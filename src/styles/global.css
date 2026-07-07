@@ -1,1 +1,99 @@
 @import "tailwindcss";
+
+@font-face {
+    font-family: "Open Sauce Two";
+    src: url("/fonts/open-sauce-two-latin-400-normal.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+}
+@font-face {
+    font-family: "Open Sauce Two";
+    src: url("/fonts/open-sauce-two-latin-500-normal.woff2") format("woff2");
+    font-weight: 500;
+    font-style: normal;
+}
+@font-face {
+    font-family: "Open Sauce Two";
+    src: url("/fonts/open-sauce-two-latin-600-normal.woff2") format("woff2");
+    font-weight: 600;
+    font-style: normal;
+}
+@font-face {
+    font-family: "Open Sauce Two";
+    src: url("/fonts/open-sauce-two-latin-700-normal.woff2") format("woff2");
+    font-weight: 700;
+    font-style: normal;
+}
+@font-face {
+    font-family: "Open Sauce Two";
+    src: url("/fonts/open-sauce-two-latin-800-normal.woff2") format("woff2");
+    font-weight: 800;
+    font-style: normal;
+}
+
+@theme {
+    --color-brand-primary: #3AFF98;
+    --color-brand-secondary: #FFFFFF;
+    --color-background-primary: #010101;
+
+    /* gradients */
+    --color-gradient-primary:#6838FF;
+    --color-gradient-secondary:#0C0A12;
+
+    /* fonts */
+    --font-sans: "Open Sauce Two", sans-serif;
+
+    /* font weights */
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    --font-weight-extrabold: 800;
+
+    /* font sizes */
+    --font-size-xs: 1rem;
+    --font-size-sm: 1.25rem;
+    --font-size-md: 1.5rem;
+    --font-size-lg: 1.75rem;
+    --font-size-xl: 2rem;
+    --font-size-2xl: 2.25rem;
+    --font-size-3xl: 2.5rem;
+    --font-size-4xl: 2.75rem;
+    --font-size-5xl: 3rem;
+    --font-size-6xl: 3.25rem;
+    --font-size-7xl: 3.5rem;
+    --font-size-8xl: 3.75rem;
+    --font-size-9xl: 4rem;
+
+    /* text colors */
+    --text-color-primary: #FFFFFF;
+    --text-color-secondary: #3AFF98;
+    --text-color-tertiary: #696385;
+    --text-color-quaternary: #6838FF;
+
+    /* Radius */
+    --radius-sm: 0.5rem;
+    --radius-md: 0.75rem;
+    --radius-lg: 2rem;
+    --radius-xl: 2.625rem;
+    --radius-2xl: 3.125rem;
+    --radius-3xl: 8.75rem;
+}
+
+@layer base {
+    body {
+        @apply bg-background-primary text-brand-secondary font-sans;
+    }
+    h1 {
+        @apply text-9xl font-normal;
+    }
+    h2 {
+        @apply text-9xl font-normal;
+    }
+    h3 {
+        @apply text-2xl font-normal;
+    }
+    h4 {
+        @apply text-sm font-semibold;
+    }
+}
