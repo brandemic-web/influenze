@@ -2,7 +2,7 @@
 
 ## Context
 
-Build the complete Influenze.ai marketing website (creator discovery/analytics SaaS) from the Figma file [Influenze Web](https://www.figma.com/design/awUatUHjSJycuLMTotbJUU/Influenze-Web) (fileKey `awUatUHjSJycuLMTotbJUU`). The file contains **3 desktop page designs (1728px)**: Home (`1:3`), Features (`1:815`), Pricing (`1:1924`). No mobile designs exist.
+Build the complete Influenze.ai marketing website (creator discovery/analytics SaaS) from the Figma file [Influenze](https://www.figma.com/design/wRKOHCAKIB0doxAmChMkM5/Influenze) (fileKey `wRKOHCAKIB0doxAmChMkM5`). The file contains **3 desktop page designs (1728px)** on Page 1 (`0:1`): Home (`143:60`), Features (`143:872`), Pricing (`143:1994`). No mobile designs exist. The frames are largely flat/ungrouped — navigate by coordinates + section screenshots, not the layer tree.
 
 The repo is a fresh Astro 7 + Tailwind v4 scaffold: brand tokens already defined in `src/styles/global.css` (dark `#010101` bg, mint `#3AFF98`, purple `#6838FF`, Open Sauce Two self-hosted in `public/fonts/`), Cloudflare Workers static deploy via `wrangler.jsonc`. Only the stock Welcome page exists — everything else is to be built.
 
@@ -11,7 +11,8 @@ The repo is a fresh Astro 7 + Tailwind v4 scaffold: brand tokens already defined
 - **Fully responsive** — build desktop-first per Figma, adapt tablet/mobile with inferred breakpoints in the same phase.
 - **Only the 3 designed pages** are built; undesigned nav/footer links (Resources, Blogs, Terms…) are placeholder `#` links.
 - **CTAs (Login/Sign Up)** point to a placeholder constant, swapped for the real app URL later.
-- **No UI framework** — pure Astro components + vanilla `<script>` for interactivity (accordion, tabs, nav dropdown, mobile menu). Marquees via CSS keyframes.
+- **No UI framework** — pure Astro components + vanilla `<script>` for interactivity (accordion, tabs, nav dropdown, mobile menu).
+- **Static build only — no animations.** Animations/sliders are integrated later via our standard stack (GSAP + SwiperJS), outside this plan's scope. Design sections that show scrolling strips (use-case cards, creator photo strips, testimonial band) are built as static rows/grids.
 - All Figma asset exports (images, screenshots, 3D bolt renders, logos, photos) will be provided.
 
 ## Code standards (apply in every phase)
@@ -20,7 +21,7 @@ The repo is a fresh Astro 7 + Tailwind v4 scaffold: brand tokens already defined
 - **Copy lives in data files** (`src/data/*.ts`, typed), not hardcoded in markup — sections render from arrays (nav links, FAQ items, pricing plans, feature blocks, use-case cards, stats, testimonials).
 - Central `src/data/site.ts` for site name, placeholder CTA URLs, social links.
 - Images through `astro:assets` `<Image />` from `src/assets/` (auto-optimized); only favicons/OG images in `public/`.
-- Semantic HTML (`header/nav/main/section/footer`, one `h1` per page), alt text, keyboard-accessible interactive widgets, `prefers-reduced-motion` guard on marquees/animations.
+- Semantic HTML (`header/nav/main/section/footer`, one `h1` per page), alt text, keyboard-accessible interactive widgets.
 - Interactivity: small inline `<script>` per component (Astro processes/bundles these), no global JS framework.
 - Fix the design's copy typo "Agnecy" → "Agency".
 
@@ -30,7 +31,7 @@ The repo is a fresh Astro 7 + Tailwind v4 scaffold: brand tokens already defined
 src/
 ├── assets/            # Figma exports (organized in Phase 0)
 ├── components/
-│   ├── common/        # Header, MobileMenu, Footer, CtaBand, Button, SectionHeading, UseCaseMarquee
+│   ├── common/        # Header, MobileMenu, Footer, CtaBand, Button, SectionHeading, UseCaseCards
 │   ├── home/          # HomeHero, CreatorCollage, StatsGrid, TrustedBy, FeatureTabs, Testimonials, Faq
 │   ├── features/      # FeaturesHero, CreatorShowcase, FeatureBlock
 │   └── pricing/       # PricingHero, PricingCards, CustomPlanStrip, CreditsExplainer
@@ -46,7 +47,7 @@ src/
 
 1. Delete `src/components/Welcome.astro` + stock `src/assets/*.svg`; blank `index.astro` shell.
 2. Upgrade `src/layouts/Layout.astro`: props for `title`/`description`, canonical + OG/Twitter meta, font preloads, dark `bg-background-primary` body (base styles already in `global.css`).
-3. Extend `global.css` `@theme`: purple gradient stops, card/surface colors seen in design (lavender testimonial card, glassy dark cards), container width (~1512px content on 1728 canvas), marquee keyframes.
+3. Extend `global.css` `@theme`: purple gradient stops, card/surface colors seen in design (lavender testimonial card, glassy dark cards), container width (~1512px content on 1728 canvas).
 4. **Asset intake**: create `src/assets/{brand,home,features,pricing,creators,logos}/` and an `ASSETS.md` manifest listing every required export with its Figma node ID (see reference table below) for exporting against it. Raster app screenshots (e.g. `1:1507`, `1:1506`) are exported as images, never rebuilt.
 5. Scaffold all `src/data/*.ts` files with typed content extracted from Figma copy.
 6. Build `Button.astro` (mint pill primary, outline/ghost variants) and `SectionHeading.astro` (two-line headings with mint/white alternating emphasis — the pattern every section uses).
@@ -57,7 +58,7 @@ src/
 2. `MobileMenu.astro`: hamburger + slide-down panel (inferred — no mobile design).
 3. `Footer.astro` (`1:500`): 3D bolt render, link columns (Learn / Resources / Legal / Use Cases), giant "influenze.ai" watermark wordmark over purple gradient.
 4. `CtaBand.astro` (`1:464`): "Ready to get influenzed?" + Sign Up button, decorative rails, floating creator photo chips + follower-count badges. Prop for button label ("Sign Up" / "Sign Up NOW").
-5. `UseCaseMarquee.astro` (`1:705`): the 5 "Who is it for?" cards (Influencer Marketing, Talent Management, PR, Advertising, E-commerce) as a CSS marquee — shared by Home and Features.
+5. `UseCaseCards.astro` (`1:705`): the 5 "Who is it for?" cards (Influencer Marketing, Talent Management, PR, Advertising, E-commerce) as a static card row — shared by Home and Features.
 6. Wire into `Layout.astro`; verify on a stub page at desktop + mobile widths.
 
 ## Phase 2 — Home page (`1:3`, 9 sections)
@@ -66,19 +67,19 @@ Build top-to-bottom in `src/components/home/`, assemble in `index.astro`:
 
 1. **HomeHero** (`1:41`): H1 "Find and analyze the right creators…", subcopy with highlighted "450M+ creators", dashboard mockup image (`1:657`) with floating "Search & Discover" callout card, purple gradient hero bg.
 2. **CreatorCollage** (`1:45`): "Find & Analyze The Right Creators" heading over wave background, floating creator photo bubbles, 3D bolt, toast chips ("Added to Nykaa List"…).
-3. **UseCaseMarquee** (reuse from Phase 1) with "Who is it for?" heading.
+3. **UseCaseCards** (reuse from Phase 1) with "Who is it for?" heading.
 4. **StatsGrid** (`1:731`): 4 glassy stat cards (99.8% fraud detection, 50M+ profiles, 3hr+ saved, 99.8% historical data) over wave vector.
 5. **TrustedBy** (`1:565`): partner logo row.
 6. **FeatureTabs** (`1:60`): "Features that you get hooked to" — 3 tabs (Discover & Analyze / My Lists / Share) switching showcase panels; vanilla JS tab switcher.
-7. **Testimonials** (`1:32`): 3 staggered lavender cards + "Real audiences. Real results." marquee band.
+7. **Testimonials** (`1:32`): 3 staggered lavender cards + "Real audiences. Real results." band (static).
 8. **Faq** (`1:429`): "Questions we get asked a lot" — accordion (native `<details>` styled, or button+JS), 6 items.
 9. Assemble with CtaBand + Footer; responsive pass on every section.
 
 ## Phase 3 — Features page (`1:815`)
 
-1. **FeaturesHero** (`1:820`): "A product that caters to you" + full-bleed creator photo card marquee (`1:826`, overflows viewport).
+1. **FeaturesHero** (`1:820`): "A product that caters to you" + full-bleed creator photo card strip (`1:826`, overflows viewport, static).
 2. **CreatorShowcase** (`1:824`): "The fastest way to discover and evaluate the right creators" + creator result-card image.
-3. Reuse **UseCaseMarquee**.
+3. Reuse **UseCaseCards**.
 4. **FeatureBlock** component + `featureBlocks.ts` data — 7 alternating rows under "The platform that actually does the work": Targeted Discovery, Analytics & Media Kit, Contact Unlocks, Comparisons, Shortlists, Easy Sharing, Reusable Pools. Each: title, copy, screenshot asset.
 5. Assemble `features.astro` with shared shell; responsive pass.
 
@@ -93,7 +94,7 @@ Build top-to-bottom in `src/components/home/`, assemble in `index.astro`:
 ## Phase 5 — Polish, SEO & QA
 
 1. `404.astro` on-brand page (wrangler is configured for `404-page` handling).
-2. Cross-page pass: hover/focus states, consistent section spacing, `prefers-reduced-motion`, keyboard nav through menu/tabs/accordion.
+2. Cross-page pass: hover/focus states, consistent section spacing, keyboard nav through menu/tabs/accordion.
 3. SEO: per-page titles/descriptions, OG image, `@astrojs/sitemap` + `robots.txt`, set `site` in `astro.config.mjs`.
 4. Performance: verify image formats/sizes from `astro:assets`, font preload, no layout shift in hero.
 5. Final visual comparison against Figma at 1728px, plus 1280 / 768 / 390px checks.
@@ -106,13 +107,15 @@ Build top-to-bottom in `src/components/home/`, assemble in `index.astro`:
 
 ## Figma node reference (for per-section design context / exports)
 
-| Page | Frame | Key section nodes |
-|---|---|---|
-| Home | `1:3` | Header `1:775`, hero `1:41` + mockup `1:657`, collage `1:45`, use-cases `1:705`, stats `1:731`, logos `1:565`, tabs `1:60`, testimonials `1:32`, FAQ `1:429`, CTA `1:464`, footer `1:500` |
-| Features | `1:815` | Hero `1:820` + marquee `1:826`, showcase `1:824`, use-cases `1:949`, 7 blocks `1:1232`/`1:1235`/`1:1334`/`1:1500`/`1:1331`/`1:1508`/`1:1542`, CTA+footer `1:1545` |
-| Pricing | `1:1924` | Hero `1:2061`, plans `1:2064`/`1:2112`/`1:2157`, custom strip `1:2304`, credits `1:2244`, CTA `1:1947`, footer `1:1983` |
+File key: `wRKOHCAKIB0doxAmChMkM5`. Pages are flat frames — these are anchor nodes inside each region, not clean section frames.
 
-During implementation, fetch per-section visuals with the Figma MCP (`get_screenshot` / `get_design_context` with fileKey `awUatUHjSJycuLMTotbJUU` + node ID).
+| Page | Frame | Key anchor nodes |
+|---|---|---|
+| Home | `143:60` (1728×8465) | Hero copy `143:100`/`143:101`, collage heading `143:102`, use-cases `143:103` + `143:766`–`143:787`, stats `143:796`–`143:828`, trusted-by `143:116`, feature tabs `143:118`–`143:125`, testimonials `143:90` + `143:459`/`143:468`/`143:477`, FAQ `143:486`–`143:508`, CTA band `143:510`–`143:549`, footer `143:560`+ |
+| Features | `143:872` (1728×7535) | Hero `143:877`–`143:880` + photo strip `143:883`, showcase `143:881`/`143:882`, use-cases `143:1005`+, 7 feature blocks `143:1290`–`143:1601`, CTA `143:1614`, footer `143:1658`+ |
+| Pricing | `143:1994` (1728×4020) | Hero `143:2131`, plan cards `143:2134`/`143:2182`/`143:2227`, custom strip `143:2374`, credits explainer `143:2314`/`143:2383`, CTA `143:2017`, footer `143:2284`+, header `143:2389` |
+
+During implementation, fetch per-section visuals with the Figma MCP (`get_screenshot` / `get_design_context` with fileKey `wRKOHCAKIB0doxAmChMkM5` + node ID).
 
 ## Verification (each phase)
 

@@ -1,0 +1,57 @@
+---
+import { Image } from "astro:assets";
+import bolt from "../../assets/images/common/decor/green_bolt.png";
+import avatar from "../../assets/images/home_page/testimonial/testimonial_profile_image.png";
+import { TESTIMONIALS, TESTIMONIALS_HEADING, TESTIMONIALS_BAND } from "../../data/testimonials";
+
+// Staggered desktop positions per Figma (cards 492×255 at x211/1086/412)
+const cardPositions = ["lg:left-[12%] lg:top-[170px]", "lg:left-[63%] lg:top-[364px]", "lg:left-[24%] lg:top-[605px]"];
+---
+
+<section class="relative overflow-hidden bg-background-primary py-24 lg:py-[50px]" aria-labelledby="testimonials-heading">
+	<div class="flex items-start justify-center gap-4">
+		<h2
+			id="testimonials-heading"
+			class="max-w-[330px] text-center text-2xl capitalize leading-[1] text-brand-primary max-md:text-lg"
+		>
+			{TESTIMONIALS_HEADING}
+		</h2>
+		<Image src={bolt} alt="" class="w-[70px] -mt-4 max-md:w-[48px]" loading="lazy" />
+	</div>
+
+	<div class="relative mt-12 lg:h-[920px] lg:mt-0">
+		<!-- giant watermark band -->
+		<div
+			class="pointer-events-none absolute inset-x-0 top-1/2 hidden -translate-y-1/2 overflow-hidden whitespace-nowrap lg:block"
+			aria-hidden="true"
+		>
+			<p class="text-center text-[140px] leading-none font-bold text-white/8 -ml-[10%]">
+				{TESTIMONIALS_BAND} {TESTIMONIALS_BAND}
+			</p>
+		</div>
+
+		<div class="relative mx-auto flex max-w-[1728px] flex-col items-center gap-8 px-6 lg:block lg:px-0">
+			{
+				TESTIMONIALS.map((testimonial, i) => (
+					<figure
+						class:list={[
+							"w-[492px] max-w-full rounded-[20px] bg-[linear-gradient(86deg,#A78EF6_19%,#8C69FD_60%)] p-[29px] lg:absolute",
+							cardPositions[i],
+						]}
+					>
+						<div class="flex items-center gap-[30px]">
+							<Image src={avatar} alt={testimonial.name} class="h-[86px] w-[86px] rounded-full object-cover" loading="lazy" />
+							<figcaption>
+								<p class="text-2xl font-medium capitalize text-white max-md:text-md">{testimonial.name}</p>
+								<p class="mt-1 text-xs text-black">{testimonial.company}</p>
+							</figcaption>
+						</div>
+						<blockquote class="mt-4 pl-[107px] max-md:pl-0">
+							<p class="text-xs leading-normal text-white/80">{testimonial.quote}</p>
+						</blockquote>
+					</figure>
+				))
+			}
+		</div>
+	</div>
+</section>

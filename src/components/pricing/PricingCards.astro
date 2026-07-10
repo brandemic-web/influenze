@@ -1,0 +1,64 @@
+---
+import { Image } from "astro:assets";
+import tick from "../../assets/images/pricing_page/pricing_cards_section/tick.svg";
+import circleX from "../../assets/images/pricing_page/pricing_cards_section/circle_x.svg";
+import star from "../../assets/images/pricing_page/pricing_cards_section/star_icon_pricing.png";
+import Button from "../common/Button.astro";
+import { PLANS } from "../../data/pricing";
+import { SIGNUP_URL } from "../../data/site";
+---
+
+<section class="bg-background-primary pb-24" aria-label="Pricing plans">
+	<div class="mx-auto grid max-w-[1348px] gap-6 px-4 md:grid-cols-2 xl:grid-cols-3 xl:gap-[20px]">
+		{
+			PLANS.map((plan) => (
+				<article class="relative flex flex-col rounded-[20px] bg-surface-card px-[38px] pt-[76px] pb-12">
+					{plan.highlighted && (
+						<Image
+							src={star}
+							alt=""
+							class="pointer-events-none absolute -top-[70px] right-0 hidden w-[159px] md:block"
+							loading="eager"
+						/>
+					)}
+					<h2 class="text-[18px] text-brand-primary">{plan.name}</h2>
+					<div class="mt-[25px] flex items-end gap-4">
+						<p class="text-[58px] leading-none text-purple-price">{plan.price}</p>
+						<p class="pb-1 text-[18px] leading-none text-white">{plan.priceUnit}</p>
+					</div>
+					<p class="mt-[18px] text-xs text-white">{plan.users}</p>
+
+					<hr class="mt-[16px] border-white/15" />
+
+					<ul class="mt-[50px] flex flex-col gap-5">
+						{plan.features.map((feature) => (
+							<li class="flex items-start gap-4">
+								<img src={feature.included ? tick.src : circleX.src} alt="" class="h-6 w-6" />
+								<span class="text-[18px] capitalize text-white">{feature.label}</span>
+							</li>
+						))}
+					</ul>
+
+					<hr class="mt-[45px] border-white/15" />
+
+					<div class="mt-[26px]">
+						<h3 class="text-[18px] text-white">CREDITS YOU GET</h3>
+						<div class="mt-3 flex items-center gap-3">
+							<span class="rounded-[8px] bg-white/10 px-4 py-2 text-[12px] capitalize text-white">{plan.credits}</span>
+							{plan.creditsBonus && <span class="text-[12px] text-brand-primary">{plan.creditsBonus}</span>}
+						</div>
+					</div>
+
+					<div class="mt-[30px]">
+						<h3 class="text-[18px] text-white">CREDIT ADD ON</h3>
+						<p class="mt-2 min-h-[36px] max-w-[336px] text-[12px] text-brand-primary">{plan.creditAddOn}</p>
+					</div>
+
+					<div class="mt-[26px]">
+						<Button href={SIGNUP_URL}>Sign Up</Button>
+					</div>
+				</article>
+			))
+		}
+	</div>
+</section>

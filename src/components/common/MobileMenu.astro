@@ -1,0 +1,75 @@
+---
+import { NAV_ITEMS } from "../../data/nav";
+import { LOGIN_URL } from "../../data/site";
+---
+
+<!-- Hamburger + slide-down panel. No mobile design exists; inferred (PLAN.md Phase 1). -->
+<button
+	type="button"
+	id="mobile-menu-button"
+	class="flex h-11 w-11 flex-col items-center justify-center gap-[6px] lg:hidden"
+	aria-expanded="false"
+	aria-controls="mobile-menu"
+	aria-label="Open menu"
+>
+	<span class="block h-[2px] w-6 bg-white transition-transform"></span>
+	<span class="block h-[2px] w-6 bg-white transition-opacity"></span>
+	<span class="block h-[2px] w-6 bg-white transition-transform"></span>
+</button>
+
+<div
+	id="mobile-menu"
+	class="fixed inset-x-4 top-24 hidden rounded-[24px] border border-white/10 bg-surface-dark p-6 lg:hidden"
+>
+	<nav aria-label="Mobile">
+		<ul class="flex flex-col gap-1">
+			{
+				NAV_ITEMS.map((item) => (
+					<li>
+						<a
+							href={item.href}
+							class="flex items-center gap-[10px] rounded-[10px] px-4 py-3 text-sm text-white hover:bg-white/5"
+						>
+							{item.label}
+							{item.badge && (
+								<span class="rounded-[5px] bg-button-primary p-[6px] text-[11px] leading-none text-[#1D192B]">
+									{item.badge}
+								</span>
+							)}
+						</a>
+						{item.dropdown && (
+							<ul class="ml-4 border-l border-white/10 pl-2">
+								{item.dropdown.map((link) => (
+									<li>
+										<a
+											href={link.href}
+											class="block rounded-[10px] px-4 py-2 text-xs text-white/60 hover:bg-white/5 hover:text-white"
+										>
+											{link.label}
+										</a>
+									</li>
+								))}
+							</ul>
+						)}
+					</li>
+				))
+			}
+		</ul>
+	</nav>
+	<a
+		href={LOGIN_URL}
+		class="mt-4 inline-flex w-full items-center justify-center rounded-full border border-brand-primary bg-surface-pill px-[25px] py-[15px] text-xs text-white"
+	>
+		Login / Sign Up
+	</a>
+</div>
+
+<script>
+	const button = document.getElementById("mobile-menu-button")!;
+	const menu = document.getElementById("mobile-menu")!;
+	button.addEventListener("click", () => {
+		const open = menu.classList.toggle("hidden");
+		button.setAttribute("aria-expanded", String(!open));
+		button.setAttribute("aria-label", open ? "Open menu" : "Close menu");
+	});
+</script>

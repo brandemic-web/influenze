@@ -1,0 +1,27 @@
+export interface NavLink {
+	label: string;
+	href: string;
+}
+
+export interface NavItem extends NavLink {
+	/** Renders a ▾ dropdown with these links (no designed panel — see NOTES.md #3) */
+	dropdown?: NavLink[];
+	/** Small green badge rendered next to the label (e.g. "DotMe") */
+	badge?: string;
+}
+
+export const NAV_ITEMS: NavItem[] = [
+	{ label: "Features", href: "/features" },
+	{ label: "Pricing", href: "/pricing" },
+	{
+		label: "Resources",
+		href: "#",
+		dropdown: [
+			{ label: "Product Demo", href: "#" },
+			{ label: "Blogs", href: "#" },
+			{ label: "FAQs", href: "#" },
+			{ label: "Contact Us", href: "#" },
+		],
+	},
+	{ label: "Linkin Bio", href: "#", badge: "DotMe" },
+];

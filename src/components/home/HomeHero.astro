@@ -1,0 +1,28 @@
+---
+import { Image } from "astro:assets";
+import heroMockup from "../../assets/images/home_page/hero/home_hero.png";
+---
+
+<section
+	class="relative overflow-hidden bg-[radial-gradient(120%_90%_at_50%_-10%,#7B4DFF_0%,#5A2FD8_35%,#2A1655_65%,#010101_100%)] pt-[170px] pb-16 lg:pt-[238px]"
+>
+	<div class="mx-auto flex max-w-[1027px] flex-col items-center gap-[44px] px-6 text-center">
+		<h1 class="max-w-[947px] text-9xl capitalize leading-[1.1] text-white max-lg:text-6xl max-md:text-3xl">
+			Find and analyze <span class="text-brand-primary">the right creators</span> from the worlds largest creator database
+		</h1>
+		<p class="max-w-[753px] text-[18px] leading-[28px] text-white">
+			Search <span class="align-baseline text-lg font-semibold text-brand-primary">450M+ creators</span> across Instagram, TikTok and YouTube using audience intelligence, fraud detection and performance signals.
+		</p>
+	</div>
+
+	<div class="mx-auto mt-12 max-w-[1430px] px-6 lg:px-0">
+		<Image
+			src={heroMockup}
+			alt="Influenze.ai dashboard — search and discover creators with AI-powered filters"
+			class="w-full"
+			widths={[640, 1024, 1430, 2860]}
+			sizes="(max-width: 1430px) 100vw, 1430px"
+			loading="eager"
+		/>
+	</div>
+</section>

@@ -1,0 +1,57 @@
+---
+import { Image } from "astro:assets";
+import wave from "../../assets/images/common/decor/hero_wave.svg";
+import bolt from "../../assets/images/common/decor/green_bolt.png";
+import bubbleOne from "../../assets/images/home_page/find_and_analyze/bubble_image_one.png";
+import bubbleTwo from "../../assets/images/home_page/find_and_analyze/bubble_image_two.png";
+import bubbleThree from "../../assets/images/home_page/find_and_analyze/bubble_image_three.png";
+import bubbleFour from "../../assets/images/home_page/find_and_analyze/bubble_image_four.png";
+import bubbleFive from "../../assets/images/home_page/find_and_analyze/bubble_image_five.png";
+import bubbleSix from "../../assets/images/home_page/find_and_analyze/bubble_image_six.png";
+import bubbleSeven from "../../assets/images/home_page/find_and_analyze/bubble_image_seven.png";
+import addedToNykaa from "../../assets/images/home_page/find_and_analyze/added_to_nykaa.svg";
+import addedToZamna from "../../assets/images/home_page/find_and_analyze/added_to_zamna.svg";
+
+const bubbles = [
+	{ src: bubbleOne, class: "left-[-2%] top-[20%] w-[230px]" },
+	{ src: bubbleTwo, class: "left-[9%] top-[28%] w-[180px]" },
+	{ src: bubbleThree, class: "left-[26%] top-[59%] w-[217px]" },
+	{ src: bubbleFour, class: "left-[46%] top-[64%] w-[221px]" },
+	{ src: bubbleFive, class: "left-[60%] top-[55%] w-[194px]" },
+	{ src: bubbleSix, class: "right-[11%] top-[10%] w-[171px]" },
+	{ src: bubbleSeven, class: "right-[-2%] top-[26%] w-[190px]" },
+] as const;
+---
+
+<section class="relative overflow-hidden bg-background-primary py-[120px] lg:h-[780px] lg:py-0">
+	<img
+		src={wave.src}
+		alt=""
+		class="pointer-events-none absolute inset-x-0 top-0 h-full w-full object-cover opacity-80"
+		loading="lazy"
+	/>
+
+	<div class="relative flex h-full items-center justify-center">
+		<h2 class="max-w-[580px] text-center text-9xl capitalize leading-[1.1] text-white max-lg:text-6xl max-md:text-3xl">
+			Find &amp; Analyze the right creators
+		</h2>
+	</div>
+
+	<div class="pointer-events-none absolute inset-0 hidden lg:block" aria-hidden="true">
+		{
+			bubbles.map((bubble) => (
+				<Image
+					src={bubble.src}
+					alt=""
+					class:list={["absolute rounded-full object-cover aspect-square", bubble.class]}
+					loading="lazy"
+				/>
+			))
+		}
+		<Image src={bolt} alt="" class="absolute right-[15%] top-[22%] w-[317px]" loading="lazy" />
+		<img src={addedToNykaa.src} alt="" class="absolute left-[7%] top-[62%] w-[210px]" loading="lazy" />
+		<img src={addedToZamna.src} alt="" class="absolute right-[4%] top-[6%] w-[220px]" loading="lazy" />
+		<span class="absolute right-[13%] top-[19%] flex h-[76px] w-[76px] items-center justify-center rounded-full bg-white/10 text-3xl font-light text-white backdrop-blur-sm">+</span>
+		<span class="absolute left-[23%] top-[75%] flex h-[76px] w-[76px] items-center justify-center rounded-full bg-white/10 text-3xl font-light text-white backdrop-blur-sm">+</span>
+	</div>
+</section>

@@ -1,0 +1,40 @@
+---
+import { Image } from "astro:assets";
+import creatorOne from "../../assets/images/featured_page/hero_section/creator_one.png";
+import creatorTwo from "../../assets/images/featured_page/hero_section/creator_two.png";
+import creatorThree from "../../assets/images/featured_page/hero_section/creator_three.png";
+import creatorFour from "../../assets/images/featured_page/hero_section/creator_four.png";
+import creatorFive from "../../assets/images/featured_page/hero_section/creator_five.png";
+import creatorSix from "../../assets/images/featured_page/hero_section/creator_six.png";
+
+const creators = [creatorOne, creatorTwo, creatorThree, creatorFour, creatorFive, creatorSix];
+---
+
+<section
+	class="relative overflow-hidden bg-[radial-gradient(120%_90%_at_50%_-10%,#7B4DFF_0%,#5A2FD8_35%,#2A1655_65%,#010101_100%)] pt-[170px] pb-16 lg:pt-[238px]"
+>
+	<div class="mx-auto flex max-w-[1027px] flex-col items-center gap-[44px] px-6 text-center">
+		<h1 class="max-w-[947px] text-9xl capitalize leading-[1.1] text-white max-lg:text-6xl max-md:text-3xl">
+			A product that caters to you
+		</h1>
+		<p class="max-w-[753px] text-[18px] leading-[28px] text-white">
+			Search <span class="text-lg font-semibold text-brand-primary">450M+ creators</span> across Instagram, TikTok and YouTube using audience intelligence, fraud detection and performance signals.
+		</p>
+	</div>
+
+	<!-- full-bleed creator photo strip; overflows the viewport per design (static, GSAP later) -->
+	<div class="mt-16 flex justify-center gap-5 overflow-hidden lg:mt-[96px]">
+		{
+			creators.map((creator) => (
+				<Image
+					src={creator}
+					alt=""
+					class="w-[240px] shrink-0 rounded-[16px] object-cover lg:w-[315px] lg:rounded-[20px]"
+					widths={[315, 630]}
+					sizes="315px"
+					loading="eager"
+				/>
+			))
+		}
+	</div>
+</section>

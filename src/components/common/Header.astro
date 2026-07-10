@@ -1,0 +1,97 @@
+---
+import { Image } from "astro:assets";
+import logo from "../../assets/images/common/logos_and_icons/influenze_logo_nav.svg";
+import { NAV_ITEMS } from "../../data/nav";
+import { LOGIN_URL } from "../../data/site";
+import MobileMenu from "./MobileMenu.astro";
+---
+
+<header class="fixed inset-x-0 top-0 z-50 px-4 pt-4 lg:px-10 lg:pt-8">
+	<div
+		class="mx-auto flex max-w-[1643px] items-center justify-between rounded-full border border-brand-primary bg-surface-header py-[10px] pr-5 pl-6 backdrop-blur-md lg:pl-10"
+	>
+		<a href="/" class="shrink-0" aria-label="influenze.ai home">
+			<Image src={logo} alt="influenze.ai" class="h-9 w-auto lg:h-10" />
+		</a>
+
+		<nav class="hidden items-center gap-10 lg:flex xl:gap-[60px]" aria-label="Main">
+			{
+				NAV_ITEMS.map((item) =>
+					item.dropdown ? (
+						<div class="group relative" data-nav-dropdown>
+							<button
+								type="button"
+								class="flex items-center gap-[10px] text-xs text-white"
+								aria-expanded="false"
+								aria-haspopup="true"
+							>
+								{item.label}
+								<svg
+									class="h-[5px] w-[8px] transition-transform group-data-open:rotate-180"
+									viewBox="0 0 8 5"
+									fill="none"
+									aria-hidden="true"
+								>
+									<path d="M1 1l3 3 3-3" stroke="currentColor" stroke-width="1.5" />
+								</svg>
+							</button>
+							<ul
+								class="invisible absolute top-full left-1/2 mt-4 w-48 -translate-x-1/2 rounded-[16px] border border-white/10 bg-surface-dark p-2 opacity-0 transition-all group-data-open:visible group-data-open:opacity-100"
+							>
+								{item.dropdown.map((link) => (
+									<li>
+										<a
+											href={link.href}
+											class="block rounded-[10px] px-4 py-3 text-xs text-white/80 hover:bg-white/5 hover:text-white"
+										>
+											{link.label}
+										</a>
+									</li>
+								))}
+							</ul>
+						</div>
+					) : (
+						<a href={item.href} class="flex items-center gap-[10px] text-xs text-white">
+							{item.label}
+							{item.badge && (
+								<span class="flex items-center gap-[5px] rounded-[5px] bg-button-primary p-[8px] text-[11px] leading-none text-[#1D192B]">
+									{item.badge}
+									<svg class="h-[6px] w-[6px]" viewBox="0 0 6 6" fill="none" aria-hidden="true">
+										<path d="M1 5L5 1M5 1H2M5 1V4" stroke="currentColor" stroke-width="1" />
+									</svg>
+								</span>
+							)}
+						</a>
+					),
+				)
+			}
+		</nav>
+
+		<div class="hidden lg:block">
+			<a
+				href={LOGIN_URL}
+				class="inline-flex items-center justify-center rounded-full border border-brand-primary bg-surface-pill px-[25px] py-[17px] text-xs leading-none text-white transition-opacity hover:opacity-85"
+			>
+				Login / Sign Up
+			</a>
+		</div>
+
+		<MobileMenu />
+	</div>
+</header>
+
+<script>
+	document.querySelectorAll<HTMLElement>("[data-nav-dropdown]").forEach((dropdown) => {
+		const button = dropdown.querySelector("button")!;
+		button.addEventListener("click", (e) => {
+			e.stopPropagation();
+			const open = dropdown.hasAttribute("data-open");
+			dropdown.toggleAttribute("data-open", !open);
+			button.setAttribute("aria-expanded", String(!open));
+		});
+		document.addEventListener("click", () => {
+			dropdown.removeAttribute("data-open");
+			button.setAttribute("aria-expanded", "false");
+		});
+	});
+</script>

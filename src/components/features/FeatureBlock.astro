@@ -1,0 +1,70 @@
+---
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+import type { FeatureBlock } from "../../data/featureBlocks";
+
+import bubblesTrio from "../../assets/images/home_page/featured_tabs/discover_and_analyze_image.png";
+import filtersPanel from "../../assets/images/common/ui_images/creator_filters_panel.png";
+import accountStats from "../../assets/images/common/ui_images/accounts_stats.svg";
+import likesGraph from "../../assets/images/common/ui_images/avg_likes_graph.svg";
+import contactRows from "../../assets/images/featured_page/blocks/contact_unlock_rows.png";
+import comparisonDashboard from "../../assets/images/common/ui_images/creator_comparison_dashboard.png";
+import addToList from "../../assets/images/common/ui_images/add_to_list.png";
+import sharePopup from "../../assets/images/common/ui_images/share_email_popup.png";
+import campaignDashboard from "../../assets/images/common/ui_images/campaign_creator_dashboard.png";
+
+interface Props {
+	block: FeatureBlock;
+}
+
+const { block } = Astro.props;
+
+// imageKey → composed visual; single images fill the inner panel,
+// pairs stack side by side overlapping it (as in Figma).
+const singles: Record<string, ImageMetadata> = {
+	contacts: contactRows,
+	comparisons: comparisonDashboard,
+	shortlists: addToList,
+	sharing: sharePopup,
+	pools: campaignDashboard,
+};
+---
+
+<article class="relative mx-auto max-w-[1572px] rounded-[28px] bg-white/13 px-8 py-12 lg:min-h-[506px] lg:px-0 lg:py-0">
+	<div class="flex flex-col gap-10 lg:flex-row lg:items-center">
+		<div class="lg:w-[565px] lg:shrink-0 lg:pl-[132px] lg:py-[100px]">
+			<h3 class="text-[58px] capitalize leading-[normal] text-white max-lg:text-4xl max-md:text-2xl">
+				{block.title}
+			</h3>
+			<p class="mt-8 max-w-[444px] text-xs leading-[26px] text-white lg:mt-[60px]">
+				{block.description}
+			</p>
+		</div>
+
+		<div class="relative flex flex-1 items-center justify-center lg:py-4">
+			<div class="absolute inset-y-4 right-0 hidden w-[92%] rounded-[20px] bg-white/50 lg:block" aria-hidden="true"></div>
+			{
+				block.imageKey === "discovery" ? (
+					<div class="relative flex w-full flex-wrap items-center justify-center gap-6 py-6">
+						<Image src={bubblesTrio} alt="" class="w-[340px] max-w-full" loading="lazy" />
+						<Image src={filtersPanel} alt="Creator filters panel" class="w-[260px] max-w-full" loading="lazy" />
+					</div>
+				) : block.imageKey === "analytics" ? (
+					<div class="relative flex w-full flex-wrap items-center justify-center gap-6 py-6">
+						<img src={accountStats.src} alt="Account stats" class="w-[340px] max-w-full" loading="lazy" />
+						<img src={likesGraph.src} alt="Average likes growth graph" class="w-[340px] max-w-full" loading="lazy" />
+					</div>
+				) : (
+					<Image
+						src={singles[block.imageKey]}
+						alt={block.title}
+						class="relative w-full max-w-[854px] lg:-ml-[10%]"
+						widths={[640, 1280]}
+						sizes="(max-width: 1024px) 100vw, 854px"
+						loading="lazy"
+					/>
+				)
+			}
+		</div>
+	</div>
+</article>

@@ -1,0 +1,37 @@
+---
+import wave from "../../assets/images/common/decor/section_wave.svg";
+import SectionHeading from "../common/SectionHeading.astro";
+import { STATS } from "../../data/stats";
+---
+
+<section class="relative overflow-hidden bg-background-primary py-24 lg:py-[130px]" aria-labelledby="stats-heading">
+	<img
+		src={wave.src}
+		alt=""
+		class="pointer-events-none absolute inset-x-0 top-0 w-full opacity-90"
+		loading="lazy"
+	/>
+
+	<div class="relative">
+		<SectionHeading
+			segments={[{ text: "The platform that actually " }, { text: "does the work", accent: true }]}
+			class="mx-auto max-w-[816px]"
+		/>
+
+		<div id="stats-heading" class="sr-only">Platform stats</div>
+
+		<div class="mx-auto mt-16 grid max-w-[1494px] gap-[30px] px-6 sm:grid-cols-2 lg:mt-24">
+			{
+				STATS.map((stat) => (
+					<article class="rounded-md bg-[#F6F6F4]/10 p-8 backdrop-blur-[2px] lg:p-[50px]">
+						<p class="text-[70px] capitalize leading-none tracking-[-3.5px] text-[#F6F6F4] max-md:text-6xl">
+							{stat.value}
+						</p>
+						<h3 class="mt-[50px] text-md font-bold capitalize text-white max-md:mt-8">{stat.label}</h3>
+						<p class="mt-5 text-[18px] leading-[28px] text-white/60">{stat.description}</p>
+					</article>
+				))
+			}
+		</div>
+	</div>
+</section>

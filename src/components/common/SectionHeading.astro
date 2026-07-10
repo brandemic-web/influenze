@@ -1,0 +1,31 @@
+---
+/**
+ * The two-tone capitalized heading used by every section.
+ * Segments alternate mint/white via `accent`.
+ */
+interface Segment {
+	text: string;
+	accent?: boolean;
+}
+
+interface Props {
+	segments: Segment[];
+	level?: "h1" | "h2";
+	class?: string;
+}
+
+const { segments, level: Tag = "h2", class: className = "" } = Astro.props;
+---
+
+<Tag
+	class:list={[
+		"capitalize leading-[1.1] text-center text-9xl max-lg:text-6xl max-md:text-3xl",
+		className,
+	]}
+>
+	{
+		segments.map((s) => (
+			<span class={s.accent ? "text-brand-primary" : "text-white"}>{s.text}</span>
+		))
+	}
+</Tag>

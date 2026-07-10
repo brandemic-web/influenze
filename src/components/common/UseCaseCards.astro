@@ -1,0 +1,26 @@
+---
+import { USE_CASES } from "../../data/useCases";
+---
+
+<section class="bg-background-primary py-20 lg:py-[100px]" aria-labelledby="use-cases-heading">
+	<h2 id="use-cases-heading" class="text-center text-sm capitalize text-brand-primary">
+		Who is it for?
+	</h2>
+
+	<!-- Design shows a marquee strip overflowing the viewport; built static
+	     (PLAN.md) as a scrollable row, ready for GSAP later. -->
+	<div class="mt-[60px] overflow-x-auto pb-4 [scrollbar-width:thin]">
+		<ul class="flex w-max gap-5 px-[75px]">
+			{
+				USE_CASES.map((useCase) => (
+					<li class="w-[485px] max-w-[85vw] shrink-0 rounded-sm border border-[#19123A] bg-background-primary px-[58px] py-10">
+						<h3 class="text-md text-white">{useCase.title}</h3>
+						<p class="mt-[28px] text-[18px] leading-[26px] text-[#CECECE]/38">
+							{useCase.description}
+						</p>
+					</li>
+				))
+			}
+		</ul>
+	</div>
+</section>
