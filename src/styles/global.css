@@ -50,20 +50,20 @@
     --font-weight-bold: 700;
     --font-weight-extrabold: 800;
 
-    /* font sizes */
-    --font-size-xs: 1rem;
-    --font-size-sm: 1.25rem;
-    --font-size-md: 1.5rem;
-    --font-size-lg: 1.75rem;
-    --font-size-xl: 2rem;
-    --font-size-2xl: 2.25rem;
-    --font-size-3xl: 2.5rem;
-    --font-size-4xl: 2.75rem;
-    --font-size-5xl: 3rem;
-    --font-size-6xl: 3.25rem;
-    --font-size-7xl: 3.5rem;
-    --font-size-8xl: 3.75rem;
-    --font-size-9xl: 4rem;
+    /* font sizes (v4 --text-* namespace) */
+    --text-xs: 1rem;
+    --text-sm: 1.25rem;
+    --text-md: 1.5rem;
+    --text-lg: 1.75rem;
+    --text-xl: 2rem;
+    --text-2xl: 2.25rem;
+    --text-3xl: 2.5rem;
+    --text-4xl: 2.75rem;
+    --text-5xl: 3rem;
+    --text-6xl: 3.25rem;
+    --text-7xl: 3.5rem;
+    --text-8xl: 3.75rem;
+    --text-9xl: 4rem;
 
     /* text colors */
     --text-color-primary: #FFFFFF;
@@ -78,6 +78,25 @@
     --radius-xl: 2.625rem;
     --radius-2xl: 3.125rem;
     --radius-3xl: 8.75rem;
+
+    /* buttons (design uses #43EE95 for pills, distinct from brand mint) */
+    --color-button-primary: #43EE95;
+    --color-button-text: #0A0718;
+
+    /* surfaces */
+    --color-surface-dark: #0A0718;
+    --color-surface-card: rgba(10, 7, 24, 0.4);
+    --color-surface-header: rgba(21, 11, 51, 0.35);
+    --color-surface-pill: #242433;
+
+    /* purples */
+    --color-purple-deep: #653EE1;
+    --color-purple-soft: #C0AFF7;
+    --color-purple-ink: #4928B3;
+    --color-purple-price: rgba(128, 88, 255, 0.4);
+
+    /* mint variants */
+    --color-mint-dark: #33E889;
 }
 
 @layer base {

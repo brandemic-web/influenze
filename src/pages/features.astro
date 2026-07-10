@@ -1,0 +1,30 @@
+---
+import Layout from "../layouts/Layout.astro";
+import FeaturesHero from "../components/features/FeaturesHero.astro";
+import CreatorShowcase from "../components/features/CreatorShowcase.astro";
+import UseCaseCards from "../components/common/UseCaseCards.astro";
+import FeatureBlock from "../components/features/FeatureBlock.astro";
+import SectionHeading from "../components/common/SectionHeading.astro";
+import { FEATURE_BLOCKS, FEATURE_BLOCKS_HEADING } from "../data/featureBlocks";
+---
+
+<Layout
+	title="Features — Influenze.ai"
+	description="A product that caters to you: targeted discovery, creator analytics, contact unlocks, comparisons, shortlists, sharing and reusable creator pools."
+>
+	<main>
+		<FeaturesHero />
+		<CreatorShowcase />
+		<UseCaseCards />
+
+		<section class="bg-background-primary py-24 lg:py-[100px]" aria-label={FEATURE_BLOCKS_HEADING}>
+			<SectionHeading
+				segments={[{ text: "The platform that " }, { text: "actually does the work", accent: true }]}
+				class="mx-auto max-w-[816px] px-6"
+			/>
+			<div class="mt-16 flex flex-col gap-8 px-4 lg:mt-24 lg:px-[78px]">
+				{FEATURE_BLOCKS.map((block) => <FeatureBlock block={block} />)}
+			</div>
+		</section>
+	</main>
+</Layout>

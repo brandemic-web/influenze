@@ -1,0 +1,21 @@
+---
+import { Image } from "astro:assets";
+import listingOne from "../../assets/images/common/ui_images/creator_listing_one.png";
+import listingTwo from "../../assets/images/common/ui_images/creator_listing_two.png";
+import listingThree from "../../assets/images/common/ui_images/creator_listing_three.png";
+---
+
+<section class="bg-background-primary py-24 lg:py-[105px]" aria-labelledby="showcase-heading">
+	<h2 id="showcase-heading" class="mx-auto max-w-[1613px] px-6 text-9xl capitalize leading-[1.1] max-lg:text-6xl max-md:text-3xl lg:px-[115px]">
+		<span class="block text-brand-primary">The fastest way to discover</span>
+		<span class="block text-white lg:pl-[491px]">and evaluate the right creators</span>
+	</h2>
+
+	<div class="mx-auto mt-16 flex max-w-[1498px] flex-col gap-4 px-6 lg:mt-24">
+		{
+			[listingOne, listingTwo, listingThree].map((listing) => (
+				<Image src={listing} alt="Creator search result" class="w-full" widths={[879, 1758]} sizes="(max-width: 1498px) 100vw, 1450px" loading="lazy" />
+			))
+		}
+	</div>
+</section>

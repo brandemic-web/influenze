@@ -1,0 +1,53 @@
+---
+import { Image } from "astro:assets";
+import bolt from "../../assets/images/common/logos_and_icons/footer_logo.svg";
+import wordmark from "../../assets/images/common/logos_and_icons/footer_text.png";
+import gradientBg from "../../assets/images/common/decor/footer_gradient_mask.svg";
+import { FOOTER_COLUMNS } from "../../data/footer";
+---
+
+<footer class="relative overflow-hidden bg-surface-dark">
+	<img
+		src={gradientBg.src}
+		alt=""
+		class="pointer-events-none absolute inset-x-0 bottom-0 h-[633px] w-full object-cover"
+		loading="lazy"
+	/>
+
+	<div class="relative mx-auto max-w-[1728px]">
+		<Image
+			src={bolt}
+			alt=""
+			class="pointer-events-none absolute -left-[67px] top-9 hidden w-[465px] lg:block"
+			loading="lazy"
+		/>
+
+		<div class="flex flex-wrap gap-x-20 gap-y-10 px-6 pt-24 pb-16 sm:px-12 lg:justify-end lg:gap-x-[120px] lg:pr-[190px] lg:pb-[120px] lg:pl-[600px]">
+			{
+				FOOTER_COLUMNS.map((column) => (
+					<nav aria-label={column.title}>
+						<h2 class="text-[22px] font-bold text-white">{column.title}</h2>
+						<ul class="mt-[30px] flex flex-col gap-[30px]">
+							{column.links.map((link) => (
+								<li>
+									<a href={link.href} class="text-[18px] text-white/50 transition-colors hover:text-white">
+										{link.label}
+									</a>
+								</li>
+							))}
+						</ul>
+					</nav>
+				))
+			}
+		</div>
+
+		<div class="relative flex justify-center px-6 lg:justify-end lg:pr-[74px] lg:pl-[268px]">
+			<Image
+				src={wordmark}
+				alt="influenze.ai"
+				class="w-full max-w-[1386px] translate-y-[6%]"
+				loading="lazy"
+			/>
+		</div>
+	</div>
+</footer>

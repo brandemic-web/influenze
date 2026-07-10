@@ -1,0 +1,29 @@
+---
+import { Image } from "astro:assets";
+import bolt from "../../assets/images/common/decor/green_bolt.png";
+import creditCard from "../../assets/images/pricing_page/credit_system_section/credit_summary_card.svg";
+import { CREDITS_EXPLAINER } from "../../data/pricing";
+---
+
+<section class="relative overflow-hidden bg-background-primary pb-32" aria-labelledby="credits-heading">
+	<h2 id="credits-heading" class="text-center text-2xl capitalize text-brand-primary max-md:text-md">
+		{CREDITS_EXPLAINER.heading}
+	</h2>
+
+	<div class="relative mx-auto mt-14 flex max-w-[1348px] flex-col items-center gap-10 px-6 lg:flex-row lg:items-center lg:justify-center lg:gap-0">
+		<Image
+			src={bolt}
+			alt=""
+			class="w-[180px] lg:-mr-16 lg:w-[268px] lg:self-end"
+			loading="lazy"
+		/>
+		<!-- the SVG already contains the credit chips, dashboard card and
+		     "Your Credits Stay With You" side card -->
+		<img
+			src={creditCard.src}
+			alt="Credits dashboard — current plan, credits left, per-action credit costs, and carried-forward credits"
+			class="w-full max-w-[801px]"
+			loading="lazy"
+		/>
+	</div>
+</section>

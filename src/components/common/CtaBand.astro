@@ -1,0 +1,79 @@
+---
+import { Image } from "astro:assets";
+import { SIGNUP_URL } from "../../data/site";
+import Button from "./Button.astro";
+
+import railThick from "../../assets/images/common/decor/cta_rail_thick.svg";
+import railThinA from "../../assets/images/common/decor/cta_rail_thin_a.svg";
+import railThinB from "../../assets/images/common/decor/cta_rail_thin_b.svg";
+import railLineA from "../../assets/images/common/decor/cta_rail_line_a.svg";
+import railLineB from "../../assets/images/common/decor/cta_rail_line_b.svg";
+import railLineC from "../../assets/images/common/decor/cta_rail_line_c.svg";
+import glowCenter from "../../assets/images/common/decor/glow_ellipse_center.svg";
+import glowSide from "../../assets/images/common/decor/glow_ellipse_side.svg";
+import scribbleA from "../../assets/images/common/decor/cta_scribble_a.svg";
+import scribbleB from "../../assets/images/common/decor/cta_scribble_b.svg";
+
+import creatorOne from "../../assets/images/common/cta_section/cta_creator_one.png";
+import creatorTwo from "../../assets/images/common/cta_section/cta_creator_two.png";
+import creatorThree from "../../assets/images/common/cta_section/cta_creator_three.png";
+import creatorFour from "../../assets/images/common/cta_section/cta_creator_four.png";
+import followersChip from "../../assets/images/common/cta_section/followers_count.svg";
+import followers570k from "../../assets/images/common/cta_section/followers_count_570k.png";
+import hyperLogo from "../../assets/images/common/cta_section/hyper_logo.svg";
+import brandemicLogo from "../../assets/images/common/cta_section/brandemic_logo.svg";
+import plusIcon from "../../assets/images/common/logos_and_icons/plus_icon_with_gradient.svg";
+import shareIcon from "../../assets/images/common/logos_and_icons/share_icon_with_gradient.svg";
+
+interface Props {
+	buttonLabel?: string;
+}
+
+const { buttonLabel = "Sign Up" } = Astro.props;
+---
+
+<section
+	class="relative overflow-hidden bg-background-primary py-[140px] lg:h-[610px] lg:py-0"
+	aria-labelledby="cta-heading"
+>
+	<!-- glows -->
+	<img src={glowCenter.src} alt="" class="pointer-events-none absolute top-0 left-1/2 h-full w-[681px] -translate-x-1/2" loading="lazy" />
+	<img src={glowSide.src} alt="" class="pointer-events-none absolute top-0 -left-[128px] h-full w-[264px]" loading="lazy" />
+	<img src={glowSide.src} alt="" class="pointer-events-none absolute top-0 -right-[128px] h-full w-[264px]" loading="lazy" />
+
+	<!-- rails -->
+	<div class="pointer-events-none absolute inset-0 hidden lg:block" aria-hidden="true">
+		<img src={railThick.src} alt="" class="absolute top-[9%] w-full" />
+		<img src={railThinA.src} alt="" class="absolute top-[29%] w-full" />
+		<img src={railLineA.src} alt="" class="absolute top-[41%] w-full -scale-y-100" />
+		<img src={railLineC.src} alt="" class="absolute top-[51%] w-full rotate-180" />
+		<img src={railLineC.src} alt="" class="absolute top-[58%] w-full" />
+		<img src={railLineB.src} alt="" class="absolute top-[63%] w-full" />
+		<img src={railThinB.src} alt="" class="absolute top-[73%] w-full rotate-180" />
+		<img src={railThick.src} alt="" class="absolute top-[80%] w-full -scale-y-100" />
+	</div>
+
+	<!-- floating creators + chips (desktop only, no mobile design) -->
+	<div class="pointer-events-none absolute inset-0 hidden lg:block" aria-hidden="true">
+		<Image src={creatorOne} alt="" class="absolute top-[8%] left-[13%] w-[220px] rotate-[-11deg] rounded-[12px]" loading="lazy" />
+		<img src={shareIcon.src} alt="" class="absolute top-[13%] left-[12.6%] w-[65px]" loading="lazy" />
+		<img src={hyperLogo.src} alt="" class="absolute bottom-[8%] left-[6%] w-[120px]" loading="lazy" />
+		<Image src={creatorTwo} alt="" class="absolute top-[53%] left-[21%] w-[125px] rotate-[20deg] rounded-[12px]" loading="lazy" />
+		<Image src={followers570k} alt="" class="absolute top-[70%] left-[20%] w-[115px]" loading="lazy" />
+		<img src={scribbleA.src} alt="" class="absolute top-[38%] left-[19%] w-[117px]" loading="lazy" />
+
+		<Image src={creatorThree} alt="" class="absolute top-[7%] right-[19%] w-[145px] rotate-[5deg] rounded-[12px]" loading="lazy" />
+		<img src={followersChip.src} alt="" class="absolute top-[17%] right-[16%] w-[184px]" loading="lazy" />
+		<img src={scribbleB.src} alt="" class="absolute top-[40%] right-[16%] w-[198px]" loading="lazy" />
+		<Image src={creatorFour} alt="" class="absolute top-[50%] right-[12%] w-[127px] rounded-[12px]" loading="lazy" />
+		<img src={plusIcon.src} alt="" class="absolute top-[71%] right-[19%] w-[37px]" loading="lazy" />
+		<img src={brandemicLogo.src} alt="" class="absolute top-[28%] right-[4%] w-[70px]" loading="lazy" />
+	</div>
+
+	<div class="relative flex h-full flex-col items-center justify-center gap-10">
+		<h2 id="cta-heading" class="text-center text-6xl capitalize text-white max-md:text-3xl lg:text-[58px]">
+			Ready to get influenzed?
+		</h2>
+		<Button href={SIGNUP_URL}>{buttonLabel}</Button>
+	</div>
+</section>

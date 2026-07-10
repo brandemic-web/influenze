@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://influenze.ai/sitemap-index.xml

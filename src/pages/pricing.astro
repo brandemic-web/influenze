@@ -1,0 +1,20 @@
+---
+import Layout from "../layouts/Layout.astro";
+import PricingHero from "../components/pricing/PricingHero.astro";
+import PricingCards from "../components/pricing/PricingCards.astro";
+import CustomPlanStrip from "../components/pricing/CustomPlanStrip.astro";
+import CreditsExplainer from "../components/pricing/CreditsExplainer.astro";
+---
+
+<Layout
+	title="Pricing — Influenze.ai"
+	description="Built for teams that demand accuracy. Starter, Growth and Accelerate plans with transparent credit-based pricing."
+	ctaButtonLabel="Sign Up NOW"
+>
+	<main>
+		<PricingHero />
+		<PricingCards />
+		<CustomPlanStrip />
+		<CreditsExplainer />
+	</main>
+</Layout>
