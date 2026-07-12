@@ -8,15 +8,17 @@ interface Props {
 const { href, variant = "primary", class: className = "" } = Astro.props;
 
 const variants = {
-	primary: "bg-button-primary text-button-text",
-	outline: "bg-surface-pill border border-brand-primary text-white",
+	primary:
+		"bg-button-primary text-button-text border border-transparent hover:bg-black hover:border-brand-primary hover:text-brand-primary",
+	outline:
+		"bg-surface-pill border border-brand-primary text-white hover:bg-brand-primary hover:text-black",
 };
 ---
 
 <a
 	href={href}
 	class:list={[
-		"inline-flex items-center justify-center rounded-full px-[25px] py-[17px] text-xs leading-none transition-opacity hover:opacity-85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary",
+		"inline-flex items-center justify-center rounded-full px-[25px] py-[17px] text-xs leading-none transition-colors duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary",
 		variants[variant],
 		className,
 	]}
