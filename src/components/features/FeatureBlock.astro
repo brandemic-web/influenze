@@ -1,7 +1,5 @@
 ---
 import { Image } from "astro:assets";
-import type { ImageMetadata } from "astro";
-import type { FeatureBlock } from "../../data/featureBlocks";
 
 import bubblesTrio from "../../assets/images/home_page/featured_tabs/discover_and_analyze_image.png";
 import filtersPanel from "../../assets/images/common/ui_images/creator_filters_panel.png";
@@ -12,59 +10,131 @@ import comparisonDashboard from "../../assets/images/common/ui_images/creator_co
 import addToList from "../../assets/images/common/ui_images/add_to_list.png";
 import sharePopup from "../../assets/images/common/ui_images/share_email_popup.png";
 import campaignDashboard from "../../assets/images/common/ui_images/campaign_creator_dashboard.png";
-
-interface Props {
-	block: FeatureBlock;
-}
-
-const { block } = Astro.props;
-
-// imageKey → composed visual; single images fill the inner panel,
-// pairs stack side by side overlapping it (as in Figma).
-const singles: Record<string, ImageMetadata> = {
-	contacts: contactRows,
-	comparisons: comparisonDashboard,
-	shortlists: addToList,
-	sharing: sharePopup,
-	pools: campaignDashboard,
-};
+import hami_insta_handle from "../../assets/images/home_page/featured_tabs/hamidbarkzi07_handle.svg"
 ---
 
-<article class="relative mx-auto max-w-[1572px] rounded-[28px] bg-white/13 px-8 py-12 lg:min-h-[506px] lg:px-0 lg:py-0">
-	<div class="flex flex-col gap-10 lg:flex-row lg:items-center">
-		<div class="lg:w-[565px] lg:shrink-0 lg:pl-[132px] lg:py-[100px]">
+<!-- Powerful Targeted Discovery -->
+<article class="relative mx-auto w-full rounded-[28px] backdrop-blur-md bg-white/10 border border-white/20 shadow-lg p-4">
+	<div class="flex flex-col gap-8 lg:flex-row lg:items-stretch">
+		<div class="flex min-w-0 flex-col justify-center px-4 py-8 lg:w-1/2 lg:px-[64px] lg:py-16">
 			<h3 class="text-[58px] capitalize leading-[normal] text-white max-lg:text-4xl max-md:text-2xl">
-				{block.title}
+				Powerful Targeted Discovery
 			</h3>
-			<p class="mt-8 max-w-[444px] text-xs leading-[26px] text-white lg:mt-[60px]">
-				{block.description}
+			<p class="mt-8 max-w-[444px] text-xs leading-[26px] text-white lg:mt-10">
+				Find creators based on specific niches, categories, regions, platforms, audience types, content styles, and campaign requirements through advanced search capabilities.
 			</p>
 		</div>
+		<div class="flex aspect-16/10 w-full items-center justify-center overflow-hidden rounded-[20px] bg-white/50 p-6 lg:w-1/2 lg:p-4">
+			<div class="relative flex h-full w-full items-center justify-center gap-4">
+				<Image src={bubblesTrio} alt="" class="max-h-full w-[50%] object-contain" loading="lazy" />
+				<Image src={filtersPanel} alt="Creator filters panel" class="max-h-full w-[50%] object-contain" loading="lazy" />
+				<Image src={hami_insta_handle} alt="" class="absolute bottom-[18%] left-[8%] w-[22%]" loading="lazy" />
+			</div>
+		</div>
+	</div>
+</article>
 
-		<div class="relative flex flex-1 items-center justify-center lg:py-4">
-			<div class="absolute inset-y-4 right-0 hidden w-[92%] rounded-[20px] bg-white/50 lg:block" aria-hidden="true"></div>
-			{
-				block.imageKey === "discovery" ? (
-					<div class="relative flex w-full flex-wrap items-center justify-center gap-6 py-6">
-						<Image src={bubblesTrio} alt="" class="w-[340px] max-w-full" loading="lazy" />
-						<Image src={filtersPanel} alt="Creator filters panel" class="w-[260px] max-w-full" loading="lazy" />
-					</div>
-				) : block.imageKey === "analytics" ? (
-					<div class="relative flex w-full flex-wrap items-center justify-center gap-6 py-6">
-						<img src={accountStats.src} alt="Account stats" class="w-[340px] max-w-full" loading="lazy" />
-						<img src={likesGraph.src} alt="Average likes growth graph" class="w-[340px] max-w-full" loading="lazy" />
-					</div>
-				) : (
-					<Image
-						src={singles[block.imageKey]}
-						alt={block.title}
-						class="relative w-full max-w-[854px] lg:-ml-[10%]"
-						widths={[640, 1280]}
-						sizes="(max-width: 1024px) 100vw, 854px"
-						loading="lazy"
-					/>
-				)
-			}
+<!-- Creator Analytics & Media Kit Access -->
+<article class="relative mx-auto w-full rounded-[28px] backdrop-blur-md bg-white/10 border border-white/20 shadow-lg p-4">
+	<div class="flex flex-col gap-8 lg:flex-row lg:items-stretch">
+		<div class="flex min-w-0 flex-col justify-center px-4 py-8 lg:w-1/2 lg:px-[64px] lg:py-16">
+			<h3 class="text-[58px] capitalize leading-[normal] text-white max-lg:text-4xl max-md:text-2xl">
+				Creator Analytics & Media Kit Access
+			</h3>
+			<p class="mt-8 max-w-[444px] text-xs leading-[26px] text-white lg:mt-10">
+				Access deeper creator insights, performance data, audience information, and structured media kit analytics to evaluate creators beyond surface-level numbers.
+			</p>
+		</div>
+		<div class="flex aspect-16/10 w-full items-center justify-center overflow-hidden rounded-[20px] bg-white/50 p-6 lg:w-1/2 lg:p-10">
+			<div class="flex h-full w-full items-center justify-center gap-4">
+				<img src={accountStats.src} alt="Account stats" class="max-h-full w-[44%] object-contain" loading="lazy" />
+				<img src={likesGraph.src} alt="Average likes growth graph" class="max-h-full w-[44%] object-contain" loading="lazy" />
+			</div>
+		</div>
+	</div>
+</article>
+
+<!-- Contact Detail Unlocks -->
+<article class="relative mx-auto w-full rounded-[28px] backdrop-blur-md bg-white/10 border border-white/20 shadow-lg p-4">
+	<div class="flex flex-col gap-8 lg:flex-row lg:items-stretch">
+		<div class="flex min-w-0 flex-col justify-center px-4 py-8 lg:w-1/2 lg:px-[64px] lg:py-16">
+			<h3 class="text-[58px] capitalize leading-[normal] text-white max-lg:text-4xl max-md:text-2xl">
+				Contact Detail Unlocks
+			</h3>
+			<p class="mt-8 max-w-[444px] text-xs leading-[26px] text-white lg:mt-10">
+				Access available creator contact details to streamline outreach, collaboration planning, and creator onboarding.
+			</p>
+		</div>
+		<div class="flex aspect-16/10 w-full items-center justify-center overflow-hidden rounded-[20px] bg-white/50 p-6 lg:w-1/2 lg:p-10">
+			<Image src={contactRows} alt="Contact Detail Unlocks" class="max-h-full w-auto max-w-full object-contain" widths={[640, 1280]} sizes="(max-width: 1024px) 100vw, 720px" loading="lazy" />
+		</div>
+	</div>
+</article>
+
+<!-- Real-Time Creator Comparisons -->
+<article class="relative mx-auto w-full rounded-[28px] backdrop-blur-md bg-white/10 border border-white/20 shadow-lg p-4">
+	<div class="flex flex-col gap-8 lg:flex-row lg:items-stretch">
+		<div class="flex min-w-0 flex-col justify-center px-4 py-8 lg:w-1/2 lg:px-[64px] lg:py-16">
+			<h3 class="text-[58px] capitalize leading-[normal] text-white max-lg:text-4xl max-md:text-2xl">
+				Real-Time Creator Comparisons
+			</h3>
+			<p class="mt-8 max-w-[444px] text-xs leading-[26px] text-white lg:mt-10">
+				Compare multiple creators side by side in real time to make faster and more confident shortlisting decisions.
+			</p>
+		</div>
+		<div class="flex aspect-16/10 w-full items-center justify-center overflow-hidden rounded-[20px] bg-white/50 p-6 lg:w-1/2 lg:p-10">
+			<Image src={comparisonDashboard} alt="Real-Time Creator Comparisons" class="max-h-full w-auto max-w-full object-contain" widths={[640, 1280]} sizes="(max-width: 1024px) 100vw, 720px" loading="lazy" />
+		</div>
+	</div>
+</article>
+
+<!-- Organized Creator Shortlists with import and export -->
+<article class="relative mx-auto w-full rounded-[28px] backdrop-blur-md bg-white/10 border border-white/20 shadow-lg p-4">
+	<div class="flex flex-col gap-8 lg:flex-row lg:items-stretch">
+		<div class="flex min-w-0 flex-col justify-center px-4 py-8 lg:w-1/2 lg:px-[64px] lg:py-16">
+			<h3 class="text-[58px] capitalize leading-[normal] text-white max-lg:text-4xl max-md:text-2xl">
+				Organized Creator Shortlists with import and export
+			</h3>
+			<p class="mt-8 max-w-[444px] text-xs leading-[26px] text-white lg:mt-10">
+				Build campaign-wise, brand-wise, niche-wise, region-wise, or roster-wise creator lists for better internal planning and client recommendations.
+			</p>
+		</div>
+		<div class="flex aspect-16/10 w-full items-center justify-center overflow-hidden rounded-[20px] bg-white/50 p-6 lg:w-1/2 lg:p-10">
+			<Image src={addToList} alt="Organized Creator Shortlists with import and export" class="max-h-full w-auto max-w-full object-contain" widths={[640, 1280]} sizes="(max-width: 1024px) 100vw, 720px" loading="lazy" />
+		</div>
+	</div>
+</article>
+
+<!-- Easy Sharing -->
+<article class="relative mx-auto w-full rounded-[28px] backdrop-blur-md bg-white/10 border border-white/20 shadow-lg p-4">
+	<div class="flex flex-col gap-8 lg:flex-row lg:items-stretch">
+		<div class="flex min-w-0 flex-col justify-center px-4 py-8 lg:w-1/2 lg:px-[64px] lg:py-16">
+			<h3 class="text-[58px] capitalize leading-[normal] text-white max-lg:text-4xl max-md:text-2xl">
+				Easy Sharing
+			</h3>
+			<p class="mt-8 max-w-[444px] text-xs leading-[26px] text-white lg:mt-10">
+				Share creator profiles, shortlists, and campaign recommendations with clients, brands, internal teams, and stakeholders through structured view-access links.
+			</p>
+		</div>
+		<div class="flex aspect-16/10 w-full items-center justify-center overflow-hidden rounded-[20px] bg-white/50 p-6 lg:w-1/2 lg:p-10">
+			<Image src={sharePopup} alt="Easy Sharing" class="max-h-full w-auto max-w-full object-contain" widths={[640, 1280]} sizes="(max-width: 1024px) 100vw, 720px" loading="lazy" />
+		</div>
+	</div>
+</article>
+
+<!-- Reusable Creator Pools -->
+<article class="relative mx-auto w-full rounded-[28px] backdrop-blur-md bg-white/10 border border-white/20 shadow-lg p-4">
+	<div class="flex flex-col gap-8 lg:flex-row lg:items-stretch">
+		<div class="flex min-w-0 flex-col justify-center px-4 py-8 lg:w-1/2 lg:px-[64px] lg:py-16">
+			<h3 class="text-[58px] capitalize leading-[normal] text-white max-lg:text-4xl max-md:text-2xl">
+				Reusable Creator Pools
+			</h3>
+			<p class="mt-8 max-w-[444px] text-xs leading-[26px] text-white lg:mt-10">
+				Build long-term creator intelligence instead of starting research from scratch for every new brief, campaign, or brand requirement.
+			</p>
+		</div>
+		<div class="flex aspect-16/10 w-full items-center justify-center overflow-hidden rounded-[20px] bg-white/50 p-6 lg:w-1/2 lg:p-10">
+			<Image src={campaignDashboard} alt="Reusable Creator Pools" class="max-h-full w-auto max-w-full object-contain" widths={[640, 1280]} sizes="(max-width: 1024px) 100vw, 720px" loading="lazy" />
 		</div>
 	</div>
 </article>
