@@ -1,6 +1,7 @@
 ---
 import { NAV_ITEMS } from "../../data/nav";
 import { LOGIN_URL } from "../../data/site";
+import Button from "./Button.astro";
 ---
 
 <!-- Hamburger + slide-down panel. No mobile design exists; inferred (PLAN.md Phase 1). -->
@@ -56,12 +57,13 @@ import { LOGIN_URL } from "../../data/site";
 			}
 		</ul>
 	</nav>
-	<a
+	<Button
 		href={LOGIN_URL}
-		class="mt-4 inline-flex w-full items-center justify-center rounded-full border border-brand-primary bg-surface-pill px-[25px] py-[15px] text-xs text-white"
+		variant="nav"
+		class="mt-4 w-full"
 	>
 		Login / Sign Up
-	</a>
+	</Button>
 </div>
 
 <script>

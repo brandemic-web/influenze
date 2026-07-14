@@ -3,14 +3,23 @@ import { Image } from "astro:assets";
 import bolt from "../../assets/images/common/logos_and_icons/footer_logo.svg";
 import wordmark from "../../assets/images/common/logos_and_icons/footer_text.png";
 import gradientBg from "../../assets/images/common/decor/footer_gradient_mask.svg";
+import influenze_mobile from "../../assets/images/common/logos_and_icons/influenze_wordmark_mobile.png";
 import { FOOTER_COLUMNS } from "../../data/footer";
+
+// Mobile-only grid placement (2 columns). Desktop uses the flex row below,
+// which ignores these grid-placement utilities.
+const MOBILE_PLACEMENT: Record<string, string> = {
+	Learn: "col-start-1 row-start-2",
+	Resources: "col-start-2 row-start-1",
+	Legal: "col-start-2 row-start-2",
+};
 ---
 
 <footer class="relative overflow-hidden bg-surface-dark">
 	<img
 		src={gradientBg.src}
 		alt=""
-		class="pointer-events-none absolute inset-x-0 bottom-0 h-[633px] w-full object-cover"
+		class="pointer-events-none absolute inset-x-0 bottom-0 h-[650px] lg:h-[550px] w-full object-cover max-lg:-scale-y-100"
 		loading="lazy"
 	/>
 
@@ -18,19 +27,29 @@ import { FOOTER_COLUMNS } from "../../data/footer";
 		<Image
 			src={bolt}
 			alt=""
-			class="pointer-events-none absolute -left-[67px] top-9 hidden w-[465px] lg:block"
+			class="pointer-events-none absolute left-[15px] top-2 w-[180px] lg:left-0 lg:bottom-5 lg:w-[380px] lg:top-auto"
 			loading="lazy"
 		/>
 
-		<div class="flex flex-wrap gap-x-20 gap-y-10 px-6 pt-24 pb-16 sm:px-12 lg:justify-end lg:gap-x-[120px] lg:pr-[190px] lg:pb-[120px] lg:pl-[600px]">
+		<div
+			class="grid grid-cols-2 gap-x-4 gap-y-16 pt-35 pb-16 pl-14 pr-6 sm:pr-12 lg:flex lg:flex-wrap lg:justify-end lg:gap-x-[190px] lg:gap-y-10 lg:pt-48 lg:pr-[100px] lg:pb-[30px] lg:pl-[600px]"
+		>
 			{
 				FOOTER_COLUMNS.map((column) => (
-					<nav aria-label={column.title}>
-						<h2 class="text-[22px] font-bold text-white">{column.title}</h2>
-						<ul class="mt-[30px] flex flex-col gap-[30px]">
+					<nav
+						aria-label={column.title}
+						class={MOBILE_PLACEMENT[column.title]}
+					>
+						<h2 class="text-[18px] lg:text-[22px] font-bold text-white">
+							{column.title}
+						</h2>
+						<ul class="mt-[30px] flex flex-col gap-2 lg:gap-4">
 							{column.links.map((link) => (
 								<li>
-									<a href={link.href} class="text-[18px] text-white/50 transition-colors hover:text-white">
+									<a
+										href={link.href}
+										class="text-[14px] lg:text-[18px] text-white/50 transition-colors hover:text-white"
+									>
 										{link.label}
 									</a>
 								</li>
@@ -41,11 +60,19 @@ import { FOOTER_COLUMNS } from "../../data/footer";
 			}
 		</div>
 
-		<div class="relative flex justify-center px-6 lg:justify-end lg:pr-[74px] lg:pl-[268px]">
+		<div
+			class="relative flex justify-center px-6 lg:justify-end lg:pr-[74px] lg:pl-[268px]"
+		>
+			<Image
+				src={influenze_mobile}
+				alt="influenze.ai"
+				class="block w-full max-w-[1386px] translate-y-[6%] lg:hidden"
+				loading="lazy"
+			/>
 			<Image
 				src={wordmark}
 				alt="influenze.ai"
-				class="w-full max-w-[1386px] translate-y-[6%]"
+				class="hidden w-full max-w-[1386px] translate-y-[0%] lg:block"
 				loading="lazy"
 			/>
 		</div>
