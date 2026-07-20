@@ -5,15 +5,15 @@ import listingTwo from "../../assets/images/common/ui_images/creator_listing_two
 import listingThree from "../../assets/images/common/ui_images/creator_listing_three.png";
 ---
 
-<section class="bg-background-primary py-24 lg:py-[105px]" aria-labelledby="showcase-heading">
-	<h2 id="showcase-heading" class="mx-auto max-w-[1613px] px-6 text-7xl capitalize leading-[1.1] max-lg:text-6xl max-md:text-3xl lg:px-25">
+<section class="py-24 lg:pt-32 lg:pb-0" aria-labelledby="showcase-heading">
+	<h2 id="showcase-heading" class="mx-auto max-w-[1613px] px-6 text-7xl capitalize leading-[1.1] max-lg:text-6xl max-md:text-3xl lg:px-25 max-lg:text-center lg:text-left">
 		<span class="text-quaternary">The</span>
 		<span class="text-brand-secondary"> fastest way</span>
 		<span class="text-quaternary"> To discover</span>
 		<span class="block lg:text-right"><span class="text-quaternary">and evaluate the</span> <span class="text-white">right creators</span></span>
 	</h2>
 
-	<div class="mx-auto mt-16 flex max-w-[800px] flex-col gap-4 px-6 lg:mt-4 relative">
+	<div class="mx-auto mt-4 flex max-w-[800px] flex-col gap-4 px-6 lg:mt-4 relative">
 		{
 			[listingOne, listingTwo, listingThree].map((listing) => (
 				<Image src={listing} alt="Creator search result" class="w-full" widths={[879, 1758]} sizes="(max-width: 1498px) 100vw, 1450px" loading="lazy" />
