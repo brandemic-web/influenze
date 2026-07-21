@@ -3,9 +3,7 @@ import Layout from "../layouts/Layout.astro";
 import FeaturesHero from "../components/features/FeaturesHero.astro";
 import CreatorShowcase from "../components/features/CreatorShowcase.astro";
 import UseCaseCards from "../components/common/UseCaseCards.astro";
-import FeatureBlock from "../components/features/FeatureBlock.astro";
-import SectionHeading from "../components/common/SectionHeading.astro";
-import bg_gradient from "../assets/images/common/decor/gradient_s_bg.svg"
+import FeatureBlockHeading from "../components/features/FeatureBlockHeading.astro";
 ---
 
 <Layout
@@ -16,18 +14,6 @@ import bg_gradient from "../assets/images/common/decor/gradient_s_bg.svg"
 		<FeaturesHero />
 		<CreatorShowcase />
 		<UseCaseCards />
-
-		<section class="relative bg-background-primary py-24 lg:py-[100px]" aria-label="The platform that actually does the work">
-			<SectionHeading
-				segments={[{ text: "The platform that actually" }, { text: " does the work", accent: true }]}
-				class="mx-auto max-w-[816px] px-6"
-			/>
-			<div class="absolute top-30 lg:top-[-200px] w-full mx-auto">
-				<img src={bg_gradient.src} alt="" class="mx-auto">
-			  </div>
-			<div class=" mt-16 flex flex-col gap-8 px-4 lg:mt-24 lg:px-[78px] relative z-2 max-w-[1550px] mx-auto">
-				<FeatureBlock />
-			</div>
-		</section>
+		<FeatureBlockHeading />
 	</main>
 </Layout>
