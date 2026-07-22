@@ -14,8 +14,7 @@
  *   data-track        stepper rail used to map pointer X → position
  *   data-fill         glowing filled portion of the track
  *   data-handle       draggable/keyboard bolt slider
- *   data-dot          per-tier stop (data-pos = % along track, data-color = notch tint)
- *   data-pointer(-fill) the tent arrow above the value box (tint follows the stop)
+ *   data-dot          per-tier stop (data-pos = % along track)
  *   data-field        value box element bound to a PricingTier key
  *   data-annual-toggle / data-annual-knob   the annual-billing switch
  */
@@ -41,15 +40,9 @@ const tiersJson = JSON.stringify(PRICING_TIERS);
 // (first gap is double-width, then even). Kept in sync with PRICING_TIERS order.
 const STOPS = [0, 25, 50, 75, 100];
 
-// Fill colour of the pointer notch at each stop, so it matches the panel's
-// background gradient at that position. Aligned with STOPS by index.
-// (0% reuses the 25% colour — no distinct value was specified for it.)
-const POINTER_COLORS = ["#201252", "#201252", "#1a103f", "#1f1150", "#211254"];
-
 // Resting position of the bolt handle on first paint (matches the Figma frame:
 // the handle sits between Starter and Growth). Clicking a dot snaps to its stop.
 const DEFAULT_POS = 25;
-const DEFAULT_POINTER_COLOR = POINTER_COLORS[STOPS.indexOf(DEFAULT_POS)];
 ---
 
 <section
@@ -79,12 +72,12 @@ const DEFAULT_POINTER_COLOR = POINTER_COLORS[STOPS.indexOf(DEFAULT_POS)];
 	>
 		<!-- ── Plan stepper ─────────────────────────────────────────── -->
 		<div class="relative" role="radiogroup" aria-label="Choose a plan">
-			<!-- rail is inset from both edges so the bolt handle / pointer never
-			     overflow the panel at the first (0%) and last (100%) stops -->
+			<!-- rail is inset from both edges so the bolt handle never
+			     overflows the panel at the first (0%) and last (100%) stops -->
 			<div class="relative mx-10 h-[44px]" data-track>
 				<!-- track base -->
 				<span
-					class="pointer-events-none absolute inset-x-0 top-1/2 h-[2px] -translate-y-1/2 rounded-full bg-[#000000]"
+					class="pointer-events-none absolute inset-x-0 top-1/2 h-[6px] -translate-y-1/2 rounded-full bg-black/25"
 				></span>
 				<!-- filled / glowing portion -->
 				<span
@@ -106,7 +99,6 @@ const DEFAULT_POINTER_COLOR = POINTER_COLORS[STOPS.indexOf(DEFAULT_POS)];
 							style={`left:${pos}%`}
 							data-dot
 							data-pos={pos}
-							data-color={POINTER_COLORS[i]}
 						>
 							<span class="block size-[19px] rounded-full bg-white" />
 						</button>
@@ -134,42 +126,10 @@ const DEFAULT_POINTER_COLOR = POINTER_COLORS[STOPS.indexOf(DEFAULT_POS)];
 			</div>
 		</div>
 
-		<!-- ── Value box (with upward pointer to the handle) ────────── -->
+		<!-- ── Value box ─────────────────────────────────────────────── -->
 		<div
 			class="relative mt-12 rounded-[20px] border border-white/15 bg-[rgba(73,40,179,0.18)] px-5 pt-9 pb-8 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.14),inset_0_-1px_0_0_rgba(255,255,255,0.03),0_12px_40px_-12px_rgba(0,0,0,0.45)] backdrop-blur-2xl backdrop-saturate-150 sm:px-8 lg:pl-14 lg:pr-10"
 		>
-			<!-- pointer tent aimed at the bolt handle (same rail inset as the
-			     stepper track so it tracks the handle at every stop) -->
-			<div
-				class="pointer-events-none absolute inset-x-10 top-[-15px] z-10"
-			>
-				<svg
-					class="absolute -translate-x-1/2 transition-[left] duration-300"
-					style={`left:${DEFAULT_POS}%`}
-					width="30"
-					height="18"
-					viewBox="0 0 30 18"
-					fill="none"
-					aria-hidden="true"
-					data-pointer
-				>
-					<!-- opaque fill overlaps ~3px into the box to mask the top
-					     border segment beneath the arrow; colour is swapped per
-					     stop by the script to match the panel gradient -->
-					<path
-						d="M2 18 L2 15 L15 2 L28 15 L28 18 Z"
-						fill={DEFAULT_POINTER_COLOR}
-						data-pointer-fill></path>
-					<!-- only the two rising edges are stroked, so they read as a
-					     continuation of the box border rather than a closed triangle -->
-					<path
-						d="M2 15 L15 2 L28 15"
-						stroke="rgba(255,255,255,0.15)"
-						stroke-width="1"
-						fill="none"></path>
-				</svg>
-			</div>
-
 			<!-- Annual toggle (visual only for now) -->
 			<div class="flex items-center gap-2">
 				<span class="text-[16px] text-white">Annual</span>

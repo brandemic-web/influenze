@@ -28,23 +28,17 @@ function initPlanStepper(panel: HTMLElement): void {
 	const track = panel.querySelector<HTMLElement>("[data-track]");
 	const fill = panel.querySelector<HTMLElement>("[data-fill]");
 	const handle = panel.querySelector<HTMLElement>("[data-handle]");
-	const pointer = panel.querySelector<HTMLElement>("[data-pointer]");
-	const pointerFill = panel.querySelector<SVGPathElement>(
-		"[data-pointer-fill]",
-	);
 	const fields = panel.querySelectorAll<HTMLElement>("[data-field]");
 
 	if (!dots.length) return;
 	const lastIndex = dots.length - 1;
 
-	// Stop positions (percent along the track) and the pointer notch colour at
-	// each stop, both in dot order.
+	// Stop positions (percent along the track), in dot order.
 	const stops = dots.map((dot) => Number(dot.dataset.pos ?? 0));
-	const colors = dots.map((dot) => dot.dataset.color ?? "");
 
 	// Elements whose CSS transition is suspended while dragging so the bolt
 	// tracks the pointer 1:1, then restored so the snap-back animates.
-	const animated = [handle, fill, pointer].filter(
+	const animated = [handle, fill].filter(
 		(el): el is HTMLElement => el !== null,
 	);
 
@@ -62,18 +56,10 @@ function initPlanStepper(panel: HTMLElement): void {
 		return best;
 	}
 
-	/** Move handle/fill/pointer to an arbitrary percent, without snapping. */
+	/** Move handle/fill to an arbitrary percent, without snapping. */
 	function moveTo(pos: number): void {
 		if (fill) fill.style.width = `${pos}%`;
 		if (handle) handle.style.left = `${pos}%`;
-		if (pointer) pointer.style.left = `${pos}%`;
-	}
-
-	/** Tint the pointer notch to match the panel gradient at the given stop. */
-	function setPointerColor(index: number): void {
-		if (pointerFill && colors[index]) {
-			pointerFill.setAttribute("fill", colors[index]);
-		}
 	}
 
 	/** Snap to a tier: update position, selected state, and value fields. */
@@ -85,7 +71,6 @@ function initPlanStepper(panel: HTMLElement): void {
 			dot.setAttribute("aria-checked", i === index ? "true" : "false"),
 		);
 		moveTo(stops[index]);
-		setPointerColor(index);
 
 		// Keep the slider handle's reported value in sync so screen readers
 		// announce the current tier (aria-valuemin/max are static in the markup).
@@ -135,9 +120,7 @@ function initPlanStepper(panel: HTMLElement): void {
 		const onPointerMove = (e: PointerEvent) => {
 			if (!dragging) return;
 			e.preventDefault();
-			const pos = posFromClientX(e.clientX);
-			moveTo(pos);
-			setPointerColor(nearestIndex(pos));
+			moveTo(posFromClientX(e.clientX));
 		};
 
 		/** Tear down the active drag: restore transitions and drop listeners. */
