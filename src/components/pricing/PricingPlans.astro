@@ -73,7 +73,7 @@ const DEFAULT_POINTER_COLOR = POINTER_COLORS[STOPS.indexOf(DEFAULT_POS)];
 	</h1>
 
 	<div
-		class="relative mx-auto mt-12 max-w-[1242px] rounded-[20px] border border-white/15 bg-surface-card px-4 :lg:py-8 py-12 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.14),inset_0_-1px_0_0_rgba(255,255,255,0.04),0_24px_70px_-12px_rgba(0,0,0,0.55)] backdrop-blur-2xl backdrop-saturate-150 sm:px-6 lg:px-[97px] lg:py-18"
+		class="relative mx-auto mt-12 max-w-[1242px] rounded-[20px] border border-white/15 bg-surface-card px-4 lg:py-8 py-12 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.14),inset_0_-1px_0_0_rgba(255,255,255,0.04),0_24px_70px_-12px_rgba(0,0,0,0.55)] backdrop-blur-2xl backdrop-saturate-150 sm:px-6 lg:px-[97px] lg:py-18"
 		data-plan-panel
 		data-tiers={tiersJson}
 	>
@@ -120,6 +120,10 @@ const DEFAULT_POINTER_COLOR = POINTER_COLORS[STOPS.indexOf(DEFAULT_POS)];
 					width="40"
 					role="slider"
 					aria-label="Drag to choose a plan"
+					aria-valuemin="0"
+					aria-valuemax={STOPS.length - 1}
+					aria-valuenow={DEFAULT_TIER_INDEX}
+					aria-valuetext={PRICING_TIERS[DEFAULT_TIER_INDEX].name}
 					tabindex="0"
 					class="absolute -top-8.75 z-30 w-16.25 -translate-x-1/2 cursor-grab touch-none select-none transition-[left] duration-300 active:cursor-grabbing focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary"
 					style={`left:${DEFAULT_POS}%`}

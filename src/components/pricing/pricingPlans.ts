@@ -87,6 +87,13 @@ function initPlanStepper(panel: HTMLElement): void {
 		moveTo(stops[index]);
 		setPointerColor(index);
 
+		// Keep the slider handle's reported value in sync so screen readers
+		// announce the current tier (aria-valuemin/max are static in the markup).
+		if (handle) {
+			handle.setAttribute("aria-valuenow", String(index));
+			handle.setAttribute("aria-valuetext", tier.name);
+		}
+
 		fields.forEach((el) => {
 			const key = el.dataset.field as keyof PricingTier | undefined;
 			if (key && key in tier) el.textContent = tier[key];
@@ -133,13 +140,29 @@ function initPlanStepper(panel: HTMLElement): void {
 			setPointerColor(nearestIndex(pos));
 		};
 
-		const onPointerUp = (e: PointerEvent) => {
-			if (!dragging) return;
+		/** Tear down the active drag: restore transitions and drop listeners. */
+		const stopDragging = (): void => {
 			dragging = false;
 			animated.forEach((el) => (el.style.transition = ""));
 			window.removeEventListener("pointermove", onPointerMove);
 			window.removeEventListener("pointerup", onPointerUp);
+			window.removeEventListener("pointercancel", onPointerCancel);
+		};
+
+		const onPointerUp = (e: PointerEvent) => {
+			if (!dragging) return;
+			stopDragging();
 			select(nearestIndex(posFromClientX(e.clientX)));
+		};
+
+		// The OS can cancel an in-progress touch drag (edge-swipe-back,
+		// pull-to-refresh, multi-touch) — no pointerup follows, so clean up here
+		// too and snap back from the handle's last position, or the drag would
+		// stick and the handle would chase every later pointer move.
+		const onPointerCancel = () => {
+			if (!dragging) return;
+			stopDragging();
+			select(nearestIndex(parseFloat(handle.style.left) || 0));
 		};
 
 		handle.addEventListener("pointerdown", (e) => {
@@ -149,6 +172,7 @@ function initPlanStepper(panel: HTMLElement): void {
 			moveTo(posFromClientX(e.clientX));
 			window.addEventListener("pointermove", onPointerMove);
 			window.addEventListener("pointerup", onPointerUp);
+			window.addEventListener("pointercancel", onPointerCancel);
 		});
 
 		handle.addEventListener("keydown", (e) => {
