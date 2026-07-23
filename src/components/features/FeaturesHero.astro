@@ -8,10 +8,62 @@ import creatorFive from "../../assets/images/featured_page/hero_section/creator_
 import creatorSix from "../../assets/images/featured_page/hero_section/creator_six.png";
 
 const creators = [creatorOne, creatorTwo, creatorThree, creatorFour, creatorFive, creatorSix];
+
+// Glass lens tuned from the Figma "Glass" effect panel values.
+const glass = {
+	refraction: 100, // bend strength  -> feDisplacementMap scale
+	depth: 250, // glass thickness -> displacement neutral / edge depth
+	dispersion: 0, // chromatic split -> per-channel scale offset
+	frost: 0, // backdrop blur    -> blur() px
+	splay: 120, // edge spread      -> width of the bend band
+	lightAngle: 45, // specular highlight direction (deg)
+	lightIntensity: 100, // specular highlight strength (%)
+};
+
+// Map the Figma 0-100 sliders onto the SVG/CSS units.
+const baseScale = Math.round(glass.refraction * 1); // refraction -> bend strength
+const dispersionPx = Math.round((glass.dispersion / 100) * 14); // ~7px channel spread
+const scaleR = baseScale + dispersionPx; // red bends most
+const scaleG = baseScale; // green in the middle
+const scaleB = baseScale - dispersionPx; // blue bends least
+const frostBlur = (glass.frost / 100) * 12; // frost -> backdrop blur px (0 here)
+const lightAlpha = (glass.lightIntensity / 100) * 0.42; // highlight opacity
+// CSS gradient angle for the light: Figma 0deg = from top, positive = clockwise.
+const frostBlurCss = `${frostBlur}px`;
+const lightAngleCss = `${glass.lightAngle + 90}deg`;
+const lightAlphaCss = `${lightAlpha}`;
+
+// Displacement map for the lens. R encodes X-shift, G encodes Y-shift; mid-gray
+// (128 / "0.5") = no displacement.
+//   - Red (horizontal) is a NARROW range around mid-gray -> barely any horizontal
+//     change, so the content keeps its width.
+//   - Green (vertical) is a FULL range top->bottom -> strong, even vertical
+//     compression, so the content looks scaled down / pressed from top and bottom.
+const displacementMap = `<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'>
+	<defs>
+		<linearGradient id='h' x1='0' y1='0' x2='1' y2='0'>
+			<stop offset='0' stop-color='#6e0000'/>
+			<stop offset='0.5' stop-color='#800000'/>
+			<stop offset='1' stop-color='#920000'/>
+		</linearGradient>
+		<linearGradient id='v' x1='0' y1='0' x2='0' y2='1'>
+			<stop offset='0' stop-color='#000000'/>
+			<stop offset='0.15' stop-color='#004a00'/>
+			<stop offset='0.35' stop-color='#006e00'/>
+			<stop offset='0.50' stop-color='#008000'/>
+			<stop offset='0.65' stop-color='#009200'/>
+			<stop offset='0.85' stop-color='#00b600'/>
+			<stop offset='1' stop-color='#00ff00'/>
+		</linearGradient>
+	</defs>
+	<rect width='100' height='100' fill='url(#h)'/>
+	<rect width='100' height='100' fill='url(#v)' style='mix-blend-mode:screen'/>
+</svg>`;
+const displacementDataUri = `data:image/svg+xml;base64,${Buffer.from(displacementMap).toString("base64")}`;
 ---
 
 <section
-	class="relative overflow-hidden bg-[radial-gradient(160%_120%_at_50%_-10%,#7B4DFF_0%,#5A2FD8_35%,#2A1655_65%,#010101_100%)] pt-[10.6rem] pb-16 lg:pt-60 lg:pb-24"
+	class="relative overflow-hidden bg-[radial-gradient(160%_100%_at_50%_-10%,#7B4DFF_0%,#5A2FD8_35%,#2A1655_65%,#010101_100%)] pt-[10.6rem] pb-16 lg:pt-60 lg:pb-24"
 >
 	<div class="mx-auto flex max-w-[1027px] flex-col items-center gap-[44px] px-6 text-center">
 		<h1 class="max-w-[947px] text-9xl capitalize leading-[1.1] text-white max-lg:text-6xl max-md:text-3xl">
@@ -22,19 +74,121 @@ const creators = [creatorOne, creatorTwo, creatorThree, creatorFour, creatorFive
 		</p>
 	</div>
 
-	<!-- full-bleed creator photo strip; overflows the viewport per design (static, GSAP later) -->
-	<div class="mt-16 flex justify-center gap-5 overflow-hidden lg:mt-[96px]">
-		{
-			creators.map((creator) => (
-				<Image
-					src={creator}
-					alt=""
-					class="w-[240px] shrink-0 rounded-[16px] object-cover lg:w-[315px] lg:rounded-[20px]"
-					widths={[315, 630]}
-					sizes="315px"
-					loading="eager"
-				/>
-			))
-		}
+	<!-- full-bleed creator photo strip; the liquid-glass lens overlays it (prototype) -->
+	<div class="creator-stage relative mt-16 lg:mt-[96px]">
+		<!-- GSAP marquee track: creators rendered twice for a seamless infinite loop -->
+		<div class="creator-track flex w-max gap-5">
+			{
+				[...creators, ...creators].map((creator, i) => (
+					<Image
+						src={creator}
+						alt=""
+						aria-hidden={i >= creators.length ? "true" : undefined}
+						class="w-[240px] shrink-0 rounded-[16px] object-cover lg:w-[315px] lg:rounded-[20px]"
+						widths={[315, 630]}
+						sizes="315px"
+						loading="eager"
+					/>
+				))
+			}
+		</div>
+
+		<!-- Liquid-glass lens: refracts + frosts the creator strip behind it -->
+		<div class="lg-lens" aria-hidden="true"></div>
 	</div>
+
+	<!-- Glass refraction filter: spherical displacement + per-channel chromatic dispersion. -->
+	<svg class="pointer-events-none absolute h-0 w-0" aria-hidden="true" focusable="false">
+		<filter id="lg-refract" x="0%" y="0%" width="100%" height="100%" color-interpolation-filters="sRGB">
+			<feImage
+				href={displacementDataUri}
+				preserveAspectRatio="none"
+				x="0"
+				y="0"
+				width="100%"
+				height="100%"
+				result="map"
+			/>
+			<!-- Blur the displacement field so the bend is smooth, not spiky. -->
+			<feGaussianBlur in="map" stdDeviation="1.4" result="mapBlur" />
+
+			<!-- Dispersion: displace R / G / B by slightly different amounts, then
+			     recombine. The channel split shows most where the bend is strongest
+			     (the edges), giving true chromatic aberration. -->
+			<feDisplacementMap in="SourceGraphic" in2="mapBlur" scale={scaleR} xChannelSelector="R" yChannelSelector="G" result="dispR" />
+			<feColorMatrix in="dispR" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="chanR" />
+
+			<feDisplacementMap in="SourceGraphic" in2="mapBlur" scale={scaleG} xChannelSelector="R" yChannelSelector="G" result="dispG" />
+			<feColorMatrix in="dispG" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="chanG" />
+
+			<feDisplacementMap in="SourceGraphic" in2="mapBlur" scale={scaleB} xChannelSelector="R" yChannelSelector="G" result="dispB" />
+			<feColorMatrix in="dispB" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="chanB" />
+
+			<feBlend in="chanR" in2="chanG" mode="screen" result="chanRG" />
+			<feBlend in="chanRG" in2="chanB" mode="screen" />
+		</filter>
+	</svg>
 </section>
+
+<script>
+	import "../../scripts/features-hero";
+</script>
+
+<style define:vars={{ frostBlurCss, lightAngleCss, lightAlphaCss }}>
+	.lg-lens {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		width: 100vw;
+		height: 100vw;
+		transform: translate(-50%, -50%);
+		border-radius: 9999px;
+		pointer-events: none;
+
+		/* Frost=0 -> no blur; dispersion/refraction come from the SVG filter */
+		-webkit-backdrop-filter: blur(var(--frostBlurCss)) saturate(115%) brightness(1);
+		backdrop-filter: blur(var(--frostBlurCss)) saturate(115%) brightness(1) url(#lg-refract);
+
+		/* Soft translucent purple cast, like the Figma glass */
+		background: radial-gradient(
+			120% 120% at 30% 25%,
+			rgba(190, 165, 255, 0.12) 0%,
+			rgba(123, 77, 255, 0.1) 55%,
+			rgba(96, 60, 200, 0.12) 100%
+		);
+
+		/* Subtle glass rim: faint white edge, soft violet inner shadow, gentle drop */
+		box-shadow:
+			inset 0 1px 2px rgba(255, 255, 255, 0.28),
+			inset 0 0 0 1px rgba(255, 255, 255, 0.16),
+			inset -6px -8px 26px rgba(70, 40, 140, 0.22),
+			0 18px 44px rgba(20, 10, 50, 0.32);
+	}
+
+	/* Specular highlight driven by the Figma light angle + intensity */
+	.lg-lens::after {
+		content: "";
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
+		background: linear-gradient(
+			var(--lightAngleCss),
+			rgba(255, 255, 255, var(--lightAlphaCss)) 0%,
+			rgba(255, 255, 255, 0) 42%
+		);
+	}
+
+	@media (min-width: 1024px) {
+		.lg-lens {
+			width: 600px;
+			height: 600px;
+		}
+	}
+
+	/* Graceful fallback: no backdrop-filter -> keep a legible frosted tint */
+	@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+		.lg-lens {
+			background: rgba(42, 22, 85, 0.35);
+		}
+	}
+</style>

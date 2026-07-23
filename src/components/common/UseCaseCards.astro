@@ -7,13 +7,15 @@ import { USE_CASES } from "../../data/useCases";
 		Who is it for?
 	</h2>
 
-	<!-- Design shows a marquee strip overflowing the viewport; built static
-	     (PLAN.md) as a scrollable row, ready for GSAP later. -->
-	<div class="use-case-scroll mt-[60px] overflow-x-auto pb-4">
-		<ul class="flex w-max gap-5 px-[75px]">
+	<!-- GSAP marquee: cards rendered twice for a seamless loop; pauses on hover. -->
+	<div class="use-case-marquee mt-[60px] overflow-hidden pb-4 relative z-2">
+		<ul class="use-case-track flex w-max gap-5">
 			{
-				USE_CASES.map((useCase) => (
-					<li class="w-[485px] max-w-[85vw] shrink-0 rounded-sm bg-linear-to-r from-[#19123A] via-[#19123A] to-[#575757] p-px">
+				[...USE_CASES, ...USE_CASES].map((useCase, i) => (
+					<li
+						aria-hidden={i >= USE_CASES.length ? "true" : undefined}
+						class="w-[485px] max-w-[85vw] shrink-0 rounded-sm bg-linear-to-r from-[#19123A] via-[#19123A] to-[#575757] p-px"
+					>
 						<div class="h-full rounded-sm bg-background-primary px-[58px] py-10">
 							<h3 class="text-md text-white">{useCase.title}</h3>
 							<p class="mt-[28px] text-[18px] leading-[26px] text-[#CECECE]/38">
@@ -27,28 +29,6 @@ import { USE_CASES } from "../../data/useCases";
 	</div>
 </section>
 
-<style>
-	/* Thin brand-purple scrollbar (Chrome, Edge, Safari) */
-	.use-case-scroll::-webkit-scrollbar {
-		height: 0.5px;
-	}
-	.use-case-scroll::-webkit-scrollbar-track {
-		background: transparent;
-	}
-	.use-case-scroll::-webkit-scrollbar-thumb {
-		background-color: #6838ff;
-		border-radius: 9999px;
-	}
-	/* Hide scrollbar arrow buttons */
-	.use-case-scroll::-webkit-scrollbar-button {
-		display: none;
-		width: 0;
-		height: 0;
-	}
-
-	/* Firefox */
-	.use-case-scroll {
-		scrollbar-width: thin;
-		scrollbar-color: #6838ff transparent;
-	}
-</style>
+<script>
+	import "../../scripts/use-case-cards";
+</script>

@@ -8,10 +8,12 @@ import accountStats from "../../assets/images/common/ui_images/accounts_stats.sv
 import likesGraph from "../../assets/images/common/ui_images/avg_likes_graph.svg";
 import creatorsListing from "../../assets/images/featured_page/blocks/contact_unlock_rows.png";
 import comparisonDashboard from "../../assets/images/common/ui_images/creator_comparison_dashboard.png";
-import addToList from "../../assets/images/common/ui_images/add_to_list.png";
 import sharePopup from "../../assets/images/common/ui_images/share_email_popup.png";
 import campaignDashboard from "../../assets/images/common/ui_images/campaign_creator_dashboard.png";
 import hami_insta_handle from "../../assets/images/featured_page/blocks/hamid_insta_handle.png";
+import ui_widgets from "../../assets/images/featured_page/blocks/ui_widgets.png";
+import csv_progress from "../../assets/images/featured_page/blocks/csv_export_progress.png";
+import csv_export_complete from "../../assets/images/featured_page/blocks/csv_export_complete.png";
 
 const [
 	discovery,
@@ -204,16 +206,36 @@ const [
 			</p>
 		</div>
 		<div
-			class="flex aspect-16/10 w-full items-center justify-center overflow-hidden rounded-[20px] bg-white/50 p-6 lg:w-1/2 lg:p-12"
+			class="flex flex-col aspect-16/10 w-full items-start justify-center gap-3.5 overflow-hidden rounded-[20px] bg-white/50 p-8 lg:w-1/2 lg:p-18"
 		>
-			<Image
-				src={addToList}
-				alt="Organized Creator Shortlists with import and export"
-				class="max-h-full w-auto max-w-[70%] object-contain"
+			<div>
+				<Image
+				src={ui_widgets}
+				alt="Header showing an 'importing' status badge, a 'Credits 2,540' button, and a user profile button labeled 'Hello!'."
+				class="w-[24rem] object-contain"
 				widths={[640, 1280]}
 				sizes="(max-width: 1024px) 100vw, 720px"
 				loading="lazy"
 			/>
+			</div>
+			<div class=" flex flex-row gap-2" >
+				<Image
+				src={csv_progress}
+				alt="CSV upload showing progress, errors, and duplicates."
+				class="w-[60%] object-contain"
+				widths={[640, 1280]}
+				sizes="(max-width: 1024px) 100vw, 720px"
+				loading="lazy"
+			/>
+			<Image
+				src={csv_export_complete}
+				alt="Export modal showing selected columns and download option."
+				class="w-[40%] object-contain"
+				widths={[640, 1280]}
+				sizes="(max-width: 1024px) 100vw, 720px"
+				loading="lazy"
+			/>
+			</div>
 		</div>
 	</div>
 </article>

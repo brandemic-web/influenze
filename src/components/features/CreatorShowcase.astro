@@ -13,13 +13,17 @@ import listingThree from "../../assets/images/common/ui_images/creator_listing_t
 		<span class="block lg:text-right"><span class="text-quaternary">and evaluate the</span> <span class="text-white">right creators</span></span>
 	</h2>
 
-	<div class="mx-auto mt-4 flex max-w-[800px] flex-col gap-4 px-6 lg:mt-4 relative">
+	<div class="mx-auto mt-4 flex max-w-[800px] flex-col gap-4 px-6 lg:mt-4 relative" data-reveal>
 		{
 			[listingOne, listingTwo, listingThree].map((listing) => (
-				<Image src={listing} alt="Creator search result" class="w-full" widths={[879, 1758]} sizes="(max-width: 1498px) 100vw, 1450px" loading="lazy" />
+				<Image src={listing} alt="Creator search result" class="w-full" widths={[879, 1758]} sizes="(max-width: 1498px) 100vw, 1450px" loading="lazy" data-reveal-item />
 			))
 		}
-		<div class="bg-linear-to-b from-transparent via-transparent via-60% to-background-primary absolute top-0 left-0 h-full w-full">
+		<div class="bg-linear-to-b from-transparent via-transparent via-60% to-background-primary absolute top-0 left-0 h-full w-full" data-reveal-item="">
 		</div>
 	</div>
 </section>
+
+<script>
+	import "../../scripts/reveals";
+</script>

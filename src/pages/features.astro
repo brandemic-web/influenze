@@ -17,3 +17,18 @@ import FeatureBlockHeading from "../components/features/FeatureBlockHeading.astr
 		<FeatureBlockHeading />
 	</main>
 </Layout>
+<!--
+	Hide the native scrollbar on the features page so the Lenis smooth-scroll
+	experience reads as a single continuous surface (the marquees/lens rely on
+	that seamless feel). Cross-browser: Firefox, IE/Edge, and WebKit each need
+	their own rule.
+-->
+<style is:global>
+	html {
+		scrollbar-width: none; /* Firefox */
+		-ms-overflow-style: none; /* IE/Edge */
+	}
+	html::-webkit-scrollbar {
+		display: none; /* Chrome, Safari, Opera */
+	}
+</style>
