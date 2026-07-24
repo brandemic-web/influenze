@@ -10,7 +10,7 @@ const cardPositions = [
 	{ left: 462, top: 554 },
 	{ left: 921, top: 681 },
 	{ left: 320, top: 866 },
-];
+].map(({ left, top }) => ({ left: left / 16, top: top / 16 }));
 ---
 
 <section class="relative lg:h-317.25" aria-labelledby="testimonials-heading">
@@ -18,7 +18,7 @@ const cardPositions = [
 		<div class="relative">
 			<h2
 				id="testimonials-heading"
-				class="w-82.5 text-center text-[36px] capitalize leading-[normal] text-brand-primary [text-box:trim-both_cap_alphabetic]"
+				class="w-82.5 text-center text-[2.25rem] capitalize leading-[normal] text-brand-primary [text-box:trim-both_cap_alphabetic]"
 			>
 				{TESTIMONIALS_HEADING}
 			</h2>
@@ -28,7 +28,7 @@ const cardPositions = [
 		{/* watermark band between the first two and last three cards (design z-order) */}
 		<div class="pointer-events-none absolute top-101.5 left-0 h-95.5 w-full overflow-hidden" aria-hidden="true">
 			<p
-				class="absolute top-48.5 left-[-1853px] -translate-y-1/2 font-['Open_Sauce_One'] text-[211.6px] leading-[normal] font-bold whitespace-nowrap text-[#252525] [text-box:trim-both_cap_alphabetic]"
+				class="absolute top-48.5 left-[-115.8125rem] -translate-y-1/2 font-['Open_Sauce_One'] text-[13.225rem] leading-[normal] font-bold whitespace-nowrap text-[#252525] [text-box:trim-both_cap_alphabetic]"
 			>
 				{TESTIMONIALS_BAND} {TESTIMONIALS_BAND}
 			</p>
@@ -37,20 +37,20 @@ const cardPositions = [
 		{
 			TESTIMONIALS.map((testimonial, i) => (
 				<figure
-					class="absolute h-63.75 w-123 rounded-[20px] bg-[linear-gradient(85.56deg,#A78EF6_19.24%,#8C69FD_36.03%)]"
-					style={`left:${cardPositions[i].left}px; top:${cardPositions[i].top}px; z-index:${i < 2 ? 0 : 1}`}
+					class="absolute h-63.75 w-123 rounded-[1.25rem] bg-[linear-gradient(85.56deg,#A78EF6_19.24%,#8C69FD_36.03%)]"
+					style={`left:${cardPositions[i].left}rem; top:${cardPositions[i].top}rem; z-index:${i < 2 ? 0 : 1}`}
 				>
 					<Image src={avatar} alt="" class="absolute top-7.25 left-7.25 h-21.5 w-21.5 rounded-full object-cover" widths={[21.5, 43]} sizes="21.5px" loading="lazy" />
 					<figcaption>
-						<p class="absolute top-14.5 left-61.25 -translate-x-1/2 -translate-y-1/2 text-[36px] font-medium capitalize whitespace-nowrap text-white [text-box:trim-both_cap_alphabetic]">
+						<p class="absolute top-14.5 left-61.25 -translate-x-1/2 -translate-y-1/2 text-[2.25rem] font-medium capitalize whitespace-nowrap text-white [text-box:trim-both_cap_alphabetic]">
 							{testimonial.name}
 						</p>
-						<p class="absolute top-22.5 left-38.75 -translate-x-1/2 -translate-y-1/2 text-[16px] uppercase leading-[normal] text-black [text-box:trim-both_cap_alphabetic]">
+						<p class="absolute top-22.5 left-38.75 -translate-x-1/2 -translate-y-1/2 text-[1rem] uppercase leading-[normal] text-black [text-box:trim-both_cap_alphabetic]">
 							{testimonial.company}
 						</p>
 					</figcaption>
 					<blockquote class="absolute top-42.25 left-34 w-77.25 -translate-y-1/2">
-						<p class="text-[16px] leading-[normal] text-white/80">{testimonial.quote}</p>
+						<p class="text-[1rem] leading-[normal] text-white/80">{testimonial.quote}</p>
 					</blockquote>
 				</figure>
 			))
@@ -76,7 +76,7 @@ const cardPositions = [
 						</figcaption>
 					</div>
 					<blockquote class="mt-4">
-						<p class="text-[16px] leading-normal text-white/80">{testimonial.quote}</p>
+						<p class="text-[1rem] leading-normal text-white/80">{testimonial.quote}</p>
 					</blockquote>
 				</figure>
 			))

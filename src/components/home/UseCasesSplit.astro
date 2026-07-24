@@ -15,7 +15,7 @@ import circleCheck from "../../assets/images/home_page/use_cases/circle_check.sv
 	<div class="relative mx-auto flex max-w-393 flex-col items-center px-6 pt-20 pb-16 lg:px-0 lg:py-40">
 		<h2
 			id="use-cases-split-heading"
-			class="max-w-204 text-center text-[32px] capitalize leading-[1.1] text-white lg:text-[55px] [text-box:trim-both_cap_alphabetic]"
+			class="max-w-204 text-center text-[2rem] capitalize leading-[1.1] text-white lg:text-[3.4375rem] [text-box:trim-both_cap_alphabetic]"
 		>
 			Use cases for <br class="max-lg:hidden" /><span class="text-brand-primary">brands and agencies</span>
 		</h2>
@@ -31,13 +31,13 @@ import circleCheck from "../../assets/images/home_page/use_cases/circle_check.sv
 						class="flex h-auto w-full max-w-2xl flex-col justify-center gap-7.5 rounded-md bg-[rgba(246,246,244,0.1)] px-8 py-10 lg:px-14 lg:py-13"
 						data-reveal-item
 					>
-						<h3 class="text-[40px] capitalize leading-[normal] text-[#F6F6F4] lg:text-[64px] [text-box:trim-both_cap_alphabetic]">{column.title}</h3>
+						<h3 class="text-[2.5rem] capitalize leading-[normal] text-[#F6F6F4] lg:text-[4rem] [text-box:trim-both_cap_alphabetic]">{column.title}</h3>
 						<div class="h-px w-full max-w-103.75 bg-white/40"></div>
 						<ul class="flex flex-col gap-3">
 							{column.points.map((point) => (
 								<li class="flex items-center gap-3.75">
 									<img src={circleCheck.src} alt="" class="h-6 w-6 shrink-0" loading="lazy" />
-									<span class="text-[18px] leading-9.5 text-white">{point}</span>
+									<span class="text-[1.125rem] leading-9.5 text-white">{point}</span>
 								</li>
 							))}
 						</ul>

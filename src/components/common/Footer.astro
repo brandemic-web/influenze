@@ -23,7 +23,7 @@ const MOBILE_PLACEMENT: Record<string, string> = {
 		loading="lazy"
 	/>
 
-	<div class="relative mx-auto max-w-[1728px]">
+	<div class="relative mx-auto max-w-[108rem]">
 		<Image
 			src={bolt}
 			alt=""
@@ -40,7 +40,7 @@ const MOBILE_PLACEMENT: Record<string, string> = {
 						aria-label={column.title}
 						class={MOBILE_PLACEMENT[column.title]}
 					>
-						<h2 class="text-[18px] lg:text-[22px] font-bold text-white">
+						<h2 class="text-[1.125rem] lg:text-[1.375rem] font-bold text-white">
 							{column.title}
 						</h2>
 						<ul class="mt-7.5 flex flex-col gap-2 lg:gap-4">
@@ -48,7 +48,7 @@ const MOBILE_PLACEMENT: Record<string, string> = {
 								<li>
 									<a
 										href={link.href}
-										class="text-[14px] lg:text-[18px] text-white/50 transition-colors hover:text-white"
+										class="text-[0.875rem] lg:text-[1.125rem] text-white/50 transition-colors hover:text-white"
 									>
 										{link.label}
 									</a>

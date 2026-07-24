@@ -69,8 +69,8 @@ const displacementDataUri = `data:image/svg+xml;base64,${Buffer.from(displacemen
 		<h1 class="max-w-236.75 text-9xl capitalize leading-[1.1] text-white max-lg:text-6xl max-md:text-3xl">
 			A product that caters to you
 		</h1>
-		<p class="max-w-188.25 text-[18px] leading-7 text-white">
-			Search <span class="text-[18px] font-semibold text-brand-primary">450M+ creators</span> across Instagram, TikTok and YouTube using audience intelligence, fraud detection and performance signals.
+		<p class="max-w-188.25 text-[1.125rem] leading-7 text-white">
+			Search <span class="text-[1.125rem] font-semibold text-brand-primary">450M+ creators</span> across Instagram, TikTok and YouTube using audience intelligence, fraud detection and performance signals.
 		</p>
 	</div>
 
@@ -84,7 +84,7 @@ const displacementDataUri = `data:image/svg+xml;base64,${Buffer.from(displacemen
 						src={creator}
 						alt=""
 						aria-hidden={i >= creators.length ? "true" : undefined}
-						class="w-60 shrink-0 rounded-[16px] object-cover lg:w-78.75 lg:rounded-[20px]"
+						class="w-60 shrink-0 rounded-[1rem] object-cover lg:w-78.75 lg:rounded-[1.25rem]"
 						widths={[315, 630]}
 						sizes="315px"
 						loading="eager"
@@ -180,8 +180,8 @@ const displacementDataUri = `data:image/svg+xml;base64,${Buffer.from(displacemen
 
 	@media (min-width: 1024px) {
 		.lg-lens {
-			width: 600px;
-			height: 600px;
+			width: 37.5rem; /* 600px at the 1728px design size; scales with the fluid root */
+			height: 37.5rem;
 		}
 	}
 

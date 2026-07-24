@@ -112,6 +112,12 @@
 }
 
 @layer base {
+    @media (min-width: 1024px) {
+        html {
+            font-size: clamp(12px, calc(100vw / 108), 16px);
+        }
+    }
+
     body {
         @apply bg-background-primary text-brand-secondary font-sans;
     }

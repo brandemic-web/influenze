@@ -13,8 +13,8 @@ function initWhyChooseMarquee() {
 	track.dataset.marqueeReady = "true";
 
 	const items = gsap.utils.toArray<HTMLElement>(".why-choose-track > *");
-	// gap-5 === 20px; keep the wrap spacing consistent with the flex gap.
-	const loop = horizontalLoop(items, { repeat: -1, speed: 1, paddingRight: 20 });
+	// Wrap spacing must match the flex gap, which is rem-based and varies with the fluid root font-size.
+	const loop = horizontalLoop(items, { repeat: -1, speed: 1, paddingRight: parseFloat(getComputedStyle(track).columnGap) || 20 });
 
 	// Pause the loop while the pointer is over the strip, resume on leave.
 	marquee.addEventListener("mouseenter", () => loop.pause());

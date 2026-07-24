@@ -37,13 +37,13 @@ import MobileMenu from "./MobileMenu.astro";
 								</svg>
 							</button>
 							<ul
-								class="invisible absolute top-full left-1/2 mt-4 w-48 -translate-x-1/2 rounded-[16px] border border-white/10 bg-background-primary p-2 opacity-0 transition-all group-data-open:visible group-data-open:opacity-100 "
+								class="invisible absolute top-full left-1/2 mt-4 w-48 -translate-x-1/2 rounded-[1rem] border border-white/10 bg-background-primary p-2 opacity-0 transition-all group-data-open:visible group-data-open:opacity-100 "
 							>
 								{item.dropdown.map((link) => (
 									<li>
 										<a
 											href={link.href}
-											class="block rounded-[10px] px-4 py-3 text-xs text-white/80 hover:bg-white/5 hover:text-brand-primary"
+											class="block rounded-[0.625rem] px-4 py-3 text-xs text-white/80 hover:bg-white/5 hover:text-brand-primary"
 										>
 											{link.label}
 										</a>
@@ -55,7 +55,7 @@ import MobileMenu from "./MobileMenu.astro";
 						<a href={item.href} class="flex items-center gap-2.5 text-xs text-white hover:text-brand-primary">
 							{item.label}
 							{item.badge && (
-								<span class="flex items-center gap-1.25 rounded-[5px] bg-button-primary p-2 text-[11px] leading-none text-[#1D192B] font-semibold ">
+								<span class="flex items-center gap-1.25 rounded-[0.3125rem] bg-button-primary p-2 text-[0.6875rem] leading-none text-[#1D192B] font-semibold ">
 									{item.badge}
 									<svg class="h-2 w-2" viewBox="0 0 7 7" fill="none" aria-hidden="true">
 										<path d="M0.450195 6.44995L6.45019 0.449951M6.45019 6.44995L6.45019 0.449951L0.450195 0.449952" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
