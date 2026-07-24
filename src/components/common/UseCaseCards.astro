@@ -3,7 +3,7 @@ import { USE_CASES } from "../../data/useCases";
 ---
 
 <section class="bg-background-primary py-20 lg:pt-25 lg:pb-6.25" aria-labelledby="use-cases-heading">
-	<h2 id="use-cases-heading" class="text-center text-[2.25rem] capitalize text-brand-primary">
+	<h2 id="use-cases-heading" class="text-center text-[30px] lg:text-[2.25rem] capitalize text-brand-primary">
 		Who is it for?
 	</h2>
 
@@ -16,9 +16,9 @@ import { USE_CASES } from "../../data/useCases";
 						aria-hidden={i >= USE_CASES.length ? "true" : undefined}
 						class="w-121.25 max-w-[85vw] shrink-0 rounded-sm bg-linear-to-r from-[#19123A] via-[#19123A] to-[#575757] p-px"
 					>
-						<div class="h-full rounded-sm bg-background-primary px-14.5 py-10">
-							<h3 class="text-md text-white">{useCase.title}</h3>
-							<p class="mt-7 text-[1.125rem] leading-6.5 text-[#CECECE]/38">
+						<div class="h-full rounded-sm bg-background-primary px-6 lg:px-14.5 py-6 lg:py-10">
+							<h3 class="text-[20px] lg:text-md text-white">{useCase.title}</h3>
+							<p class="mt-7 text-[14px] lg:text-[1.125rem] leading-6.5 text-[#CECECE]/38">
 								{useCase.description}
 							</p>
 						</div>

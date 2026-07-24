@@ -63,9 +63,9 @@ const displacementDataUri = `data:image/svg+xml;base64,${Buffer.from(displacemen
 ---
 
 <section
-	class="relative bg-[radial-gradient(160%_100%_at_50%_-10%,#7B4DFF_0%,#5A2FD8_35%,#2A1655_65%,#010101_100%)] pt-[10.6rem] pb-16 lg:pt-60 lg:pb-24"
+	class="relative bg-[radial-gradient(160%_100%_at_50%_-10%,#7B4DFF_0%,#5A2FD8_35%,#2A1655_65%,#010101_100%)] pt-30 pb-16 lg:pt-60 lg:pb-24 overflow-hidden lg:overflow-visible"
 >
-	<div class="mx-auto flex max-w-256.75 flex-col items-center gap-11 px-6 text-center">
+	<div class="mx-auto flex max-w-256.75 flex-col items-center gap-6 lg:gap-11 px-6 text-center">
 		<h1 class="max-w-236.75 text-9xl capitalize leading-[1.1] text-white max-lg:text-6xl max-md:text-3xl">
 			A product that caters to you
 		</h1>
@@ -75,7 +75,7 @@ const displacementDataUri = `data:image/svg+xml;base64,${Buffer.from(displacemen
 	</div>
 
 	<!-- full-bleed creator photo strip; the liquid-glass lens overlays it (prototype) -->
-	<div class="creator-stage relative mt-16 lg:mt-24">
+	<div class="creator-stage relative mt-8 lg:mt-24">
 		<!-- GSAP marquee track: creators rendered twice for a seamless infinite loop -->
 		<div class="creator-track flex w-max gap-5">
 			{
@@ -94,7 +94,7 @@ const displacementDataUri = `data:image/svg+xml;base64,${Buffer.from(displacemen
 		</div>
 
 		<!-- Liquid-glass lens: refracts + frosts the creator strip behind it -->
-		<div class="lg-lens" aria-hidden="true"></div>
+		<div class="lg-lens hidden lg:block " aria-hidden="true"></div>
 	</div>
 
 	<!-- Glass refraction filter: spherical displacement + per-channel chromatic dispersion. -->
