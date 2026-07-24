@@ -1,28 +1,85 @@
 ---
 import { Image } from "astro:assets";
-import heroMockup from "../../assets/images/home_page/hero/home_hero.png";
+import { SIGNUP_URL } from "../../data/site";
+import Button from "../common/Button.astro";
+import backgroundArcs from "../../assets/images/home_page/hero/bg_svg_lines_hero.svg";
+import darkLayerSide from "../../assets/images/home_page/hero/dark_layer_side.svg";
+import darkLayerCenter from "../../assets/images/home_page/hero/dark_layer_center.svg";
+import searchUi from "../../assets/images/home_page/hero/home_hero.png";
 ---
 
-<section
-	class="relative overflow-hidden bg-[radial-gradient(120%_90%_at_50%_-10%,#7B4DFF_0%,#5A2FD8_35%,#2A1655_65%,#010101_100%)] pt-[170px] pb-16 lg:pt-[238px]"
->
-	<div class="mx-auto flex max-w-[1027px] flex-col items-center gap-[44px] px-6 text-center">
-		<h1 class="max-w-[947px] text-9xl capitalize leading-[1.1] text-white max-lg:text-6xl max-md:text-3xl">
-			Find and analyze <span class="text-brand-primary">the right creators</span> from the worlds largest creator database
-		</h1>
-		<p class="max-w-[753px] text-[18px] leading-[28px] text-white">
-			Search <span class="align-baseline text-lg font-semibold text-brand-primary">450M+ creators</span> across Instagram, TikTok and YouTube using audience intelligence, fraud detection and performance signals.
-		</p>
+<section class="relative overflow-hidden">
+	<!-- gradient backdrop-->
+	<div
+		class="pointer-events-none absolute inset-x-0 top-0 h-344 bg-[linear-gradient(179.95deg,#11092B_0%,#6838FF_5.85%,#0C0A12_99.94%)]"
+		aria-hidden="true"
+	>
 	</div>
 
-	<div class="mx-auto mt-12 max-w-[1430px] px-6 lg:px-0">
-		<Image
-			src={heroMockup}
-			alt="Influenze.ai dashboard — search and discover creators with AI-powered filters"
-			class="w-full"
-			widths={[640, 1024, 1430, 2860]}
-			sizes="(max-width: 1430px) 100vw, 1430px"
-			loading="eager"
+	<!-- decorative concentric arcs, centered on the 1728 design canvas -->
+	<div
+		class="pointer-events-none absolute top-36 left-1/2 hidden w-full -translate-x-1/2 lg:block"
+		aria-hidden="true"
+	>
+		<img
+			src={darkLayerSide.src}
+			alt=""
+			class="absolute top-1/2 left-0 -translate-x-1/2 -translate-y-1/2"
 		/>
+		<img
+			src={darkLayerSide.src}
+			alt=""
+			class="absolute top-1/2 right-0 translate-x-1/2 -translate-y-1/2"
+		/>
+		<img
+			src={darkLayerCenter.src}
+			alt=""
+			class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+		/>
+		<img src={backgroundArcs.src} alt="" class="w-full" loading="eager" />
+	</div>
+
+	<div
+		class="relative flex flex-col items-center px-6 pt-40 lg:px-0 lg:pt-61"
+		data-reveal
+		data-reveal-stagger="0.12"
+	>
+		<h1
+			class="text-center leading-[1.05] tracking-[-2.64px] [text-box:trim-both_cap_alphabetic] lg:leading-34"
+			data-reveal-item
+		>
+			<span class="font-light text-[44px] text-brand-primary lg:text-[88px]">Find The</span><br />
+			<span class="font-normal text-[58px] leading-1 text-white lg:text-[132px]">RIGHT CREATORS</span>
+		</h1>
+
+		<!-- glass copy card -->
+		<div
+			class="mt-8 w-full max-w-113.25 rounded-sm border border-white bg-[linear-gradient(180deg,rgba(255,255,255,0.2)_0%,rgba(100,77,173,0.2)_100%)] px-6 py-6 lg:mt-8.25 lg:w-113.25 lg:px-10 lg:py-8"
+			data-reveal-item
+		>
+			<p class="text-center text-[16px] leading-6 text-white [text-box:trim-both_cap_alphabetic] lg:text-[20px] lg:leading-7.25">
+				Get access to the world's largest database of <span class="font-semibold text-brand-primary">450M+ creators</span> across Instagram, Youtube, TikTok &amp; LinkedIn
+			</p>
+		</div>
+
+		<div class="mt-6 lg:mt-3.75" data-reveal-item>
+			<Button href={SIGNUP_URL}>Sign Up</Button>
+		</div>
+
+		<!-- product mockup + numbered chip -->
+		<div class="relative mt-12 w-full max-w-7xl px-6 lg:mt-14.75 lg:w-7xl lg:px-0">
+			<Image
+				src={searchUi}
+				alt="Influenze.ai dashboard — search and discover creators with AI-powered filters"
+				class="w-full rounded-[16px]"
+				widths={[640, 1280]}
+				sizes="(max-width: 1280px) 100vw, 1280px"
+				loading="eager"
+			/>
+		</div>
 	</div>
 </section>
+
+<script>
+	import "../../scripts/reveals";
+</script>

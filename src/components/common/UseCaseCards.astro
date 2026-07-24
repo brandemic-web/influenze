@@ -2,23 +2,23 @@
 import { USE_CASES } from "../../data/useCases";
 ---
 
-<section class="bg-background-primary py-20 lg:pt-[100px] lg:pb-[25px]" aria-labelledby="use-cases-heading">
+<section class="bg-background-primary py-20 lg:pt-25 lg:pb-6.25" aria-labelledby="use-cases-heading">
 	<h2 id="use-cases-heading" class="text-center text-[36px] capitalize text-brand-primary">
 		Who is it for?
 	</h2>
 
 	<!-- GSAP marquee: cards rendered twice for a seamless loop; pauses on hover. -->
-	<div class="use-case-marquee mt-[60px] overflow-hidden pb-4 relative z-2">
+	<div class="use-case-marquee mt-15 overflow-hidden pb-1 relative z-2">
 		<ul class="use-case-track flex w-max gap-5">
 			{
 				[...USE_CASES, ...USE_CASES].map((useCase, i) => (
 					<li
 						aria-hidden={i >= USE_CASES.length ? "true" : undefined}
-						class="w-[485px] max-w-[85vw] shrink-0 rounded-sm bg-linear-to-r from-[#19123A] via-[#19123A] to-[#575757] p-px"
+						class="w-121.25 max-w-[85vw] shrink-0 rounded-sm bg-linear-to-r from-[#19123A] via-[#19123A] to-[#575757] p-px"
 					>
-						<div class="h-full rounded-sm bg-background-primary px-[58px] py-10">
+						<div class="h-full rounded-sm bg-background-primary px-14.5 py-10">
 							<h3 class="text-md text-white">{useCase.title}</h3>
-							<p class="mt-[28px] text-[18px] leading-[26px] text-[#CECECE]/38">
+							<p class="mt-7 text-[18px] leading-6.5 text-[#CECECE]/38">
 								{useCase.description}
 							</p>
 						</div>

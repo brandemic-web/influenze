@@ -1,0 +1,63 @@
+---
+import { SIGNUP_URL } from "../../data/site";
+import {
+	HOW_IT_WORKS_EYEBROW,
+	HOW_IT_WORKS_BUTTON,
+	HOW_IT_WORKS_STEPS,
+} from "../../data/howItWorks";
+import iconSearch from "../../assets/images/common/icons/search.svg";
+import iconEye from "../../assets/images/common/icons/eye.svg";
+import iconRocket from "../../assets/images/common/icons/rocket.svg";
+import Button from "../common/Button.astro";
+
+const stepIcons: Record<string, ImageMetadata> = {
+	search: iconSearch,
+	eye: iconEye,
+	rocket: iconRocket,
+};
+---
+
+<section aria-labelledby="how-it-works-heading">
+	<div class="relative mx-auto flex flex-col items-center px-6 text-center">
+		<p class="text-[18px] uppercase leading-[normal] text-brand-primary">{HOW_IT_WORKS_EYEBROW}</p>
+		<h2
+			id="how-it-works-heading"
+			class="mt-8 max-w-130 text-[28px] capitalize leading-[normal] text-white lg:text-[36px] [text-box:trim-both_cap_alphabetic]"
+		>
+			Take your brand further with the <span class="text-brand-primary">right creators</span>
+		</h2>
+
+		<div
+			class="mt-8 flex flex-col items-center justify-center gap-5 lg:flex-row lg:items-stretch"
+			data-reveal
+			data-reveal-stagger="0.15"
+		>
+			{
+				HOW_IT_WORKS_STEPS.map((step) => (
+					<article
+						class="rounded-sm bg-linear-to-r from-[#19123A] via-[#19123A] to-[#575757] p-px"
+						data-reveal-item
+					>
+						<div class="flex h-full items-center rounded-sm bg-background-primary px-8 py-8 lg:px-15 lg:py-10">
+							<div class="flex w-82.75 max-w-full flex-col gap-5 text-left">
+								<div class="flex items-center gap-4">
+									<img src={stepIcons[step.icon].src} alt="" class="h-12 w-12 rounded-sm" loading="lazy" />
+									<h3 class="text-md capitalize leading-[normal] text-white [text-box:trim-both_cap_alphabetic]">{step.title}</h3>
+								</div>
+								<p class="text-[18px] leading-6.5 text-[#CECECE]/70 [text-box:trim-both_cap_alphabetic]">{step.description}</p>
+							</div>
+						</div>
+					</article>
+				))
+			}
+		</div>
+
+		<Button href={SIGNUP_URL} variant="nav" class="mt-12">
+			{HOW_IT_WORKS_BUTTON}
+		</Button>
+	</div>
+</section>
+
+<script>
+	import "../../scripts/reveals";
+</script>
