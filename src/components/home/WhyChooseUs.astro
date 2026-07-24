@@ -1,0 +1,64 @@
+---
+import { SIGNUP_URL } from "../../data/site";
+import { WHY_CHOOSE_CARDS, WHY_CHOOSE_EYEBROW, WHY_CHOOSE_BUTTON } from "../../data/whyChooseUs";
+import Button from "../common/Button.astro";
+import iconSearch from "../../assets/images/common/icons/search.svg";
+import iconChart from "../../assets/images/common/icons/chart.svg";
+import iconContact from "../../assets/images/common/icons/contact_round.svg";
+import iconCompare from "../../assets/images/common/icons/square_chevron_right.svg";
+import iconShare from "../../assets/images/common/icons/share.svg";
+import iconImportExport from "../../assets/images/common/icons/square_arrow_right_enter.svg";
+
+const cardIcons: Record<string, ImageMetadata> = {
+	search: iconSearch,
+	chart: iconChart,
+	contact: iconContact,
+	compare: iconCompare,
+	share: iconShare,
+	"import-export": iconImportExport,
+};
+---
+
+<section class="relative overflow-hidden pb-32" aria-labelledby="why-choose-heading">
+	<div class="flex flex-col items-center text-center">
+		<p class="text-[1.125rem] uppercase leading-[normal] text-brand-primary">{WHY_CHOOSE_EYEBROW}</p>
+		<h2
+			id="why-choose-heading"
+			class="mt-8 max-w-130 px-6 text-[1.75rem] capitalize leading-[normal] text-white lg:text-[2.25rem] [text-box:trim-both_cap_alphabetic]"
+		>
+			Everything you need to find <span class="text-brand-primary">better creators</span>
+		</h2>
+	</div>
+
+	<!-- GSAP marquee: cards rendered twice for a seamless loop; pauses on hover. -->
+	<div class="why-choose-marquee mt-8 overflow-hidden">
+		<ul class="why-choose-track flex w-max gap-5">
+			{
+				[...WHY_CHOOSE_CARDS, ...WHY_CHOOSE_CARDS].map((card, i) => (
+					<li
+						aria-hidden={i >= WHY_CHOOSE_CARDS.length ? "true" : undefined}
+						class="shrink-0 rounded-sm bg-linear-to-r from-[#19123A] via-[#19123A] to-[#575757] p-px"
+					>
+						<div class="flex h-full items-center rounded-sm bg-background-primary px-15 py-10">
+							<div class="flex w-82.75 flex-col gap-8 text-left">
+								<div class="flex items-center gap-4">
+									<img src={cardIcons[card.icon].src} alt="" class="h-12 w-12 rounded-sm" loading="lazy" />
+									<h3 class="max-w-66.75 text-md capitalize leading-[normal] text-white [text-box:trim-both_cap_alphabetic]">{card.title}</h3>
+								</div>
+								<p class="text-[1.125rem] leading-6.5 text-[#CECECE]/70 [text-box:trim-both_cap_alphabetic]">{card.description}</p>
+							</div>
+						</div>
+					</li>
+				))
+			}
+		</ul>
+	</div>
+
+	<div class="mt-13 text-center">
+		<Button href={SIGNUP_URL} variant="nav">{WHY_CHOOSE_BUTTON}</Button>
+	</div>
+</section>
+
+<script>
+	import "../../scripts/why-choose";
+</script>

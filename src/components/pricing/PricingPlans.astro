@@ -46,7 +46,7 @@ const DEFAULT_POS = 25;
 ---
 
 <section
-	class="relative overflow-hidden bg-background-primary pt-[150px] pb-12 lg:pb-52 lg:pt-[200px]"
+	class="relative overflow-hidden pt-37.5 pb-12 lg:pb-52 lg:pt-50"
 	aria-labelledby="pricing-heading"
 >
 	<img
@@ -58,7 +58,7 @@ const DEFAULT_POS = 25;
 
 	<h1
 		id="pricing-heading"
-		class="relative mx-auto max-w-[900px] px-6 text-center text-9xl capitalize leading-[1.1] max-lg:text-6xl max-md:text-4xl"
+		class="relative mx-auto max-w-225 px-6 text-center text-9xl capitalize leading-[1.1] max-lg:text-6xl max-md:text-4xl"
 	>
 		<span class="text-white">{PRICING_HEADING.lead}</span><span
 			class="text-brand-primary">{PRICING_HEADING.accent}</span
@@ -66,7 +66,7 @@ const DEFAULT_POS = 25;
 	</h1>
 
 	<div
-		class="relative mx-auto mt-12 max-w-[1242px] rounded-[20px] border border-white/15 bg-surface-card px-4 lg:py-8 py-12 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.14),inset_0_-1px_0_0_rgba(255,255,255,0.04),0_24px_70px_-12px_rgba(0,0,0,0.55)] backdrop-blur-2xl backdrop-saturate-150 sm:px-6 lg:px-[97px] lg:py-18"
+		class="relative mx-auto mt-12 max-w-310.5 rounded-[1.25rem] border border-white/15 bg-surface-card px-4 py-12 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.14),inset_0_-1px_0_0_rgba(255,255,255,0.04),0_24px_70px_-12px_rgba(0,0,0,0.55)] backdrop-blur-2xl backdrop-saturate-150 sm:px-6 lg:px-24.25 lg:py-18"
 		data-plan-panel
 		data-tiers={tiersJson}
 	>
@@ -74,14 +74,14 @@ const DEFAULT_POS = 25;
 		<div class="relative" role="radiogroup" aria-label="Choose a plan">
 			<!-- rail is inset from both edges so the bolt handle never
 			     overflows the panel at the first (0%) and last (100%) stops -->
-			<div class="relative mx-10 h-[44px]" data-track>
+			<div class="relative mx-10.5 h-11" data-track>
 				<!-- track base -->
 				<span
-					class="pointer-events-none absolute inset-x-0 top-1/2 h-[6px] -translate-y-1/2 rounded-full bg-black/25"
+					class="pointer-events-none absolute inset-x-0 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-black/25"
 				></span>
 				<!-- filled / glowing portion -->
 				<span
-					class="pointer-events-none absolute left-0 top-1/2 h-[6px] -translate-y-1/2 rounded-full bg-brand-primary shadow-[0_0_14px_6px_rgba(58,255,152,0.7)] transition-[width] duration-300"
+					class="pointer-events-none absolute left-0 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-brand-primary shadow-[0_0_14px_6px_rgba(58,255,152,0.7)] transition-[width] duration-300"
 					style={`width:${DEFAULT_POS}%`}
 					data-fill></span>
 
@@ -100,7 +100,7 @@ const DEFAULT_POS = 25;
 							data-dot
 							data-pos={pos}
 						>
-							<span class="block size-[19px] rounded-full bg-white" />
+							<span class="block size-4.75 rounded-full bg-white" />
 						</button>
 					))
 				}
@@ -128,11 +128,11 @@ const DEFAULT_POS = 25;
 
 		<!-- ── Value box ─────────────────────────────────────────────── -->
 		<div
-			class="relative mt-12 rounded-[20px] border border-white/15 bg-[rgba(73,40,179,0.18)] px-5 pt-9 pb-8 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.14),inset_0_-1px_0_0_rgba(255,255,255,0.03),0_12px_40px_-12px_rgba(0,0,0,0.45)] backdrop-blur-2xl backdrop-saturate-150 sm:px-8 lg:pl-14 lg:pr-10"
+			class="relative mt-12 rounded-[1.25rem] border border-white/15 bg-[rgba(73,40,179,0.18)] px-5 pt-9 pb-8 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.14),inset_0_-1px_0_0_rgba(255,255,255,0.03),0_12px_40px_-12px_rgba(0,0,0,0.45)] backdrop-blur-2xl backdrop-saturate-150 sm:px-8 lg:pl-14 lg:pr-10"
 		>
 			<!-- Annual toggle (visual only for now) -->
 			<div class="flex items-center gap-2">
-				<span class="text-[16px] text-white">Annual</span>
+				<span class="text-[1rem] text-white">Annual</span>
 				<button
 					type="button"
 					role="switch"
@@ -154,47 +154,47 @@ const DEFAULT_POS = 25;
 			>
 				<div class="sm:flex-1 sm:pr-8">
 					<p
-						class="text-[42px] leading-none text-white sm:text-[58px]"
+						class="text-[2.625rem] leading-none text-white sm:text-[3.625rem]"
 						data-field="price"
 					>
 						{initial.price}
 					</p>
 					<p
-						class="mt-4 text-[16px] text-white"
+						class="mt-4 text-[1rem] text-white"
 						data-field="priceUnit"
 					>
 						{initial.priceUnit}
 					</p>
 				</div>
 				<span
-					class="hidden w-px self-center bg-[#FFFFFF4D] sm:block sm:h-[82px]"
+					class="hidden w-px self-center bg-[#FFFFFF4D] sm:block sm:h-20.5"
 				></span>
 				<div class="sm:flex-1 sm:px-8">
 					<p
-						class="text-[42px] leading-none text-white sm:text-[58px]"
+						class="text-[2.625rem] leading-none text-white sm:text-[3.625rem]"
 						data-field="credits"
 					>
 						{initial.credits}
 					</p>
 					<p
-						class="mt-4 text-[16px] text-brand-primary"
+						class="mt-4 text-[1rem] text-brand-primary"
 						data-field="creditsBonus"
 					>
 						{initial.creditsBonus}
 					</p>
 				</div>
 				<span
-					class="hidden w-px self-center bg-[#FFFFFF4D] sm:block sm:h-[82px]"
+					class="hidden w-px self-center bg-[#FFFFFF4D] sm:block sm:h-20.5"
 				></span>
 				<div class="sm:flex-1 sm:pl-8">
 					<p
-						class="text-[42px] leading-none text-brand-primary sm:text-[58px]"
+						class="text-[2.625rem] leading-none text-brand-primary sm:text-[3.625rem]"
 						data-field="addOn"
 					>
 						{initial.addOn}
 					</p>
 					<p
-						class="mt-4 max-w-[223px] text-[16px] text-white"
+						class="mt-4 max-w-55.75 text-[1rem] text-white"
 						data-field="addOnNote"
 					>
 						{initial.addOnNote}
@@ -209,14 +209,14 @@ const DEFAULT_POS = 25;
 			<div
 				class="mt-9 flex flex-col gap-1 md:flex-row md:items-start md:justify-between"
 			>
-				<div class="max-w-[600px]">
-					<h2 class="text-[18px] text-brand-primary">
+				<div class="max-w-150">
+					<h2 class="text-[1.125rem] text-brand-primary">
 						FEATURES ALL PLANS GET
 					</h2>
 					<ul class="mt-5 flex flex-wrap gap-2">
 						{
 							PLAN_FEATURES.map((feature) => (
-								<li class="rounded-[5px] border border-white/15 bg-[#0A071866] px-5 py-2 text-[18px] capitalize text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_4px_12px_rgba(0,0,0,0.15)] backdrop-blur-md">
+								<li class="rounded-[0.3125rem] border border-white/15 bg-[#0A071866] px-5 py-2 text-[1.125rem] capitalize text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_4px_12px_rgba(0,0,0,0.15)] backdrop-blur-md">
 									{feature}
 								</li>
 							))
@@ -229,17 +229,17 @@ const DEFAULT_POS = 25;
 						src={bolt}
 						alt=""
 						width="70"
-						class="-mr-14 hidden w-[110px] shrink-0 md:block relative z-3"
+						class="-mr-14 hidden w-27.5 shrink-0 md:block relative z-3"
 						loading="lazy"
 					/>
 					<div
-						class="w-full lg:max-w-[600px] max-w-[300px] rounded-[8px] border border-white/15 bg-[#0A071866] px-4 py-2 text-[18px] capitalize text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_4px_12px_rgba(0,0,0,0.15)] backdrop-blur-md p-5 lg:px-[28px] lg:py-[34px]"
+						class="w-full lg:max-w-150 max-w-75 rounded-sm border border-white/15 bg-[#0A071866] px-4 py-2 text-[1.125rem] capitalize text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_4px_12px_rgba(0,0,0,0.15)] backdrop-blur-md p-5 lg:px-7 lg:py-8.5"
 					>
-						<h3 class="text-[15px] font-bold text-white">
+						<h3 class="text-[0.9375rem] font-bold text-white">
 							{CREDITS_CARRYOVER.title}
 						</h3>
 						<p
-							class="mt-3 text-[13px] leading-[21px] text-white/60"
+							class="mt-3 text-[0.8125rem] leading-5.25 text-white/60"
 						>
 							{CREDITS_CARRYOVER.body}
 						</p>
@@ -250,19 +250,19 @@ const DEFAULT_POS = 25;
 
 		<!-- ── How credits work · Best for · CTA ─────────────────────── -->
 		<div
-			class="mt-10 flex flex-col gap-10 px-1 sm:px-16 md:flex-row md:items-start md:gap-[93px]"
+			class="mt-10 flex flex-col gap-10 px-1 sm:px-16 md:flex-row md:items-start md:gap-23.25"
 		>
 			<!-- Wrapper 1: How credits work -->
-			<div class="w-full max-w-[342px]">
-				<h2 class="text-[18px] text-brand-primary">HOW CREDITS WORK</h2>
-				<ul class="mt-4 flex flex-col gap-[7px]">
+			<div class="w-full max-w-85.5">
+				<h2 class="text-[1.125rem] text-brand-primary">HOW CREDITS WORK</h2>
+				<ul class="mt-4 flex flex-col gap-1.75">
 					{
 						CREDIT_COSTS.map((row) => (
 							<li class="flex items-center justify-between gap-4">
-								<span class="flex items-center gap-1.5 text-[14.5px] text-[#f4f4ff]">
+								<span class="flex items-center gap-1.5 text-[0.90625rem] text-[#f4f4ff]">
 									{row.label}
 									<svg
-										class="size-[13px] shrink-0 text-[#BFABFF]"
+										class="size-3.25 shrink-0 text-[#BFABFF]"
 										viewBox="0 0 24 24"
 										fill="none"
 										aria-hidden="true"
@@ -282,7 +282,7 @@ const DEFAULT_POS = 25;
 										/>
 									</svg>
 								</span>
-								<span class="shrink-0 rounded-[6px] bg-[#255f3c] px-[8px] py-[3px] text-[14.5px] text-[#a1ffce]">
+								<span class="shrink-0 rounded-[0.375rem] bg-[#255f3c] px-2 py-0.75 text-[0.90625rem] text-[#a1ffce]">
 									{row.cost}
 								</span>
 							</li>
@@ -294,9 +294,9 @@ const DEFAULT_POS = 25;
 			<!-- Wrapper 2: Best for + CTA -->
 			<div class="flex flex-1 flex-col lg:gap-20.25 gap-5 sm:flex-row sm:items-end ">
 				<div>
-					<h2 class="text-[18px] text-brand-primary">BEST FOR</h2>
+					<h2 class="text-[1.125rem] text-brand-primary">BEST FOR</h2>
 					<span
-						class="mt-4 inline-block rounded-[5px] border border-white/10 border-t-white/25 bg-gradient-to-b from-white/[0.04] to-black/10 px-[14px] py-2 text-[18px] capitalize text-white shadow-[0_8px_20px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.15),inset_0_-1px_0_rgba(0,0,0,0.3)] backdrop-blur-md"
+						class="mt-4 inline-block rounded-[0.3125rem] border border-white/10 border-t-white/25 bg-linear-to-b from-white/4 to-black/10 px-3.5 py-2 text-[1.125rem] capitalize text-white shadow-[0_8px_20px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.15),inset_0_-1px_0_rgba(0,0,0,0.3)] backdrop-blur-md"
 					>
 						{BEST_FOR}
 					</span>

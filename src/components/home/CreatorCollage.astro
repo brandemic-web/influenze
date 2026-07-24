@@ -1,57 +1,60 @@
 ---
 import { Image } from "astro:assets";
-import wave from "../../assets/images/common/decor/hero_wave.svg";
 import bolt from "../../assets/images/common/decor/green_bolt.png";
-import bubbleOne from "../../assets/images/home_page/find_and_analyze/bubble_image_one.png";
-import bubbleTwo from "../../assets/images/home_page/find_and_analyze/bubble_image_two.png";
-import bubbleThree from "../../assets/images/home_page/find_and_analyze/bubble_image_three.png";
-import bubbleFour from "../../assets/images/home_page/find_and_analyze/bubble_image_four.png";
-import bubbleFive from "../../assets/images/home_page/find_and_analyze/bubble_image_five.png";
-import bubbleSix from "../../assets/images/home_page/find_and_analyze/bubble_image_six.png";
-import bubbleSeven from "../../assets/images/home_page/find_and_analyze/bubble_image_seven.png";
-import addedToNykaa from "../../assets/images/home_page/find_and_analyze/added_to_nykaa.svg";
-import addedToZamna from "../../assets/images/home_page/find_and_analyze/added_to_zamna.svg";
-
-const bubbles = [
-	{ src: bubbleOne, class: "left-[-2%] top-[20%] w-[230px]" },
-	{ src: bubbleTwo, class: "left-[9%] top-[28%] w-[180px]" },
-	{ src: bubbleThree, class: "left-[26%] top-[59%] w-[217px]" },
-	{ src: bubbleFour, class: "left-[46%] top-[64%] w-[221px]" },
-	{ src: bubbleFive, class: "left-[60%] top-[55%] w-[194px]" },
-	{ src: bubbleSix, class: "right-[11%] top-[10%] w-[171px]" },
-	{ src: bubbleSeven, class: "right-[-2%] top-[26%] w-[190px]" },
-] as const;
+import glowBand from "../../assets/images/home_page/choose_creators/glow_band.svg";
+import plusButton from "../../assets/images/common/logos_and_icons/plus_icon_with_gradient.svg";
+import bubbleA from "../../assets/images/home_page/choose_creators/bubble_image_one.png";
+import bubbleB from "../../assets/images/home_page/choose_creators/bubble_image_two.png";
+import bubbleC from "../../assets/images/home_page/choose_creators/bubble_image_three.png";
+import bubbleD from "../../assets/images/home_page/choose_creators/bubble_image_four.png";
+import bubbleE from "../../assets/images/home_page/choose_creators/bubble_image_five.png";
+import bubbleF from "../../assets/images/home_page/choose_creators/bubble_image_six.png";
+import bubbleG from "../../assets/images/home_page/choose_creators/bubble_image_seven.png";
+import addedToZaamna from "../../assets/images/home_page/choose_creators/added_to_zaamna.png";
+import addedToNykaa from "../../assets/images/home_page/choose_creators/added_to_nykaa.png";
 ---
 
-<section class="relative overflow-hidden bg-background-primary py-[120px] lg:h-[780px] lg:py-0">
-	<img
-		src={wave.src}
-		alt=""
-		class="pointer-events-none absolute inset-x-0 top-0 h-full w-full object-cover opacity-80"
-		loading="lazy"
-	/>
+<section class="relative lg:-mt-3.5 lg:h-280" aria-label="Choose creators based on your preferences">
+	<div class="pointer-events-none absolute top-0 left-1/2 hidden h-full w-full -translate-x-1/2 lg:flex lg:items-center lg:justify-center">
+		<img
+			src={glowBand.src}
+			alt=""
+			class="absolute -bottom-110 w-full object-cover"
+			loading="lazy"
+		/>
 
-	<div class="relative flex h-full items-center justify-center">
-		<h2 class="max-w-[580px] text-center text-9xl capitalize leading-[1.1] text-white max-lg:text-6xl max-md:text-3xl">
-			Find &amp; Analyze the right creators
+		<h2 class="relative z-4 w-186.25 text-center text-[4rem] capitalize leading-20 text-white">
+			Choose creators based<br />on <span class="text-brand-primary">your preferences</span>
 		</h2>
+		
+		<Image src={bolt} alt="" class="absolute z-2 top-[34%] right-[15.45%] w-[18.34%]" widths={[317, 634]} sizes="18.34vw" loading="lazy" />
+		<Image src={bubbleA} alt="" class="absolute top-[34%] left-[-1.5%] w-[12%]" loading="lazy" />
+		<Image src={bubbleB} alt="" class="absolute top-[43%] left-[12%] w-[10.5%] " loading="lazy" />
+		<div class="absolute bottom-[25%] left-[22%] w-[12.56%]">
+			<Image src={bubbleC} alt="" class="w-full" loading="lazy" />
+			<Image src={addedToZaamna} alt="Added to Zaamna list" class="absolute z-1 top-[48%] left-[-72.8%] w-[63.1%]" loading="lazy" />
+			<img src={plusButton.src} alt="" class="absolute top-[57.9%] left-[-17.5%] w-[35%]" loading="lazy" />
+		</div>
+		<Image src={bubbleE} alt="" class="absolute right-[29.05%] bottom-[24%] w-[11.23%]" loading="lazy" />
+		<div class="absolute top-[33%] right-[13.95%] w-[9.9%]">
+			<Image src={bubbleF} alt="" class="w-full" loading="lazy" />
+			<Image src={addedToNykaa} alt="Added to Nykaa list" class="absolute z-1 top-[-33.9%] left-[90.6%] w-[70.8%]" loading="lazy" />
+			<img src={plusButton.src} alt="" class="absolute top-[-13.2%] left-[63.7%] w-[44.4%]" loading="lazy" />
+		</div>
+		<Image src={bubbleD} alt="" class="absolute right-[44%] bottom-[18.74%] w-[12.79%]" loading="lazy" />
+		<Image src={bubbleG} alt="" class="absolute top-[52%] right-0 w-[9.49%]" loading="lazy" />
 	</div>
 
-	<div class="pointer-events-none absolute inset-0 hidden lg:block" aria-hidden="true">
-		{
-			bubbles.map((bubble) => (
-				<Image
-					src={bubble.src}
-					alt=""
-					class:list={["absolute rounded-full object-cover aspect-square", bubble.class]}
-					loading="lazy"
-				/>
-			))
-		}
-		<Image src={bolt} alt="" class="absolute right-[15%] top-[22%] w-[317px]" loading="lazy" />
-		<img src={addedToNykaa.src} alt="" class="absolute left-[7%] top-[62%] w-[210px]" loading="lazy" />
-		<img src={addedToZamna.src} alt="" class="absolute right-[4%] top-[6%] w-[220px]" loading="lazy" />
-		<span class="absolute right-[13%] top-[19%] flex h-[76px] w-[76px] items-center justify-center rounded-full bg-white/10 text-3xl font-light text-white backdrop-blur-sm">+</span>
-		<span class="absolute left-[23%] top-[75%] flex h-[76px] w-[76px] items-center justify-center rounded-full bg-white/10 text-3xl font-light text-white backdrop-blur-sm">+</span>
+	<!-- mobile / tablet fallback: heading over the glow -->
+	<div class="relative flex items-center justify-center overflow-hidden py-30 lg:hidden">
+		<img
+			src={glowBand.src}
+			alt=""
+			class="pointer-events-none absolute top-1/2 left-1/2 w-300 max-w-none -translate-x-1/2 -translate-y-1/2"
+			loading="lazy"
+		/>
+		<h2 class="relative max-w-160 px-6 text-center text-3xl capitalize leading-[1.2] text-white">
+			Choose creators based on <span class="text-brand-primary">your preferences</span>
+		</h2>
 	</div>
 </section>

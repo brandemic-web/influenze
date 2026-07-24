@@ -8,19 +8,19 @@ import Button from "./Button.astro";
 <button
 	type="button"
 	id="mobile-menu-button"
-	class="flex h-11 w-11 flex-col items-center justify-center gap-[6px] lg:hidden"
+	class="flex h-2.75 w-2.75 flex-col items-center justify-center gap-1.5 lg:hidden"
 	aria-expanded="false"
 	aria-controls="mobile-menu"
 	aria-label="Open menu"
 >
-	<span class="block h-[2px] w-6 bg-white transition-transform"></span>
-	<span class="block h-[2px] w-6 bg-white transition-opacity"></span>
-	<span class="block h-[2px] w-6 bg-white transition-transform"></span>
+	<span class="block h-0.5 w-1.5 bg-white transition-transform"></span>
+	<span class="block h-0.5 w-1.5 bg-white transition-opacity"></span>
+	<span class="block h-0.5 w-1.5 bg-white transition-transform"></span>
 </button>
 
 <div
 	id="mobile-menu"
-	class="fixed inset-x-4 top-24 hidden rounded-[24px] border border-white/10 bg-surface-dark p-6 lg:hidden"
+	class="fixed inset-x-4 top-24 hidden rounded-[1.5rem] border border-white/10 bg-surface-dark p-6 lg:hidden"
 >
 	<nav aria-label="Mobile">
 		<ul class="flex flex-col gap-1">
@@ -29,11 +29,11 @@ import Button from "./Button.astro";
 					<li>
 						<a
 							href={item.href}
-							class="flex items-center gap-[10px] rounded-[10px] px-4 py-3 text-sm text-white hover:bg-white/5"
+							class="flex items-center gap-2.5 rounded-[0.625rem] px-4 py-3 text-sm text-white hover:bg-white/5"
 						>
 							{item.label}
 							{item.badge && (
-								<span class="rounded-[5px] bg-button-primary p-[6px] text-[11px] leading-none text-[#1D192B]">
+								<span class="rounded-[0.3125rem] bg-button-primary p-1.5 text-[0.6875rem] leading-none text-[#1D192B]">
 									{item.badge}
 								</span>
 							)}
@@ -44,7 +44,7 @@ import Button from "./Button.astro";
 									<li>
 										<a
 											href={link.href}
-											class="block rounded-[10px] px-4 py-2 text-xs text-white/60 hover:bg-white/5 hover:text-white"
+											class="block rounded-[0.625rem] px-4 py-2 text-xs text-white/60 hover:bg-white/5 hover:text-white"
 										>
 											{link.label}
 										</a>

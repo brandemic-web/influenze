@@ -8,10 +8,12 @@ import accountStats from "../../assets/images/common/ui_images/accounts_stats.sv
 import likesGraph from "../../assets/images/common/ui_images/avg_likes_graph.svg";
 import creatorsListing from "../../assets/images/featured_page/blocks/contact_unlock_rows.png";
 import comparisonDashboard from "../../assets/images/common/ui_images/creator_comparison_dashboard.png";
-import addToList from "../../assets/images/common/ui_images/add_to_list.png";
 import sharePopup from "../../assets/images/common/ui_images/share_email_popup.png";
 import campaignDashboard from "../../assets/images/common/ui_images/campaign_creator_dashboard.png";
 import hami_insta_handle from "../../assets/images/featured_page/blocks/hamid_insta_handle.png";
+import ui_widgets from "../../assets/images/featured_page/blocks/ui_widgets.png";
+import csv_progress from "../../assets/images/featured_page/blocks/csv_export_progress.png";
+import csv_export_complete from "../../assets/images/featured_page/blocks/csv_export_complete.png";
 
 const [
 	discovery,
@@ -26,27 +28,27 @@ const [
 
 <!-- Powerful Targeted Discovery -->
 <article
-	class="relative top-auto lg:sticky lg:top-34 mx-auto w-full rounded-[28px] backdrop-blur-md bg-white/10 border border-white/20 shadow-lg p-4"
+	class="relative top-auto lg:sticky lg:top-34 mx-auto w-full rounded-[1.75rem] backdrop-blur-md bg-white/10 border border-white/20 shadow-lg p-4"
 >
 	<div
 		class="flex flex-col gap-8 lg:flex-row lg:items-stretch justify-between"
 	>
 		<div
-			class="flex min-w-0 flex-col justify-center py-8 lg:w-1/2 lg:pl-[64px]"
+			class="flex min-w-0 flex-col justify-center py-8 lg:w-1/2 lg:pl-16"
 		>
 			<h3
-				class="text-[58px] capitalize leading-[normal] text-white max-lg:text-4xl max-md:text-2xl"
+				class="text-[3.625rem] capitalize leading-[normal] text-white max-lg:text-4xl max-md:text-2xl"
 			>
 				{discovery.title}
 			</h3>
 			<p
-				class="mt-8 max-w-[444px] text-xs leading-[26px] text-white lg:mt-10"
+				class="mt-8 max-w-111 text-xs leading-6.5 text-white lg:mt-10"
 			>
 				{discovery.description}
 			</p>
 		</div>
 		<div
-			class="flex aspect-16/10 w-full items-center justify-center overflow-hidden rounded-[20px] bg-white/50 p-6 lg:w-1/2 lg:p-4"
+			class="flex aspect-16/10 w-full items-center justify-center overflow-hidden rounded-[1.25rem] bg-white/50 p-6 lg:w-1/2 lg:p-4"
 		>
 			<div
 				class="relative flex h-full w-full items-center justify-center gap-4"
@@ -76,25 +78,25 @@ const [
 
 <!-- Creator Analytics & Media Kit Access -->
 <article
-	class="relative top-auto lg:sticky lg:top-40 mx-auto w-full rounded-[28px] backdrop-blur-md bg-white/10 border border-white/20 shadow-lg p-4"
+	class="relative top-auto lg:sticky lg:top-40 mx-auto w-full rounded-[1.75rem] backdrop-blur-md bg-white/10 border border-white/20 shadow-lg p-4"
 >
 	<div class="flex flex-col gap-8 lg:flex-row lg:items-stretch">
 		<div
-			class="flex min-w-0 flex-col justify-center py-8 lg:w-1/2 lg:pl-[64px]"
+			class="flex min-w-0 flex-col justify-center py-8 lg:w-1/2 lg:pl-16"
 		>
 			<h3
-				class="text-[58px] capitalize leading-[normal] text-white max-lg:text-4xl max-md:text-2xl"
+				class="text-[3.625rem] capitalize leading-[normal] text-white max-lg:text-4xl max-md:text-2xl"
 			>
 				{analytics.title}
 			</h3>
 			<p
-				class="mt-8 max-w-[444px] text-xs leading-[26px] text-white lg:mt-10"
+				class="mt-8 max-w-111 text-xs leading-6.5 text-white lg:mt-10"
 			>
 				{analytics.description}
 			</p>
 		</div>
 		<div
-			class="flex aspect-16/10 w-full items-center justify-center overflow-hidden rounded-[20px] bg-white/50 p-6 lg:w-1/2 lg:p-10"
+			class="flex aspect-16/10 w-full items-center justify-center overflow-hidden rounded-[1.25rem] bg-white/50 p-6 lg:w-1/2 lg:p-10"
 		>
 			<div class="flex h-full w-full items-start justify-center gap-1">
 				<img
@@ -116,25 +118,25 @@ const [
 
 <!-- Contact Detail Unlocks -->
 <article
-	class="relative top-auto lg:sticky lg:top-46 mx-auto w-full rounded-[28px] backdrop-blur-md bg-white/10 border border-white/20 shadow-lg p-4"
+	class="relative top-auto lg:sticky lg:top-46 mx-auto w-full rounded-[1.75rem] backdrop-blur-md bg-white/10 border border-white/20 shadow-lg p-4"
 >
 	<div class="flex flex-col gap-8 lg:flex-row lg:items-stretch">
 		<div
-			class="flex min-w-0 flex-col justify-center py-8 lg:w-1/2 lg:pl-[64px]"
+			class="flex min-w-0 flex-col justify-center py-8 lg:w-1/2 lg:pl-16"
 		>
 			<h3
-				class="text-[58px] capitalize leading-[normal] text-white max-lg:text-4xl max-md:text-2xl"
+				class="text-[3.625rem] capitalize leading-[normal] text-white max-lg:text-4xl max-md:text-2xl"
 			>
 				{contacts.title}
 			</h3>
 			<p
-				class="mt-8 max-w-[444px] text-xs leading-[26px] text-white lg:mt-10"
+				class="mt-8 max-w-111 text-xs leading-6.5 text-white lg:mt-10"
 			>
 				{contacts.description}
 			</p>
 		</div>
 		<div
-			class="flex aspect-16/10 w-full items-center justify-center rounded-[20px] bg-white/50 p-6 lg:w-1/2"
+			class="flex aspect-16/10 w-full items-center justify-center rounded-[1.25rem] bg-white/50 p-6 lg:w-1/2"
 		>
 			<div class="w-full max-w-full">
 				<Image
@@ -152,25 +154,25 @@ const [
 
 <!-- Real-Time Creator Comparisons -->
 <article
-	class="relative top-auto lg:sticky lg:top-52 mx-auto w-full rounded-[28px] backdrop-blur-md bg-white/10 border border-white/20 shadow-lg p-4"
+	class="relative top-auto lg:sticky lg:top-52 mx-auto w-full rounded-[1.75rem] backdrop-blur-md bg-white/10 border border-white/20 shadow-lg p-4"
 >
 	<div class="flex flex-col gap-8 lg:flex-row lg:items-stretch">
 		<div
-			class="flex min-w-0 flex-col justify-center py-8 lg:w-1/2 lg:pl-[64px]"
+			class="flex min-w-0 flex-col justify-center py-8 lg:w-1/2 lg:pl-16"
 		>
 			<h3
-				class="text-[58px] capitalize leading-[normal] text-white max-lg:text-4xl max-md:text-2xl"
+				class="text-[3.625rem] capitalize leading-[normal] text-white max-lg:text-4xl max-md:text-2xl"
 			>
 				{comparisons.title}
 			</h3>
 			<p
-				class="mt-8 max-w-[444px] text-xs leading-[26px] text-white lg:mt-10"
+				class="mt-8 max-w-111 text-xs leading-6.5 text-white lg:mt-10"
 			>
 				{comparisons.description}
 			</p>
 		</div>
 		<div
-			class="flex aspect-16/10 w-full items-center justify-center overflow-hidden rounded-[20px] bg-white/50 p-4 lg:w-1/2 lg:p-5"
+			class="flex aspect-16/10 w-full items-center justify-center overflow-hidden rounded-[1.25rem] bg-white/50 p-4 lg:w-1/2 lg:p-5"
 		>
 			<Image
 				src={comparisonDashboard}
@@ -186,59 +188,79 @@ const [
 
 <!-- Organized Creator Shortlists with import and export -->
 <article
-	class="relative top-auto lg:sticky lg:top-58 mx-auto w-full rounded-[28px] backdrop-blur-md bg-white/10 border border-white/20 shadow-lg p-4"
+	class="relative top-auto lg:sticky lg:top-58 mx-auto w-full rounded-[1.75rem] backdrop-blur-md bg-white/10 border border-white/20 shadow-lg p-4"
 >
 	<div class="flex flex-col gap-8 lg:flex-row lg:items-stretch">
 		<div
-			class="flex min-w-0 flex-col justify-center py-8 lg:w-1/2 lg:pl-[64px]"
+			class="flex min-w-0 flex-col justify-center py-8 lg:w-1/2 lg:pl-16"
 		>
 			<h3
-				class="text-[58px] capitalize leading-[normal] text-white max-lg:text-4xl max-md:text-2xl"
+				class="text-[3.625rem] capitalize leading-[normal] text-white max-lg:text-4xl max-md:text-2xl"
 			>
 				{shortlists.title}
 			</h3>
 			<p
-				class="mt-8 max-w-[444px] text-xs leading-[26px] text-white lg:mt-10"
+				class="mt-8 max-w-111 text-xs leading-6.5 text-white lg:mt-10"
 			>
 				{shortlists.description}
 			</p>
 		</div>
 		<div
-			class="flex aspect-16/10 w-full items-center justify-center overflow-hidden rounded-[20px] bg-white/50 p-6 lg:w-1/2 lg:p-12"
+			class="flex flex-col aspect-16/10 w-full items-start justify-center gap-3.5 overflow-hidden rounded-[1.25rem] bg-white/50 p-8 lg:w-1/2 lg:p-18"
 		>
-			<Image
-				src={addToList}
-				alt="Organized Creator Shortlists with import and export"
-				class="max-h-full w-auto max-w-[70%] object-contain"
+			<div>
+				<Image
+				src={ui_widgets}
+				alt="Header showing an 'importing' status badge, a 'Credits 2,540' button, and a user profile button labeled 'Hello!'."
+				class="w-[24rem] object-contain"
 				widths={[640, 1280]}
 				sizes="(max-width: 1024px) 100vw, 720px"
 				loading="lazy"
 			/>
+			</div>
+			<div class=" flex flex-row gap-2" >
+				<Image
+				src={csv_progress}
+				alt="CSV upload showing progress, errors, and duplicates."
+				class="w-[60%] object-contain"
+				widths={[640, 1280]}
+				sizes="(max-width: 1024px) 100vw, 720px"
+				loading="lazy"
+			/>
+			<Image
+				src={csv_export_complete}
+				alt="Export modal showing selected columns and download option."
+				class="w-[40%] object-contain"
+				widths={[640, 1280]}
+				sizes="(max-width: 1024px) 100vw, 720px"
+				loading="lazy"
+			/>
+			</div>
 		</div>
 	</div>
 </article>
 
 <!-- Easy Sharing -->
 <article
-	class="relative top-auto lg:sticky lg:top-64 mx-auto w-full rounded-[28px] backdrop-blur-md bg-white/10 border border-white/20 shadow-lg p-4"
+	class="relative top-auto lg:sticky lg:top-64 mx-auto w-full rounded-[1.75rem] backdrop-blur-md bg-white/10 border border-white/20 shadow-lg p-4"
 >
 	<div class="flex flex-col gap-8 lg:flex-row lg:items-stretch">
 		<div
-			class="flex min-w-0 flex-col justify-center py-8 lg:w-1/2 lg:pl-[64px]"
+			class="flex min-w-0 flex-col justify-center py-8 lg:w-1/2 lg:pl-16"
 		>
 			<h3
-				class="text-[58px] capitalize leading-[normal] text-white max-lg:text-4xl max-md:text-2xl"
+				class="text-[3.625rem] capitalize leading-[normal] text-white max-lg:text-4xl max-md:text-2xl"
 			>
 				{sharing.title}
 			</h3>
 			<p
-				class="mt-8 max-w-[444px] text-xs leading-[26px] text-white lg:mt-10"
+				class="mt-8 max-w-111 text-xs leading-6.5 text-white lg:mt-10"
 			>
 				{sharing.description}
 			</p>
 		</div>
 		<div
-			class="flex aspect-16/10 w-full items-center justify-center overflow-hidden rounded-[20px] bg-white/50 p-6 lg:w-1/2 lg:p-4"
+			class="flex aspect-16/10 w-full items-center justify-center overflow-hidden rounded-[1.25rem] bg-white/50 p-6 lg:w-1/2 lg:p-4"
 		>
 			<Image
 				src={sharePopup}
@@ -254,25 +276,25 @@ const [
 
 <!-- Reusable Creator Pools -->
 <article
-	class="relative top-auto lg:sticky lg:top-70 mx-auto w-full rounded-[28px] backdrop-blur-md bg-white/10 border border-white/20 shadow-lg p-4"
+	class="relative top-auto lg:sticky lg:top-70 mx-auto w-full rounded-[1.75rem] backdrop-blur-md bg-white/10 border border-white/20 shadow-lg p-4"
 >
 	<div class="flex flex-col gap-8 lg:flex-row lg:items-stretch">
 		<div
-			class="flex min-w-0 flex-col justify-center py-8 lg:w-1/2 lg:pl-[64px] lg:pr-30"
+			class="flex min-w-0 flex-col justify-center py-8 lg:w-1/2 lg:pl-16 lg:pr-30"
 		>
 			<h3
-				class="text-[58px] capitalize leading-[normal] text-white max-lg:text-4xl max-md:text-2xl"
+				class="text-[3.625rem] capitalize leading-[normal] text-white max-lg:text-4xl max-md:text-2xl"
 			>
 				{pools.title}
 			</h3>
 			<p
-				class="mt-8 max-w-[444px] text-xs leading-[26px] text-white lg:mt-10"
+				class="mt-8 max-w-111 text-xs leading-6.5 text-white lg:mt-10"
 			>
 				{pools.description}
 			</p>
 		</div>
 		<div
-			class="flex aspect-16/10 w-full items-center justify-center overflow-hidden rounded-[20px] bg-white/50 p-6 lg:w-1/2 lg:p-4"
+			class="flex aspect-16/10 w-full items-center justify-center overflow-hidden rounded-[1.25rem] bg-white/50 p-6 lg:w-1/2 lg:p-4"
 		>
 			<Image
 				src={campaignDashboard}

@@ -2,23 +2,21 @@
 import { FAQS, FAQ_HEADING, FAQ_SUBCOPY } from "../../data/faqs";
 ---
 
-<section class="bg-background-primary py-24 lg:py-[120px]" aria-labelledby="faq-heading">
-	<div class="mx-auto flex max-w-[1613px] flex-col gap-14 px-6 lg:flex-row lg:justify-between lg:gap-24 lg:px-[116px]">
-		<div class="lg:max-w-[572px]">
-			<h2 id="faq-heading" class="text-9xl capitalize leading-[1.05] text-white max-md:text-3xl">
-				{FAQ_HEADING}
-			</h2>
-			<p class="mt-8 max-w-[436px] text-[18px] leading-[1.4] text-white/50">{FAQ_SUBCOPY}</p>
+<section class="bg-background-primary pb-20.5 max-lg:py-24" aria-labelledby="faq-heading">
+	<div class="mx-auto flex flex-col gap-5 px-6 lg:flex-row lg:justify-between lg:gap-10 lg:px-14">
+		<div class="lg:max-w-120">
+			<h2 id="faq-heading" class="text-[2.25rem] capitalize leading-[1.2] text-white lg:text-[3.4375rem] lg:leading-16.25">{FAQ_HEADING}</h2>
+			<p class="mt-2 max-w-109 leading-[1.4] text-white/50 lg:mt-3.5">{FAQ_SUBCOPY}</p>
 		</div>
 
-		<div class="flex w-full max-w-[786px] flex-col gap-[10px]">
+		<div class="flex w-full max-w-196.5 flex-col gap-2.5">
 			{
 				FAQS.map((faq, i) => (
-					<details class="group rounded-sm bg-[#131212]" open={i === 1}>
-						<summary class="flex cursor-pointer list-none items-center justify-between gap-[10px] p-[30px] [&::-webkit-details-marker]:hidden">
-							<span class="text-[18px] font-semibold text-white">{faq.question}</span>
+					<details class="group rounded-sm" open={i === 1}>
+						<summary class="flex cursor-pointer list-none items-center justify-between gap-2.5 rounded-sm bg-[#131212] p-7.5 [&::-webkit-details-marker]:hidden">
+							<span class="text-[1.125rem] font-semibold leading-[normal] text-white [text-box:trim-both_cap_alphabetic]">{faq.question}</span>
 							<svg
-								class="h-[6px] w-[12px] shrink-0 text-white transition-transform group-open:rotate-180"
+								class="h-1.5 w-3 shrink-0 text-white transition-transform group-open:rotate-180"
 								viewBox="0 0 12 6"
 								fill="none"
 								aria-hidden="true"
@@ -26,7 +24,7 @@ import { FAQS, FAQ_HEADING, FAQ_SUBCOPY } from "../../data/faqs";
 								<path d="M1 1l5 4 5-4" stroke="currentColor" stroke-width="1.5" />
 							</svg>
 						</summary>
-						<p class="px-[30px] pb-[30px] text-xs leading-[28px] text-[#CECECE]/38">{faq.answer}</p>
+						<p class="p-7.5 leading-7 text-[#CECECE]/70">{faq.answer}</p>
 					</details>
 				))
 			}

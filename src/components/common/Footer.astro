@@ -19,20 +19,20 @@ const MOBILE_PLACEMENT: Record<string, string> = {
 	<img
 		src={gradientBg.src}
 		alt=""
-		class="pointer-events-none absolute inset-x-0 bottom-0 h-[650px] lg:h-[550px] w-full object-cover max-lg:-scale-y-100"
+		class="pointer-events-none absolute inset-x-0 bottom-0 h-162.5 lg:h-137.5 w-full object-cover max-lg:-scale-y-100"
 		loading="lazy"
 	/>
 
-	<div class="relative mx-auto max-w-[1728px]">
+	<div class="relative mx-auto max-w-[108rem]">
 		<Image
 			src={bolt}
 			alt=""
-			class="pointer-events-none absolute left-[15px] top-2 w-[180px] lg:left-0 lg:bottom-5 lg:w-[380px] lg:top-auto"
+			class="pointer-events-none absolute left-3.75 top-0.5 w-45 lg:left-0 lg:bottom-1.25 lg:w-95 lg:top-auto"
 			loading="lazy"
 		/>
 
 		<div
-			class="grid grid-cols-2 gap-x-4 gap-y-16 pt-35 pb-16 pl-14 pr-6 sm:pr-12 lg:flex lg:flex-wrap lg:justify-end lg:gap-x-[190px] lg:gap-y-10 lg:pt-48 lg:pr-[100px] lg:pb-[30px] lg:pl-[600px]"
+			class="grid grid-cols-2 gap-x-4 gap-y-16 pt-35 pb-16 pl-14 pr-6 sm:pr-12 lg:flex lg:flex-wrap lg:justify-end lg:gap-x-47.5 lg:gap-y-10 lg:pt-48 lg:pr-25 lg:pb-7.5 lg:pl-150"
 		>
 			{
 				FOOTER_COLUMNS.map((column) => (
@@ -40,15 +40,15 @@ const MOBILE_PLACEMENT: Record<string, string> = {
 						aria-label={column.title}
 						class={MOBILE_PLACEMENT[column.title]}
 					>
-						<h2 class="text-[18px] lg:text-[22px] font-bold text-white">
+						<h2 class="text-[1.125rem] lg:text-[1.375rem] font-bold text-white">
 							{column.title}
 						</h2>
-						<ul class="mt-[30px] flex flex-col gap-2 lg:gap-4">
+						<ul class="mt-7.5 flex flex-col gap-2 lg:gap-4">
 							{column.links.map((link) => (
 								<li>
 									<a
 										href={link.href}
-										class="text-[14px] lg:text-[18px] text-white/50 transition-colors hover:text-white"
+										class="text-[0.875rem] lg:text-[1.125rem] text-white/50 transition-colors hover:text-white"
 									>
 										{link.label}
 									</a>
@@ -61,18 +61,18 @@ const MOBILE_PLACEMENT: Record<string, string> = {
 		</div>
 
 		<div
-			class="relative flex justify-center px-6 lg:justify-end lg:pr-[74px] lg:pl-[268px]"
+			class="relative flex justify-center px-6 lg:justify-end lg:pr-18.5 lg:pl-67"
 		>
 			<Image
 				src={influenze_mobile}
 				alt="influenze.ai"
-				class="block w-full max-w-[1386px] translate-y-[6%] lg:hidden"
+				class="block w-full max-w-346.5 translate-y-[6%] lg:hidden"
 				loading="lazy"
 			/>
 			<Image
 				src={wordmark}
 				alt="influenze.ai"
-				class="hidden w-full max-w-[1386px] translate-y-[0%] lg:block"
+				class="hidden w-full max-w-346.5 translate-y-[0%] lg:block"
 				loading="lazy"
 			/>
 		</div>

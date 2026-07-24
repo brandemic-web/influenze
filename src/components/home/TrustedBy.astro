@@ -1,26 +1,35 @@
 ---
-import hopscotch from "../../assets/images/home_page/trusted_by/hopscotch_logo.svg";
 import hammerhead from "../../assets/images/home_page/trusted_by/hammerhead_logo.svg";
 import brandemic from "../../assets/images/home_page/trusted_by/brandemic_logo.svg";
 import hyper from "../../assets/images/home_page/trusted_by/hyper_logo.svg";
 import owled from "../../assets/images/home_page/trusted_by/owled_logo.svg";
+import hopscotch from "../../assets/images/home_page/trusted_by/hopscotch_logo.svg";
 
 const logos = [
-	{ src: hopscotch, alt: "Hopscotch" },
-	{ src: hammerhead, alt: "Hammerhead" },
-	{ src: brandemic, alt: "Brandemic" },
-	{ src: hyper, alt: "Hyper" },
-	{ src: owled, alt: "Owled" },
+	{ src: hammerhead, alt: "Hammerhead Global", w: 245, h: 68 },
+	{ src: brandemic, alt: "Brandemic", w: 191, h: 42 },
+	{ src: hyper, alt: "Hyper", w: 97, h: 56 },
+	{ src: owled, alt: "Owled", w: 93, h: 64 },
+	{ src: hopscotch, alt: "Hopscotch", w: 123, h: 49 },
 ];
 ---
 
-<section class="bg-background-primary py-16 lg:py-20" aria-label="Trusted by">
-	<h2 class="text-center text-sm capitalize text-white">Trusted By</h2>
-	<ul class="mx-auto mt-[50px] flex max-w-[1160px] flex-wrap items-center justify-center gap-x-16 gap-y-8 px-6 lg:justify-between">
+<section class="relative z-2 pt-36.5 pb-32" aria-label="Trusted by">
+	<h2 class="text-center text-[2.25rem] capitalize leading-[normal] text-white [text-box:trim-both_cap_alphabetic]">Trusted By</h2>
+	<ul
+		class="mx-auto mt-10 flex max-w-290 flex-wrap items-center justify-center gap-x-12 gap-y-8 px-6 opacity-60 lg:flex-nowrap lg:gap-x-25.75 lg:px-0"
+	>
 		{
 			logos.map((logo) => (
-				<li>
-					<img src={logo.src.src} alt={logo.alt} class="h-10 w-auto lg:h-[50px]" loading="lazy" />
+				<li class="shrink-0">
+					<img
+						src={logo.src.src}
+						alt={logo.alt}
+						width={logo.w}
+						height={logo.h}
+						class="max-lg:h-10 max-lg:w-auto"
+						loading="lazy"
+					/>
 				</li>
 			))
 		}
