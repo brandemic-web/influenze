@@ -19,7 +19,7 @@ const cardIcons: Record<string, ImageMetadata> = {
 };
 ---
 
-<section class="relative overflow-hidden pb-32" aria-labelledby="why-choose-heading">
+<section class="relative overflow-hidden pb-10 lg:pb-32" aria-labelledby="why-choose-heading">
 	<div class="flex flex-col items-center text-center">
 		<p class="text-[1.125rem] uppercase leading-[normal] text-brand-primary">{WHY_CHOOSE_EYEBROW}</p>
 		<h2
@@ -30,20 +30,24 @@ const cardIcons: Record<string, ImageMetadata> = {
 		</h2>
 	</div>
 
-	<!-- GSAP marquee: cards rendered twice for a seamless loop; pauses on hover. -->
-	<div class="why-choose-marquee mt-8 overflow-hidden">
-		<ul class="why-choose-track flex w-max gap-5">
+	<!-- GSAP marquee at every width: cards rendered twice for a seamless loop; pauses on hover. -->
+	<div class="mt-8 overflow-x-auto overscroll-x-contain" data-marquee="always">
+		<ul class="flex w-max gap-5 px-6" data-marquee-track>
 			{
 				[...WHY_CHOOSE_CARDS, ...WHY_CHOOSE_CARDS].map((card, i) => (
 					<li
+						class:list={[
+							"shrink-0 rounded-sm bg-linear-to-r from-[#19123A] via-[#19123A] to-[#575757] p-px",
+							i >= WHY_CHOOSE_CARDS.length && "hidden",
+						]}
+						data-marquee-clone={i >= WHY_CHOOSE_CARDS.length ? "" : undefined}
 						aria-hidden={i >= WHY_CHOOSE_CARDS.length ? "true" : undefined}
-						class="shrink-0 rounded-sm bg-linear-to-r from-[#19123A] via-[#19123A] to-[#575757] p-px"
 					>
-						<div class="flex h-full items-center rounded-sm bg-background-primary px-15 py-10">
-							<div class="flex w-82.75 flex-col gap-8 text-left">
+						<div class="flex h-full items-center rounded-sm bg-background-primary px-5.25 py-5.75 lg:px-15 lg:py-10">
+							<div class="flex w-80 lg:w-82.75 flex-col gap-13.75 lg:gap-8 text-left">
 								<div class="flex items-center gap-4">
-									<img src={cardIcons[card.icon].src} alt="" class="h-12 w-12 rounded-sm" loading="lazy" />
-									<h3 class="max-w-66.75 text-md capitalize leading-[normal] text-white [text-box:trim-both_cap_alphabetic]">{card.title}</h3>
+									<img src={cardIcons[card.icon].src} alt="" class="h-10.75 w-10.75 lg:h-12 lg:w-12 rounded-sm" loading="lazy" />
+									<h3 class="max-w-66.75 text-[1.25rem] lg:text-md capitalize leading-[normal] text-white [text-box:trim-both_cap_alphabetic]">{card.title}</h3>
 								</div>
 								<p class="text-[1.125rem] leading-6.5 text-[#CECECE]/70 [text-box:trim-both_cap_alphabetic]">{card.description}</p>
 							</div>
@@ -54,11 +58,11 @@ const cardIcons: Record<string, ImageMetadata> = {
 		</ul>
 	</div>
 
-	<div class="mt-13 text-center">
+	<div class="mt-8 lg:mt-13 text-center">
 		<Button href={SIGNUP_URL} variant="nav">{WHY_CHOOSE_BUTTON}</Button>
 	</div>
 </section>
 
 <script>
-	import "../../scripts/why-choose";
+	import "../../scripts/marquee";
 </script>

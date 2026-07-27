@@ -14,24 +14,36 @@ const logos = [
 ];
 ---
 
-<section class="relative z-2 pt-36.5 pb-32" aria-label="Trusted by">
+<section class="relative z-2 pt-15 lg:pt-36.5 pb-10 overflow-hidden" aria-label="Trusted by">
 	<h2 class="text-center text-[2.25rem] capitalize leading-[normal] text-white [text-box:trim-both_cap_alphabetic]">Trusted By</h2>
-	<ul
-		class="mx-auto mt-10 flex max-w-290 flex-wrap items-center justify-center gap-x-12 gap-y-8 px-6 opacity-60 lg:flex-nowrap lg:gap-x-25.75 lg:px-0"
-	>
-		{
-			logos.map((logo) => (
-				<li class="shrink-0">
-					<img
-						src={logo.src.src}
-						alt={logo.alt}
-						width={logo.w}
-						height={logo.h}
-						class="max-lg:h-10 max-lg:w-auto"
-						loading="lazy"
-					/>
-				</li>
-			))
-		}
-	</ul>
+	<!-- Mobile: GSAP ticker (logos rendered twice so the loop stays gapless on tablets). Desktop: static centered row. -->
+	<div class="mt-10 overflow-x-auto overscroll-x-contain lg:overflow-visible" data-marquee>
+		<ul
+			class="mx-auto flex w-max items-center gap-x-10 px-6 opacity-60 flex-nowrap lg:w-auto lg:max-w-290 lg:justify-center lg:gap-x-25.75 lg:px-0"
+			data-marquee-track
+		>
+			{
+				[...logos, ...logos].map((logo, i) => (
+					<li
+						class:list={["shrink-0", i >= logos.length && "hidden"]}
+						data-marquee-clone={i >= logos.length ? "" : undefined}
+						aria-hidden={i >= logos.length ? "true" : undefined}
+					>
+						<img
+							src={logo.src.src}
+							alt={i >= logos.length ? "" : logo.alt}
+							width={logo.w}
+							height={logo.h}
+							class="h-10 lg:max-h-10 lg:max-w-auto"
+							loading="lazy"
+						/>
+					</li>
+				))
+			}
+		</ul>
+	</div>
 </section>
+
+<script>
+	import "../../scripts/marquee";
+</script>

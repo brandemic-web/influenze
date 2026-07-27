@@ -22,38 +22,38 @@ const featureIcons: Record<string, ImageMetadata> = {
 <section class="relative" aria-labelledby="creators-ai-heading">
 
 	<div
-		class="pointer-events-none absolute inset-x-0 top-[-40%] h-full lg:h-400 bg-[linear-gradient(178.32deg,#010101_1.67%,#21144B_11.9%,#8058FF_43.98%,#251949_75.14%,#000000_98.38%)]"
+		class="pointer-events-none absolute inset-x-0 top-[-35%] lg:top-[-40%] h-[150%] lg:h-400 bg-[linear-gradient(178.32deg,#010101_1.67%,#21144B_11.9%,#8058FF_43.98%,#251949_75.14%,#000000_98.38%)] z-0"
 		aria-hidden="true"
 	>
 	</div>
-	<div class="relative mx-auto hidden w-full max-w-393 px-4 lg:flex lg:flex-col lg:items-center lg:pt-12">
+	<div class="relative z-10 mx-auto flex w-full max-w-393 flex-col items-center px-4 pb-16 pt-10 lg:pt-12 lg:pb-0">
 		<h2
 			id="creators-ai-heading"
-			class="w-222.25 mb-8 text-center text-[3.4375rem] capitalize leading-[normal] text-white [text-box:trim-both_cap_alphabetic]"
+			class="mb-8 w-full max-w-222.25 text-center text-[30px] lg:text-3xl capitalize leading-[1.2] text-white lg:text-[3.4375rem] lg:leading-[normal] lg:[text-box:trim-both_cap_alphabetic]"
 		>
 			The world's creators,<br /><span class="text-brand-primary">found with AI</span>
 		</h2>
 
 		<!-- outer glass panel -->
-		<div class="relative mt-8 flex h-199.25 w-full items-center justify-between gap-8 rounded-[1.75rem] bg-white/10 py-5.75 pl-[min(148px,8%)] pr-4.75">
+		<div class="relative mt-8 flex w-full flex-col items-center gap-8 rounded-[1.75rem] bg-white/10 px-5 pb-8 pt-12 lg:h-199.25 lg:flex-row lg:items-center lg:justify-between lg:py-5.75 lg:pl-[min(148px,8%)] lg:pr-4.75 ">
 
 			<div class="absolute -top-6 left-0 right-0 mx-auto w-max">
 				<Button href={SIGNUP_URL} variant="nav">{CREATORS_AI_BUTTON}</Button>
 			</div>
 
 			<!-- feature list -->
-			<div class="flex w-full min-w-0 max-w-143.75 flex-col gap-8" data-reveal data-reveal-stagger="0.12">
+			<div class="flex w-full min-w-0 flex-col gap-6 lg:max-w-143.75 lg:gap-8" data-reveal data-reveal-stagger="0.12">
 				{
 					CREATORS_AI_FEATURES.map((feature, i) => (
 						<>
-						   {i !== 0 && <div class="h-px w-full max-w-124 bg-white/40"></div>}
-				
-							<div class="flex max-w-126 flex-col gap-3">
+						   {i !== 0 && <div class="h-px w-full bg-white/40 lg:max-w-124"></div>}
+
+							<div class="flex flex-col gap-3 lg:max-w-126">
 								<div class="flex items-center gap-4">
-									<img src={featureIcons[feature.icon].src} alt="" class="h-12 w-12 rounded-sm" loading="lazy" />
-									<h3 class="text-md capitalize leading-[normal] text-white [text-box:trim-both_cap_alphabetic]">{feature.title}</h3>
+									<img src={featureIcons[feature.icon].src} alt="" class="h-7.5 w-7.5 rounded-sm lg:h-12 lg:w-12" loading="lazy" />
+									<h3 class="text-[18px] lg:text-md capitalize leading-[normal] text-white lg:[text-box:trim-both_cap_alphabetic]">{feature.title}</h3>
 								</div>
-								<p class="pl-16.25 text-[1rem] leading-6.5 text-white [text-box:trim-both_cap_alphabetic]">{feature.description}</p>
+								<p class="pl-12 text-[14px] lg:text-[1rem] leading-6.5 text-white lg:pl-16.25 lg:[text-box:trim-both_cap_alphabetic]">{feature.description}</p>
 							</div>
 						</>
 					))
@@ -61,53 +61,22 @@ const featureIcons: Record<string, ImageMetadata> = {
 			</div>
 
 			<!-- inner panel -->
-			<div class="h-189.5 w-172.5 shrink-0 rounded-[1.25rem] bg-white/20 pl-5.5 pt-22">
-				<div class="relative w-108.5">
+			<div class="w-full shrink-0 overflow-hidden rounded-[1.25rem] bg-white/20 p-4 lg:h-189.5 lg:w-172.5 lg:overflow-visible lg:p-0 lg:pl-5.5 lg:pt-22">
+				<div class="relative w-full lg:w-108.5">
 					<Image
 						src={productShot}
 						alt="Influenze.ai creator search filters — lookalike audience, sort, and location"
-						class="h-145.75 w-108.5 rounded-md object-cover object-top"
+						class="w-[75%] rounded-md object-cover object-top lg:h-145.75 lg:w-108.5"
 						widths={[434, 868, 1738]}
-						sizes="434px"
+						sizes="(min-width: 1024px) 434px, 100vw"
 						loading="lazy"
 					/>
 
 					<!-- floating chips over the screenshot's right edge -->
-					<img src={tabsChip.src} alt="" class="absolute left-72.75 top-30.25 w-76.25 max-w-none" loading="lazy" />
-					<img src={metricsChip.src} alt="" class="absolute left-72.75 top-57.75 w-87 max-w-none" loading="lazy" />
+					<img src={tabsChip.src} alt="" class="absolute left-34 top-18 lg:left-72.75 lg:top-30.25 w-40 lg:w-76.25 " loading="lazy" />
+					<img src={metricsChip.src} alt="" class="absolute left-34 top-33 w-40 lg:left-72.75 lg:top-57.75 lg:w-87" loading="lazy" />
 				</div>
 			</div>
-		</div>
-	</div>
-
-	<!-- mobile / tablet fallback -->
-	<div class="flex flex-col items-center gap-8 px-6 py-16 lg:hidden">
-		<h2 class="text-center text-3xl capitalize leading-[1.2] text-white">
-			The world's creators, <span class="text-brand-primary">found with AI</span>
-		</h2>
-		<Button href={SIGNUP_URL}>{CREATORS_AI_BUTTON}</Button>
-		<div class="w-full rounded-[1.25rem] bg-white/10 p-6">
-			<div class="flex flex-col gap-6">
-				{
-					CREATORS_AI_FEATURES.map((feature) => (
-						<div class="flex flex-col gap-3">
-							<div class="flex items-center gap-4">
-								<img src={featureIcons[feature.icon].src} alt="" class="h-10 w-10" loading="lazy" />
-								<h3 class="text-md capitalize text-white">{feature.title}</h3>
-							</div>
-							<p class="text-sm leading-6.5 text-white/80">{feature.description}</p>
-						</div>
-					))
-				}
-			</div>
-			<Image
-				src={productShot}
-				alt="Influenze.ai creator search filters"
-				class="mt-8 w-full rounded-md"
-				widths={[434, 868]}
-				sizes="100vw"
-				loading="lazy"
-			/>
 		</div>
 	</div>
 </section>

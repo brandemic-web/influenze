@@ -8,17 +8,17 @@ import darkLayerCenter from "../../assets/images/home_page/hero/dark_layer_cente
 import searchUi from "../../assets/images/home_page/hero/influenze_analyze.svg";
 ---
 
-<section class="relative h-344">
+<section class="relative h-200 lg:h-344 overflow-x-hidden lg:overflow-visible">
 	<!-- gradient backdrop-->
 	<div
-		class="pointer-events-none absolute inset-x-0 top-0 h-344 bg-[linear-gradient(179.95deg,#11092B_0%,#6838FF_5.85%,#0C0A12_99.94%)]"
+		class="pointer-events-none absolute inset-x-0 top-0 lg:h-344 h-160 bg-[linear-gradient(179.95deg,#11092B_0%,#6838FF_5.85%,#010101_99.94%)]"
 		aria-hidden="true"
 	>
 	</div>
 
 	<!-- decorative concentric arcs, centered on the 1728 design canvas -->
 	<div
-		class="pointer-events-none absolute top-36 left-1/2 hidden w-full -translate-x-1/2 lg:block"
+		class="pointer-events-none absolute top-36 left-1/2 w-full -translate-x-1/2 lg:block"
 		aria-hidden="true"
 	>
 		<img
@@ -36,11 +36,11 @@ import searchUi from "../../assets/images/home_page/hero/influenze_analyze.svg";
 			alt=""
 			class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
 		/>
-		<img src={backgroundArcs.src} alt="" class="w-full" loading="eager" />
+		<img src={backgroundArcs.src} alt="" class="w-[115%] max-w-[115%] lg:w-full lg:max-w-full" loading="eager" />
 	</div>
 
 	<div
-		class="relative flex flex-col items-center px-6 pt-40 lg:px-0 lg:pt-61"
+		class="relative flex flex-col items-center px-6 pt-25 lg:px-0 lg:pt-61"
 		data-reveal
 		data-reveal-stagger="0.12"
 	>
@@ -54,20 +54,20 @@ import searchUi from "../../assets/images/home_page/hero/influenze_analyze.svg";
 
 		<!-- glass copy card -->
 		<div
-			class="mt-8 w-full max-w-113.25 rounded-sm border border-white bg-[linear-gradient(180deg,rgba(255,255,255,0.2)_0%,rgba(100,77,173,0.2)_100%)] px-6 py-6 lg:mt-8.25 lg:w-113.25 lg:px-10 lg:py-8"
+			class="order-3 lg:order-2 mt-4 w-full max-w-77 lg:max-w-113.5 rounded-sm border border-white bg-[linear-gradient(180deg,rgba(255,255,255,0.2)_0%,rgba(100,77,173,0.2)_100%)] px-4 py-6 lg:mt-8.25 lg:w-113.25 lg:px-10 lg:py-8"
 			data-reveal-item
 		>
-			<p class="text-center text-[1rem] leading-6 text-white [text-box:trim-both_cap_alphabetic] lg:text-[1.25rem] lg:leading-7.25">
+			<p class="text-center text-[14px] leading-6 text-white [text-box:trim-both_cap_alphabetic] lg:text-[1.25rem] lg:leading-7.25">
 				Get access to the world's largest database of <span class="font-semibold text-brand-primary">450M+ creators</span> across Instagram, Youtube, TikTok &amp; LinkedIn
 			</p>
 		</div>
 
-		<div class="mt-6 lg:mt-3.75" data-reveal-item>
+		<div class="order-4 lg:order-3 -mt-2 lg:mt-3.75" data-reveal-item>
 			<Button href={SIGNUP_URL}>Sign Up</Button>
 		</div>
 
 		<!-- product mockup + numbered chip -->
-		<div class="relative mt-12 w-full max-w-7xl px-6 lg:mt-14.75 lg:w-7xl lg:px-0">
+		<div class="order-2 lg:order-4 relative mt-12 w-full max-w-7xl px-0 lg:mt-14.75 lg:w-7xl lg:px-0">
 			<Image
 				src={searchUi}
 				alt="Influenze.ai dashboard — search and discover creators with AI-powered filters"
