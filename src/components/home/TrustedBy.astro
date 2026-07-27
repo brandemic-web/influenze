@@ -15,7 +15,7 @@ const logos = [
 ---
 
 <section class="relative z-2 pt-15 lg:pt-36.5 pb-10 overflow-hidden" aria-label="Trusted by">
-	<h2 class="text-center text-[2.25rem] capitalize leading-[normal] text-white [text-box:trim-both_cap_alphabetic]">Trusted By</h2>
+	<h2 class="text-center text-[30px] lg:text-[2.25rem] capitalize leading-[normal] text-white [text-box:trim-both_cap_alphabetic]">Trusted By</h2>
 	<!-- Mobile: GSAP ticker (logos rendered twice so the loop stays gapless on tablets). Desktop: static centered row. -->
 	<div class="mt-10 overflow-x-auto overscroll-x-contain lg:overflow-visible" data-marquee>
 		<ul
@@ -34,7 +34,7 @@ const logos = [
 							alt={i >= logos.length ? "" : logo.alt}
 							width={logo.w}
 							height={logo.h}
-							class="h-10 lg:max-h-10 lg:max-w-auto"
+							class="w-25 lg:w-auto h-8 lg:max-h-10 lg:max-w-auto"
 							loading="lazy"
 						/>
 					</li>

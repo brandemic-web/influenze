@@ -4,12 +4,13 @@ import swoosh from "../../assets/images/home_page/use_cases/swoosh.svg";
 import circleCheck from "../../assets/images/home_page/use_cases/circle_check.svg";
 ---
 
-<section class="relative" aria-labelledby="use-cases-split-heading">
+<section class="relative overflow-hidden lg:overflow-visible" aria-labelledby="use-cases-split-heading">
 	<!-- decorative swoosh painted over the cards, per design z-order -->
+	<!-- zoomed/cropped on mobile so the glow fills the section, natural width from lg up -->
 	<img
 	src={swoosh.src}
 	alt=""
-	class="pointer-events-none absolute w-full object-cover"
+	class="pointer-events-none absolute top-[20%] lg:top-auto left-1/2 w-[260%] max-w-none -translate-x-1/2 object-cover lg:left-0 lg:w-full lg:translate-x-0"
 	loading="lazy"/>
 
 	<div class="relative mx-auto flex max-w-393 flex-col items-center px-6 pt-10 pb-16 lg:px-0 lg:py-40">
@@ -28,12 +29,12 @@ import circleCheck from "../../assets/images/home_page/use_cases/circle_check.sv
 			{
 				USE_CASES_SPLIT.map((column) => (
 					<article
-						class="flex h-auto w-full max-w-2xl flex-col justify-center gap-7.5 rounded-md bg-[rgba(246,246,244,0.1)] px-8 py-10 lg:px-14 lg:py-13"
+						class="flex h-auto w-full max-w-2xl flex-col justify-center gap-7.5 rounded-md border border-white/15 bg-[rgba(246,246,244,0.1)] shadow-[0_8px_32px_rgba(0,0,0,0.18),inset_0_1px_0_rgba(255,255,255,0.18)] backdrop-blur-md backdrop-saturate-150 px-8 py-10 lg:px-14 lg:py-13"
 						data-reveal-item
 					>
 						<h3 class="text-[1.875rem] capitalize leading-[normal] text-[#F6F6F4] lg:text-[4rem] [text-box:trim-both_cap_alphabetic]">{column.title}</h3>
 						<div class="h-px w-full max-w-103.75 bg-white/40"></div>
-						<ul class="flex flex-col gap-3">
+						<ul class="flex flex-col gap-6">
 							{column.points.map((point) => (
 								<li class="flex items-start lg:items-center gap-5.5 lg:gap-3.75">
 									<img src={circleCheck.src} alt="" class="h-6 w-6 shrink-0" loading="lazy" />

@@ -24,19 +24,25 @@ import searchUi from "../../assets/images/home_page/hero/influenze_analyze.svg";
 		<img
 			src={darkLayerSide.src}
 			alt=""
-			class="absolute top-1/2 left-0 -translate-x-1/2 -translate-y-1/2"
+			class="absolute top-1/2 left-0 -translate-x-1/2 -translate-y-1/2 z-2"
 		/>
 		<img
 			src={darkLayerSide.src}
 			alt=""
-			class="absolute top-1/2 right-0 translate-x-1/2 -translate-y-1/2"
+			class="absolute top-1/2 right-0 translate-x-1/2 -translate-y-1/2 z-2"
 		/>
 		<img
 			src={darkLayerCenter.src}
 			alt=""
-			class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+			class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-2"
 		/>
-		<img src={backgroundArcs.src} alt="" class="w-[115%] max-w-[115%] lg:w-full lg:max-w-full" loading="eager" />
+		<!-- zoomed/cropped on mobile so the arcs read at small widths, natural width from lg up -->
+		<img
+			src={backgroundArcs.src}
+			alt=""
+			class="absolute left-1/2 w-[120%] max-w-none -translate-x-1/2 lg:left-0 lg:w-full lg:max-w-full lg:translate-x-0 z-0 " 
+			loading="eager"
+		/>
 	</div>
 
 	<div
