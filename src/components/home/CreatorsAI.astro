@@ -152,13 +152,11 @@ const tabLayers: PanelLayer[][] = [
 									"creators-panel w-full",
 									// The first panel holds the flow height; the rest stack on top of it.
 									// `invisible` (not just opacity-0) so hidden panels are inert before
-									// the script runs — GSAP's autoAlpha then drives the same two props.
 									i === 0 ? "relative" : "absolute inset-0 invisible opacity-0",
 								]}
 							>
 								{layers.map((layer) =>
 									// SVGs pass through untouched (Astro can't resize them); only rasters
-									// go through the image service.
 									layer.src.format === "svg" ? (
 										<img src={layer.src.src} alt={layer.alt ?? ""} class={layer.class} loading="lazy" decoding="async" />
 									) : (
