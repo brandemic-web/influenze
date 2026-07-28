@@ -25,7 +25,7 @@ const { href, variant = "primary", class: className = "" } = Astro.props;
 
 // Shared base: shape, spacing, typography and focus ring for the solid/outline variants.
 const base =
-	"inline-flex items-center justify-center rounded-full px-[1.5rem] py-[1rem] text-xs leading-none transition-colors duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary";
+	"inline-flex items-center justify-center rounded-full px-6 py-4 text-[0.75rem] lg:text-xs leading-none transition-colors duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary";
 
 // Solid / outline variants style the <a> directly.
 const variants = {
@@ -52,7 +52,7 @@ const isNav = variant === "nav";
 				className,
 			]}
 		>
-			<span class="inline-flex w-full items-center justify-center rounded-full bg-surface-pill px-6.25 py-4 text-xs leading-none text-white transition-colors duration-300 group-hover:bg-brand-primary group-hover:text-button-text">
+			<span class="inline-flex w-full items-center justify-center rounded-full bg-surface-pill px-4 py-4.25 lg:px-6.25 lg:py-4 text-[0.75rem] lg:text-xs leading-none text-white transition-colors duration-300 group-hover:bg-brand-primary group-hover:text-button-text">
 				<slot />
 			</span>
 		</a>

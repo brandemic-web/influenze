@@ -8,70 +8,155 @@ import Button from "./Button.astro";
 <button
 	type="button"
 	id="mobile-menu-button"
-	class="flex h-2.75 w-2.75 flex-col items-center justify-center gap-1.5 lg:hidden"
+	class="flex h-5 w-12 flex-col items-center justify-center gap-1.5 lg:hidden"
 	aria-expanded="false"
 	aria-controls="mobile-menu"
 	aria-label="Open menu"
 >
-	<span class="block h-0.5 w-1.5 bg-white transition-transform"></span>
-	<span class="block h-0.5 w-1.5 bg-white transition-opacity"></span>
-	<span class="block h-0.5 w-1.5 bg-white transition-transform"></span>
+	<span class="bar bar-top block h-0.5 w-6.5 bg-white transition-transform duration-300 ease-in-out"></span>
+	<span class="bar bar-middle block h-0.5 w-6.5 bg-white transition-opacity duration-300 ease-in-out"></span>
+	<span class="bar bar-bottom block h-0.5 w-6.5 bg-white transition-transform duration-300 ease-in-out"></span>
 </button>
 
-<div
-	id="mobile-menu"
-	class="fixed inset-x-4 top-24 hidden rounded-[1.5rem] border border-white/10 bg-surface-dark p-6 lg:hidden"
->
-	<nav aria-label="Mobile">
-		<ul class="flex flex-col gap-1">
-			{
-				NAV_ITEMS.map((item) => (
-					<li>
-						<a
-							href={item.href}
-							class="flex items-center gap-2.5 rounded-[0.625rem] px-4 py-3 text-sm text-white hover:bg-white/5"
-						>
-							{item.label}
-							{item.badge && (
-								<span class="rounded-[0.3125rem] bg-button-primary p-1.5 text-[0.6875rem] leading-none text-[#1D192B]">
-									{item.badge}
-								</span>
-							)}
-						</a>
-						{item.dropdown && (
-							<ul class="ml-4 border-l border-white/10 pl-2">
-								{item.dropdown.map((link) => (
-									<li>
-										<a
-											href={link.href}
-											class="block rounded-[0.625rem] px-4 py-2 text-xs text-white/60 hover:bg-white/5 hover:text-white"
+<div id="mobile-menu" class="fixed inset-x-0 top-17 z-40  lg:hidden">
+	<div class="menu-inner">
+		<div class="rounded-[1.5rem] border border-brand-primary bg-[#18122b] p-6">
+			<nav aria-label="Mobile">
+				<ul class="flex flex-col">
+					{
+						NAV_ITEMS.map((item, index) =>
+							item.dropdown ? (
+								<li class={index < NAV_ITEMS.length - 1 ? "border-b border-white/10" : ""}>
+									<button
+										type="button"
+										class="res-toggle flex w-full items-center justify-between py-4 text-[0.875rem] text-white"
+										aria-expanded="false"
+									>
+										{item.label}
+										<svg
+											class="chevron h-2 w-3 transition-transform duration-300"
+											viewBox="0 0 8 5"
+											fill="none"
+											aria-hidden="true"
 										>
-											{link.label}
-										</a>
-									</li>
-								))}
-							</ul>
-						)}
-					</li>
-				))
-			}
-		</ul>
-	</nav>
-	<Button
-		href={LOGIN_URL}
-		variant="nav"
-		class="mt-4 w-full"
-	>
-		Login / Sign Up
-	</Button>
+											<path d="M1 1l3 3 3-3" stroke="currentColor" stroke-width="1.5" />
+										</svg>
+									</button>
+									<div class="submenu">
+										<div class="overflow-hidden">
+											<ul class="pb-2">
+												{item.dropdown.map((link) => (
+													<li>
+														<a
+															href={link.href}
+															class="block py-2.5 pl-3 text-base text-white/60 hover:text-white"
+														>
+															{link.label}
+														</a>
+													</li>
+												))}
+											</ul>
+										</div>
+									</div>
+								</li>
+							) : (
+								<li class={index <= NAV_ITEMS.length - 1 ? "border-b border-white/10" : ""}>
+									<a
+										href={item.href}
+										class="flex items-center gap-3 py-4 text-[0.875rem] text-white"
+									>
+										{item.label}
+										{item.badge && (
+											<span class="flex items-center gap-1.25 rounded-[0.3125rem] bg-button-primary p-2 text-[0.6875rem] leading-none font-semibold text-[#1D192B]">
+												{item.badge}
+												<svg class="h-2 w-2" viewBox="0 0 7 7" fill="none" aria-hidden="true">
+													<path
+														d="M0.450195 6.44995L6.45019 0.449951M6.45019 6.44995L6.45019 0.449951L0.450195 0.449952"
+														stroke="currentColor"
+														stroke-width="1"
+														stroke-linecap="round"
+													/>
+												</svg>
+											</span>
+										)}
+									</a>
+								</li>
+							),
+						)
+					}
+				</ul>
+			</nav>
+			<Button
+				href={LOGIN_URL}
+				variant="nav"
+				class="mt-6"
+			>
+			Get Access
+			</Button>
+		</div>
+	</div>
 </div>
+
+<style>
+	/* Hamburger → X */
+	#mobile-menu-button.is-open .bar-top {
+		transform: translateY(0.5rem) rotate(45deg);
+	}
+	#mobile-menu-button.is-open .bar-middle {
+		opacity: 0;
+	}
+	#mobile-menu-button.is-open .bar-bottom {
+		transform: translateY(-0.5rem) rotate(-45deg);
+	}
+
+	/* Panel height-reveal (grid-rows 0fr → 1fr animates to content height) */
+	#mobile-menu .menu-inner {
+		display: grid;
+		grid-template-rows: 0fr;
+		opacity: 0;
+		visibility: hidden;
+		transition:
+			grid-template-rows 300ms ease,
+			opacity 300ms ease,
+			visibility 300ms;
+	}
+	#mobile-menu.is-open .menu-inner {
+		grid-template-rows: 1fr;
+		opacity: 1;
+		visibility: visible;
+	}
+	#mobile-menu .menu-inner > div {
+		overflow: hidden;
+	}
+
+	/* Resources submenu reveal */
+	.submenu {
+		display: grid;
+		grid-template-rows: 0fr;
+		transition: grid-template-rows 300ms ease;
+	}
+	.res-toggle.is-open + .submenu {
+		grid-template-rows: 1fr;
+	}
+	.res-toggle.is-open .chevron {
+		transform: rotate(180deg);
+	}
+</style>
 
 <script>
 	const button = document.getElementById("mobile-menu-button")!;
 	const menu = document.getElementById("mobile-menu")!;
 	button.addEventListener("click", () => {
-		const open = menu.classList.toggle("hidden");
-		button.setAttribute("aria-expanded", String(!open));
-		button.setAttribute("aria-label", open ? "Open menu" : "Close menu");
+		const open = menu.classList.toggle("is-open");
+		button.classList.toggle("is-open", open);
+		button.setAttribute("aria-expanded", String(open));
+		button.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+	});
+
+	menu.querySelectorAll<HTMLButtonElement>(".res-toggle").forEach((toggle) => {
+		toggle.addEventListener("click", () => {
+			const open = toggle.classList.toggle("is-open");
+			toggle.setAttribute("aria-expanded", String(open));
+		});
 	});
 </script>

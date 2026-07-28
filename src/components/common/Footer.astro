@@ -15,7 +15,7 @@ const MOBILE_PLACEMENT: Record<string, string> = {
 };
 ---
 
-<footer class="relative overflow-hidden bg-surface-dark">
+<footer class="relative  lg:overflow-hidden bg-surface-dark">
 	<img
 		src={gradientBg.src}
 		alt=""
@@ -27,12 +27,12 @@ const MOBILE_PLACEMENT: Record<string, string> = {
 		<Image
 			src={bolt}
 			alt=""
-			class="pointer-events-none absolute left-3.75 top-0.5 w-45 lg:left-0 lg:bottom-1.25 lg:w-95 lg:top-auto"
+			class="pointer-events-none absolute left-3.75 -top-8.5 w-45 lg:left-0 lg:bottom-1.25 lg:w-95 lg:top-auto"
 			loading="lazy"
 		/>
 
 		<div
-			class="grid grid-cols-2 gap-x-4 gap-y-16 pt-35 pb-16 pl-14 pr-6 sm:pr-12 lg:flex lg:flex-wrap lg:justify-end lg:gap-x-47.5 lg:gap-y-10 lg:pt-48 lg:pr-25 lg:pb-7.5 lg:pl-150"
+			class="grid grid-cols-2 gap-x-4 gap-y-16 pt-29 pb-16 pl-14 pr-6 sm:pr-12 lg:flex lg:flex-wrap lg:justify-end lg:gap-x-47.5 lg:gap-y-10 lg:pt-48 lg:pr-25 lg:pb-7.5 lg:pl-150"
 		>
 			{
 				FOOTER_COLUMNS.map((column) => (

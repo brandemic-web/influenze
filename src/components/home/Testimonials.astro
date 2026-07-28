@@ -11,75 +11,84 @@ const cardPositions = [
 	{ left: 921, top: 681 },
 	{ left: 320, top: 866 },
 ].map(({ left, top }) => ({ left: left / 16, top: top / 16 }));
+
+const cards = [...TESTIMONIALS, ...TESTIMONIALS];
 ---
 
-<section class="relative lg:h-317.25" aria-labelledby="testimonials-heading">
-	<div class="relative flex-col items-center mx-auto hidden h-full w-full max-w-full lg:flex">
-		<div class="relative">
-			<h2
-				id="testimonials-heading"
-				class="w-82.5 text-center text-[2.25rem] capitalize leading-[normal] text-brand-primary [text-box:trim-both_cap_alphabetic]"
-			>
-				{TESTIMONIALS_HEADING}
-			</h2>
-			<Image src={bolt} alt="" class="absolute top-0 bottom-0 my-auto -right-22 h-58.5 w-32" widths={[128, 256]} sizes="128px" loading="lazy" />
-		</div>
-
-		{/* watermark band between the first two and last three cards (design z-order) */}
-		<div class="pointer-events-none absolute top-101.5 left-0 h-95.5 w-full overflow-hidden" aria-hidden="true">
-			<p
-				class="absolute top-48.5 left-[-115.8125rem] -translate-y-1/2 font-['Open_Sauce_One'] text-[13.225rem] leading-[normal] font-bold whitespace-nowrap text-[#252525] [text-box:trim-both_cap_alphabetic]"
-			>
-				{TESTIMONIALS_BAND} {TESTIMONIALS_BAND}
-			</p>
-		</div>
-
-		{
-			TESTIMONIALS.map((testimonial, i) => (
-				<figure
-					class="absolute h-63.75 w-123 rounded-[1.25rem] bg-[linear-gradient(85.56deg,#A78EF6_19.24%,#8C69FD_36.03%)]"
-					style={`left:${cardPositions[i].left}rem; top:${cardPositions[i].top}rem; z-index:${i < 2 ? 0 : 1}`}
-				>
-					<Image src={avatar} alt="" class="absolute top-7.25 left-7.25 h-21.5 w-21.5 rounded-full object-cover" widths={[21.5, 43]} sizes="21.5px" loading="lazy" />
-					<figcaption>
-						<p class="absolute top-14.5 left-61.25 -translate-x-1/2 -translate-y-1/2 text-[2.25rem] font-medium capitalize whitespace-nowrap text-white [text-box:trim-both_cap_alphabetic]">
-							{testimonial.name}
-						</p>
-						<p class="absolute top-22.5 left-38.75 -translate-x-1/2 -translate-y-1/2 text-[1rem] uppercase leading-[normal] text-black [text-box:trim-both_cap_alphabetic]">
-							{testimonial.company}
-						</p>
-					</figcaption>
-					<blockquote class="absolute top-42.25 left-34 w-77.25 -translate-y-1/2">
-						<p class="text-[1rem] leading-[normal] text-white/80">{testimonial.quote}</p>
-					</blockquote>
-				</figure>
-			))
-		}
+<section class="relative flex flex-col items-center gap-4 overflow-hidden pb-15 lg:h-317.25 lg:gap-0 lg:overflow-visible lg:py-0 lg:w-full lg:max-w-full" aria-labelledby="testimonials-heading">
+	<div class="relative flex items-center justify-center gap-0 px-6 lg:block lg:px-0">
+		<h2
+			id="testimonials-heading"
+			class="max-w-55 text-center text-md capitalize leading-[1.1] text-brand-primary lg:w-82.5 lg:max-w-none lg:text-[2.25rem] lg:leading-[normal] [text-box:trim-both_cap_alphabetic]"
+		>
+			{TESTIMONIALS_HEADING}
+		</h2>
+		<Image
+			src={bolt}
+			alt=""
+			class="-ml-6 w-20 lg:absolute lg:ml-0 lg:top-0 lg:bottom-0 lg:my-auto lg:-right-22 lg:h-58.5 lg:w-32"
+			widths={[128, 256]}
+			sizes="128px"
+			loading="lazy"
+		/>
 	</div>
 
-	<!-- mobile / tablet fallback -->
-	<div class="flex flex-col items-center gap-8 px-6 py-16 lg:hidden">
-		<div class="flex items-start justify-center gap-3">
-			<h2 class="max-w-82.5 text-center text-2xl capitalize leading-[1.1] text-brand-primary">
-				{TESTIMONIALS_HEADING}
-			</h2>
-			<Image src={bolt} alt="" class="-mt-2 w-12" loading="lazy" />
+	{/* watermark band (design z-order: behind ticker on mobile, between card groups on desktop) */}
+	<p
+		class="pointer-events-none absolute bottom-5 left-0 w-full whitespace-nowrap text-center font-['Open_Sauce_One'] text-6xl font-bold text-[#252525] [text-box:trim-both_cap_alphabetic] lg:top-149.5 lg:left-[-115.8125rem] lg:-translate-y-1/2 lg:bottom-auto lg:text-left lg:text-[13.225rem]"
+		aria-hidden="true"
+	>
+		{TESTIMONIALS_BAND}<span class="hidden lg:inline"> {TESTIMONIALS_BAND}</span>
+	</p>
+
+	<!-- Cards: mobile renders as a GSAP marquee track (duplicated for a gapless loop), -->
+	<!-- desktop escapes both wrappers via lg:contents and positions absolutely against the section. -->
+	<div
+		class="relative w-full overflow-x-auto overscroll-x-contain lg:contents"
+		data-marquee
+	>
+		<div class="flex w-max gap-4 px-6 lg:contents" data-marquee-track>
+			{
+				cards.map((testimonial, i) => {
+					const idx = i % TESTIMONIALS.length;
+					const pos = cardPositions[idx];
+					const isDuplicate = i >= TESTIMONIALS.length;
+					return (
+						<figure
+							class={`w-85 shrink-0 rounded-sm bg-[linear-gradient(85.56deg,#A78EF6_19.24%,#8C69FD_36.03%)] px-2.75 py-4 lg:h-63.75 lg:w-123 lg:shrink-0 lg:rounded-[1.25rem] lg:px-0 lg:py-0 lg:absolute ${isDuplicate ? "hidden" : ""}`}
+							style={`left:${pos.left}rem; top:${pos.top}rem; z-index:${idx < 2 ? 0 : 1}`}
+							data-marquee-clone={isDuplicate ? "" : undefined}
+							aria-hidden={isDuplicate ? "true" : undefined}
+						>
+							<div class="flex items-center gap-3 lg:contents">
+								<Image
+									src={avatar}
+									alt=""
+									class="h-11.5 w-11.5 rounded-full object-cover lg:absolute lg:top-7.25 lg:left-7.25 lg:h-21.5 lg:w-21.5"
+									widths={[21.5, 43]}
+									sizes="21.5px"
+									loading="lazy"
+								/>
+								<figcaption class="lg:contents">
+									<p class="text-[1.025rem] font-medium capitalize text-white lg:absolute lg:top-14.5 lg:left-61.25 lg:-translate-x-1/2 lg:-translate-y-1/2 lg:whitespace-nowrap lg:text-[2.25rem] lg:[text-box:trim-both_cap_alphabetic]">
+										{testimonial.name}
+									</p>
+									<p class="mt-1 text-xs uppercase text-black lg:absolute lg:top-22.5 lg:left-38.75 lg:mt-0 lg:-translate-x-1/2 lg:-translate-y-1/2 lg:whitespace-nowrap lg:text-[1rem] lg:leading-[normal] lg:[text-box:trim-both_cap_alphabetic]">
+										{testimonial.company}
+									</p>
+								</figcaption>
+							</div>
+							<blockquote class="mt-4 ml-13 lg:absolute lg:top-42.25 lg:left-34 lg:mt-0 lg:ml-0 lg:w-77.25 lg:-translate-y-1/2">
+								<p class="text-[0.875rem] leading-normal text-white/80 lg:text-[1rem]">{testimonial.quote}</p>
+							</blockquote>
+						</figure>
+					);
+				})
+			}
 		</div>
-		{
-			TESTIMONIALS.map((testimonial) => (
-				<figure class="w-full max-w-123 rounded-sm bg-[linear-gradient(85.56deg,#A78EF6_19.24%,#8C69FD_36.03%)] p-7.25">
-					<div class="flex items-center gap-6">
-						<Image src={avatar} alt="" class="h-16.5 w-16.5 rounded-full object-cover" loading="lazy" />
-						<figcaption>
-							<p class="text-md font-medium capitalize text-white">{testimonial.name}</p>
-							<p class="mt-1 text-xs uppercase text-black">{testimonial.company}</p>
-						</figcaption>
-					</div>
-					<blockquote class="mt-4">
-						<p class="text-[1rem] leading-normal text-white/80">{testimonial.quote}</p>
-					</blockquote>
-				</figure>
-			))
-		}
 	</div>
 </section>
+
+<script>
+	import "../../scripts/marquee";
+</script>
