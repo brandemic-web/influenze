@@ -29,7 +29,7 @@ import Button from "./Button.astro";
 								<li class={index < NAV_ITEMS.length - 1 ? "border-b border-white/10" : ""}>
 									<button
 										type="button"
-										class="res-toggle flex w-full items-center justify-between py-4 text-[14px] text-white"
+										class="res-toggle flex w-full items-center justify-between py-4 text-[0.875rem] text-white"
 										aria-expanded="false"
 									>
 										{item.label}
@@ -63,7 +63,7 @@ import Button from "./Button.astro";
 								<li class={index <= NAV_ITEMS.length - 1 ? "border-b border-white/10" : ""}>
 									<a
 										href={item.href}
-										class="flex items-center gap-3 py-4 text-[14px] text-white"
+										class="flex items-center gap-3 py-4 text-[0.875rem] text-white"
 									>
 										{item.label}
 										{item.badge && (
@@ -86,15 +86,13 @@ import Button from "./Button.astro";
 					}
 				</ul>
 			</nav>
-			<div class="w-44">
-				<Button
+			<Button
 				href={LOGIN_URL}
 				variant="nav"
-				class="mt-6 w-full"
+				class="mt-6"
 			>
-				Login / Sign Up
+			Get Access
 			</Button>
-			</div>
 		</div>
 	</div>
 </div>

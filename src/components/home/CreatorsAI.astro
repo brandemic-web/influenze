@@ -29,13 +29,13 @@ const featureIcons: Record<string, ImageMetadata> = {
 	<div class="relative z-10 mx-auto flex w-full max-w-393 flex-col items-center px-4 pb-16 pt-10 lg:pt-12 lg:pb-0">
 		<h2
 			id="creators-ai-heading"
-			class="mb-8 w-full max-w-222.25 text-center text-[30px] lg:text-3xl capitalize leading-[1.2] text-white lg:text-[3.4375rem] lg:leading-[normal] lg:[text-box:trim-both_cap_alphabetic]"
+			class="mb-8 w-full max-w-222.25 text-center text-[1.875rem] lg:text-3xl capitalize leading-[1.2] text-white lg:text-[3.4375rem] lg:leading-[normal] lg:[text-box:trim-both_cap_alphabetic]"
 		>
 			The world's creators,<br /><span class="text-brand-primary">found with AI</span>
 		</h2>
 
 		<!-- outer glass panel -->
-		<div class="relative mt-8 flex w-full flex-col items-center gap-8 rounded-[1.75rem] border border-white/15 bg-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.18),inset_0_1px_0_rgba(255,255,255,0.18)] backdrop-blur-md backdrop-saturate-150 px-5 pb-8 pt-12 lg:h-199.25 lg:flex-row lg:items-center lg:justify-between lg:py-5.75 lg:pl-[min(148px,8%)] lg:pr-4.75 ">
+		<div class="relative mt-8 flex w-full flex-col items-center gap-8 rounded-[1.75rem] border border-white/15 bg-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.18),inset_0_1px_0_rgba(255,255,255,0.18)] backdrop-blur-md backdrop-saturate-150 px-5 pb-8 pt-12 lg:h-199.25 lg:flex-row lg:items-center lg:justify-between lg:py-5.75 lg:pl-[min(9.25rem,8%)] lg:pr-4.75 ">
 
 			<div class="absolute -top-6 left-0 right-0 mx-auto w-max">
 				<Button href={SIGNUP_URL} variant="nav">{CREATORS_AI_BUTTON}</Button>
@@ -51,9 +51,9 @@ const featureIcons: Record<string, ImageMetadata> = {
 							<div class="flex flex-col gap-3 lg:max-w-126">
 								<div class="flex items-center gap-4">
 									<img src={featureIcons[feature.icon].src} alt="" class="h-7.5 w-7.5 rounded-sm lg:h-12 lg:w-12" loading="lazy" />
-									<h3 class="text-[18px] lg:text-md capitalize leading-[normal] text-white lg:[text-box:trim-both_cap_alphabetic]">{feature.title}</h3>
+									<h3 class="text-[1.125rem] lg:text-md capitalize leading-[normal] text-white lg:[text-box:trim-both_cap_alphabetic]">{feature.title}</h3>
 								</div>
-								<p class="pl-12 text-[14px] lg:text-[1rem] leading-6.5 text-white lg:pl-16.25 lg:[text-box:trim-both_cap_alphabetic]">{feature.description}</p>
+								<p class="pl-12 text-[0.875rem] lg:text-xs leading-6.5 text-white lg:pl-16.25 lg:[text-box:trim-both_cap_alphabetic]">{feature.description}</p>
 							</div>
 						</>
 					))
