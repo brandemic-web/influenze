@@ -20,7 +20,7 @@
  */
 import { CONTACT_URL } from "../../data/site";
 import { CREDIT_RECHARGE } from "../../data/pricing";
-import { formatPrice } from "./pricingModel";
+import { formatPrice } from "../../scripts/pricing-page/pricingModel";
 
 const options = CREDIT_RECHARGE.options;
 const initial = options[0];
@@ -152,7 +152,7 @@ const optionsJson = JSON.stringify(options);
 </section>
 
 <script>
-	import { initCreditRecharge } from "./creditRecharge";
+	import { initCreditRecharge } from "../../scripts/pricing-page/creditRecharge";
 
 	initCreditRecharge();
 </script>

@@ -1,5 +1,5 @@
 import gsap from "gsap";
-import { horizontalLoop } from "./gsap/horizontalLoop";
+import { horizontalLoop } from "../gsap/horizontalLoop";
 
 // Right-to-left infinite marquee of the creator strip.
 function initCreatorMarquee() {

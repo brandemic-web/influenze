@@ -11,5 +11,5 @@ export const SITE = {
 } as const;
 
 export const SIGNUP_URL = "#";
-export const LOGIN_URL = "#";
+export const LOGIN_URL = "https://influenze.ai/";
 export const CONTACT_URL = "#";

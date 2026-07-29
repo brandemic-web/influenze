@@ -53,7 +53,7 @@ import {
   bonusLabel,
   formatPrice,
   formatAmount,
-} from "./pricingModel";
+} from "../../scripts/pricing-page/pricingModel";
 
 const tiersJson = JSON.stringify(PRICING_TIERS);
 const stops = stopPositions();
@@ -436,7 +436,7 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
 </section>
 
 <script>
-  import { initPricingPlans } from "./pricingPlans";
+  import { initPricingPlans } from "../../scripts/pricing-page/pricingPlans";
 
   initPricingPlans();
 </script>
