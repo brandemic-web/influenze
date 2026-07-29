@@ -208,7 +208,7 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
 
     <!-- ── Price / credits body (all tiers except Enterprise) ────── -->
     <div
-      class="relative mt-9 rounded-[1.25rem] border border-white/12 bg-[rgba(73,40,179,0.22)] px-5 pt-9 pb-8 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.14),0_12px_40px_-12px_rgba(0,0,0,0.45)] sm:px-8 lg:px-12 lg:pt-10"
+      class="relative mt-9 rounded-[1.25rem] border border-white/12 bg-[rgba(73,40,179,0.22)] px-7 pt-9 pb-8 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.14),0_12px_40px_-12px_rgba(0,0,0,0.45)] lg:pt-10"
       data-panel="price"
       hidden={initialTier.custom}
     >
@@ -216,7 +216,7 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
         class="flex flex-col gap-9 lg:flex-row lg:items-start lg:justify-between"
       >
         <!-- price + annual toggle -->
-        <div class="pl-4.5">
+        <div class="pl-9.5">
           <p class="flex items-baseline text-white">
             <span
               class="text-[2.625rem] leading-none sm:text-[3.625rem]"
@@ -308,15 +308,15 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
       <!-- Subscribe -->
       <a
         href={SIGNUP_URL}
-        class="mt-9 flex w-full items-center justify-center gap-2 rounded-full bg-button-primary px-6 py-4.5 text-[0.875rem] leading-none text-button-text transition-colors duration-300 hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary"
+        class="mt-5.5 flex w-full items-center justify-center gap-1 rounded-full bg-button-primary px-6 py-2.5 text-[1rem] leading-none text-button-text transition-colors duration-300 hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary"
       >
         {SUBSCRIBE_LABEL}
         <svg
-          class="size-4.5 shrink-0"
+          class="size-7.5 shrink-0"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          stroke-width="2"
+          stroke-width="1.5"
           stroke-linecap="round"
           stroke-linejoin="round"
           aria-hidden="true"

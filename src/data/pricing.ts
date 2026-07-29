@@ -103,24 +103,3 @@ export const CREDIT_COSTS = [
 	{ label: "Profile analytics unlock", detail: "", cost: "50 Credits" },
 	{ label: "Contact detail unlock", detail: "", cost: "5 Credits" },
 ];
-
-/**
- * Credit Recharge block (CreditRecharge.astro).
- *
- * This section is a HIDDEN layer in Figma, so it could not be rendered for
- * visual reference — the copy and structure below come from the layer names and
- * geometry only. Treat the styling as a best-effort match and the amounts as
- * PLACEHOLDERS: only the Growth row (₹10,000 → ₹11,000, i.e. +10%) is given.
- */
-export const CREDIT_RECHARGE = {
-	title: "Credit Recharge",
-	body: "Top up your account anytime and earn 10% bonus credits on every recharge.",
-	currentPlanLabel: "Current plan",
-	rechargeLabel: "Recharge",
-	creditsWorthLabel: "You get credits worth",
-	contactLabel: "Contact us",
-	options: [
-		{ id: "growth", name: "Growth", recharge: 10_000, bonusPct: 10 },
-		{ id: "accelerate", name: "Accelerate", recharge: 25_000, bonusPct: 20 },
-	],
-};
