@@ -1,5 +1,5 @@
 import gsap from "gsap";
-import { horizontalLoop } from "./gsap/horizontalLoop";
+import { horizontalLoop } from "../gsap/horizontalLoop";
 
 /**
  * Declarative right-to-left marquee. Add `data-marquee` to a wrapper and
