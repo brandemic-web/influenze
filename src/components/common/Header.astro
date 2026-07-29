@@ -2,7 +2,6 @@
 import { Image } from "astro:assets";
 import logo from "../../assets/images/common/logos_and_icons/influenze_logo_nav.svg";
 import { NAV_ITEMS } from "../../data/nav";
-import { LOGIN_URL } from "../../data/site";
 import Button from "./Button.astro";
 import MobileMenu from "./MobileMenu.astro";
 ---
@@ -69,7 +68,7 @@ import MobileMenu from "./MobileMenu.astro";
 		</nav>
 
 		<div class="hidden lg:block">
-			<Button href={LOGIN_URL} variant="nav">Login / Sign Up</Button>
+			<Button href="https://influenze.ai/" variant="nav">Login / Sign Up</Button>
 		</div>
 
 		<MobileMenu />

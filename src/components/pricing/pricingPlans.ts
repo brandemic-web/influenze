@@ -1,112 +1,132 @@
 /**
- * Client-side behavior for the pricing plan panel (PricingPlans.astro).
+ * Client-side behavior for the pricing panel (PricingPlans.astro).
  *
- * Two independent widgets live inside each `[data-plan-panel]`:
- *   1. A plan stepper whose bolt handle can be clicked (via dots), dragged, or
- *      driven with the keyboard, snapping to the nearest tier on release.
- *   2. An annual-billing toggle (currently visual only).
+ * There is a single piece of state per panel — the selected monthly spend (plus
+ * an annual-billing flag) — and three ways to change it:
+ *   1. dragging the bolt handle along the track (continuous),
+ *   2. clicking a tier tab or a stop dot (jumps to that tier's minimum),
+ *   3. arrow keys on the handle (one SPEND_STEP at a time).
+ *
+ * Everything visible — active tab, price, credits, bonus caption, and whether
+ * the price body or the Enterprise "talk to us" body is shown — is recomputed
+ * from that spend by `render()`. The maths lives in pricingModel.ts and is
+ * shared with the server render, so first paint and drag updates agree.
  *
  * The panel is entirely data-attribute driven: the markup ships the tier data
  * (serialized into `data-tiers`) and the script reads the DOM hooks documented
  * in PricingPlans.astro. No IDs or framework runtime are involved.
  */
 
-// Tier data is serialized into `data-tiers` from PRICING_TIERS, so we reuse the
-// source-of-truth type instead of re-declaring one that could drift out of sync.
 import type { PricingTier } from "../../data/pricing";
+import {
+	SPEND_STEP,
+	clamp,
+	spendFromPos,
+	posFromSpend,
+	tierIndexFromSpend,
+	creditsFor,
+	bonusLabel,
+	formatPrice,
+	formatAmount,
+} from "./pricingModel";
 
-/** Clamp a number to the inclusive [min, max] range. */
-function clamp(value: number, min: number, max: number): number {
-	return Math.min(max, Math.max(min, value));
-}
-
-function initPlanStepper(panel: HTMLElement): void {
+function initPanel(panel: HTMLElement): void {
 	const tiers: PricingTier[] = JSON.parse(panel.dataset.tiers ?? "[]");
-	const dots = Array.from(
-		panel.querySelectorAll<HTMLButtonElement>("[data-dot]"),
-	);
+	if (!tiers.length) return;
+
+	const tabs = Array.from(panel.querySelectorAll<HTMLButtonElement>("[data-tab]"));
+	const dots = Array.from(panel.querySelectorAll<HTMLButtonElement>("[data-dot]"));
 	const track = panel.querySelector<HTMLElement>("[data-track]");
 	const fill = panel.querySelector<HTMLElement>("[data-fill]");
 	const handle = panel.querySelector<HTMLElement>("[data-handle]");
-	const fields = panel.querySelectorAll<HTMLElement>("[data-field]");
+	const bodies = Array.from(panel.querySelectorAll<HTMLElement>("[data-panel]"));
+	const annualToggle = panel.querySelector<HTMLButtonElement>(
+		"[data-annual-toggle]",
+	);
+	const annualKnob = panel.querySelector<HTMLElement>("[data-annual-knob]");
 
-	if (!dots.length) return;
-	const lastIndex = dots.length - 1;
+	const min = tiers[0].minSpend;
+	const max = tiers[tiers.length - 1].minSpend;
 
-	// Stop positions (percent along the track), in dot order.
-	const stops = dots.map((dot) => Number(dot.dataset.pos ?? 0));
+	let spend = Number(panel.dataset.defaultSpend ?? min);
+	let annual = false;
 
 	// Elements whose CSS transition is suspended while dragging so the bolt
-	// tracks the pointer 1:1, then restored so the snap-back animates.
+	// tracks the pointer 1:1, then restored so the snap animates.
 	const animated = [handle, fill].filter(
 		(el): el is HTMLElement => el !== null,
 	);
 
-	/** Index of the stop nearest a given percent along the track. */
-	function nearestIndex(pos: number): number {
-		let best = 0;
-		let bestDist = Infinity;
-		stops.forEach((stop, i) => {
-			const dist = Math.abs(stop - pos);
-			if (dist < bestDist) {
-				bestDist = dist;
-				best = i;
-			}
-		});
-		return best;
+	/** Write a derived value into every element bound to `key`. */
+	function setField(key: string, value: string): void {
+		panel
+			.querySelectorAll<HTMLElement>(`[data-field="${key}"]`)
+			.forEach((el) => (el.textContent = value));
 	}
 
-	/** Move handle/fill to an arbitrary percent, without snapping. */
+	/** Repaint the whole panel from the current `spend` / `annual` state. */
+	function render(movePosition = true): void {
+		const index = tierIndexFromSpend(spend, tiers);
+		const tier = tiers[index];
+		const pos = posFromSpend(spend, tiers);
+
+		if (movePosition) moveTo(pos);
+
+		tabs.forEach((tab, i) =>
+			tab.setAttribute("aria-selected", i === index ? "true" : "false"),
+		);
+
+		// Enterprise quotes rather than prices, so it swaps in the custom body.
+		bodies.forEach((body) => {
+			const wanted = tier.custom ? "custom" : "price";
+			body.hidden = body.dataset.panel !== wanted;
+		});
+
+		setField("price", formatPrice(spend));
+		setField("credits", formatAmount(creditsFor(spend, tier, annual)));
+		setField("creditsBonus", bonusLabel(tier, annual));
+
+		if (handle) {
+			handle.setAttribute("aria-valuenow", String(spend));
+			handle.setAttribute(
+				"aria-valuetext",
+				`${formatPrice(spend)} per month — ${tier.name}`,
+			);
+		}
+	}
+
+	/** Move handle/fill to an arbitrary percent, without changing `spend`. */
 	function moveTo(pos: number): void {
 		if (fill) fill.style.width = `${pos}%`;
 		if (handle) handle.style.left = `${pos}%`;
 	}
 
-	/** Snap to a tier: update position, selected state, and value fields. */
-	function select(index: number): void {
-		const tier = tiers[index];
-		if (!tier) return;
-
-		dots.forEach((dot, i) =>
-			dot.setAttribute("aria-checked", i === index ? "true" : "false"),
-		);
-		moveTo(stops[index]);
-
-		// Keep the slider handle's reported value in sync so screen readers
-		// announce the current tier (aria-valuemin/max are static in the markup).
-		if (handle) {
-			handle.setAttribute("aria-valuenow", String(index));
-			handle.setAttribute("aria-valuetext", tier.name);
-		}
-
-		fields.forEach((el) => {
-			const key = el.dataset.field as keyof PricingTier | undefined;
-			if (key && key in tier) el.textContent = tier[key];
-		});
+	/** Commit a new spend value and repaint. */
+	function setSpend(value: number, movePosition = true): void {
+		spend = clamp(Math.round(value), min, max);
+		render(movePosition);
 	}
 
-	/** Move the keyboard focus/selection by `delta` stops, clamped. */
-	function step(from: number, delta: number, focusDot = false): void {
-		const to = clamp(from + delta, 0, lastIndex);
-		if (focusDot) dots[to].focus();
-		select(to);
-	}
+	// ── Tabs and dots: jump to a tier's minimum spend ──────────────────────
+	const selectTier = (i: number) => setSpend(tiers[i].minSpend);
 
-	// ── Dots: click to jump, arrow keys to move between them ───────────────
-	dots.forEach((dot, i) => {
-		dot.addEventListener("click", () => select(i));
-		dot.addEventListener("keydown", (e) => {
-			if (e.key === "ArrowRight" || e.key === "ArrowDown") {
-				e.preventDefault();
-				step(i, 1, true);
-			} else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
-				e.preventDefault();
-				step(i, -1, true);
-			}
+	tabs.forEach((tab, i) => tab.addEventListener("click", () => selectTier(i)));
+	dots.forEach((dot, i) => dot.addEventListener("click", () => selectTier(i)));
+
+	// Left/Right arrows move between tabs, matching tablist conventions.
+	tabs.forEach((tab, i) => {
+		tab.addEventListener("keydown", (e) => {
+			const delta =
+				e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+			if (!delta) return;
+			e.preventDefault();
+			const to = clamp(i + delta, 0, tabs.length - 1);
+			tabs[to].focus();
+			selectTier(to);
 		});
 	});
 
-	// ── Bolt handle: drag to move, snap to nearest stop on release ─────────
+	// ── Bolt handle: drag anywhere along the track ─────────────────────────
 	if (handle && track) {
 		let dragging = false;
 
@@ -117,10 +137,21 @@ function initPlanStepper(panel: HTMLElement): void {
 			return clamp(((clientX - rect.left) / rect.width) * 100, 0, 100);
 		};
 
+		/**
+		 * During a drag the handle follows the pointer exactly (so it never lags
+		 * behind the finger) while the readouts update from the snapped spend —
+		 * hence `movePosition = false`.
+		 */
+		const dragTo = (clientX: number): void => {
+			const pos = posFromClientX(clientX);
+			moveTo(pos);
+			setSpend(spendFromPos(pos, tiers), false);
+		};
+
 		const onPointerMove = (e: PointerEvent) => {
 			if (!dragging) return;
 			e.preventDefault();
-			moveTo(posFromClientX(e.clientX));
+			dragTo(e.clientX);
 		};
 
 		/** Tear down the active drag: restore transitions and drop listeners. */
@@ -135,66 +166,66 @@ function initPlanStepper(panel: HTMLElement): void {
 		const onPointerUp = (e: PointerEvent) => {
 			if (!dragging) return;
 			stopDragging();
-			select(nearestIndex(posFromClientX(e.clientX)));
+			// Settle the handle onto the exact position for the snapped spend.
+			setSpend(spendFromPos(posFromClientX(e.clientX), tiers));
 		};
 
 		// The OS can cancel an in-progress touch drag (edge-swipe-back,
 		// pull-to-refresh, multi-touch) — no pointerup follows, so clean up here
-		// too and snap back from the handle's last position, or the drag would
-		// stick and the handle would chase every later pointer move.
+		// too and settle on whatever spend the drag last produced, or the drag
+		// would stick and the handle would chase every later pointer move.
 		const onPointerCancel = () => {
 			if (!dragging) return;
 			stopDragging();
-			select(nearestIndex(parseFloat(handle.style.left) || 0));
+			setSpend(spend);
 		};
 
 		handle.addEventListener("pointerdown", (e) => {
 			e.preventDefault();
 			dragging = true;
 			animated.forEach((el) => (el.style.transition = "none"));
-			moveTo(posFromClientX(e.clientX));
+			dragTo(e.clientX);
 			window.addEventListener("pointermove", onPointerMove);
 			window.addEventListener("pointerup", onPointerUp);
 			window.addEventListener("pointercancel", onPointerCancel);
 		});
 
+		// Clicking the rail itself jumps the handle there, like a native range.
+		track.addEventListener("pointerdown", (e) => {
+			if (e.target !== track) return;
+			setSpend(spendFromPos(posFromClientX(e.clientX), tiers));
+		});
+
 		handle.addEventListener("keydown", (e) => {
-			const current = nearestIndex(parseFloat(handle.style.left) || 0);
-			if (e.key === "ArrowRight" || e.key === "ArrowUp") {
-				e.preventDefault();
-				step(current, 1);
-			} else if (e.key === "ArrowLeft" || e.key === "ArrowDown") {
-				e.preventDefault();
-				step(current, -1);
-			}
+			const step =
+				e.key === "ArrowRight" || e.key === "ArrowUp"
+					? SPEND_STEP
+					: e.key === "ArrowLeft" || e.key === "ArrowDown"
+						? -SPEND_STEP
+						: 0;
+			if (!step) return;
+			e.preventDefault();
+			setSpend(spend + step);
 		});
 	}
 
-	// The initial handle/fill/pointer position and field values are rendered
-	// server-side (the Figma resting position), so there is no initial select()
-	// here — the handle only snaps to a stop once the user picks one.
-}
+	// ── Annual billing switch: adds a credits bonus on top of the tier's ───
+	if (annualToggle && annualKnob) {
+		annualToggle.addEventListener("click", () => {
+			annual = !annual;
+			annualToggle.setAttribute("aria-checked", annual ? "true" : "false");
+			annualKnob.dataset.on = annual ? "true" : "false";
+			render();
+		});
+	}
 
-function initAnnualToggle(panel: HTMLElement): void {
-	const toggle = panel.querySelector<HTMLButtonElement>(
-		"[data-annual-toggle]",
-	);
-	const knob = panel.querySelector<HTMLElement>("[data-annual-knob]");
-	if (!toggle || !knob) return;
-
-	toggle.addEventListener("click", () => {
-		const on = toggle.getAttribute("aria-checked") !== "true";
-		toggle.setAttribute("aria-checked", on ? "true" : "false");
-		knob.dataset.on = on ? "true" : "false";
-	});
+	// The initial handle position and readouts are rendered server-side from
+	// DEFAULT_SPEND via the same helpers, so no initial render() is needed.
 }
 
 /** Wire up every pricing panel on the page. */
 export function initPricingPlans(): void {
 	document
 		.querySelectorAll<HTMLElement>("[data-plan-panel]")
-		.forEach((panel) => {
-			initPlanStepper(panel);
-			initAnnualToggle(panel);
-		});
+		.forEach(initPanel);
 }

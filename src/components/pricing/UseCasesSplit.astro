@@ -1,55 +1,19 @@
 ---
-/**
- * Shared "Use cases for brands and agencies" block — rendered on both the home
- * page and the pricing page, so any change here affects both.
- */
 import { USE_CASES_SPLIT } from "../../data/useCasesSplit";
 import swoosh from "../../assets/images/home_page/use_cases/swoosh.svg";
 import circleCheck from "../../assets/images/home_page/use_cases/circle_check.svg";
-
-interface Props {
-	/**
-	 * Drop the block's top padding. Used on the pricing page, where the section
-	 * above already supplies the gap and the default `pt` doubles it up.
-	 */
-	flushTop?: boolean;
-	/**
-	 * Omit the decorative swoosh glow behind the cards. Used on the pricing
-	 * page, which has its own background treatment above this block.
-	 */
-	hideSwoosh?: boolean;
-	/** Tighten the spacing between bullet points. Used on the pricing page. */
-	tightPoints?: boolean;
-}
-
-const {
-	flushTop = false,
-	hideSwoosh = false,
-	tightPoints = false,
-} = Astro.props;
 ---
 
 <section class="relative overflow-hidden lg:overflow-visible" aria-labelledby="use-cases-split-heading">
 	<!-- decorative swoosh painted over the cards, per design z-order -->
 	<!-- zoomed/cropped on mobile so the glow fills the section, natural width from lg up -->
-	{
-		!hideSwoosh && (
-			<img
-				src={swoosh.src}
-				alt=""
-				class="pointer-events-none absolute top-[20%] lg:top-auto left-1/2 w-[260%] max-w-none -translate-x-1/2 object-cover lg:left-0 lg:w-full lg:translate-x-0"
-				loading="lazy"
-			/>
-		)
-	}
+	<img
+	src={swoosh.src}
+	alt=""
+	class="pointer-events-none absolute top-[20%] lg:top-auto left-1/2 w-[260%] max-w-none -translate-x-1/2 object-cover lg:left-0 lg:w-full lg:translate-x-0"
+	loading="lazy"/>
 
-	<!-- `py-40` is split into pt/pb so `flushTop` can zero the top on its own -->
-	<div
-		class:list={[
-			"relative mx-auto flex max-w-393 flex-col items-center px-6 pb-16 lg:px-0 lg:pb-40",
-			flushTop ? "pt-0 lg:pt-0" : "pt-10 lg:pt-40",
-		]}
-	>
+	<div class="relative mx-auto flex max-w-393 flex-col items-center px-6 pt-10 pb-16 lg:px-0 lg:py-40">
 		<h2
 			id="use-cases-split-heading"
 			class="max-w-204 text-center text-[1.875rem] capitalize leading-[1.1] text-white lg:text-[3.4375rem] [text-box:trim-both_cap_alphabetic]"
@@ -70,7 +34,7 @@ const {
 					>
 						<h3 class="text-[1.875rem] capitalize leading-[normal] text-[#F6F6F4] lg:text-[4rem] [text-box:trim-both_cap_alphabetic]">{column.title}</h3>
 						<div class="h-px w-full max-w-103.75 bg-white/40"></div>
-						<ul class:list={["flex flex-col", tightPoints ? "gap-2" : "gap-6"]}>
+						<ul class="flex flex-col gap-6">
 							{column.points.map((point) => (
 								<li class="flex items-start lg:items-center gap-5.5 lg:gap-3.75">
 									<img src={circleCheck.src} alt="" class="h-6 w-6 shrink-0" loading="lazy" />
