@@ -5,7 +5,7 @@ export interface WhyChooseCard {
 	description: string;
 }
 
-export const WHY_CHOOSE_EYEBROW = "Why Choose Us";
+export const WHY_CHOOSE_EYEBROW = "Why Influenze?";
 export const WHY_CHOOSE_BUTTON = "Learn More";
 
 /** Copy is exactly the Figma "Home V2" card frame 224:26722 (6 cards). */

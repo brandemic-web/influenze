@@ -45,4 +45,4 @@ export const FAQS: Faq[] = [
 
 export const FAQ_HEADING = "Questions we get asked a lot";
 export const FAQ_SUBCOPY =
-	"Still have questions? Our team is made up of real people who've worked in influencer marketing.";
+	"Still have questions? Write to us at info@dotme.in";
