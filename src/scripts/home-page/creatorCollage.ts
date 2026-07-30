@@ -173,7 +173,7 @@ function initCollage(root: HTMLElement): void {
     );
 
     // Each bubble spins against that turn. The ring already imposes +360 on
-    // every child, so -720 leaves one net turn the other way — the photos
+    // every child, so -360 leaves one net turn the other way a little — the photos
     // rotate counter to the orbit. Same duration and ease as the ring, so the
     // two stay exactly opposed the whole way round; -720 is a whole number of
     // turns, so the faces finish upright for the fly-out.
@@ -190,7 +190,7 @@ function initCollage(root: HTMLElement): void {
 
     timeline.to(bubbles, { x: 0, y: 0, scale: 1, ...flyOut }, "+=0.1");
 
-    // Headline and bolt come up with that move — `<` pins this to the same start.
+    // Headline and bolt come up with that move — `+=0.1` pins this to the same start.
     timeline.to(
       reveals,
       { opacity: 1, duration: 1.2, ease: "power1.out" },
