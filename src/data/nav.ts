@@ -13,15 +13,17 @@ export interface NavItem extends NavLink {
 export const NAV_ITEMS: NavItem[] = [
 	{ label: "Features", href: "/features" },
 	{ label: "Pricing", href: "/pricing" },
-	{
-		label: "Resources",
-		href: "#",
-		dropdown: [
-			{ label: "Product Demo", href: "#" },
-			{ label: "Blogs", href: "#" },
-			{ label: "FAQs", href: "#" },
-			{ label: "Contact Us", href: "#" },
-		],
-	},
+	// "Resources" is hidden for now — its dropdown links have no destinations yet.
+	// Restore this entry once those pages exist.
+	// {
+	// 	label: "Resources",
+	// 	href: "#",
+	// 	dropdown: [
+	// 		{ label: "Product Demo", href: "#" },
+	// 		{ label: "Blogs", href: "#" },
+	// 		{ label: "FAQs", href: "#" },
+	// 		{ label: "Contact Us", href: "#" },
+	// 	],
+	// },
 	{ label: "Linkin Bio", href: "#", badge: "DotMe" },
 ];
