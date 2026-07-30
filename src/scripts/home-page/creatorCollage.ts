@@ -9,9 +9,10 @@
  * as that outward move begins, and the list pills fade in last, once their
  * bubble has landed.
  *
- * Mobile (below DESKTOP_MIN): no ring or spin — the bubbles simply fade in at
- * the resting positions CSS already holds, then the headline/bolt and pills
- * follow. Nothing is moved or measured.
+ * Mobile (below DESKTOP_MIN, the shared `lg:` breakpoint from scripts/
+ * breakpoints.ts): no ring or spin — the bubbles simply fade in at the resting
+ * positions CSS already holds, then the headline/bolt and pills follow. Nothing
+ * is moved or measured.
  *
  * Nothing here hardcodes a layout: the ring offsets are measured at run time
  * from each bubble's real box, so the same timeline works at every breakpoint
@@ -28,6 +29,7 @@
 
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { isDesktop, prefersReducedMotion } from "../breakpoints";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -36,13 +38,6 @@ const RING_RATIO = 0.22;
 
 /** Size the bubbles hold while in the ring; they reach 1 as they fly out. */
 const RING_SCALE = 0.8;
-
-/**
- * Viewport width (px) at and above which the full orbit animation runs. Below
- * this, the collage gets the plain fade instead. Keep in step with the layout's
- * own breakpoints in CreatorCollage.astro.
- */
-const DESKTOP_MIN = 768;
 
 interface Offset {
   dx: number;
@@ -100,7 +95,7 @@ function initCollage(root: HTMLElement): void {
 
   // Reduced motion: the CSS that hides them is behind a no-preference query,
   // so there is nothing to undo — just make sure no transform lingers.
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  if (prefersReducedMotion()) {
     gsap.set([...bubbles, ...tags, ...reveals], { clearProps: "all" });
     return;
   }
@@ -216,16 +211,16 @@ function initCollage(root: HTMLElement): void {
   // Pick the intro when the collage enters view, so the choice reflects the
   // viewport the reader actually lands on rather than the width at page load.
   function play(): void {
-    if (window.matchMedia(`(min-width: ${DESKTOP_MIN}px)`).matches) {
+    if (isDesktop()) {
       playOrbit();
     } else {
       playFade();
     }
   }
-  const isDesktop = window.matchMedia(`(min-width: ${DESKTOP_MIN}px)`).matches;
+
   ScrollTrigger.create({
     trigger: "[data-collage-reveal]",
-    start: isDesktop ? "top 85%" : "top 70%",
+    start: isDesktop() ? "top 85%" : "top 70%",
     once: true,
     onEnter: play,
   });
