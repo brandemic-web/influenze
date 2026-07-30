@@ -17,6 +17,7 @@ import addedToNykaa from "../../assets/images/home_page/choose_creators/added_to
 <section
 	class="relative mt-55 h-100 lg:-mt-3.5 lg:h-280"
 	aria-label="Choose creators based on your preferences"
+	data-collage
 >
 	<div class="pointer-events-none absolute top-0 left-1/2 flex h-full w-full -translate-x-1/2 lg:items-center lg:justify-center">
 		<img
@@ -28,6 +29,7 @@ import addedToNykaa from "../../assets/images/home_page/choose_creators/added_to
 
 		<h2
 			class="relative z-4 w-186.25 text-center text-[1.875rem] leading-10 text-white lg:text-9xl lg:leading-20 capitalize"
+			data-collage-reveal
 		>
 			Choose creators based<br />
 			on <span class="text-brand-primary">your preferences</span>
@@ -40,77 +42,130 @@ import addedToNykaa from "../../assets/images/home_page/choose_creators/added_to
 			widths={[317, 634]}
 			sizes="18.34vw"
 			loading="lazy"
+			data-collage-reveal
 		/>
 
-		<Image
-			src={bubbleA}
-			alt=""
-			class="absolute top-[-30%] right-[2%] w-[28%] lg:top-[34%] lg:left-[-1.5%] lg:right-auto lg:w-[12%]"
-			loading="lazy"
-		/>
-
-		<Image
-			src={bubbleB}
-			alt=""
-			class="absolute top-[-26%] left-[-5%] w-[25%] lg:top-[43%] lg:left-[12%] lg:w-[10.5%]"
-			loading="lazy"
-		/>
-
-		<div
-			class="absolute top-[25%] left-[-3%] w-[30%] lg:top-auto lg:bottom-[25%] lg:left-[22%] lg:w-[12.56%]"
-		>
-			<Image src={bubbleC} alt="" class="w-full" loading="lazy" />
+		<!--
+			The bubbles live in their own layer so the intro can rotate all seven as
+			one ring (see scripts/home-page/creatorCollage.ts). `inset-0` makes this
+			box identical to its parent, so the bubbles' percentage offsets resolve
+			exactly as they did when they were direct children.
+		-->
+		<div class="absolute inset-0" data-orbit>
 			<Image
-				src={addedToZaamna}
-				alt="Added to Zaamna list"
-				class="absolute z-1 top-0 right-[-70%] w-[63.1%] lg:top-[48%] lg:left-[-72.8%] lg:right-auto"
-				loading="lazy"
-			/>
-			<img
-				src={plusButton.src}
+				src={bubbleA}
 				alt=""
-				class="absolute top-[15%] right-[-14%] w-[35%] lg:top-[57.9%] lg:left-[-17.5%] lg:right-auto"
+				class="absolute top-[-30%] right-[2%] w-[28%] lg:top-[34%] lg:left-[-1.5%] lg:right-auto lg:w-[12%]"
 				loading="lazy"
+				data-bubble
+			/>
+
+			<Image
+				src={bubbleB}
+				alt=""
+				class="absolute top-[-26%] left-[-5%] w-[25%] lg:top-[43%] lg:left-[12%] lg:w-[10.5%]"
+				loading="lazy"
+				data-bubble
+			/>
+
+			<!-- Bubble + its list pill travel together on the wrapper. -->
+			<div
+				class="absolute top-[25%] left-[-3%] w-[30%] lg:top-auto lg:bottom-[25%] lg:left-[22%] lg:w-[12.56%]"
+				data-bubble
+			>
+				<Image src={bubbleC} alt="" class="w-full" loading="lazy" />
+				<Image
+					src={addedToZaamna}
+					alt="Added to Zaamna list"
+					class="absolute z-1 top-0 right-[-70%] w-[63.1%] lg:top-[48%] lg:left-[-72.8%] lg:right-auto"
+					loading="lazy"
+					data-bubble-tag
+				/>
+				<img
+					src={plusButton.src}
+					alt=""
+					class="absolute top-[15%] right-[-14%] w-[35%] lg:top-[57.9%] lg:left-[-17.5%] lg:right-auto"
+					loading="lazy"
+					data-bubble-tag
+				/>
+			</div>
+
+			<Image
+				src={bubbleE}
+				alt=""
+				class="absolute top-[33%] right-[3%] w-[23%] lg:top-auto lg:right-[29.05%] lg:bottom-[24%] lg:w-[11.23%]"
+				loading="lazy"
+				data-bubble
+			/>
+
+			<div
+				class="absolute top-[-45%] left-[28%] w-[18%] lg:top-[33%] lg:right-[13.95%] lg:left-auto lg:w-[9.9%]"
+				data-bubble
+			>
+				<Image src={bubbleF} alt="" class="w-full" loading="lazy" />
+				<Image
+					src={addedToNykaa}
+					alt="Added to Nykaa list"
+					class="absolute z-1 top-[-33.9%] left-[90.6%] w-[70.8%]"
+					loading="lazy"
+					data-bubble-tag
+				/>
+				<img
+					src={plusButton.src}
+					alt=""
+					class="absolute top-[-13.2%] left-[63.7%] w-[44.4%]"
+					loading="lazy"
+					data-bubble-tag
+				/>
+			</div>
+
+			<Image
+				src={bubbleD}
+				alt=""
+				class="absolute top-[38%] right-[35%] w-[25%] lg:top-auto lg:right-[44%] lg:bottom-[18.74%] lg:w-[12.79%]"
+				loading="lazy"
+				data-bubble
+			/>
+
+			<Image
+				src={bubbleG}
+				alt=""
+				class="absolute top-[-45%] right-[17%] w-[20%] lg:top-[52%] lg:right-0 lg:w-[9.49%]"
+				loading="lazy"
+				data-bubble
 			/>
 		</div>
-
-		<Image
-			src={bubbleE}
-			alt=""
-			class="absolute top-[33%] right-[3%] w-[23%] lg:top-auto lg:right-[29.05%] lg:bottom-[24%] lg:w-[11.23%]"
-			loading="lazy"
-		/>
-
-		<div
-			class="absolute top-[-45%] left-[28%] w-[18%] lg:top-[33%] lg:right-[13.95%] lg:left-auto lg:w-[9.9%]"
-		>
-			<Image src={bubbleF} alt="" class="w-full" loading="lazy" />
-			<Image
-				src={addedToNykaa}
-				alt="Added to Nykaa list"
-				class="absolute z-1 top-[-33.9%] left-[90.6%] w-[70.8%]"
-				loading="lazy"
-			/>
-			<img
-				src={plusButton.src}
-				alt=""
-				class="absolute top-[-13.2%] left-[63.7%] w-[44.4%]"
-				loading="lazy"
-			/>
-		</div>
-
-		<Image
-			src={bubbleD}
-			alt=""
-			class="absolute top-[38%] right-[35%] w-[25%] lg:top-auto lg:right-[44%] lg:bottom-[18.74%] lg:w-[12.79%]"
-			loading="lazy"
-		/>
-
-		<Image
-			src={bubbleG}
-			alt=""
-			class="absolute top-[-45%] right-[17%] w-[20%] lg:top-[52%] lg:right-0 lg:w-[9.49%]"
-			loading="lazy"
-		/>
 	</div>
 </section>
+
+<style>
+	/*
+		Bubbles start hidden so they can't flash at their final spots before the
+		intro runs. Only when motion is welcome and JS can take over — a
+		reduced-motion visitor, or one with scripting off (see <noscript>), keeps
+		the static collage.
+	*/
+	@media (prefers-reduced-motion: no-preference) {
+		[data-bubble],
+		[data-bubble-tag],
+		[data-collage-reveal] {
+			opacity: 0;
+		}
+	}
+</style>
+
+<noscript>
+	<style>
+		[data-bubble],
+		[data-bubble-tag],
+		[data-collage-reveal] {
+			opacity: 1 !important;
+		}
+	</style>
+</noscript>
+
+<script>
+	import { initCreatorCollage } from "../../scripts/home-page/creatorCollage";
+
+	initCreatorCollage();
+</script>
