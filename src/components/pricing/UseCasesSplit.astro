@@ -1,19 +1,18 @@
 ---
+/**
+ * "Use cases for brands and agencies" block — pricing page only.
+ *
+ * No top padding: the section above already supplies the gap. No decorative
+ * swoosh either, since the pricing page has its own background treatment.
+ */
 import { USE_CASES_SPLIT } from "../../data/useCasesSplit";
-import swoosh from "../../assets/images/home_page/use_cases/swoosh.svg";
 import circleCheck from "../../assets/images/home_page/use_cases/circle_check.svg";
 ---
 
 <section class="relative overflow-hidden lg:overflow-visible" aria-labelledby="use-cases-split-heading">
-	<!-- decorative swoosh painted over the cards, per design z-order -->
-	<!-- zoomed/cropped on mobile so the glow fills the section, natural width from lg up -->
-	<img
-	src={swoosh.src}
-	alt=""
-	class="pointer-events-none absolute top-[20%] lg:top-auto left-1/2 w-[260%] max-w-none -translate-x-1/2 object-cover lg:left-0 lg:w-full lg:translate-x-0"
-	loading="lazy"/>
-
-	<div class="relative mx-auto flex max-w-393 flex-col items-center px-6 pt-10 pb-16 lg:px-0 lg:py-40">
+	<div
+		class="relative mx-auto flex max-w-393 flex-col items-center px-6 pb-16 lg:px-0 lg:pb-40"
+	>
 		<h2
 			id="use-cases-split-heading"
 			class="max-w-204 text-center text-[1.875rem] capitalize leading-[1.1] text-white lg:text-[3.4375rem] [text-box:trim-both_cap_alphabetic]"
@@ -34,7 +33,7 @@ import circleCheck from "../../assets/images/home_page/use_cases/circle_check.sv
 					>
 						<h3 class="text-[1.875rem] capitalize leading-[normal] text-[#F6F6F4] lg:text-[4rem] [text-box:trim-both_cap_alphabetic]">{column.title}</h3>
 						<div class="h-px w-full max-w-103.75 bg-white/40"></div>
-						<ul class="flex flex-col gap-6">
+						<ul class="flex flex-col gap-2">
 							{column.points.map((point) => (
 								<li class="flex items-start lg:items-center gap-5.5 lg:gap-3.75">
 									<img src={circleCheck.src} alt="" class="h-6 w-6 shrink-0" loading="lazy" />
