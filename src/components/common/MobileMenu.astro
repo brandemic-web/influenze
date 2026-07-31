@@ -63,6 +63,8 @@ import Button from "./Button.astro";
 								<li class={index <= NAV_ITEMS.length - 1 ? "border-b border-white/10" : ""}>
 									<a
 										href={item.href}
+										target={item.newTab ? "_blank" : undefined}
+										rel={item.newTab ? "noopener noreferrer" : undefined}
 										class="flex items-center gap-3 py-4 text-[0.875rem] text-white"
 									>
 										{item.label}

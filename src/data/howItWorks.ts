@@ -5,7 +5,7 @@ export interface HowItWorksStep {
 	description: string;
 }
 
-export const HOW_IT_WORKS_EYEBROW = "How It Works";
+export const HOW_IT_WORKS_EYEBROW = "WHY INFLUENZE?";
 export const HOW_IT_WORKS_BUTTON = "Learn More";
 
 export const HOW_IT_WORKS_STEPS: HowItWorksStep[] = [
