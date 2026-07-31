@@ -12,11 +12,12 @@ import bubbleF from "../../assets/images/home_page/choose_creators/bubble_image_
 import bubbleG from "../../assets/images/home_page/choose_creators/bubble_image_seven.png";
 import addedToZaamna from "../../assets/images/home_page/choose_creators/added_to_zaamna.png";
 import addedToNykaa from "../../assets/images/home_page/choose_creators/added_to_nykaa.png";
+import FollowerTag from "./FollowerTag.astro";
 ---
 
 <section
 	class="relative mt-55 h-100 lg:-mt-3.5 lg:h-280"
-	aria-label="Choose creators based on your preferences"
+	aria-label="Discover and analyze winning creators"
 	data-collage
 >
 	<div class="pointer-events-none absolute top-0 left-1/2 flex h-full w-full -translate-x-1/2 lg:items-center lg:justify-center">
@@ -31,8 +32,8 @@ import addedToNykaa from "../../assets/images/home_page/choose_creators/added_to
 			class="relative z-4 w-186.25 text-center text-[1.875rem] leading-10 text-white lg:text-9xl lg:leading-20 capitalize"
 			data-collage-reveal
 		>
-			Choose creators based<br />
-			on <span class="text-brand-primary">your preferences</span>
+			Discover &amp; Analyze<br />
+			<span class="text-brand-primary">winning creators</span>
 		</h2>
 
 		<Image
@@ -52,13 +53,14 @@ import addedToNykaa from "../../assets/images/home_page/choose_creators/added_to
 			exactly as they did when they were direct children.
 		-->
 		<div class="absolute inset-0" data-orbit>
-			<Image
-				src={bubbleA}
-				alt=""
+			<!-- Bubble + its follower tag travel together on the wrapper. -->
+			<div
 				class="absolute top-[-30%] right-[2%] w-[28%] lg:top-[34%] lg:left-[-1.5%] lg:right-auto lg:w-[12%]"
-				loading="lazy"
 				data-bubble
-			/>
+			>
+				<Image src={bubbleA} alt="" class="w-full" loading="lazy" />
+				<FollowerTag count="31.6K" class="top-[75%] right-[61%] lg:top-[-1%] lg:right-auto lg:left-[65%]" />
+			</div>
 
 			<Image
 				src={bubbleB}
@@ -77,17 +79,18 @@ import addedToNykaa from "../../assets/images/home_page/choose_creators/added_to
 				<Image
 					src={addedToZaamna}
 					alt="Added to Zaamna list"
-					class="absolute z-1 top-0 right-[-70%] w-[63.1%] lg:top-[48%] lg:left-[-72.8%] lg:right-auto"
+					class="absolute z-1 top-0 right-[-70%] w-[63.1%] lg:top-[56%] lg:left-[-72.8%] lg:right-auto"
 					loading="lazy"
 					data-bubble-tag
 				/>
 				<img
 					src={plusButton.src}
 					alt=""
-					class="absolute top-[15%] right-[-14%] w-[35%] lg:top-[57.9%] lg:left-[-17.5%] lg:right-auto"
+					class="absolute top-[15%] right-[-14%] w-[35%] lg:top-[71.9%] lg:left-[-17.5%] lg:right-auto"
 					loading="lazy"
 					data-bubble-tag
 				/>
+				<FollowerTag count="156K" class="top-[83%] left-[34%] lg:top-[24%] lg:right-[85%] lg:left-auto" />
 			</div>
 
 			<Image
@@ -117,6 +120,7 @@ import addedToNykaa from "../../assets/images/home_page/choose_creators/added_to
 					loading="lazy"
 					data-bubble-tag
 				/>
+				<FollowerTag count="566K" class="top-[-16%] left-[-88%] lg:top-0 lg:right-[70%] lg:left-auto" />
 			</div>
 
 			<Image

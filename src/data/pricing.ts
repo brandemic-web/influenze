@@ -61,7 +61,7 @@ export const PRICING_TIERS: PricingTier[] = [
 	{ id: "starter", name: "Starter", minSpend: SLIDER_MIN, bonusPct: 0 },
 	// Growth is the one tier Figma pins down: ₹22,000 → 24,200 = +10%.
 	{ id: "growth", name: "Growth", minSpend: 10_000, bonusPct: 10 },
-	{ id: "scale", name: "Scale", minSpend: 40_000, bonusPct: 20 },
+	{ id: "scale", name: "Scale", minSpend: 50_000, bonusPct: 20 },
 	{
 		id: "enterprise",
 		name: "Enterprise",
@@ -96,10 +96,35 @@ export const PLAN_FEATURES = [
 	"All Social Platform Access",
 ];
 
+export interface CreditCost {
+	label: string;
+	detail: string;
+	cost: string;
+	/** Explanation revealed on hover/focus of the row's info icon. */
+	tooltip: string;
+}
+
 /** Per-action credit costs, shared across all tiers. */
-export const CREDIT_COSTS = [
-	{ label: "Direct search", detail: "1 result", cost: "5 Credits" },
-	{ label: "Filtered search", detail: "10 results/page", cost: "50 Credits" },
-	{ label: "Profile analytics unlock", detail: "", cost: "50 Credits" },
-	{ label: "Contact detail unlock", detail: "", cost: "5 Credits" },
+export const CREDIT_COSTS: CreditCost[] = [
+	{
+		label: "Direct search",
+		detail: "1 result",
+		cost: "5 Credits",
+		tooltip:
+			"5 credits are deducted for each creator/account in the analyzed results.",
+	},
+	{
+		label: "Profile analytics unlock",
+		detail: "",
+		cost: "50 Credits",
+		tooltip:
+			"50 credits are deducted for every creator/account media kit unlocked.",
+	},
+	{
+		label: "Contact detail unlock",
+		detail: "",
+		cost: "5 Credits",
+		tooltip:
+			"5 credits are deducted for every creator/account contact details unlocked.",
+	},
 ];

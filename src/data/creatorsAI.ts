@@ -15,26 +15,26 @@ export const CREATORS_AI_BUTTON = "Sign Up";
 export const CREATORS_AI_FEATURES: CreatorAIFeature[] = [
 	{
 		icon: "search",
-		title: "Search Globally",
+		title: "Search & Discover globally",
 		description:
-			"Access a vast database of Instagram, YouTube, and TikTok creators across countries, languages, and niches",
+			"Search millions of creator profiles across Instagram, YouTube, and TikTok with AI-driven filters.",
 	},
 	{
 		icon: "users",
-		title: "Know The Audience",
+		title: "Analyze the profile",
 		description:
-			"Analyze audience quality, geography, interests, and behavior beyond simple follower counts",
+			"Know before you commit. Detailed creator reports break down audience, performance, and brand fit in real time.",
 	},
 	{
 		icon: "square-check",
-		title: "Choose The Right Creators",
+		title: "Build your shortlists",
 		description:
-			"Compare creators based on audience fit, performance signals, and campaign relevance",
+			"Build lists from your search results & compare creators on the metrics that matter. Share, import and export with ease.",
 	},
 	{
 		icon: "scaling",
-		title: "Scale Campaigns Confidently",
+		title: "Reach out directly",
 		description:
-			"Build creator lists for local, regional, or worldwide campaigns from a single platform",
+			"Tap into verified contact details for creators across email, phone, and WhatsApp.",
 	},
 ];

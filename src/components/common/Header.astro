@@ -52,7 +52,12 @@ import { LOGIN_URL } from "../../data/site";
 							</ul>
 						</div>
 					) : (
-						<a href={item.href} class="flex items-center gap-2.5 text-xs text-white hover:text-brand-primary">
+						<a
+							href={item.href}
+							target={item.newTab ? "_blank" : undefined}
+							rel={item.newTab ? "noopener noreferrer" : undefined}
+							class="flex items-center gap-2.5 text-xs text-white hover:text-brand-primary"
+						>
 							{item.label}
 							{item.badge && (
 								<span class="flex items-center gap-1.25 rounded-[0.3125rem] bg-button-primary p-2 text-[0.6875rem] leading-none text-[#1D192B] font-semibold ">
@@ -69,7 +74,7 @@ import { LOGIN_URL } from "../../data/site";
 		</nav>
 
 		<div class="hidden lg:block">
-			<Button href={LOGIN_URL} variant="nav">Login / Sign Up</Button>
+			<Button href={LOGIN_URL} variant="nav" newTab>Login / Sign Up</Button>
 		</div>
 
 		<MobileMenu />

@@ -16,47 +16,12 @@ function initCreatorMarquee() {
 	horizontalLoop(items, { repeat: -1, speed: 1, paddingRight: parseFloat(getComputedStyle(track).columnGap) || 20 });
 }
 
-// Lens follows the pointer inside the strip; scales away when the mouse leaves.
-function initLensFollow() {
-	const stage = document.querySelector<HTMLElement>(".creator-stage");
-	const lens = stage?.querySelector<HTMLElement>(".lg-lens");
-	if (!stage || !lens || stage.dataset.lensReady === "true") return;
-
-	const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-	const canHover = window.matchMedia("(hover: hover)").matches;
-	// No hover (touch) or reduced motion: leave the static centered CSS lens as-is.
-	if (reduceMotion || !canHover) return;
-
-	stage.dataset.lensReady = "true";
-
-	// Switch the lens from CSS centering to pointer-driven positioning.
-	// Starts hidden and scaled down; it scales up on enter.
-	gsap.set(lens, { left: 0, top: 0, xPercent: -50, yPercent: -50, scale: 0, autoAlpha: 0 });
-
-	const xTo = gsap.quickTo(lens, "x", { duration: 0.5, ease: "power3" });
-	const yTo = gsap.quickTo(lens, "y", { duration: 0.5, ease: "power3" });
-
-	const moveTo = (e: PointerEvent) => {
-		const rect = stage.getBoundingClientRect();
-		xTo(e.clientX - rect.left);
-		yTo(e.clientY - rect.top);
-	};
-
-	stage.addEventListener("pointerenter", (e) => {
-		const rect = stage.getBoundingClientRect();
-		// Jump to the pointer instantly so the lens scales up where the cursor is.
-		gsap.set(lens, { x: e.clientX - rect.left, y: e.clientY - rect.top });
-		gsap.to(lens, { scale: 1, autoAlpha: 1, duration: 0.45, ease: "back.out(1.6)" });
-	});
-	stage.addEventListener("pointermove", moveTo);
-	stage.addEventListener("pointerleave", () => {
-		gsap.to(lens, { scale: 0, autoAlpha: 0, duration: 0.3, ease: "power2.in" });
-	});
-}
+// The lens stays where its CSS puts it — centred in the strip, always visible.
+// It used to be pointer-driven (scaled up on enter, followed the cursor, scaled
+// away on leave); that behaviour is gone, so nothing here touches it.
 
 function init() {
 	initCreatorMarquee();
-	initLensFollow();
 }
 
 init();

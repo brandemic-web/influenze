@@ -46,7 +46,7 @@ export function formatPrice(value: number): string {
  * and the dot centres sit at x=398.5 / 745.5 / 1092.5, giving 0 / 36.8 / 75.4.
  *
  * Figma draws NO dot at the track end: the rail simply continues past Scale
- * into Enterprise territory, and the "Rs 100,000+" caption sits under the third
+ * into Enterprise territory, and the "Rs 50,000+" caption sits under the third
  * dot rather than at the far right. Hence VISIBLE_DOTS below.
  */
 export const STOP_POSITIONS = [0, 36.8, 75.4, 100];

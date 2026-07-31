@@ -5,7 +5,7 @@ export interface HowItWorksStep {
 	description: string;
 }
 
-export const HOW_IT_WORKS_EYEBROW = "How It Works";
+export const HOW_IT_WORKS_EYEBROW = "WHY INFLUENZE?";
 export const HOW_IT_WORKS_BUTTON = "Learn More";
 
 export const HOW_IT_WORKS_STEPS: HowItWorksStep[] = [
@@ -13,18 +13,18 @@ export const HOW_IT_WORKS_STEPS: HowItWorksStep[] = [
 		icon: "search",
 		title: "Discover",
 		description:
-			"Access a vast database of Instagram, YouTube, and TikTok creators across countries, languages, and interests",
+			"Access the largest database of Instagram, YouTube, and TikTok profiles across countries, languages, and interests",
 	},
 	{
 		icon: "eye",
-		title: "Vet",
+		title: "Analyze",
 		description:
-			"View audience insights, engagement, growth trends and performance before making a decision",
+			"View Audience insights, growth, brand affinities, performance, estimated pricing and more in real time",
 	},
 	{
 		icon: "rocket",
 		title: "Launch",
 		description:
-			"Shortlist creators, build campaigns and spend your budget where it delivers results",
+			"Shortlist & reach out to creators, build campaigns and optimize your budget where it delivers results",
 	},
 ];

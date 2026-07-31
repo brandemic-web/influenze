@@ -1,5 +1,5 @@
 ---
-import { SIGNUP_URL } from "../../data/site";
+import { FEATURES_URL } from "../../data/site";
 import { WHY_CHOOSE_CARDS, WHY_CHOOSE_EYEBROW, WHY_CHOOSE_BUTTON } from "../../data/whyChooseUs";
 import Button from "../common/Button.astro";
 import iconSearch from "../../assets/images/common/icons/search.svg";
@@ -26,7 +26,7 @@ const cardIcons: Record<string, ImageMetadata> = {
 			id="why-choose-heading"
 			class="mt-8 max-w-130 px-6 text-[1.75rem] capitalize leading-[normal] text-white lg:text-[2.25rem] [text-box:trim-both_cap_alphabetic]"
 		>
-			Everything you need to find <span class="text-brand-primary">better creators</span>
+			We are the first step for <span class="text-brand-primary">every influencer campaign</span>
 		</h2>
 	</div>
 
@@ -59,7 +59,7 @@ const cardIcons: Record<string, ImageMetadata> = {
 	</div>
 
 	<div class="mt-8 lg:mt-13 text-center">
-		<Button href={SIGNUP_URL} variant="nav">{WHY_CHOOSE_BUTTON}</Button>
+		<Button href={FEATURES_URL} variant="nav">{WHY_CHOOSE_BUTTON}</Button>
 	</div>
 </section>
 
