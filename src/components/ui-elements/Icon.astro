@@ -1,0 +1,139 @@
+---
+import { ICON_STROKE, ICON_VIEW_BOX, type IconName } from "./icons";
+
+/**
+ * Shared glyph set for the UI element mocks. Every glyph draws in
+ * `currentColor`, so colour comes from a `text-*` utility at the call site
+ * rather than a hardcoded hex — see the `ui-*` tokens in styles/global.css.
+ *
+ * Sizing is the caller's job too: pass `size-4`, `size-6`, … via `class`.
+ */
+interface Props {
+	name: IconName;
+	class?: string;
+	/** Stroke weight in viewBox units. Defaults per glyph in `icons.ts`. */
+	strokeWidth?: number;
+}
+
+const { name, class: className = "", strokeWidth } = Astro.props;
+
+const sw = strokeWidth ?? ICON_STROKE[name];
+---
+
+<svg
+	class:list={["flex-none", className]}
+	viewBox={ICON_VIEW_BOX[name]}
+	fill="none"
+	aria-hidden="true"
+>
+	{name === "close" && (
+		<path d="m4.5 4.5 7 7m0-7-7 7" stroke="currentColor" stroke-width={sw} stroke-linecap="round" />
+	)}
+
+	{name === "chevron-down" && (
+		<path
+			d="M4 6.25 8 10.25 12 6.25"
+			stroke="currentColor"
+			stroke-width={sw}
+			stroke-linecap="round"
+			stroke-linejoin="round"
+		/>
+	)}
+
+	{name === "search" && (
+		<>
+			<circle cx="7" cy="7" r="4.4" stroke="currentColor" stroke-width={sw} />
+			<path d="m10.4 10.4 3 3" stroke="currentColor" stroke-width={sw} stroke-linecap="round" />
+		</>
+	)}
+
+	{name === "arrow-down" && (
+		<path
+			d="M8 3v10m0 0 3.2-3.4M8 13l-3.2-3.4"
+			stroke="currentColor"
+			stroke-width={sw}
+			stroke-linecap="round"
+			stroke-linejoin="round"
+		/>
+	)}
+
+	{name === "info" && (
+		<>
+			<circle cx="8" cy="8" r="6.25" stroke="currentColor" stroke-width={sw} />
+			<path d="M8 7.1v4" stroke="currentColor" stroke-width={sw + 0.2} stroke-linecap="round" />
+			<circle cx="8" cy="4.9" r="0.85" fill="currentColor" />
+		</>
+	)}
+
+	{name === "mail" && (
+		<path
+			d="M22.2898 7.0924L13.18 12.8951C12.8708 13.0747 12.5197 13.1693 12.1622 13.1693C11.8047 13.1693 11.4535 13.0747 11.1444 12.8951L2.02539 7.0924M4.05184 4.05273H20.2634C21.3826 4.05273 22.2898 4.96 22.2898 6.07918V18.2378C22.2898 19.357 21.3826 20.2643 20.2634 20.2643H4.05184C2.93266 20.2643 2.02539 19.357 2.02539 18.2378V6.07918C2.02539 4.96 2.93266 4.05273 4.05184 4.05273Z"
+			stroke="currentColor"
+			stroke-width={sw}
+			stroke-linecap="round"
+			stroke-linejoin="round"
+		/>
+	)}
+
+	{name === "phone" && (
+		<path
+			d="M14.0138 16.7875C14.2231 16.8836 14.4588 16.9055 14.6823 16.8497C14.9057 16.7939 15.1034 16.6637 15.2429 16.4805L15.6026 16.0093C15.7913 15.7576 16.0361 15.5534 16.3175 15.4127C16.5989 15.272 16.9091 15.1987 17.2237 15.1987H20.2634C20.8008 15.1987 21.3163 15.4122 21.6963 15.7923C22.0763 16.1723 22.2898 16.6877 22.2898 17.2252V20.2649C22.2898 20.8023 22.0763 21.3177 21.6963 21.6978C21.3163 22.0778 20.8008 22.2913 20.2634 22.2913C15.4264 22.2913 10.7875 20.3698 7.36718 16.9495C3.94689 13.5292 2.02539 8.89032 2.02539 4.0533C2.02539 3.51585 2.23889 3.00042 2.61892 2.62039C2.99895 2.24036 3.51439 2.02686 4.05184 2.02686H7.0915C7.62895 2.02686 8.14438 2.24036 8.52441 2.62039C8.90445 3.00042 9.11795 3.51585 9.11795 4.0533V7.09297C9.11795 7.40756 9.0447 7.71784 8.90401 7.99922C8.76332 8.2806 8.55905 8.52537 8.30737 8.71412L7.83318 9.06976C7.64717 9.21179 7.51606 9.41384 7.46213 9.64158C7.4082 9.86931 7.43476 10.1087 7.53732 10.3191C8.92207 13.1316 11.1995 15.4063 14.0138 16.7875Z"
+			stroke="currentColor"
+			stroke-width={sw}
+			stroke-linecap="round"
+			stroke-linejoin="round"
+		/>
+	)}
+
+	{name === "audience" && (
+		<>
+			<path
+				d="M10.4998 12.2497C10.4998 11.012 10.0082 9.82501 9.133 8.94984C8.25783 8.07467 7.07085 7.58301 5.83317 7.58301C4.59549 7.58301 3.40851 8.07467 2.53334 8.94984C1.65817 9.82501 1.1665 11.012 1.1665 12.2497"
+				stroke="currentColor"
+				stroke-width={sw}
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			/>
+			<path
+				d="M5.83341 7.58333C7.44424 7.58333 8.75008 6.2775 8.75008 4.66667C8.75008 3.05584 7.44424 1.75 5.83341 1.75C4.22258 1.75 2.91675 3.05584 2.91675 4.66667C2.91675 6.2775 4.22258 7.58333 5.83341 7.58333Z"
+				stroke="currentColor"
+				stroke-width={sw}
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			/>
+			<path
+				d="M12.8334 11.6665C12.8334 9.7007 11.6667 7.87487 10.5 6.99987C10.8835 6.71215 11.1902 6.33434 11.3929 5.89986C11.5956 5.46538 11.688 4.98764 11.6621 4.50892C11.6361 4.0302 11.4925 3.56525 11.2441 3.15524C10.9956 2.74522 10.6499 2.40277 10.2375 2.1582"
+				stroke="currentColor"
+				stroke-width={sw}
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			/>
+		</>
+	)}
+
+	{name === "creator" && (
+		<>
+			<path
+				d="M1.16675 12.2499C1.1667 11.3518 1.42583 10.4727 1.91303 9.7182C2.40024 8.96369 3.09482 8.36579 3.91343 7.99627C4.73204 7.62676 5.63989 7.50131 6.52802 7.63499C7.41616 7.76868 8.24686 8.15581 8.92041 8.74993"
+				stroke="currentColor"
+				stroke-width={sw}
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			/>
+			<path
+				d="M5.83341 7.58333C7.44424 7.58333 8.75008 6.2775 8.75008 4.66667C8.75008 3.05584 7.44424 1.75 5.83341 1.75C4.22258 1.75 2.91675 3.05584 2.91675 4.66667C2.91675 6.2775 4.22258 7.58333 5.83341 7.58333Z"
+				stroke="currentColor"
+				stroke-width={sw}
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			/>
+			<path
+				d="M9.3335 11.0837L10.5002 12.2503L12.8335 9.91699"
+				stroke="currentColor"
+				stroke-width={sw}
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			/>
+		</>
+	)}
+</svg>

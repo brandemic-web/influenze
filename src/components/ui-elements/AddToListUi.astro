@@ -1,0 +1,94 @@
+---
+import Icon from "./Icon.astro";
+
+/**
+ * Add to List UI — modal for adding creators to a campaign list.
+ */
+interface Props {
+	class?: string;
+}
+
+const { class: className = "" } = Astro.props;
+
+const lists = [
+	{ name: "Spenny Campaign", creators: "1 Creators", added: true },
+	{ name: "Fruti Campaign", creators: "2 Creators", added: false },
+];
+---
+
+<div
+	class:list={[
+		"w-[24.8125rem] max-w-full overflow-hidden rounded-[1rem] border border-white/8 bg-[#1c1a26] font-sans text-white",
+		className,
+	]}
+>
+	<div class="relative px-5 pt-5 pb-4">
+		<h3 class="text-center text-[1.25rem] font-medium">
+			Add to List <span class="text-[#6b6584]">{"{1}"}</span>
+		</h3>
+		<button
+			type="button"
+			aria-label="Close"
+			class="absolute top-4 right-4 inline-flex cursor-pointer p-0.5 text-ui-muted hover:text-white"
+		>
+			<Icon name="close" class="size-3.5" strokeWidth={1.6} />
+		</button>
+	</div>
+
+	<ul class="flex list-none flex-col gap-3 px-4 pb-4">
+		{
+			lists.map((list) => (
+				<li class="flex items-center gap-3 rounded-md border border-white/8 bg-[#221f2e] p-3">
+					{/* placeholder avatar cluster — swap for real images later */}
+					<span class="grid flex-none grid-cols-2 gap-1">
+						<span class="size-6.5 rounded-[0.3125rem] bg-white/10" />
+						<span class="size-6.5 rounded-[0.3125rem] bg-white/10" />
+						<span class="size-6.5 rounded-[0.3125rem] bg-white/10" />
+						<span class="size-6.5 rounded-[0.3125rem] bg-white/[0.04]" />
+					</span>
+
+					<span class="flex-auto">
+						<span class="block text-[0.9375rem] font-semibold">{list.name}</span>
+						<span class="mt-0.5 block text-[0.75rem] text-ui-muted">
+							{list.creators}
+						</span>
+					</span>
+
+					{list.added ? (
+						<button
+							type="button"
+							disabled
+							class="flex-none cursor-default rounded-full bg-[#37325a]/60 px-4 py-1.5 text-[0.75rem] font-medium text-ui-muted"
+						>
+							Added
+						</button>
+					) : (
+						<button
+							type="button"
+							class="flex-none cursor-pointer rounded-full bg-gradient-primary px-5 py-1.5 text-[0.75rem] font-semibold text-white hover:bg-ui-indigo-hover"
+						>
+							Add
+						</button>
+					)}
+				</li>
+			))
+		}
+	</ul>
+
+	<div class="border-t border-white/8 px-5 pt-4 pb-5 text-center">
+		<button
+			type="button"
+			class="inline-flex cursor-pointer items-center gap-2 rounded-full bg-gradient-primary px-5 py-2.5 text-[0.8125rem] font-semibold text-white hover:bg-ui-indigo-hover"
+		>
+			<svg class="size-4 flex-none" viewBox="0 0 16 16" aria-hidden="true">
+				<path
+					d="M2.5 4h8m-8 3.5h5m-5 3.5h5m4-3v5m-2.5-2.5h5"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="1.4"
+					stroke-linecap="round"></path>
+			</svg>
+			Create New List
+		</button>
+	</div>
+</div>

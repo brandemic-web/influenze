@@ -109,6 +109,21 @@
 
     /* mint variants */
     --color-mint-dark: #33E889;
+
+    /*
+     * Palette for the product UI mocks in src/components/ui-elements. These are
+     * screenshot colours, not site chrome — kept in their own `ui-*` namespace so
+     * they can't be mistaken for brand tokens.
+     */
+    --color-ui-muted: #8F88AB;
+    --color-ui-subtle: #B9B3CF;
+    --color-ui-lilac: #C0ACFF;
+    --color-ui-violet: #B8A2FF;
+    --color-ui-violet-link: #8A6BFF;
+    --color-ui-violet-hover: #A690FF;
+    --color-ui-indigo-hover: #7A4DFF;
+    --color-ui-amber: #F5C451;
+    --color-ui-icon: #8878B8;
 }
 
 @layer base {

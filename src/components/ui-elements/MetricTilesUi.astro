@@ -1,0 +1,30 @@
+---
+/**
+ * Metric Tiles UI — row of three headline stats.
+ */
+interface Props {
+	class?: string;
+}
+
+const { class: className = "" } = Astro.props;
+
+const tiles = [
+	{ label: "Engagement rate", value: "8.4%", note: "Tiktok" },
+	{ label: "Top gender", value: "256k", note: "Female" },
+	{ label: "Top age", value: "25-34", note: "Years Old" },
+];
+---
+
+<div class:list={["flex gap-4 font-sans", className]}>
+	{
+		tiles.map((tile) => (
+			<div class="w-39 max-w-full rounded-md bg-[#2c3033] px-4 pt-3.5 pb-4">
+				<span class="block text-[0.8125rem] text-ui-subtle">{tile.label}</span>
+				<span class="mt-5 block text-[1.75rem] leading-none text-white">
+					{tile.value}
+				</span>
+				<span class="mt-2.5 block text-[0.8125rem] text-brand-primary">{tile.note}</span>
+			</div>
+		))
+	}
+</div>
