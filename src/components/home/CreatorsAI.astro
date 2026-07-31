@@ -1,26 +1,23 @@
 ---
-import { Image } from "astro:assets";
 import Button from "../common/Button.astro";
 import { SIGNUP_URL } from "../../data/site";
 import { CREATORS_AI_FEATURES, CREATORS_AI_BUTTON } from "../../data/creatorsAI";
-import searchFilters from "../../assets/images/home_page/sign_up/search_global_1.png";
-import searchTabsChip from "../../assets/images/home_page/sign_up/search_global_3.svg";
-import searchMetricsChip from "../../assets/images/home_page/sign_up/search_global_2.svg";
-import audienceEngagement from "../../assets/images/home_page/sign_up/know_audience_engagement.svg";
-import audienceGender from "../../assets/images/home_page/sign_up/know_audience_top_gender.svg";
-import audienceAge from "../../assets/images/home_page/sign_up/know_audience_age.svg";
-import audienceQuality from "../../assets/images/home_page/sign_up/know_audience_metrics.png";
-import audienceAffinities from "../../assets/images/home_page/sign_up/know_audience_metrics_2.png";
-import creatorsCompare from "../../assets/images/home_page/sign_up/right_creators_compare.png";
-import creatorsAddToList from "../../assets/images/home_page/sign_up/right_creators_list.png";
-import campaignZamna from "../../assets/images/home_page/sign_up/scale_campaigns_1.png";
-import campaignZomaland from "../../assets/images/home_page/sign_up/scale_campaigns_4.png";
-import campaignMokobora from "../../assets/images/home_page/sign_up/scale_campaigns_3.png";
-import campaignShare from "../../assets/images/home_page/sign_up/scale_campaigns_share.png";
+import { panelId, tabId } from "../../scripts/creators-ai";
+import SearchUi from "../ui-elements/SearchUi.astro";
+import PlatformUi from "../ui-elements/PlatformUi.astro";
+import FollowerMetricsUi from "../ui-elements/FollowerMetricsUi.astro";
+import MetricTilesUi from "../ui-elements/MetricTilesUi.astro";
+import FollowerQualityUi from "../ui-elements/FollowerQualityUi.astro";
+import AudienceAffinitiesUi from "../ui-elements/AudienceAffinitiesUi.astro";
+import CompareUi from "../ui-elements/CompareUi.astro";
+import AddToListUi from "../ui-elements/AddToListUi.astro";
+import AnalyzedCreator from "../ui-elements/AnalyzedCreatorUi.astro";
+import DemoCursor from "../ui-elements/DemoCursor.astro";
 import iconSearch from "../../assets/images/common/icons/search.svg";
 import iconUsers from "../../assets/images/common/icons/users.svg";
 import iconSquareCheck from "../../assets/images/common/icons/square_check_big.svg";
 import iconScaling from "../../assets/images/common/icons/scaling.svg";
+import shareIcon from "../../assets/images/common/logos_and_icons/share_icon_with_gradient.svg";
 
 const featureIcons: Record<string, ImageMetadata> = {
 	search: iconSearch,
@@ -29,80 +26,41 @@ const featureIcons: Record<string, ImageMetadata> = {
 	scaling: iconScaling,
 };
 
-interface PanelLayer {
-	src: ImageMetadata;
-	class: string;
-	alt?: string;
-}
-
-const PANEL_IMAGE_WIDTHS = [208, 624];
-const PANEL_IMAGE_SIZES = "(min-width: 64rem) 39rem, 13rem";
-
-
-const tabLayers: PanelLayer[][] = [
-	// Search Globally
-	[
-		{
-			src: searchFilters,
-			class: "relative w-[75%] rounded-md object-cover object-top lg:h-145.75 lg:w-108.5",
-			alt: "Creator search filters — lookalike audience, sort, and location",
-		},
-		{ src: searchTabsChip, class: "absolute left-34 top-18 w-40 lg:left-72.75 lg:top-30.25 lg:w-76.25" },
-		{ src: searchMetricsChip, class: "absolute left-34 top-33 w-40 lg:left-72.75 lg:top-57.75 lg:w-87" },
-	],
-	// Know The Audience
-	[
-		{ src: audienceEngagement, class: "absolute left-0 top-0 w-20 lg:left-[17%] lg:w-41" },
-		{ src: audienceGender, class: "absolute left-21 top-0 w-20 lg:left-[43.5%] lg:w-41.5" },
-		{ src: audienceAge, class: "absolute left-42 top-0 w-20 lg:left-[70%] lg:w-41" },
-		{
-			src: audienceQuality,
-			class: "absolute left-0 top-24 w-52 rounded-md lg:top-42 lg:w-104",
-			alt: "Follower quality breakdown — real followers, mass followers, influencers, and suspicious accounts",
-		},
-		{ src: audienceAffinities, class: "absolute left-30 top-44 w-36 rounded-md lg:left-[45%] lg:top-[57%] lg:w-83" },
-	],
-	// Choose The Right Creators
-	[
-		{
-			src: creatorsCompare,
-			class: "absolute left-0 top-6 w-full rounded-md lg:top-44 lg:w-155 lg:left-[3%]",
-			alt: "Two creators compared side by side on engagement rate and audience tier",
-		},
-		{ src: creatorsAddToList, class: "absolute left-6 top-4 w-40 rounded-md lg:left-0 lg:w-87" },
-	],
-	// Scale Campaigns Confidently
-	[
-		{
-			src: campaignZamna,
-			class: "absolute left-0 top-15 w-24 rounded-md lg:w-65",
-			alt: "Campaign creator lists ready to share",
-		},
-		{ src: campaignZomaland, class: "absolute left-20 top-6 w-24 rounded-md lg:left-68 lg:top-15 lg:w-65" },
-		{ src: campaignMokobora, class: "absolute left-40 top-12 w-24 rounded-md lg:left-136 lg:top-15 lg:w-65" },
-		{ src: campaignShare, class: "absolute left-8 top-48 w-48 rounded-md lg:left-48 lg:top-76 lg:w-100" },
-	],
-];
+/**
+ * The visuals are real UI element components at their design size, laid out on a
+ * fixed 668 x 680 px stage (w-167 x h-170) so every panel shares one coordinate
+ * space. Below `lg` the whole stage is scaled down as a unit — that keeps the
+ * collage's relative positions identical at every breakpoint, and the wrapper
+ * heights below mirror stage height x scale.
+ *
+ * Panel/tab ids come from `scripts/creators-ai` — the same helpers the tab
+ * controller and the panel demos use, so the three files can't drift.
+ */
 ---
 
 <section class="relative" aria-labelledby="creators-ai-heading">
-
 	<div
 		class="pointer-events-none absolute inset-x-0 top-[-35%] lg:top-[-40%] h-[150%] lg:h-400 bg-[linear-gradient(178.32deg,#010101_1.67%,#21144B_11.9%,#8058FF_43.98%,#251949_75.14%,#000000_98.38%)] z-0"
 		aria-hidden="true"
 	>
 	</div>
-	<div class="relative z-10 mx-auto flex w-full max-w-393 flex-col items-center px-4 pb-16 pt-10 lg:pt-12 lg:pb-0" data-creators-tabs>
+	<div
+		class="relative z-10 mx-auto flex w-full max-w-393 flex-col items-center px-4 pb-16 pt-10 lg:pt-12 lg:pb-0"
+		data-creators-tabs
+	>
 		<h2
 			id="creators-ai-heading"
 			class="mb-8 w-full max-w-222.25 text-center text-[1.875rem] lg:text-3xl capitalize leading-[1.2] text-white lg:text-[3.4375rem] lg:leading-[normal] lg:[text-box:trim-both_cap_alphabetic]"
 		>
-			The world's creators,<br /><span class="text-brand-primary">found with AI</span>
+			The world's creators,<br /><span class="text-brand-primary"
+				>found with AI</span
+			>
 		</h2>
 
 		<!-- outer glass panel -->
-		<div class="relative mt-8 flex w-full flex-col items-center gap-8 rounded-[1.75rem] border border-white/15 bg-white/10 shadow-[0_0.5rem_2rem_rgba(0,0,0,0.18),inset_0_0.0625rem_0_rgba(255,255,255,0.18)] backdrop-blur-md backdrop-saturate-150 px-5 pb-8 pt-12 lg:h-199.25 lg:flex-row lg:items-center lg:justify-between lg:py-5.75 lg:pl-[min(9.25rem,8%)] lg:pr-4.75">
-
+		<div
+			class="relative mt-8 flex w-full flex-col items-center gap-8 rounded-[1.75rem] border border-white/15 bg-white/10 shadow-[0_0.5rem_2rem_rgba(0,0,0,0.18),inset_0_0.0625rem_0_rgba(255,255,255,0.18)] backdrop-blur-md backdrop-saturate-150 px-5 pb-8 pt-12 lg:h-199.25 lg:flex-row lg:items-center lg:justify-between lg:py-5.75 lg:pl-[min(9.25rem,8%)] lg:pr-4.75"
+		>
 			<div class="absolute -top-6 left-0 right-0 mx-auto w-max">
 				<Button href={SIGNUP_URL} variant="nav">{CREATORS_AI_BUTTON}</Button>
 			</div>
@@ -116,64 +74,134 @@ const tabLayers: PanelLayer[][] = [
 				{
 					CREATORS_AI_FEATURES.map((feature, i) => (
 						<>
-							{i !== 0 && <div class="h-px w-full bg-white/40 lg:max-w-124"></div>}
+							{i !== 0 && <div class="h-px w-full bg-white/40 lg:max-w-124" />}
 
 							<button
 								type="button"
-								id={`creators-ai-tab-${i}`}
+								id={tabId(i)}
 								role="tab"
-								aria-controls={`creators-ai-panel-${i}`}
+								aria-controls={panelId(i)}
 								aria-selected={i === 0 ? "true" : "false"}
 								tabindex={i === 0 ? 0 : -1}
 								data-creators-tab
 								class="creators-tab flex cursor-pointer flex-col gap-3 text-left lg:max-w-126"
 							>
 								<span class="flex items-center gap-4">
-									<img src={featureIcons[feature.icon].src} alt="" class="h-7.5 w-7.5 rounded-sm lg:h-12 lg:w-12" loading="lazy" />
-									<span class="text-[1.125rem] lg:text-md capitalize leading-[normal] text-white lg:[text-box:trim-both_cap_alphabetic]">{feature.title}</span>
+									<img
+										src={featureIcons[feature.icon].src}
+										alt=""
+										class="h-7.5 w-7.5 rounded-sm lg:h-12 lg:w-12"
+										loading="lazy"
+									/>
+									<span class="text-[1.125rem] lg:text-md capitalize leading-[normal] text-white lg:[text-box:trim-both_cap_alphabetic]">
+										{feature.title}
+									</span>
 								</span>
-								<span class="block pl-12 text-[0.875rem] lg:text-xs leading-6.5 text-white lg:pl-16.25 lg:[text-box:trim-both_cap_alphabetic]">{feature.description}</span>
+								<span class="block pl-12 text-[0.875rem] lg:text-xs leading-6.5 text-white lg:pl-16.25 lg:[text-box:trim-both_cap_alphabetic]">
+									{feature.description}
+								</span>
 							</button>
 						</>
 					))
 				}
 			</div>
-			<div class="w-full shrink-0 overflow-hidden rounded-[1.25rem] border border-white/20 bg-white/15 shadow-[inset_0_0.0625rem_0_rgba(255,255,255,0.22)] p-4 lg:h-189.5 lg:w-172.5 lg:p-0 lg:pl-5.5 lg:pt-22">
-				<div class="relative w-full">
-					{
-						tabLayers.map((layers, i) => (
-							<div
-								id={`creators-ai-panel-${i}`}
-								role="tabpanel"
-								aria-labelledby={`creators-ai-tab-${i}`}
-								aria-hidden={i === 0 ? undefined : "true"}
-								data-creators-panel
-								class:list={[
-									"creators-panel w-full",
-									// The first panel holds the flow height; the rest stack on top of it.
-									// `invisible` (not just opacity-0) so hidden panels are inert before
-									i === 0 ? "relative" : "absolute inset-0 invisible opacity-0",
-								]}
-							>
-								{layers.map((layer) =>
-									// SVGs pass through untouched (Astro can't resize them); only rasters
-									layer.src.format === "svg" ? (
-										<img src={layer.src.src} alt={layer.alt ?? ""} class={layer.class} loading="lazy" decoding="async" />
-									) : (
-										<Image
-											src={layer.src}
-											alt={layer.alt ?? ""}
-											class={layer.class}
-											widths={PANEL_IMAGE_WIDTHS}
-											sizes={PANEL_IMAGE_SIZES}
-											loading="lazy"
-											decoding="async"
-										/>
-									),
-								)}
+
+			<div
+				class="w-full shrink-0 overflow-hidden rounded-[1.25rem] border border-white/20 bg-white/15 shadow-[inset_0_0.0625rem_0_rgba(255,255,255,0.22)] p-4 lg:h-189.5 lg:w-172.5 lg:p-0 lg:pl-5.5 lg:pt-22"
+			>
+				<!-- stage viewport: height tracks the scaled stage at each breakpoint -->
+				<div class="relative h-75 w-full sm:h-102 md:h-128 lg:h-170">
+					<div
+						class="absolute left-0 top-0 h-170 w-167 origin-top-left scale-[0.44] sm:scale-[0.6] md:scale-[0.75] lg:scale-100"
+					>
+						<!-- Search Globally -->
+						<div
+							id={panelId(0)}
+							role="tabpanel"
+							aria-labelledby={tabId(0)}
+							data-creators-panel
+							class="creators-panel absolute inset-0"
+						>
+							<!--
+								Each card sits in its own untransformed wrapper so the
+								intro stagger can own `transform` without clobbering the
+								component's own scale.
+							-->
+							<div data-search-card class="absolute left-0 top-0">
+								<SearchUi />
 							</div>
-						))
-					}
+							<div data-search-card class="absolute left-66 top-30.25">
+								<PlatformUi class="scale-80" />
+							</div>
+							<div data-search-card class="absolute left-69 top-48.75">
+								<FollowerMetricsUi class="scale-84" />
+							</div>
+
+							<DemoCursor />
+						</div>
+
+						<!-- Know The Audience -->
+						<div
+							id={panelId(1)}
+							role="tabpanel"
+							aria-labelledby={tabId(1)}
+							aria-hidden="true"
+							data-creators-panel
+							class="creators-panel absolute inset-0 invisible opacity-0"
+						>
+							<div data-panel-item class="absolute left-[17%] top-0">
+								<MetricTilesUi />
+							</div>
+							<div data-panel-item class="absolute left-0 top-36">
+								<FollowerQualityUi />
+							</div>
+							<div data-panel-item class="absolute left-[47%] top-78">
+								<AudienceAffinitiesUi />
+							</div>
+
+							<DemoCursor />
+						</div>
+
+						<!-- Choose The Right Creators -->
+						<div
+							id={panelId(2)}
+							role="tabpanel"
+							aria-labelledby={tabId(2)}
+							aria-hidden="true"
+							data-creators-panel
+							class="creators-panel absolute inset-0 invisible opacity-0"
+						>
+							<img
+								data-panel-item
+								src={shareIcon.src}
+								alt=""
+								class="absolute w-28 right-24.75 top-17.75"
+								loading="lazy"
+							/>
+							<div data-panel-item class="absolute left-[5%] top-38 z-10">
+								<CompareUi />
+							</div>
+							<div data-panel-item class="absolute left-0 top-4">
+								<AddToListUi />
+							</div>
+						</div>
+
+						<!-- Scale Campaigns Confidently -->
+						<div
+							id={panelId(3)}
+							role="tabpanel"
+							aria-labelledby={tabId(3)}
+							aria-hidden="true"
+							data-creators-panel
+							class="creators-panel absolute inset-0 invisible opacity-0"
+						>
+							<div data-panel-item class="absolute -top-25 left-1">
+								<AnalyzedCreator class="scale-75" />
+							</div>
+
+							<DemoCursor />
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -195,4 +223,5 @@ const tabLayers: PanelLayer[][] = [
 <script>
 	import "../../scripts/reveals";
 	import "../../scripts/creators-ai-tabs";
+	import "../../scripts/creators-ai-panels";
 </script>
