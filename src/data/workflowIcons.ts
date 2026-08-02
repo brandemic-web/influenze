@@ -56,6 +56,7 @@ const ICON_FILES = {
 	removeFromList: "remove_from_list.svg",
 	search: "search.svg",
 	share: "share.svg",
+	thumbsUp: "thumbs_up.svg",
 	userRoundCheck: "user_round_check.svg",
 	userRoundCog: "user_round_cog.svg",
 	usersRound: "users_round.svg",
