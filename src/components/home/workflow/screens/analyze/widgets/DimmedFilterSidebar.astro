@@ -1,0 +1,21 @@
+---
+/**
+ * The Analyze sidebar as it appears while a creator detail is open —
+ * `FilterDisableOverlay` in analyze_filter_sidebar.dart wraps the whole column
+ * (search bar included) in `opacity 0.55` plus a 1.6 sigma blur.
+ */
+import AnalyzeFilterSidebar from "./AnalyzeFilterSidebar.astro";
+import AnalyzeSearchBar from "./AnalyzeSearchBar.astro";
+
+interface Props {
+	scroll?: number;
+	lookalikeFilled?: boolean;
+}
+
+const { scroll = 0, lookalikeFilled = true } = Astro.props;
+---
+
+<div class="absolute inset-0 opacity-55 blur-[0.1rem]" data-wf-dimmed>
+	<AnalyzeSearchBar />
+	<AnalyzeFilterSidebar scroll={scroll} lookalikeFilled={lookalikeFilled} />
+</div>

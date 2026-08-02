@@ -1,0 +1,22 @@
+---
+/**
+ * `FilterSectionHeader` — a 12px/500 title inset 8px, with an optional reset ✕
+ * nudged 2px down at the right edge. Sections can carry more than one of these
+ * (Follower Metrics uses three).
+ */
+import Icon from "./Icon.astro";
+
+interface Props {
+	label: string;
+	resettable?: boolean;
+	class?: string;
+}
+
+const { label, resettable = false, class: className = "" } = Astro.props;
+---
+
+<header class:list={["flex items-start justify-between", className]}>
+	<h4 class="pl-2 text-[0.75rem] font-medium text-wf-text-soft">{label}</h4>
+	{resettable && <Icon name="cross" size="0.875rem" class="mt-0.5 text-wf-text-muted" />}
+	<slot />
+</header>

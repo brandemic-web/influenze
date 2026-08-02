@@ -1,0 +1,35 @@
+---
+/**
+ * Frame background, nav bar and the content card — mirrors
+ * common/widgets/app_shell.dart.
+ *
+ * The card is `containerBg` inset 16px left/right and bottom, butted straight up
+ * against the nav. The app's version footer is deliberately left out.
+ *
+ * The card is decorative here: screen content is positioned against the
+ * 90rem x 56.25rem frame, matching how the app's 50px content padding lands.
+ */
+import AppNavBar from "./AppNavBar.astro";
+
+interface Props {
+	active?: "analyze" | "lists" | "roster";
+	showCredits?: boolean;
+}
+
+const { active = "analyze", showCredits = true } = Astro.props;
+---
+
+<div class="absolute inset-0 bg-wf-page">
+	<AppNavBar active={active} showCredits={showCredits} />
+
+	<div class="absolute top-20 left-4 h-201 w-352 rounded-[2rem] bg-wf-card"></div>
+
+	<!--
+		Coincident with the frame, so the positioned screen content keeps its
+		coordinates. It exists so a section change can fade the card's contents
+		without touching the nav or the card itself.
+	-->
+	<div class="absolute inset-0" data-wf-card-body>
+		<slot />
+	</div>
+</div>

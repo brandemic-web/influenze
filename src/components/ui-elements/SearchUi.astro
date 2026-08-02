@@ -1,8 +1,12 @@
 ---
 import Icon from "./Icon.astro";
+import { LOOKALIKE_HANDLE } from "../../data/workflowMockup";
 
 /**
  * Search UI — filter panel.
+ *
+ * Types the same Audience Lookalike seed as the hero workflow mockup, so the two
+ * demos on the page tell one story.
  */
 interface Props {
 	class?: string;
@@ -82,7 +86,7 @@ const regions = ["United States", "Germany", "India"];
 			>
 				<Icon name="search" class="size-4 text-ui-muted" />
 				<p class="text-white" data-search-text>
-					<span class="text-brand-primary">@</span>nikhilchinapa
+					<span class="text-brand-primary">@</span>{LOOKALIKE_HANDLE}
 				</p>
 				<span
 					data-search-caret

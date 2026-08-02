@@ -1,0 +1,21 @@
+---
+/**
+ * The Analyze screen's right-hand surface — the `Expanded` half of the Row in
+ * analyze.dart. Fills the content box left of the 22.5rem sidebar plus its
+ * 1rem gutter.
+ */
+interface Props {
+	class?: string;
+}
+
+const { class: className = "" } = Astro.props;
+---
+
+<div
+	class:list={[
+		"absolute top-32.5 left-110.5 h-176 w-233 overflow-hidden rounded-md bg-wf-panel",
+		className,
+	]}
+>
+	<slot />
+</div>

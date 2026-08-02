@@ -1,0 +1,169 @@
+---
+/**
+ * Profile card in a results or list table
+ *
+ * `buildAnalyzeLayout` is a single row; `buildListLayout` adds a rule and a
+ * location/gender/language line underneath. The Design frames show the list
+ * variant on the Analyze screen, which is wrong — hence the `variant` prop.
+ */
+import CreatorAvatar from "./CreatorAvatar.astro";
+import Icon from "./Icon.astro";
+import PlatformIcon from "./PlatformIcon.astro";
+import ProfileCardColumns from "./ProfileCardColumns.astro";
+import VerifiedBadge from "./VerifiedBadge.astro";
+import type { Creator, EngagementLevel } from "../../../../data/workflowMockup";
+
+interface Props {
+	creator: Creator;
+	variant?: "analyze" | "list";
+}
+
+const { creator, variant = "analyze" } = Astro.props;
+const isList = variant === "list";
+
+/**
+ * `checked` marks the pair the story compares, which is a selection inside its
+ * *list* — the search results are never selected, so the analyze row always draws
+ * an empty box.
+ */
+const ticked = isList && creator.checked;
+
+/**
+ * Engagement quality colours — `InfluenzeColors`' *Er tokens. HIGH and LOW keep
+ * the dimmer values the Figma frames were signed off with; the middle bands are
+ * the app's own (`aboveAverageEr`, `averageEr`, `belowAverageEr`).
+ */
+const LEVEL_COLOUR: Record<EngagementLevel, string> = {
+	HIGH: "#3fbd71",
+	"ABOVE AVERAGE": "#9edb57",
+	AVERAGE: "#f2994a",
+	"BELOW AVERAGE": "#ff7350",
+	LOW: "#8f4242",
+};
+---
+
+<article
+	class:list={[
+		"rounded-sm border border-[#2c2c3d] bg-wf-surface px-3.5 pt-4 pb-4",
+		isList && "flex items-start",
+	]}
+	data-wf-creator={creator.handle}
+>
+	{
+		isList && (
+			<>
+				<div class="w-21 shrink-0">
+					<span class="flex items-center">
+						<span
+							class:list={[
+								"grid size-3 shrink-0 place-items-center rounded-[0.1875rem] border",
+								ticked ? "border-wf-violet-bright bg-wf-violet-bright" : "border-wf-table-label",
+							]}
+							data-wf-check
+						>
+							<Icon
+								name="check"
+								size="0.625rem"
+								class={ticked ? "text-white" : "text-white opacity-0"}
+							/>
+						</span>
+						<span class="w-3 shrink-0" />
+						<CreatorAvatar size="3.75rem" handle={creator.handle} />
+					</span>
+				</div>
+				<div class="w-5 shrink-0" />
+			</>
+		)
+	}
+
+	<div class:list={[isList && "min-w-0 flex-1"]}>
+		<ProfileCardColumns withLeading={!isList}>
+			{
+				!isList && (
+					<span slot="leading" class="flex items-center">
+						<span
+							class:list={[
+								"grid size-3 shrink-0 place-items-center rounded-[0.1875rem] border",
+								ticked ? "border-wf-violet-bright bg-wf-violet-bright" : "border-wf-table-label",
+							]}
+							data-wf-check
+						>
+							<Icon
+								name="check"
+								size="0.625rem"
+								class={ticked ? "text-white" : "text-white opacity-0"}
+							/>
+						</span>
+						<span class="w-3 shrink-0" />
+						<CreatorAvatar size="3.75rem" handle={creator.handle} />
+					</span>
+				)
+			}
+
+			<div slot="identity" class="flex flex-col gap-1">
+				<span class="flex items-center gap-1">
+					<span class="whitespace-nowrap text-[1rem] text-wf-text">{creator.name}</span>
+					<VerifiedBadge size="0.75rem" />
+				</span>
+				<span class="flex items-center" style={`gap:${isList ? "0.25rem" : "0.5rem"}`}>
+					<span class="flex min-w-0 items-center gap-1">
+						<PlatformIcon platform="instagram" tile="0.75rem" glyph="0.4375rem" radius="0.1875rem" />
+						<span class="whitespace-nowrap text-[0.625rem] font-medium text-[#ac91ff]">{creator.handle}</span>
+						<Icon name="redirect" size="0.75rem" class="text-[#ac91ff]" />
+					</span>
+					<span class="rounded-[0.625rem] bg-[#33294c] px-1.5 py-1 text-[0.5rem] whitespace-nowrap text-[#d5caee]">
+						{creator.tierLabel}
+					</span>
+				</span>
+			</div>
+
+			<span slot="followers" class="text-[0.875rem] text-wf-text">{creator.followers}</span>
+			<span slot="likes" class="text-[0.875rem] text-wf-text">{creator.avgLikes}</span>
+			<span slot="engagement" class="flex items-end gap-1">
+				<span class="text-[0.875rem] text-wf-text">{creator.engagement}</span>
+				<span class="text-[0.5rem] whitespace-nowrap" style={`color:${LEVEL_COLOUR[creator.engagementLevel]}`}
+					>{creator.engagementLevel}</span
+				>
+			</span>
+
+			<span slot="actions" class="flex items-center gap-2">
+				<span class="flex items-center rounded-[1.25rem] border border-wf-green-mid bg-[#202427] px-3 py-2">
+					<Icon name="messageCircle" size="0.75rem" class="text-wf-green-mid" />
+					<span class="ml-1 text-[0.625rem] whitespace-nowrap text-wf-text">Enquire</span>
+					<Icon name="arrowIcon" size="0.625rem" class="ml-1 text-[#3e9761]" />
+				</span>
+				<!--
+					`AddToListButton`, whose `remove` state is the paired glyph to the analyze
+					row's add_to_list. The app passes that state no colour filter, so the
+					glyph keeps the asset's own red instead of going white.
+				-->
+				{isList ? (
+					<span class="grid size-7.5 place-items-center rounded-full border border-[#5b2929] bg-wf-danger-bg">
+						<Icon name="removeFromList" size="0.625rem" class="text-wf-danger" />
+					</span>
+				) : (
+					<span class="grid size-7 place-items-center rounded-[1.25rem] border border-[#463575] bg-[#2f254a]">
+						<Icon name="addToList" size="0.75rem" class="text-[#bfabff]" />
+					</span>
+				)}
+			</span>
+		</ProfileCardColumns>
+
+		{
+			isList && (
+				<>
+					<span class="my-[0.84375rem] block h-px w-full bg-wf-rule" />
+					<div class="flex">
+						<div class="flex min-w-0 flex-[4_1_0%] items-center text-[0.625rem] text-wf-meta">
+							<Icon name="mapPin" size="0.625rem" />
+							<span class="ml-1 whitespace-nowrap">{creator.location}</span>
+							{creator.gender && <span class="ml-4 whitespace-nowrap">{creator.gender}</span>}
+							<span class="ml-4 whitespace-nowrap">{creator.language}</span>
+						</div>
+						<div class="w-40.75 shrink-0" />
+					</div>
+				</>
+			)
+		}
+	</div>
+</article>

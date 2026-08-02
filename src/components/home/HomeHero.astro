@@ -1,14 +1,14 @@
 ---
-import { Image } from "astro:assets";
 import { SIGNUP_URL } from "../../data/site";
+import { HERO_WORDS } from "../../data/heroWords";
 import Button from "../common/Button.astro";
+import WorkflowMockup from "./workflow/WorkflowMockup.astro";
 import backgroundArcs from "../../assets/images/home_page/hero/bg_svg_lines_hero.svg";
 import darkLayerSide from "../../assets/images/home_page/hero/dark_layer_side.svg";
 import darkLayerCenter from "../../assets/images/home_page/hero/dark_layer_center.svg";
-import searchUi from "../../assets/images/home_page/hero/influenze_analyze.svg";
 ---
 
-<section class="relative h-200 lg:h-344 overflow-x-hidden lg:overflow-visible">
+<section class="relative h-170 lg:h-344 overflow-x-hidden lg:overflow-visible">
 	<!-- gradient backdrop-->
 	<div
 		class="pointer-events-none absolute inset-x-0 top-0 lg:h-344 h-160 bg-[linear-gradient(179.95deg,#11092B_0%,#6838FF_5.85%,#010101_99.94%)]"
@@ -55,7 +55,21 @@ import searchUi from "../../assets/images/home_page/hero/influenze_analyze.svg";
 			data-reveal-item
 		>
 			<span class="font-light text-[2.75rem] text-brand-primary lg:text-[5.5rem]">Find The Right</span><br />
-			<span class="font-normal text-[3.625rem] leading-1 text-white lg:text-[8.25rem]">CREATORS</span>
+			{/*
+				`inline-block` so the swap can translate — an inline box ignores `y`.
+				`uppercase` keeps the design's caps whatever casing the data carries.
+
+				The word has to stay on one line: `leading-1` and the h1's cap-trim were
+				written for a single unwrappable word, so a wrapped one draws its two
+				lines on top of each other. The longest word in HERO_WORDS measures
+				~8.2em, so below `lg` the size is whatever keeps that inside the padded
+				viewport — capped at the design's 3.625rem, which it reaches around
+				540px. `lg` has room for all of them at full size.
+			*/}
+			<span
+				class="inline-block font-normal text-[clamp(2rem,calc((100vw-3rem)/8.4),3.625rem)] leading-1 whitespace-nowrap text-white uppercase lg:text-[8.25rem]"
+				data-hero-word>{HERO_WORDS[0]}</span
+			>
 		</h1>
 
 		<!-- glass copy card -->
@@ -69,23 +83,17 @@ import searchUi from "../../assets/images/home_page/hero/influenze_analyze.svg";
 		</div>
 
 		<div class="order-4 lg:order-3 -mt-2 lg:mt-3.75" data-reveal-item>
-			<Button href={SIGNUP_URL} newTab>Sign Up</Button>
+			<Button href={SIGNUP_URL} newTab>Free Trial</Button>
 		</div>
 
-		<!-- product mockup + numbered chip -->
+		<!-- product mockup: real markup so GSAP can play the workflow through it -->
 		<div class="order-2 lg:order-4 relative mt-12 w-full max-w-7xl px-0 lg:mt-14.75 lg:w-7xl lg:px-0">
-			<Image
-				src={searchUi}
-				alt="Influenze.ai dashboard — search and discover creators with AI-powered filters"
-				class="w-full rounded-[1rem]"
-				widths={[640, 1280]}
-				sizes="(max-width: 1280px) 100vw, 1280px"
-				loading="eager"
-			/>
+			<WorkflowMockup />
 		</div>
 	</div>
 </section>
 
 <script>
 	import "../../scripts/reveals";
+	import "../../scripts/hero-words";
 </script>
