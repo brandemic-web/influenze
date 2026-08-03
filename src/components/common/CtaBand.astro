@@ -32,11 +32,18 @@ const { buttonLabel = "Sign Up" } = Astro.props;
 	aria-labelledby="cta-heading"
 	data-cta-section
 >
-	<img src={bg_svg.src} alt="" class="pointer-events-none absolute inset-0 h-full w-full object-cover" loading="lazy" />
+		<img src={bg_svg.src} alt="" class="pointer-events-none absolute inset-0 h-full w-full object-cover" loading="lazy" />
 	<!-- glows -->
 	<img src={glowCenter.src} alt="" class="pointer-events-none absolute top-0 left-1/2 h-full lg:w-300 w-75 -translate-x-1/2" loading="lazy" />
 	<img src={glowSide.src} alt="" class="pointer-events-none absolute top-0 -left-32 h-full lg:w-66 w-25" loading="lazy" />
 	<img src={glowSide.src} alt="" class="pointer-events-none absolute top-0 -right-32 h-full lg:w-66 w-25" loading="lazy" />
+
+	<!-- fade to footer bg -->
+	<div
+		class="pointer-events-none absolute inset-0 bg-linear-to-b from-transparent from-60% to-[#0A0718]"
+		aria-hidden="true"
+	>
+	</div>
 
 	<!-- floating creators + chips (mobile base, lg: desktop) -->
 	<div class="pointer-events-none absolute inset-0 max-w-[102rem] mx-auto" aria-hidden="true">
@@ -81,7 +88,7 @@ const { buttonLabel = "Sign Up" } = Astro.props;
 		</div>
 	</div>
 
-	<div class="relative flex h-full flex-col items-center justify-center gap-3 lg:gap-10">
+		<div class="relative flex h-full flex-col items-center justify-center gap-3 lg:gap-10">
 		<h2 id="cta-heading" data-cta-heading class="text-center text-[2rem] capitalize text-white max-md:text-3xl lg:text-[3.625rem]">
 			Ready to get influenzed?
 		</h2>
