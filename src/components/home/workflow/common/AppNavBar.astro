@@ -1,0 +1,77 @@
+---
+/**
+ * Influenze app nav bar
+ */
+import logoNav from "../../../../assets/images/common/logos_and_icons/influenze_logo_nav.svg";
+import CreatorAvatar from "./CreatorAvatar.astro";
+import Icon from "./Icon.astro";
+import { APP_USER } from "../../../../data/workflowMockup";
+
+interface Props {
+	/** Which primary nav item reads as the current section. */
+	active?: "analyze" | "lists" | "roster";
+	showCredits?: boolean;
+}
+
+const { active = "analyze", showCredits = true } = Astro.props;
+
+const navItems = [
+	{ id: "analyze", label: "Analyze" },
+	{ id: "lists", label: "My Lists" },
+	{ id: "roster", label: "Roster" },
+] as const;
+---
+
+<header class="absolute inset-x-0 top-0 flex h-20 items-center px-16.5">
+	<img src={logoNav.src} alt="influenze.ai" class="h-10 w-auto" />
+
+	<!-- The app nudges the links 10px left so they read as centred. -->
+	<nav class="absolute top-1/2 left-1/2 flex -translate-x-[calc(50%+0.625rem)] -translate-y-1/2 items-center gap-8">
+		{
+			navItems.map((item) =>
+				item.id === active ? (
+					<span
+						class="rounded-[1.25rem] bg-white/10 px-4 py-2 text-[0.875rem] font-medium text-wf-text"
+						data-wf-nav={item.id}
+					>
+						{item.label}
+					</span>
+				) : (
+					<span class="text-[0.875rem] text-white/50" data-wf-nav={item.id}>
+						{item.label}
+					</span>
+				)
+			)
+		}
+	</nav>
+
+	<div class="ml-auto flex items-center gap-4">
+		<!--
+			`IoNotificationButton` in its idle state — `_StatusCircle`: a 40px circle
+			with a lavender61 hairline over a diagonal lavender29 → lavender38 gradient,
+			holding a 16px glyph that gets no colour filter, so it keeps its own
+			lavender46. The app's notifications.svg is info.svg's glyph exported on a
+			16 grid, so the icon here is the same artwork.
+		-->
+		<span
+			class="grid size-10 place-items-center rounded-full border border-wf-notify-border bg-[linear-gradient(258deg,var(--color-wf-notify-from)_20.1%,var(--color-wf-notify-to)_96.06%)]"
+		>
+			<Icon name="info" size="1rem" class="text-wf-text-muted" />
+		</span>
+
+		{
+			showCredits && (
+				<span class="flex items-center gap-2.5 rounded-full border border-wf-credit-border bg-[linear-gradient(to_right,var(--color-wf-credit-from),var(--color-wf-credit-to))] px-3 py-2">
+					<Icon name="coins" size="1rem" class="text-wf-green" />
+					<span class="text-[0.875rem] whitespace-nowrap text-wf-green">Credits</span>
+					<span class="-ml-1.5 text-[0.875rem] whitespace-nowrap text-wf-green-deep">2,540</span>
+				</span>
+			)
+		}
+
+		<span class="flex items-center gap-2.5 rounded-full bg-wf-user-pill py-1 pr-1 pl-3">
+			<span class="text-[0.875rem] whitespace-nowrap text-wf-green">Hi, {APP_USER.name}</span>
+			<CreatorAvatar size="2rem" handle={APP_USER.handle} />
+		</span>
+	</div>
+</header>

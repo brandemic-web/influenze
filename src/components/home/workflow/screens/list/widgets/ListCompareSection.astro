@@ -1,0 +1,77 @@
+---
+/**
+ * Compare
+ *
+ * Not a screen of its own: the body `ListDetails` swaps in when it goes into
+ * compare mode, which is why it lives beside the list's other widgets and draws
+ * no panel. Columns reuse the media kit's Account Stats verbatim, only darker
+ * (`cardColor #18171f`) and with the trailing paragraph suppressed.
+ */
+import CreatorAvatar from "../../../common/CreatorAvatar.astro";
+import VerifiedBadge from "../../../common/VerifiedBadge.astro";
+import MediaKitDetail from "../../analyze/widgets/media-kit/MediaKitDetail.astro";
+import { COMPARED_HANDLES, MACRO_BENCHMARK, MEDIA_KIT_STATS, creatorByHandle } from "../../../../../../data/workflowMockup";
+
+const [profiled, against] = COMPARED_HANDLES.map(creatorByHandle);
+
+/**
+ * The benchmark bar's scale, marker and median live per creator in
+ * `MEDIA_KIT_STATS` — they are not shared, because APP-SPEC draws the axis around
+ * each creator's own rate (`min = 0.5 x min(rate, median)`, `max = 1.5 x max(...)`).
+ * The median *label* and the tier paragraph are shared, since both columns are
+ * macro: `MACRO_BENCHMARK`.
+ *
+ * `meta` is the app's location · gender · language line, joined with a middot
+ * here because the compare column has no room for the spaced-out version.
+ */
+const subjects = [profiled, against].map((creator, i) => ({
+	creator,
+	stats: i === 0 ? MEDIA_KIT_STATS.justin : MEDIA_KIT_STATS.kawal,
+	meta: [creator.location, creator.gender, creator.language].filter(Boolean).join(" · "),
+}));
+---
+
+<div class="mt-3 flex min-h-0 flex-1 gap-2.5 overflow-hidden">
+	{
+		subjects.map(({ creator, stats, meta }) => (
+			<div class="flex min-w-0 flex-1 flex-col">
+				<!-- CompareProfileHeader: transparent, padding 12, no card. -->
+				<div class="flex shrink-0 items-start p-3">
+					<CreatorAvatar size="3.75rem" handle={creator.handle} />
+					<div class="ml-5 flex min-w-0 flex-1 flex-col">
+						<span class="flex items-center gap-1">
+							<span class="text-[1rem] font-medium whitespace-nowrap text-wf-text">{creator.name}</span>
+							<VerifiedBadge size="0.75rem" />
+						</span>
+						<span class="mt-1 w-fit rounded-[0.625rem] bg-[#33294c] px-1.25 py-1 text-[0.5rem] whitespace-nowrap text-[#d5caee]">
+							{stats.tier}
+						</span>
+						<span class="my-[0.71875rem] block h-px w-full bg-wf-notify-border"></span>
+						<span class="text-[0.625rem] whitespace-nowrap text-wf-meta">{meta}</span>
+					</div>
+				</div>
+				<span class="mx-3 mt-5 block h-px shrink-0 bg-wf-notify-border"></span>
+
+				<div class="min-h-0 flex-1 overflow-hidden" data-wf-compare-scroll>
+					<MediaKitDetail
+						surface="#18171f"
+						rate={stats.engagement}
+						tierLabel={stats.tier}
+						level={stats.level}
+						headline={stats.headline}
+						marker={stats.marker}
+						median={stats.median}
+						medianLabel={MACRO_BENCHMARK.medianLabel}
+						axis={stats.axis}
+						body={MACRO_BENCHMARK.body}
+						followers={stats.followers}
+						posts={stats.posts}
+						views={stats.reelViews}
+						likes={stats.likes}
+						comments={stats.comments}
+					/>
+				</div>
+			</div>
+		))
+	}
+</div>

@@ -1,0 +1,134 @@
+import gsap from "gsap";
+import { typeText } from "../../../gsap/typeText";
+import { swapInline } from "../utils/dom";
+import type { Pointer } from "../utils/pointer";
+
+/**
+ * Beat 11 — send the share, then head home and let the story begin again.
+ *
+ * Types the address, presses **Send** (which settles to "Sent"), closes the modal,
+ * and presses **Analyze** in the nav to land back on screen 1. That is where the
+ * master timeline loops from, so this beat has to hand the mockup over in a state
+ * beat 1 can start from — which is what `reset` is for, and why the cursor is left
+ * sitting on the Analyze nav item rather than faded out.
+ *
+ * Closing the modal needs no layer change, the same as beat 6's dialog: screen 10
+ * *is* screen 8 once the blur and card are unwound, so the nav the cursor then
+ * clicks is the one inside screen 10's own backdrop copy.
+ *
+ * 10 → 1 is a section change, like beat 6's — the nav pill snaps from My Lists to
+ * Analyze on the click that caused it, and the card body fades across.
+ */
+
+export interface RestartLayers {
+	/** The share layer being left. */
+	from: HTMLElement;
+	/** Screen 1, where the story starts over. */
+	to: HTMLElement;
+	/**
+	 * Beat 1's rail reset. Screen 1 is still carrying beat 1's output at this point,
+	 * so it has to be wound back *before* the card body fades in, not when the loop
+	 * restarts — otherwise the story comes home to a screen full of applied filters.
+	 */
+	reset?: () => void;
+}
+
+/** Every element the beat drives, or null if the markup is not what we expect. */
+function collect({ from, to }: RestartLayers) {
+	const field = from.querySelector<HTMLElement>("[data-wf-email-field]");
+
+	const el = {
+		field,
+		hint: from.querySelector<HTMLElement>("[data-wf-email-hint]"),
+		value: from.querySelector<HTMLElement>("[data-wf-email-value]"),
+		caret: field?.querySelector<HTMLElement>("[data-wf-caret]") ?? null,
+		send: from.querySelector<HTMLElement>("[data-wf-send]"),
+		sendIdle: from.querySelector<HTMLElement>('[data-wf-send-label="idle"]'),
+		sendDone: from.querySelector<HTMLElement>('[data-wf-send-label="done"]'),
+		close: from.querySelector<HTMLElement>("[data-wf-share-close]"),
+		panel: from.querySelector<HTMLElement>("[data-wf-panel-body]"),
+		card: from.querySelector<HTMLElement>("[data-wf-share-card]"),
+		// The nav inside the share layer's own backdrop copy of the list.
+		navAnalyze: from.querySelector<HTMLElement>('[data-wf-nav="analyze"]'),
+		fromBody: from.querySelector<HTMLElement>("[data-wf-card-body]"),
+		toBody: to.querySelector<HTMLElement>("[data-wf-card-body]"),
+	};
+
+	return Object.values(el).every(Boolean) ? (el as { [K in keyof typeof el]: NonNullable<(typeof el)[K]> }) : null;
+}
+
+export function restart(layers: RestartLayers, pointer: Pointer) {
+	const el = collect(layers);
+	if (!el) return null;
+
+	// The address is authored in the markup, so it is read rather than restated —
+	// and read before the timeline runs, so a loop cannot retype its own output.
+	const address = el.value.textContent?.trim() ?? "";
+
+	const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
+
+	// Wind the share form back to blank, so the loop plays it again from the start.
+	tl.call(() => {
+		layers.to.removeAttribute("data-wf-active");
+		layers.from.setAttribute("data-wf-active", "");
+	})
+		.set(el.hint, { display: "inline", opacity: 1 })
+		.set(el.value, { display: "none" })
+		.set(el.caret, { display: "none" })
+		.set(el.sendIdle, { display: "inline", opacity: 1 })
+		.set(el.sendDone, { display: "none" });
+
+	// ── type the address ─────────────────────────────────────────────────────
+	tl.add(pointer.moveTo(el.field, { at: { x: 0.22 }, duration: 0.7 }))
+		.add(pointer.press())
+		.call(() => {
+			gsap.set(el.hint, { display: "none" });
+			el.value.textContent = "";
+			gsap.set(el.value, { display: "inline", opacity: 1 });
+			// Inline context here, unlike beat 1's carets, which sit in flex rows.
+			gsap.set(el.caret, { display: "inline-block" });
+		})
+		.add(typeText(el.value, address))
+		.call(() => gsap.set(el.caret, { display: "none" }), undefined, "+=0.25");
+
+	// ── send it ──────────────────────────────────────────────────────────────
+	tl.add(pointer.moveTo(el.send, { duration: 0.6 }), "+=0.3")
+		.add(pointer.press())
+		.add(swapInline(el.sendIdle, el.sendDone), "-=0.05");
+
+	// ── close the modal ──────────────────────────────────────────────────────
+	// 200ms out on the blur, against 260ms in — the app's own asymmetry.
+	tl.add(pointer.moveTo(el.close, { duration: 0.6 }), "+=0.45")
+		.add(pointer.press())
+		.addLabel("close")
+		.to(el.card, { opacity: 0, duration: 0.22 }, "close")
+		.to(el.panel, { filter: "blur(0px)", duration: 0.2, ease: "none" }, "close+=0.04");
+
+	// ── home, and round again ────────────────────────────────────────────────
+	const LEAVE = 0.3;
+	tl.add(pointer.moveTo(el.navAnalyze, { duration: 0.8 }), "+=0.4")
+		.add(pointer.press())
+		.addLabel("go")
+		.to(el.fromBody, { opacity: 0, duration: LEAVE }, "go");
+
+	tl.addLabel("swap", `go+=${LEAVE}`)
+		.call(
+			() => {
+				// Clean the rail while screen 1 is still hidden, so it comes back into
+				// view untouched rather than showing the filters the story just applied.
+				layers.reset?.();
+				layers.from.removeAttribute("data-wf-active");
+				layers.to.setAttribute("data-wf-active", "");
+			},
+			undefined,
+			"swap"
+		)
+		// Leave the layer we came from as we found it, so the next loop starts clean.
+		.set(el.fromBody, { opacity: 1 }, "swap")
+		.from(el.toBody, { opacity: 0, duration: 0.4, immediateRender: false }, "swap");
+
+	// The cursor stays put and visible: it ends on the Analyze nav item, which is
+	// exactly where beat 1 parks it, so the loop seam needs no fade at all.
+
+	return tl;
+}

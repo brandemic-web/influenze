@@ -1,8 +1,19 @@
 ---
-import { Image } from "astro:assets";
-import listingOne from "../../assets/images/common/ui_images/creator_listing_one.png";
-import listingTwo from "../../assets/images/common/ui_images/creator_listing_two.png";
-import listingThree from "../../assets/images/common/ui_images/creator_listing_three.png";
+/**
+ * The rows are the app's own `ProfileCard` — the same components the hero's
+ * workflow mockup is built from, so there is one definition of a creator row on
+ * the site and it tracks common/widgets/profile_card.dart.
+ *
+ * Rows only — no column header. This is a marketing strip rather than a working
+ * table, and the metrics read fine unlabelled at three rows.
+ *
+ * `.wf-strip` scales the strip to the page the way the hero canvas does; see
+ * styles/workflow.css for the geometry.
+ */
+import ProfileCard from "../home/workflow/common/ProfileCard.astro";
+import { SHOWCASE_HANDLES, creatorByHandle } from "../../data/workflowMockup";
+
+const rows = SHOWCASE_HANDLES.map(creatorByHandle);
 ---
 
 <section class=" lg:pt-32 lg:pb-0" aria-labelledby="showcase-heading">
@@ -13,13 +24,18 @@ import listingThree from "../../assets/images/common/ui_images/creator_listing_t
 		<span class="lg:block lg:text-right"><span class="text-quaternary">and evaluate the</span> <span class="text-white">right creators</span></span>
 	</h2>
 
-	<div class="mx-auto mt-7 flex max-w-200 flex-col gap-4 px-6 lg:mt-4 relative" data-reveal>
-		{
-			[listingOne, listingTwo, listingThree].map((listing) => (
-				<Image src={listing} alt="Creator search result" class="w-full" widths={[879, 1758]} sizes="(max-width: 1498px) 100vw, 1450px" loading="lazy" data-reveal-item />
-			))
-		}
-		<div class="bg-linear-to-b from-transparent via-transparent via-60% to-background-primary absolute top-0 left-0 h-full w-full" data-reveal-item="">
+	<div class="mx-auto mt-7 max-w-200 px-6 lg:mt-4" data-reveal>
+		<div class="wf-strip">
+			<div class="wf-strip-canvas flex flex-col gap-4">
+				{rows.map((creator) => (
+					<div data-reveal-item>
+						<ProfileCard creator={creator} />
+					</div>
+				))}
+			</div>
+
+			<div class="bg-linear-to-b from-transparent via-transparent via-60% to-background-primary absolute inset-0" data-reveal-item="">
+			</div>
 		</div>
 	</div>
 </section>

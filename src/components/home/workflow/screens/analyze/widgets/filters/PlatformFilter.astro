@@ -1,0 +1,22 @@
+---
+/** Platform filter pill — mirrors `PlatformFilter.chip`. */
+import PlatformIcon, { type Platform } from "../../../../common/PlatformIcon.astro";
+
+interface Props {
+	label: string;
+	platform: Platform;
+	selected?: boolean;
+}
+
+const { label, platform, selected = false } = Astro.props;
+---
+
+<div
+	class:list={[
+		"flex items-center gap-2 rounded-[0.25rem] border px-1.5 py-1.25 text-[0.75rem] text-wf-text",
+		selected ? "border-wf-chip-on-border bg-wf-chip-on" : "border-wf-chip-border bg-wf-chip",
+	]}
+>
+	<PlatformIcon platform={platform} tile="1.25rem" glyph="0.625rem" radius="0.25rem" />
+	<span class="whitespace-nowrap">{label}</span>
+</div>

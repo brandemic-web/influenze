@@ -1,0 +1,24 @@
+---
+/**
+ * One block in the filter rail — `analyzeFilterSectionPadding` (l16 r16 t16 b24)
+ * plus the 1px rule the sidebar draws between sections.
+ *
+ * The header is optional because a few sections (Reach Out, Follower Metrics)
+ * roll their own or carry several.
+ */
+import FilterSectionHeader from "../../../../common/FilterSectionHeader.astro";
+
+interface Props {
+	label?: string;
+	resettable?: boolean;
+	divided?: boolean;
+	class?: string;
+}
+
+const { label, resettable = false, divided = false, class: className = "" } = Astro.props;
+---
+
+<section class:list={["flex flex-col px-4 pt-4 pb-6", divided && "border-t border-wf-section-rule", className]}>
+	{label && <FilterSectionHeader label={label} resettable={resettable} class="mb-3" />}
+	<slot />
+</section>

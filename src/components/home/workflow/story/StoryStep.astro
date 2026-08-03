@@ -1,0 +1,24 @@
+---
+/**
+ * One step of the story: a full-canvas layer the beats raise and lower.
+ *
+ * The number is the story's step index, published as `data-wf-screen` — the only
+ * handle the beats (scripts/home-page/workflow) and the explainer cards
+ * (data/workflowCards.ts) have on a layer. Several steps are the same app screen
+ * in a different state, so the number belongs here and not in the screens.
+ */
+interface Props {
+	step: number;
+	/**
+	 * Marks the step showing on first paint — exactly one of them. GSAP takes over
+	 * from there; everything without it is hidden by `workflow.css`.
+	 */
+	active?: boolean;
+}
+
+const { step, active = false } = Astro.props;
+---
+
+<div class="absolute inset-0" data-wf-screen={step} data-wf-active={active ? "" : undefined}>
+	<slot />
+</div>

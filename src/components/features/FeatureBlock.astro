@@ -1,6 +1,7 @@
 ---
 import { Image } from "astro:assets";
 import { FEATURE_BLOCKS } from "../../data/featureBlocks";
+import ShareToEmailUi from "../ui-elements/ShareToEmailUi.astro";
 
 import bubblesTrio from "../../assets/images/home_page/featured_tabs/discover_and_analyze_image.png";
 import filtersPanel from "../../assets/images/common/ui_images/creator_filters_panel.png";
@@ -8,7 +9,6 @@ import accountStats from "../../assets/images/common/ui_images/accounts_stats.sv
 import likesGraph from "../../assets/images/common/ui_images/avg_likes_graph.svg";
 import creatorsListing from "../../assets/images/featured_page/blocks/contact_unlock_rows.png";
 import comparisonDashboard from "../../assets/images/common/ui_images/creator_comparison_dashboard.png";
-import sharePopup from "../../assets/images/common/ui_images/share_email_popup.png";
 import campaignDashboard from "../../assets/images/common/ui_images/campaign_creator_dashboard.png";
 import hami_insta_handle from "../../assets/images/featured_page/blocks/hamid_insta_handle.png";
 import ui_widgets from "../../assets/images/featured_page/blocks/ui_widgets.png";
@@ -259,17 +259,18 @@ const [
 				{sharing.description}
 			</p>
 		</div>
+		{/*
+			The one well that holds markup rather than an image, so it is also the one
+			that cannot letterbox its content: the dialog is sized in rem and the root
+			font-size is larger on small screens than it is at `lg`, which makes the
+			dialog outgrow a 16/10 box and get cut off by the clip. Below `lg` the well
+			takes its height from the dialog instead; from `lg` up the dialog is
+			comfortably inside the ratio, so the shape matches every other block.
+		*/}
 		<div
-			class="flex aspect-16/10 w-full items-center justify-center overflow-hidden rounded-[1.25rem] bg-white/50 p-6 lg:w-1/2 lg:p-4"
+			class="flex aspect-auto w-full items-center justify-center overflow-hidden rounded-[1.25rem] bg-white/50 p-6 lg:aspect-16/10 lg:w-1/2 lg:p-4"
 		>
-			<Image
-				src={sharePopup}
-				alt="Easy Sharing"
-				class="max-h-full w-auto max-w-full object-contain"
-				widths={[640, 1280]}
-				sizes="(max-width: 1024px) 100vw, 720px"
-				loading="lazy"
-			/>
+			<ShareToEmailUi />
 		</div>
 	</div>
 </article>
