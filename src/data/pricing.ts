@@ -82,6 +82,7 @@ export const CUSTOM_PLAN = {
 	title: "Looking for More Flexibility?",
 	body: "Get a tailored plan with White-labeling, a custom creator link-in-bio, and features built for your team. Available for teams of 3 or more users.",
 	ctaLabel: "Get in Touch",
+	contactEmail: "harsh@dotme.in",
 };
 
 export const PRICE_NOTE = "Billed monthly + Taxes";

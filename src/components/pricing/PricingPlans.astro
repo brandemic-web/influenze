@@ -203,7 +203,8 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
         <span class="absolute left-0">Rs. {formatAmount(SLIDER_MIN)}</span>
         <span
           class="absolute -translate-x-1/2 whitespace-nowrap"
-          style={`left:${maxCaptionPos}%`}>Rs {formatAmount(maxCaptionSpend)}+</span
+          style={`left:${maxCaptionPos}%`}
+          >Rs {formatAmount(maxCaptionSpend)}+</span
         >
       </div>
     </div>
@@ -310,6 +311,8 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
       <!-- Subscribe -->
       <a
         href={SIGNUP_URL}
+        target="_blank"
+        rel="noopener noreferrer"
         class="mt-5.5 flex w-full items-center justify-center gap-1 rounded-full bg-button-primary px-6 py-2.5 text-[1rem] leading-none text-button-text transition-colors duration-300 hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary"
       >
         {SUBSCRIBE_LABEL}
@@ -352,7 +355,7 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
         </div>
 
         <a
-          href={CONTACT_URL}
+          href={`mailto:${CUSTOM_PLAN.contactEmail}`}
           class="inline-flex shrink-0 items-center justify-center rounded-full bg-button-primary px-8 py-4.5 text-[0.875rem] leading-none text-button-text transition-colors duration-300 hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary"
         >
           {CUSTOM_PLAN.ctaLabel}
@@ -402,7 +405,9 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
             <li class="relative flex items-center justify-between gap-4">
               <span class="flex items-center gap-1.5 text-[0.9375rem] text-white">
                 {row.label}
-                {row.detail && <span class="text-white/50">· {row.detail}</span>}
+                {row.detail && (
+                  <span class="text-white/50">· {row.detail}</span>
+                )}
                 {/*
                   The icon is the hover/focus target. `tabindex` makes the
                   tooltip reachable by keyboard, and `group-focus-within`
