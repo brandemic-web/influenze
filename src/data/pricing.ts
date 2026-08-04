@@ -57,7 +57,7 @@ export const SLIDER_MAX = 100_000;
  * Growth — the tier is the part that matters, and opening at the tier's floor
  * reads better than mid-tier.
  */
-export const DEFAULT_SPEND = 10_000;
+export const DEFAULT_SPEND = 20_000;
 
 /** Extra credits granted for paying annually, as a percentage. */
 export const ANNUAL_BONUS_PCT = 5;
@@ -65,13 +65,15 @@ export const ANNUAL_BONUS_PCT = 5;
 export const PRICING_TIERS: PricingTier[] = [
 	{ id: "starter", name: "Starter", minSpend: SLIDER_MIN, bonusPct: 0 },
 	// Growth is the one tier Figma pins down: ₹22,000 → 24,200 = +10%.
-	{ id: "growth", name: "Growth", minSpend: 10_000, bonusPct: 10 },
+	{ id: "growth", name: "Growth", minSpend: 20_000, bonusPct: 10 },
 	{ id: "scale", name: "Scale", minSpend: 50_000, bonusPct: 20 },
 	{
 		id: "enterprise",
 		name: "Enterprise",
 		minSpend: SLIDER_MAX,
-		bonusPct: 0,
+		// The slider's own 1,00,000 dot still shows a price (custom only kicks in
+		// past that dot), so it keeps the +10-per-tier bonus pattern going.
+		bonusPct: 30,
 		custom: true,
 	},
 ];

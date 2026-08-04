@@ -41,18 +41,43 @@ export function formatPrice(value: number): string {
 }
 
 /**
- * Stop positions along the track, in percent, one per tier — measured off the
- * Figma frame rather than spaced evenly. The rail spans x=414→1314 (900 wide)
- * and the dot centres sit at x=398.5 / 745.5 / 1092.5, giving 0 / 36.8 / 75.4.
+ * Stop positions along the track, in percent, one per tier. The first dot sits
+ * at the first tab's left edge; the rest sit at the midpoint of the gap between
+ * each pair of adjacent tabs, so they read as sitting "between" the two tiers
+ * rather than glued to the next tab's edge.
  *
- * Figma draws NO dot at the track end: the rail simply continues past Scale
- * into Enterprise territory, and the "Rs 50,000+" caption sits under the third
- * dot rather than at the far right. Hence VISIBLE_DOTS below.
+ * The tab row is the rail's width, holding four equal columns with a 0.75rem
+ * gap, so a column starts at i × (width + gap) / railWidth and a gap midpoint
+ * sits half a gap-width earlier: 0 / 24.66 / 50.00 / 75.34 (measured, holds at
+ * every viewport since the row width and the gap both scale with the root font
+ * size). Keep in step with the tablist's `lg:grid-cols-4` and `gap-3`.
+ *
+ * The rail runs on past Enterprise's dot: everything beyond ₹1,00,000 is quoted
+ * rather than priced, which is the stretch the "looking for more flexibility"
+ * block speaks to.
  */
-export const STOP_POSITIONS = [0, 36.8, 75.4, 100];
+export const STOP_POSITIONS = [0, 24.66, 50, 75.34];
 
-/** How many leading stops render a visible dot (Figma shows three). */
-export const VISIBLE_DOTS = 3;
+/** How many leading stops render a visible dot — every tier, including Enterprise. */
+export const VISIBLE_DOTS = 4;
+
+/**
+ * Where the priced range ends. The rail runs on past the last dot; anything in
+ * that stretch is above the top price, so the panel quotes instead of pricing.
+ */
+export const CUSTOM_ZONE_START = STOP_POSITIONS[STOP_POSITIONS.length - 1];
+
+/** Is this position in the quote-only stretch past the last dot? */
+export function isCustomPos(pos: number): boolean {
+	return pos > CUSTOM_ZONE_START;
+}
+
+/**
+ * Which stop the upper price caption labels. Kept separate from VISIBLE_DOTS so
+ * adding or removing a dot does not move the caption: it belongs to Scale, whose
+ * "Rs 50,000+" reads as the top of the self-serve range.
+ */
+export const CAPTION_STOP = 2;
 
 /** Stop positions (percent along the track), one per tier. */
 export function stopPositions(tiers: PricingTier[] = PRICING_TIERS): number[] {
