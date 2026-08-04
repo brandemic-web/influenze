@@ -4,8 +4,10 @@
  *
  * Both lists are rendered into one grid cell so the card's height is the taller
  * of the two and swapping between them can't shift the layout. The markup ships
- * in its *settled* state (Interests selected) — the panel demo in
- * `creators-ai-panels.ts` rewinds it to Brand Affinities and clicks across.
+ * in its *settled* state — Brand Affinities, where the beat in
+ * `creators-ai/beats/knowAudience.ts` leaves it. That beat rewinds the card to
+ * Interests and clicks across, so `SELECTED` is the end of its story rather than
+ * the start; change it and the beat's two ends swap with it.
  */
 interface Props {
 	class?: string;
@@ -39,7 +41,7 @@ const AFFINITY_GROUPS = [
 ];
 
 /** The group the markup renders as selected. */
-const SELECTED = "interests";
+const SELECTED = "brands";
 ---
 
 <div
