@@ -4,7 +4,7 @@ import brandemic from "../../assets/images/home_page/trusted_by/brandemic_logo.s
 import hyper from "../../assets/images/home_page/trusted_by/hyper_logo.svg";
 import owled from "../../assets/images/home_page/trusted_by/owled_logo.svg";
 import iplixMedia from "../../assets/images/home_page/trusted_by/iplix_media_logo.svg";
-
+import circuit from "../../assets/images/home_page/trusted_by/circuit_logo.png";
 /**
  * Every logo shares one box on mobile; from `lg:` up they are sized
  * individually. `size` and `class` are therefore lg-only — mobile keeps the
@@ -28,6 +28,7 @@ const logos = [
 		// 86×53 is the artwork's own size, so it renders undistorted.
 		size: "lg:w-21.5 lg:h-13.25",
 	},
+	{ src: circuit, alt: "Circuit", mobileSize: "w-22 h-5", size: "lg:w-40 lg:h-9" },
 	{ src: owled, alt: "Owled", w: 93, h: 64, size: "lg:w-19 lg:h-13" },
 	{ src: hammerhead, alt: "Hammerhead Global", w: 245, h: 68 },
 ];
@@ -38,7 +39,7 @@ const logos = [
 	<!-- Mobile: GSAP ticker (logos rendered twice so the loop stays gapless on tablets). Desktop: static centered row. -->
 	<div class="mt-10 overflow-x-auto overscroll-x-contain lg:overflow-visible" data-marquee>
 		<ul
-			class="mx-auto flex w-max items-center gap-x-10 px-6 flex-nowrap lg:w-auto lg:max-w-290 lg:justify-between lg:gap-x-1 lg:px-0"
+			class="mx-auto flex w-max items-center gap-x-10 px-6 flex-nowrap lg:w-auto lg:max-w-7xl lg:justify-between lg:gap-x-8"
 			data-marquee-track
 		>
 			{
@@ -53,7 +54,7 @@ const logos = [
 							alt={i >= logos.length ? "" : logo.alt}
 							width={logo.w}
 							height={logo.h}
-							class:list={[MOBILE_SIZE, logo.size ?? DESKTOP_SIZE, logo.class]}
+							class:list={[logo.mobileSize ?? MOBILE_SIZE, logo.size ?? DESKTOP_SIZE, logo.class]}
 							loading="lazy"
 						/>
 					</li>

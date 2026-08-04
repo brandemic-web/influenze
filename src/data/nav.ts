@@ -28,7 +28,7 @@ export const NAV_ITEMS: NavItem[] = [
 	// 	],
 	// },
 	{
-		label: "Linkin Bio",
+		label: "Link-in Bio",
 		href: "https://www.dotme.in/",
 		badge: "DotMe",
 		newTab: true,
