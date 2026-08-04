@@ -1,83 +1,46 @@
 ---
 /**
- * Button — shared pill button/link with selectable style variants.
- *
- * Pick a variant with the `variant` prop:
- *   - "primary" : solid mint-filled pill. Main CTA (e.g. "Sign Up").
- *   - "outline" : dark pill with a solid mint border. Secondary action.
- *   - "nav"     : dark pill wrapped in a purple → mint GRADIENT border.
- *                 Used for the "Login / Sign Up" button in the header & mobile menu.
+ * Button — shared pill button/link. Dark pill wrapped in a purple → mint
+ * GRADIENT border, mint-filled on hover.
  *
  * Usage:
- *   <Button href="/signup">Sign Up</Button>                       // primary (default)
- *   <Button href="/" variant="outline">Back to Home</Button>
- *   <Button href={LOGIN_URL} variant="nav" class="w-full">Login / Sign Up</Button>
+ *   <Button href="/signup">Sign Up</Button>
+ *   <Button href={LOGIN_URL} class="w-full">Login / Sign Up</Button>
  *
  * Pass extra utility classes via `class` (e.g. `w-full` for full-width in the mobile menu).
  * Set `newTab` for links that leave the site, e.g. the app's login page.
  */
 interface Props {
 	href: string;
-	variant?: "primary" | "outline" | "nav";
 	class?: string;
 	/** Open in a new tab. Adds the rel guard that `target="_blank"` needs. */
 	newTab?: boolean;
 }
 
-const {
-	href,
-	variant = "primary",
-	class: className = "",
-	newTab = false,
-} = Astro.props;
+const { href, class: className = "", newTab = false } = Astro.props;
 
 // `noopener` keeps the opened page from reaching back through window.opener.
 const target = newTab ? "_blank" : undefined;
 const rel = newTab ? "noopener noreferrer" : undefined;
-
-// Shared base: shape, spacing, typography and focus ring for the solid/outline variants.
-const base =
-	"inline-flex items-center justify-center rounded-full px-6 py-4 text-[0.75rem] lg:text-xs leading-none transition-colors duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary";
-
-// Solid / outline variants style the <a> directly.
-const variants = {
-	primary:
-		"bg-button-primary text-button-text border border-transparent hover:bg-black hover:border-brand-primary hover:text-brand-primary",
-	outline:
-		"bg-surface-pill border border-brand-primary text-white hover:bg-brand-primary hover:text-black",
-};
-
-const isNav = variant === "nav";
 ---
 
 {
-	isNav ? (
-		/*
-		 * nav variant: the outer <a> is the gradient "border" (purple → mint).
-		 * A ~2px padding (p-0.5) reveals the gradient around the inner dark span,
-		 * whose matching rounded-full clip turns that padding into a ring.
-		 */
-		<a
-			href={href}
-			target={target}
-			rel={rel}
-			class:list={[
-				"group inline-flex rounded-full bg-linear-to-r  from-brand-primary to-[#0F5B33] p-[1.5px] transition-transform duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary",
-				className,
-			]}
-		>
-			<span class="inline-flex w-full items-center justify-center rounded-full bg-surface-pill px-4 py-4.25 lg:px-6.25 lg:py-4 text-[0.75rem] lg:text-xs leading-none text-white transition-colors duration-300 group-hover:bg-brand-primary group-hover:text-button-text">
-				<slot />
-			</span>
-		</a>
-	) : (
-		<a
-			href={href}
-			target={target}
-			rel={rel}
-			class:list={[base, variants[variant], className]}
-		>
-			<slot />
-		</a>
-	)
+	/*
+	 * The outer <a> is the gradient "border" (purple → mint). A ~1.5px padding
+	 * (p-[1.5px]) reveals the gradient around the inner dark span, whose
+	 * matching rounded-full clip turns that padding into a ring.
+	 */
 }
+<a
+	href={href}
+	target={target}
+	rel={rel}
+	class:list={[
+		"group inline-flex rounded-full bg-linear-to-r from-brand-primary to-[#0F5B33] p-[1.5px] transition-transform duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary",
+		className,
+	]}
+>
+	<span class="inline-flex w-full items-center justify-center rounded-full bg-surface-pill px-6 py-4 text-[0.75rem] leading-none text-white transition-colors duration-300 group-hover:bg-brand-primary group-hover:text-button-text lg:text-xs">
+		<slot />
+	</span>
+</a>

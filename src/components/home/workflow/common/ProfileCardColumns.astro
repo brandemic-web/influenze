@@ -1,0 +1,42 @@
+---
+/**
+ * The column skeleton shared by the results table header and every creator card
+ * — `ProfileCard`'s layout constants in common/widgets/profile_card.dart:
+ * leading 84 · gap 20 · identity flex 4 · gap 16 · metrics flex 6 · gap 12 ·
+ * actions 130. The spacers mirror Flutter's `SizedBox`es so the flex maths (and
+ * therefore the column alignment) comes out identical.
+ *
+ * Metric cells: with three of them the first two take a fixed third of the row
+ * minus the 12px the actions slot gave back, so they stay put as the third grows.
+ */
+interface Props {
+	/** Header rows sit tighter than cards. */
+	class?: string;
+	/** The list layout draws its own leading slot outside this grid. */
+	withLeading?: boolean;
+}
+
+const { class: className = "", withLeading = true } = Astro.props;
+---
+
+<div class:list={["flex items-center", className]}>
+	{
+		withLeading && (
+			<>
+				<div class="w-21 shrink-0">
+					<slot name="leading" />
+				</div>
+				<div class="w-5 shrink-0" />
+			</>
+		)
+	}
+	<div class="min-w-0 flex-[4_1_0%]"><slot name="identity" /></div>
+	<div class="w-4 shrink-0"></div>
+	<div class="flex min-w-0 flex-[6_1_0%] items-center">
+		<div class="w-[calc((100%-0.75rem)/3)] shrink-0"><slot name="followers" /></div>
+		<div class="w-[calc((100%-0.75rem)/3)] shrink-0"><slot name="likes" /></div>
+		<div class="min-w-0 flex-1"><slot name="engagement" /></div>
+	</div>
+	<div class="w-3 shrink-0"></div>
+	<div class="flex w-32.5 shrink-0 justify-end"><slot name="actions" /></div>
+</div>

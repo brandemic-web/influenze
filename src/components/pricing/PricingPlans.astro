@@ -28,7 +28,7 @@
 import { Image } from "astro:assets";
 import bolt from "../../assets/images/common/logos_and_icons/footer_logo.svg";
 import wave from "../../assets/images/common/decor/wave_bg.svg";
-import { SIGNUP_URL, CONTACT_URL } from "../../data/site";
+import { SIGNUP_URL } from "../../data/site";
 import {
   PRICING_HEADING,
   PRICING_TIERS,
@@ -88,7 +88,7 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
   <!-- ── Heading ───────────────────────────────────────────────────── -->
   <h1
     id="pricing-heading"
-    class="relative mx-auto max-w-225 px-6 text-center text-9xl capitalize leading-[1.1] max-lg:text-6xl max-md:text-4xl"
+    class="relative mx-auto max-w-225 px-6 text-center text-9xl capitalize leading-[1.1] max-lg:text-4xl max-md:text-2xl lg:mx-auto"
   >
     <span class="block text-white">{PRICING_HEADING.lead}</span><span
       class="block text-brand-primary">{PRICING_HEADING.accent}</span
@@ -100,10 +100,11 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
 
   <!--
     ── Tier tabs ───────────────────────────────────────────────────
-    The row is sized to match the slider rail below it. The rail's width is the
-    panel card's content box less the inner wrapper's margin, so the padding
-    here mirrors that sum: card border (1px) + card padding + wrapper margin.
-    Keep in step with the card's `px-*` and the rail wrapper's `mx-*`.
+    The row is sized to match the slider rail below it, so each tab sits over the
+    stretch of rail its tier covers (see STOP_POSITIONS in pricingModel.ts). The
+    rail's width is the panel card's content box less the inner wrapper's margin,
+    so the padding here mirrors that sum: card border (1px) + card padding +
+    wrapper margin. Keep in step with the card's `px-*` and the rail's `mx-*`.
   -->
   <div
     class="relative mx-auto mt-10 flex max-w-6xl flex-wrap items-center justify-center gap-3 px-6.25 sm:px-8.25 lg:grid lg:grid-cols-4 lg:px-30.5"
@@ -143,7 +144,7 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
 
   <!-- ── Panel card ────────────────────────────────────────────────── -->
   <div
-    class="glass-rim relative mx-auto mt-11 max-w-6xl rounded-[1.25rem] border border-transparent bg-[#0a071885] px-4 pt-12 pb-10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.14),inset_0_-1px_0_0_rgba(255,255,255,0.04),0_24px_70px_-12px_rgba(0,0,0,0.55)] sm:px-6 lg:px-24.25 lg:pt-14 lg:pb-14"
+    class="glass-rim relative mx-4 mt-11 max-w-6xl rounded-[1.25rem] border border-transparent bg-[#0a071885] px-4 pt-12 pb-10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.14),inset_0_-1px_0_0_rgba(255,255,255,0.04),0_24px_70px_-12px_rgba(0,0,0,0.55)] sm:px-6 lg:px-24.25 lg:pt-14 lg:pb-14 lg:mx-auto"
   >
     <!-- ── Spend slider ──────────────────────────────────────────── -->
     <div class="relative mx-2 lg:mx-6">
@@ -209,7 +210,8 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
         <span class="absolute left-0">Rs. {formatAmount(SLIDER_MIN)}</span>
         <span
           class="absolute -translate-x-1/2 whitespace-nowrap"
-          style={`left:${maxCaptionPos}%`}>Rs {formatAmount(maxCaptionSpend)}+</span
+          style={`left:${maxCaptionPos}%`}
+          >Rs {formatAmount(maxCaptionSpend)}+</span
         >
       </div>
     </div>
@@ -316,6 +318,8 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
       <!-- Subscribe -->
       <a
         href={SIGNUP_URL}
+        target="_blank"
+        rel="noopener noreferrer"
         class="mt-5.5 flex w-full items-center justify-center gap-1 rounded-full bg-button-primary px-6 py-2.5 text-[1rem] leading-none text-button-text transition-colors duration-300 hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary"
       >
         {SUBSCRIBE_LABEL}
@@ -358,7 +362,7 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
         </div>
 
         <a
-          href={CONTACT_URL}
+          href={`mailto:${CUSTOM_PLAN.contactEmail}`}
           class="inline-flex shrink-0 items-center justify-center rounded-full bg-button-primary px-8 py-4.5 text-[0.875rem] leading-none text-button-text transition-colors duration-300 hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary"
         >
           {CUSTOM_PLAN.ctaLabel}
@@ -408,7 +412,9 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
             <li class="relative flex items-center justify-between gap-4">
               <span class="flex items-center gap-1.5 text-[0.9375rem] text-white">
                 {row.label}
-                {row.detail && <span class="text-white/50">· {row.detail}</span>}
+                {row.detail && (
+                  <span class="text-white/50">· {row.detail}</span>
+                )}
                 {/*
                   The icon is the hover/focus target. `tabindex` makes the
                   tooltip reachable by keyboard, and `group-focus-within`

@@ -1,0 +1,70 @@
+---
+/**
+ * The ranked results table — `analyze_results_list.dart`: `padding h24 v20`, then
+ * header / rule / applied filters / rule / column header / list.
+ *
+ * `data-wf-results-part` tags each block so beat 2 can stagger them in as the
+ * search lands; `data-wf-results-scroll` is the column the cursor wheels.
+ */
+import Icon from "../../../common/Icon.astro";
+import ProfileCard from "../../../common/ProfileCard.astro";
+import ProfileCardColumns from "../../../common/ProfileCardColumns.astro";
+import { RESULT_CREATORS, RESULT_FILTERS } from "../../../../../../data/workflowMockup";
+---
+
+<!-- buildHeader: fromLTRB(18, 20, 0, 20) -->
+<div class="flex shrink-0 items-center pt-5 pr-6 pb-5 pl-4.5" data-wf-results-part>
+	<span class="flex items-center gap-1 text-md whitespace-nowrap text-wf-text">
+		Analyzed <span class="text-wf-green-mid">10</span>
+		<span class="w-2"></span>
+		Total Results <span class="text-wf-green-mid">1248</span>
+	</span>
+	<!--
+		No bulk Add to List here: it is `BulkActionButton`, which collapses to
+		nothing at a count of 0 (bulk_action_button.dart), and the story never
+		selects from the results — it adds to a list from the creator's profile.
+	-->
+</div>
+
+<span class="block h-px shrink-0 bg-wf-rule" data-wf-results-part></span>
+
+<!-- AnalyzeAppliedFiltersBar: fromLTRB(18, 20, 24, 20), groups spaced 24 -->
+<div class="flex shrink-0 items-center gap-6 overflow-hidden pt-5 pr-6 pb-5 pl-4.5" data-wf-results-part>
+	{
+		RESULT_FILTERS.map((filter) => (
+			<span class="flex shrink-0 items-center gap-2.5">
+				<span class="text-[0.75rem] font-medium whitespace-nowrap text-wf-text-soft">{filter.label}</span>
+				<span class="rounded-[0.25rem] bg-wf-chip-on px-2 pt-1 pb-1.25 text-[0.75rem] whitespace-nowrap text-wf-text">
+					{filter.value}
+				</span>
+			</span>
+		))
+	}
+</div>
+
+<span class="block h-px shrink-0 bg-wf-rule" data-wf-results-part></span>
+
+<!-- HeaderRow: padding l14 r14 b8, inside a pt-16/pb-8 wrapper -->
+<div class="shrink-0 pt-4 pb-2" data-wf-results-part>
+	<ProfileCardColumns class="px-3.5 pb-2">
+		<span slot="leading" class="flex items-center gap-2">
+			<span class="size-3 shrink-0 rounded-[0.1875rem] border border-wf-table-label"></span>
+			<span class="text-[0.75rem] whitespace-nowrap text-wf-table-label">Select all</span>
+		</span>
+		<span slot="identity" class="text-[0.75rem] whitespace-nowrap text-wf-table-label">Name</span>
+		<span slot="followers" class="text-[0.75rem] whitespace-nowrap text-wf-table-label">Followers</span>
+		<span slot="likes" class="text-[0.75rem] whitespace-nowrap text-wf-table-label">Avg. Likes</span>
+		<span slot="engagement" class="flex items-center gap-1 text-[0.75rem] whitespace-nowrap text-wf-table-label">
+			Engagement Rate
+			<Icon name="arrowDown" size="0.875rem" class="text-wf-table-label" />
+		</span>
+	</ProfileCardColumns>
+</div>
+
+<!-- The inner column holds the rows so it can be scrolled as one; it keeps its
+     natural height and overflows the clipped parent rather than shrinking. -->
+<div class="flex min-h-0 flex-1 flex-col overflow-hidden pt-2" data-wf-results-part>
+	<div class="flex shrink-0 flex-col gap-2" data-wf-results-scroll>
+		{RESULT_CREATORS.map((creator) => <ProfileCard creator={creator} />)}
+	</div>
+</div>

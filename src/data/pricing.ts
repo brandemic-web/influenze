@@ -10,7 +10,7 @@
  * ┌─────────────────────────────────────────────────────────────────────────┐
  * │ PLACEHOLDER NUMBERS — READ BEFORE SHIPPING                              │
  * │                                                                         │
- * │ Figma specifies EXACTLY ONE state: Growth at ₹22,000/mo → 24,200        │
+ * │ Design specifies EXACTLY ONE state: Growth at ₹22,000/mo → 24,200        │
  * │ credits (+10% bonus), annual = +5% credits, range Rs. 1,000–100,000+.   │
  * │ Those five numbers below are taken from the design and are correct.     │
  * │                                                                         │
@@ -47,18 +47,24 @@ export const PRICING_HEADING = {
 	sub: "Tier updates as you drag",
 };
 
-/** Slider bounds in ₹. From Figma: "Rs. 1,000" → "Rs 100,000+". */
+/** Slider bounds in ₹. "Rs. 1,000" → "Rs 100,000+". */
 export const SLIDER_MIN = 1_000;
 export const SLIDER_MAX = 100_000;
 
-/** Monthly spend selected on first paint. Figma shows ₹22,000 (Growth). */
-export const DEFAULT_SPEND = 22_000;
+/**
+ * Monthly spend selected on first paint: the bottom of the Growth tier, so the
+ * panel opens on Growth at its entry price. Figma pinned this at ₹22,000, also
+ * Growth — the tier is the part that matters, and opening at the tier's floor
+ * reads better than mid-tier.
+ */
+export const DEFAULT_SPEND = 20_000;
 
 /** Extra credits granted for paying annually, as a percentage. */
 export const ANNUAL_BONUS_PCT = 5;
 
 export const PRICING_TIERS: PricingTier[] = [
 	{ id: "starter", name: "Starter", minSpend: SLIDER_MIN, bonusPct: 0 },
+	// Growth is the one tier Figma pins down: ₹22,000 → 24,200 = +10%.
 	{ id: "growth", name: "Growth", minSpend: 20_000, bonusPct: 10 },
 	{ id: "scale", name: "Scale", minSpend: 50_000, bonusPct: 20 },
 	{
@@ -76,6 +82,7 @@ export const CUSTOM_PLAN = {
 	title: "Looking for More Flexibility?",
 	body: "Get a tailored plan with White-labeling, a custom creator link-in-bio, and features built for your team. Available for teams of 3 or more users.",
 	ctaLabel: "Get in Touch",
+	contactEmail: "harsh@dotme.in",
 };
 
 export const PRICE_NOTE = "Billed monthly + Taxes";

@@ -1,0 +1,31 @@
+---
+/**
+ * Destructive selection action — `BulkActionButton` / `RemoveFromListButton`.
+ * `min-w-16 h-9` is Material's 64x36 minimum, which wins over the padding.
+ */
+import Icon from "./Icon.astro";
+import type { WorkflowIconName } from "../../../../data/workflowIcons";
+
+interface Props {
+	label: string;
+	icon: WorkflowIconName;
+	/** Rendered bare, without parentheses, unlike the Compare button's count. */
+	count: number;
+	/** Glyph size differs per call site: `delete` is 12, `remove_from_list` is 10. */
+	iconSize?: string;
+	class?: string;
+}
+
+const { label, icon, count, iconSize = "0.75rem", class: className = "" } = Astro.props;
+---
+
+<span
+	class:list={[
+		"flex h-9 min-w-16 items-center gap-2 rounded-[0.375rem] bg-wf-danger-bg px-3 text-[0.625rem] whitespace-nowrap",
+		className,
+	]}
+>
+	<Icon name={icon} size={iconSize} class="text-white" />
+	<span class="font-medium text-wf-danger">{label}</span>
+	<span class="text-wf-danger-text">{count}</span>
+</span>

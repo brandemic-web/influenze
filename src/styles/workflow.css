@@ -1,0 +1,282 @@
+/*
+ * Design tokens for the hero "product workflow" mockup.
+ *
+ * These are the *app's* colours, taken from influenze/lib/common/colors.dart and
+ * kept in their own `wf-` namespace so they never collide with the marketing-site
+ * brand palette in global.css. The Dart name is noted where it isn't obvious.
+ * See components/home/workflow/APP-SPEC.md for the geometry these go with.
+ */
+
+@theme {
+	/* shell */
+	--color-wf-page: #080814; /* bodyBg */
+	--color-wf-card: #171721; /* containerBg */
+	--color-wf-panel: #232339; /* sectionBg */
+	--color-wf-rail: #121214; /* grey5 */
+	--color-wf-rail-border: #222232; /* lavender41 */
+	--color-wf-rail-rule: #564d71; /* lavender8 */
+	--color-wf-section-rule: #252525; /* grey6 */
+	--color-wf-rule: #383869; /* lavender11 — panel + card rules */
+	--color-wf-surface: #181823; /* blue / listCardBg */
+
+	/* nav */
+	--color-wf-user-pill: #1b3e2c; /* green2 */
+	--color-wf-credit-from: #15613a; /* green14 */
+	--color-wf-credit-to: #1b3e2c; /* green2 */
+	--color-wf-credit-border: #256745; /* green1 */
+	--color-wf-notify-from: #282434; /* lavender29 */
+	--color-wf-notify-to: #463c60; /* lavender38 */
+	--color-wf-notify-border: #322b46; /* lavender61 */
+
+	/* inputs */
+	--color-wf-input: #242433; /* lavender26 */
+	--color-wf-input-border: #413a56; /* lavender6 */
+	--color-wf-search: #2c2c49; /* searchBarBg */
+	--color-wf-input-filled: #0cbf61; /* green13 */
+	--color-wf-action: #6443cc; /* lavender31 */
+	--color-wf-action-off: #464668; /* lavender65 */
+	--color-wf-action-muted: #6d638f; /* add-to-list, once the creator is in the list */
+
+	/* chips & controls */
+	--color-wf-chip: #282434; /* chipDefaultBg */
+	--color-wf-chip-border: #302846; /* chipDefaultBorder */
+	--color-wf-chip-on: #50349e; /* chipSelectedBg */
+	--color-wf-chip-on-border: #7e57ea; /* chipSelectedBorder */
+	--color-wf-chip-row-on: #322b45; /* lavender69 */
+	--color-wf-control-border: #615381; /* lavender14 */
+	--color-wf-track: #423c57; /* sliderInactive */
+
+	/* parameter dropdown */
+	--color-wf-select: #574789; /* lavender3 */
+	--color-wf-select-open: #6a55ac; /* lavender63 */
+	--color-wf-select-active: #6e6199; /* lavender62 */
+
+	/* accents */
+	--color-wf-violet: #653ee1; /* lavender25 */
+	--color-wf-violet-bright: #865fff; /* lavender15 */
+	--color-wf-green: #33e889; /* brandGreen */
+	--color-wf-green-mid: #32e889; /* green3 — note: one digit from brandGreen */
+	--color-wf-green-deep: #1aae55; /* green11 */
+	--color-wf-green-bright: #3aff98; /* green8 */
+
+	/* type */
+	--color-wf-text: #ffffff;
+	--color-wf-text-soft: #d0c2ff; /* lavender7 */
+	--color-wf-text-muted: #847aa4; /* lavender46 */
+	--color-wf-text-dim: #9fa1ff; /* lavender19 */
+	--color-wf-text-value: #c0acff; /* lavender44 */
+	--color-wf-text-quiet: #beb8d0; /* lavender71 */
+	--color-wf-table-label: #7474c7; /* lavender1 — column headers */
+	--color-wf-meta: #a89ccb; /* lavender28 — location/gender/language */
+	--color-wf-text-idle: #463c60; /* lavender38 */
+
+	/* status */
+	--color-wf-danger: #ff4b52; /* red1 */
+	--color-wf-danger-bg: #3d2222; /* red — destructive button fill */
+	--color-wf-danger-text: #8f4242; /* red2 */
+}
+
+/*
+ * The mockup is authored on the app's native 1440x900 canvas (90rem x 56.25rem)
+ * and scaled down to whatever width the hero gives it, so every value inside can
+ * stay a plain, readable rem at 1:1 app pixels.
+ */
+.wf-mockup {
+	container-type: inline-size;
+	aspect-ratio: 1440 / 900;
+	position: relative;
+}
+
+/*
+ * Both layers are the same canvas. `100cqw` has to be resolved by a *child* of
+ * the container — an element never queries itself — which is why the scale is
+ * written here rather than hoisted to a custom property on `.wf-mockup`.
+ *
+ * Both are taken out of flow, and that is load-bearing rather than tidiness:
+ * `scale` is a transform, so a layer's *layout* box stays the full 56.25rem
+ * however far down it is drawn. A box carrying an `aspect-ratio` takes its
+ * automatic minimum size from its content, so an in-flow layer would hold
+ * `.wf-mockup` open at 900px at every width and leave dead space under the
+ * mockup on anything narrower than the canvas.
+ */
+.wf-stage,
+.wf-card-layer {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 90rem;
+	height: 56.25rem;
+	transform-origin: top left;
+	/* Fallback for browsers without CSS trig: exact at the >=lg hero width. */
+	scale: 0.888889;
+	/* tan(atan2(a, b)) divides two lengths into a unitless ratio, which is the
+	   only pure-CSS way to express "scale the canvas to fit its container". */
+	scale: tan(atan2(100cqw, 90rem));
+}
+
+/*
+ * The cards' layer, laid over the stage and deliberately not clipped, so a card
+ * can hang past the canvas edge the way Figma draws it. Nothing in it is
+ * interactive, and it must never swallow a click meant for the page beneath.
+ */
+.wf-card-layer {
+	pointer-events: none;
+}
+
+/*
+ * A strip of app UI on its own, away from the hero: the features page's creator
+ * showcase renders the real results table (components/features/CreatorShowcase).
+ *
+ * Same scaling trick as the hero canvas, with one difference — the width is the
+ * Analyze results list's *own* row width rather than the whole app frame: the
+ * 58.25rem panel less its two 1.5rem gutters. So the rows come out at exactly the
+ * proportions the app draws them at, and the strip still spans whatever the page
+ * gives it. Both the width and the divisor are rem, so the ratio is unaffected by
+ * the fluid root font-size.
+ *
+ * The container carries the ratio for the same reason `.wf-mockup` does: `scale`
+ * is a transform, so the canvas's layout box stays its full unscaled height and
+ * would hold the strip open at that height on every viewport. 315 design px is
+ * the canvas's measured content height — three 94px rows (1px border + 16px +
+ * the 60px avatar + 16px + 1px) with two 16px gaps between them. Change what the
+ * strip holds and this has to follow, or dead space opens under the last row.
+ */
+.wf-strip {
+	container-type: inline-size;
+	position: relative;
+	aspect-ratio: 884 / 315;
+}
+
+.wf-strip-canvas {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 55.25rem;
+	transform-origin: top left;
+	/* Fallback for browsers without CSS trig: exact at the >=lg strip width. */
+	scale: 0.753;
+	scale: tan(atan2(100cqw, 55.25rem));
+}
+
+/*
+ * Flutter sizes a Text to its glyph box, so a label contributes far less height
+ * than a CSS line box would. Trimming to cap height is what keeps the app's
+ * stacked paddings landing on the same pixels here.
+ *
+ * The card layer is in for a different reason: it is not app UI, but Figma sets
+ * `text-box-trim: trim-both` on the cards' own text layers, so their 30px
+ * paddings only land right if the text is trimmed the same way.
+ */
+:is(.wf-stage, .wf-card-layer, .wf-strip-canvas) :is(p, span, b, h1, h2, h3, h4, h5, h6, label) {
+	text-box: trim-both cap alphabetic;
+}
+
+/* Only the active step paints; GSAP swaps the attribute as the story advances. */
+[data-wf-screen]:not([data-wf-active]) {
+	opacity: 0;
+	visibility: hidden;
+}
+
+/*
+ * Animation state.
+ *
+ * Screens 1 and 2 are the *same* Analyze screen, so the filter rail renders every
+ * state it passes through at once and these rules pick which one paints as the
+ * static first frame. The timeline then writes inline styles, which outrank
+ * everything here, so it can move between them freely.
+ * See scripts/home-page/workflow/analyzeLookalike.ts.
+ */
+
+/* Which of the two stacked parameter bodies is in flow. */
+[data-wf-param="none"] :is([data-wf-param-sheet], [data-wf-param-panel]),
+[data-wf-param="open"] [data-wf-param-panel],
+[data-wf-param="lookalike"] [data-wf-param-sheet] {
+	display: none;
+}
+
+/* Everything that only exists once the Lookalike filter carries a value. */
+[data-wf-rail]:not([data-wf-filled]) :is([data-wf-handle-value], [data-wf-location-chips], [data-wf-sort="lookalike"]),
+[data-wf-rail][data-wf-filled] :is([data-wf-handle-hint], [data-wf-sort="followers"]) {
+	display: none;
+}
+
+/* The reset x fades instead of reflowing, so it keeps its box in the header row. */
+[data-wf-rail]:not([data-wf-filled]) [data-wf-reset] {
+	opacity: 0;
+}
+
+/*
+ * Spans added purely as animation hooks around text that used to sit in an
+ * anonymous box opt out of the cap-trim above. Trimming them would shorten the
+ * box and shift the glyphs ~1px inside the fixed-height rows they live in.
+ */
+.wf-stage .wf-untrimmed {
+	text-box: normal;
+}
+
+/*
+ * The explainer cards that punctuate the story. Hidden until the timeline
+ * brings one up, so a failed script leaves the hero clean.
+ *
+ * All five share one resting place, measured off the design rather than
+ * chosen: Figma sets every card 112px below its app frame's top edge and hangs
+ * it 153px past the right edge, so the overhang is the design's, not a
+ * workaround. Those are Figma pixels against its 1280-wide frame, so both are
+ * x1.125 here for the 1440-wide canvas — the same factor `WorkflowCard.astro`
+ * applies to the card's own geometry. Override one with `[data-wf-card="N"]`.
+ *
+ * The overhang is a fraction of the card's own width, so it runs through the
+ * card's `--wf-card-scale` as well — otherwise shrinking the card would leave
+ * half of it hanging off the canvas. The top offset is a position rather than a
+ * size, so it stays where the design puts it.
+ *
+ * `visibility` as well as `opacity`: a card left at `opacity: 0` would still
+ * take the hit-testing if anything in here ever became interactive.
+ */
+.wf-card {
+	position: absolute;
+	top: 7.875rem;
+	right: calc(-10.758rem * var(--wf-card-scale, 1));
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
+}
+
+/*
+ * Card 2's violet fill. Figma paints a flat #8058ff rectangle and masks a
+ * radial ellipse over its right-hand side; the ellipse's outer stop is that
+ * same #8058ff, so one gradient does the work of both and no mask is needed.
+ *
+ * The radii and centre are percentages of the card rather than the design's
+ * pixels, so the highlight stays put when the stage rescales.
+ */
+.wf-card-violet {
+	background: radial-gradient(ellipse 33.57% 122.83% at 89.97% 43.06%, #ae98f4 0%, #8058ff 100%);
+}
+
+/*
+ * The hand cursor that drives the story. It sits in the stage rather than in a
+ * screen layer (those get hidden), so it can travel across steps and scales with
+ * the canvas. GSAP owns x/y/scale/opacity; it stays invisible until the timeline
+ * runs, so a failed script leaves no stray cursor behind.
+ */
+.wf-pointer {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 50;
+	width: 2rem;
+	height: 2rem;
+	opacity: 0;
+	transform-origin: top left;
+	pointer-events: none;
+}
+
+/*
+ * Offset the glyph so the fingertip — measured at 44%/26% across the 32x32
+ * asset — lands on the wrapper's origin. The timeline can then aim the wrapper
+ * straight at a target's centre, and a press scales around the fingertip.
+ */
+.wf-pointer > img {
+	translate: -44% -26%;
+}

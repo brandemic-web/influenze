@@ -1,14 +1,14 @@
-export interface HowItWorksStep {
+export interface WhyInfluenzeStep {
 	/** Key into the icon map in common/LucideIcon.astro */
 	icon: "search" | "eye" | "rocket";
 	title: string;
 	description: string;
 }
 
-export const HOW_IT_WORKS_EYEBROW = "WHY INFLUENZE?";
-export const HOW_IT_WORKS_BUTTON = "Learn More";
+export const WHY_INFLUENZE_EYEBROW = "WHY INFLUENZE?";
+export const WHY_INFLUENZE_BUTTON = "Learn More";
 
-export const HOW_IT_WORKS_STEPS: HowItWorksStep[] = [
+export const WHY_INFLUENZE_STEPS: WhyInfluenzeStep[] = [
 	{
 		icon: "search",
 		title: "Discover",

@@ -1,0 +1,96 @@
+---
+/**
+ * Follower Metrics UI — tier list with the selected tier expanded.
+ */
+interface Props {
+	class?: string;
+}
+
+const { class: className = "" } = Astro.props;
+
+const tiers = [
+	{ icon: "🚀", name: "Nano Influencer", range: "1k - 10k followers" },
+	{ icon: "🔥", name: "Micro Influencer", range: "10k - 50k followers" },
+	{ icon: "⭐", name: "Mid-Tier Account", range: "50k - 100k followers" },
+];
+---
+
+<div
+	class:list={[
+		"w-[21.875rem] max-w-full rounded-md border border-white/8 bg-[#0b0916] px-3 pt-3.5 pb-3.5 font-sans text-white",
+		className,
+	]}
+>
+	<span class="text-[0.8125rem] font-medium text-ui-subtle">Follower Metrics</span>
+
+	<ul class="mt-2.5 flex list-none flex-col p-0">
+		{
+			tiers.map((tier) => (
+				<li class="flex items-center gap-2.5 border-b border-white/8 px-1 py-2.75">
+					<span class="size-3.5 flex-none rounded-[0.25rem] border border-gradient-primary/60" />
+					<span class="text-[0.8125rem] leading-none">{tier.icon}</span>
+					<span class="flex-auto text-[0.8125rem]">{tier.name}</span>
+					<span class="text-[0.75rem] text-ui-lilac">{tier.range}</span>
+				</li>
+			))
+		}
+		<li class="flex items-center gap-2.5 px-1 pt-3.5 pb-1">
+			<span
+				class="size-3.5 flex-none rounded-[0.25rem] border border-gradient-primary/60"
+			></span>
+			<span class="text-[0.8125rem] leading-none">💎</span>
+			<span class="flex-auto text-[0.8125rem]">Macro Influencer</span>
+			<span class="text-[0.75rem] text-ui-lilac">100k - 1M followers</span>
+		</li>
+
+		<!--
+			Selected tier, expanded. Markup is the *settled* state; the section's
+			timeline (creators-ai-search-anim) rewinds it to an unselected row and
+			plays the selection forward, so it degrades to the design without JS.
+		-->
+		<li data-metrics-row class="mt-1.5 rounded-sm bg-[#282341] px-3 pt-2.75 pb-3">
+			<div class="flex items-center gap-2.5">
+				<span
+					data-metrics-check
+					class="inline-flex size-3.5 flex-none items-center justify-center rounded-[0.25rem] border border-transparent bg-gradient-primary"
+				>
+					<span data-metrics-dot class="size-1.5 rounded-full bg-white"></span>
+				</span>
+				<span class="text-[0.8125rem] leading-none">👑</span>
+				<span class="flex-auto text-[0.8125rem] font-medium">Mega Account</span>
+				<span class="text-[0.75rem] text-white">1M+ followers</span>
+			</div>
+
+			<div data-metrics-expand class="overflow-hidden">
+				<div class="relative mt-3.5 h-1 rounded-full bg-white/12">
+					<span
+						data-metrics-slider
+						class="absolute inset-y-0 left-0 block w-full origin-left rounded-full bg-brand-primary"
+					></span>
+					<span
+						data-metrics-knob
+						class="absolute top-1/2 left-0 size-4 -translate-y-1/2 rounded-full bg-white"
+					></span>
+				</div>
+
+				<div class="mt-2 flex justify-between text-[0.625rem] text-ui-muted">
+					<span>min</span>
+					<span>poor</span>
+					<span>average</span>
+					<span>good</span>
+					<span>max</span>
+				</div>
+
+				<p
+					class="mt-3 border-t border-white/12 pt-2.5 text-[0.75rem] text-ui-subtle"
+				>
+					displaying all ranges <span class="font-semibold text-brand-primary"
+						>min</span
+					> to <span class="font-semibold text-brand-primary">max</span>
+				</p>
+			</div>
+		</li>
+
+		
+	</ul>
+</div>

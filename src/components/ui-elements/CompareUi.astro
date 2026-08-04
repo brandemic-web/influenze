@@ -1,0 +1,359 @@
+---
+/**
+ * Compare UI — side-by-side creator comparison panel.
+ */
+interface Props {
+	class?: string;
+}
+
+const { class: className = "" } = Astro.props;
+
+/** Icon key -> the accent each stat tile uses. `null` renders no icon. */
+type StatIcon = "posts" | "views" | "comments" | null;
+
+/**
+ * A creator's engagement band. The tier badge, the rate, the status chip and
+ * the description lead all share one accent, so the column picks a tone and the
+ * classes are looked up once below — keeping the data free of styling.
+ */
+type Tone = "amber" | "mint";
+
+const TONES: Record<Tone, { badge: string; value: string; status: string }> = {
+	amber: {
+		badge: "bg-[#2a2417] text-ui-amber",
+		value: "text-ui-amber",
+		status: "bg-[#6b5416] text-ui-amber",
+	},
+	mint: {
+		badge: "bg-[#16281d] text-brand-primary",
+		value: "text-brand-primary",
+		status: "bg-[#1d4d33] text-brand-primary",
+	},
+};
+
+interface Creator {
+	name: string;
+	verified: boolean;
+	meta: string;
+	tone: Tone;
+	stats: { label: string; value: string; icon: StatIcon }[];
+	tierBadge: string;
+	rate: string;
+	median: string;
+	scaleMin: string;
+	scaleMax: string;
+	/** Position of the category-median tick along the scale, as a CSS length. */
+	tickAt: string;
+	status: string;
+	tierTitle: string;
+	descLead: string;
+	descRest: string;
+}
+
+const creators: Creator[] = [
+	{
+		name: "VOXPOP Bangalore",
+		verified: false,
+		meta: "India · EN",
+		tone: "amber",
+		stats: [
+			{ label: "Total Followers", value: "25k", icon: null },
+			{ label: "Total Posts", value: "420", icon: "posts" },
+			{ label: "Average Reel Views", value: "10.6k", icon: "views" },
+			{ label: "Average Comments", value: "2,345", icon: "comments" },
+		],
+		tierBadge: "🔥 Micro Influencer",
+		rate: "1.75%",
+		median: "0.98%",
+		scaleMin: "0.4",
+		scaleMax: "2.6",
+		tickAt: "62%",
+		status: "AVERAGE ENGAGEMENT",
+		tierTitle: "Micro Influencer (10k - 50k followers)",
+		descLead: "Micro Influencers",
+		descRest: "are valued for their niche focus and credibility.",
+	},
+	{
+		name: "Shreyaa Nachappa",
+		verified: true,
+		meta: "India · Female · EN",
+		tone: "mint",
+		stats: [
+			{ label: "Total Followers", value: "12k", icon: null },
+			{ label: "Total Posts", value: "99", icon: "posts" },
+			{ label: "Average Reel Views", value: "2.4k", icon: "views" },
+			{ label: "Average Comments", value: "134", icon: "comments" },
+		],
+		tierBadge: "⭐ Mid-Tier Influencer",
+		rate: "2.84%",
+		median: "0.88%",
+		scaleMin: "0.4",
+		scaleMax: "4.3",
+		tickAt: "62%",
+		status: "HIGH ENGAGEMENT",
+		tierTitle: "Mid-Tier Influencer (50k - 100k followers)",
+		descLead: "Mid-tier Influencers",
+		descRest: "bridge niche communities and broader reach.",
+	},
+];
+---
+
+<div
+	class:list={[
+		"w-[36.625rem] max-w-full overflow-hidden rounded-[1rem] border border-white/8 bg-[#232338] font-sans text-white",
+		className,
+	]}
+>
+	<!-- Header -->
+	<div
+		class="flex items-center justify-between border-b border-white/8 px-5 py-4"
+	>
+		<span class="text-[1.25rem] font-medium">Compare</span>
+		<button
+			type="button"
+			class="cursor-pointer text-[0.875rem] font-medium text-brand-primary hover:text-white"
+		>
+			Back
+		</button>
+	</div>
+
+	<!--
+		Body scrolls on its own so the card keeps a fixed footprint in the
+		CreatorsAI collage no matter how many stats a creator has.
+	-->
+	<div
+		data-compare-scroll
+		class="compare-scroll grid max-h-105 grid-cols-2 gap-4 overflow-y-auto px-5 py-4"
+	>
+		{
+			creators.map((creator) => {
+				const tone = TONES[creator.tone];
+				return (
+				<div class="flex flex-col">
+					{/* profile */}
+					<div class="flex items-center gap-3">
+						{/* placeholder avatar — swap for a real image later */}
+						<span class="size-12 flex-none rounded-full bg-white/10" />
+						<span class="min-w-0 flex-auto">
+							<span class="flex items-center gap-1.5">
+								<span class="truncate text-[0.9375rem] font-semibold">
+									{creator.name}
+								</span>
+								{creator.verified && (
+									<span class="size-2 flex-none rounded-full bg-[#3b9bff]" />
+								)}
+							</span>
+							<span
+								class:list={[
+									"mt-1 inline-block rounded-full px-1.5 py-0.5 text-[0.5625rem] font-medium",
+									tone.badge,
+								]}
+							>
+								{creator.tierBadge}
+							</span>
+							<span class="mt-1 block text-[0.6875rem] text-ui-muted">
+								{creator.meta}
+							</span>
+						</span>
+					</div>
+
+					{/* account stats */}
+					<div class="mt-4 flex items-center gap-2 border-t border-white/8 pt-4">
+						<span class="inline-flex size-6 flex-none items-center justify-center rounded-[0.3125rem] bg-[#1f2937]">
+							<svg class="size-3.5 flex-none" viewBox="0 0 16 16" aria-hidden="true">
+								<rect x="2.5" y="8" width="2.5" height="5" rx="0.6" fill="#3aff98" />
+								<rect x="6.75" y="5" width="2.5" height="8" rx="0.6" fill="#3b9bff" />
+								<rect x="11" y="2.5" width="2.5" height="10.5" rx="0.6" fill="#8a6bff" />
+							</svg>
+						</span>
+						<span class="text-[0.8125rem] font-semibold">Account Stats</span>
+					</div>
+
+					{/* headline counts, two per row */}
+					<div class="mt-3 grid grid-cols-2 gap-2">
+						{creator.stats.map((stat) => (
+							<div class="rounded-md bg-[#0d0c12] px-2.5 pt-2 pb-2.5">
+								<span class="block text-[0.5625rem] text-ui-muted">
+									{stat.label}
+								</span>
+								<div class="mt-1.5 flex items-center justify-between gap-2">
+									<span class="text-[1.25rem] leading-none font-medium">
+										{stat.value}
+									</span>
+
+									{stat.icon === "posts" && (
+										<svg
+											class="size-3.5 flex-none text-[#f5a524]"
+											viewBox="0 0 16 16"
+											aria-hidden="true"
+										>
+											<rect
+												x="2"
+												y="3"
+												width="12"
+												height="3"
+												rx="0.8"
+												fill="none"
+												stroke="currentColor"
+												stroke-width="1.3"
+											/>
+											<rect
+												x="3"
+												y="6.5"
+												width="10"
+												height="6.5"
+												rx="1"
+												fill="none"
+												stroke="currentColor"
+												stroke-width="1.3"
+											/>
+											<path
+												d="M6.5 9h3"
+												stroke="currentColor"
+												stroke-width="1.3"
+												stroke-linecap="round"
+											/>
+										</svg>
+									)}
+
+									{stat.icon === "views" && (
+										<svg
+											class="size-3.5 flex-none text-[#f4415f]"
+											viewBox="0 0 16 16"
+											aria-hidden="true"
+										>
+											<path
+												d="M1.5 8s2.4-4.2 6.5-4.2S14.5 8 14.5 8s-2.4 4.2-6.5 4.2S1.5 8 1.5 8Z"
+												fill="none"
+												stroke="currentColor"
+												stroke-width="1.3"
+												stroke-linejoin="round"
+											/>
+											<circle
+												cx="8"
+												cy="8"
+												r="1.9"
+												fill="none"
+												stroke="currentColor"
+												stroke-width="1.3"
+											/>
+										</svg>
+									)}
+
+									{stat.icon === "comments" && (
+										<svg
+											class="size-3.5 flex-none text-[#5b5bd6]"
+											viewBox="0 0 16 16"
+											aria-hidden="true"
+										>
+											<path
+												d="M13.5 7.7c0 3-2.5 5.4-5.5 5.4a6 6 0 0 1-2.5-.5l-3 .9.9-2.8A5.2 5.2 0 0 1 2.5 7.7c0-3 2.5-5.4 5.5-5.4s5.5 2.4 5.5 5.4Z"
+												fill="none"
+												stroke="currentColor"
+												stroke-width="1.3"
+												stroke-linejoin="round"
+											/>
+										</svg>
+									)}
+								</div>
+							</div>
+						))}
+					</div>
+
+					<div class="mt-3 rounded-md bg-[#0d0c12] px-3 pt-3 pb-3.5">
+						<span class="block text-[0.6875rem] text-ui-muted">
+							Engagement Rate
+						</span>
+
+						<div class="mt-2 flex items-center gap-2">
+							<span
+								class:list={[
+									"text-[1.75rem] leading-none font-medium",
+									tone.value,
+								]}
+							>
+								{creator.rate}
+							</span>
+							<span
+								class:list={[
+									"rounded-full px-1.5 py-0.5 text-[0.5625rem] font-medium",
+									tone.badge,
+								]}
+							>
+								{creator.tierBadge}
+							</span>
+						</div>
+
+						{/* median scale */}
+						<div class="mt-3">
+							<span
+								class="block text-[0.6875rem] font-semibold"
+								style={`margin-left: calc(${creator.tickAt} - 1.25rem)`}
+							>
+								{creator.median}
+							</span>
+							<div class="mt-1 flex items-center gap-1.5">
+								<span class="text-[0.5rem] text-ui-muted">{creator.scaleMin}</span>
+								<span class="relative h-1 flex-auto rounded-full bg-linear-to-r from-[#3f4a43] to-[#3aff98]">
+									<span
+										class="absolute -top-1 h-3 w-px bg-white"
+										style={`left: ${creator.tickAt}`}
+									/>
+								</span>
+								<span class="text-[0.5rem] text-ui-muted">{creator.scaleMax}</span>
+							</div>
+							<span
+								class="mt-1 block text-[0.5rem] text-ui-muted"
+								style={`margin-left: calc(${creator.tickAt} - 1.5rem)`}
+							>
+								Category Median
+							</span>
+						</div>
+
+						<span
+							class:list={[
+								"mt-3 inline-block rounded-[0.25rem] px-2 py-1 text-[0.625rem] font-bold",
+								tone.status,
+							]}
+						>
+							{creator.status}
+						</span>
+
+						<p class="mt-3 text-[0.8125rem] font-semibold">{creator.tierTitle}</p>
+						<p class="mt-1.5 text-[0.6875rem] leading-[1.5] text-ui-subtle">
+							<span class:list={["font-medium", tone.value]}>
+								{creator.descLead}
+							</span>{" "}
+							{creator.descRest}
+						</p>
+					</div>
+				</div>
+				);
+			})
+		}
+	</div>
+</div>
+
+<style>
+	/* Firefox */
+	.compare-scroll {
+		scrollbar-width: thin;
+		scrollbar-color: rgba(138, 107, 255, 0.55) rgba(255, 255, 255, 0.05);
+	}
+
+	/* WebKit / Blink */
+	.compare-scroll::-webkit-scrollbar {
+		width: 0.375rem;
+	}
+	.compare-scroll::-webkit-scrollbar-track {
+		border-radius: 999px;
+		background: rgba(255, 255, 255, 0.05);
+	}
+	.compare-scroll::-webkit-scrollbar-thumb {
+		border-radius: 999px;
+		background: rgba(138, 107, 255, 0.55);
+	}
+	.compare-scroll::-webkit-scrollbar-thumb:hover {
+		background: rgba(138, 107, 255, 0.85);
+	}
+</style>

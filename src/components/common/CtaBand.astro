@@ -32,57 +32,143 @@ const { buttonLabel = "Sign Up" } = Astro.props;
 	aria-labelledby="cta-heading"
 	data-cta-section
 >
-	<img src={bg_svg.src} alt="" class="pointer-events-none absolute inset-0 h-full w-full object-cover" loading="lazy" />
+	<img
+		src={bg_svg.src}
+		alt=""
+		class="pointer-events-none absolute inset-0 h-full w-full object-cover"
+		loading="lazy"
+	/>
 	<!-- glows -->
-	<img src={glowCenter.src} alt="" class="pointer-events-none absolute top-0 left-1/2 h-full lg:w-300 w-75 -translate-x-1/2" loading="lazy" />
-	<img src={glowSide.src} alt="" class="pointer-events-none absolute top-0 -left-32 h-full lg:w-66 w-25" loading="lazy" />
-	<img src={glowSide.src} alt="" class="pointer-events-none absolute top-0 -right-32 h-full lg:w-66 w-25" loading="lazy" />
+	<img
+		src={glowCenter.src}
+		alt=""
+		class="pointer-events-none absolute top-0 left-1/2 h-full lg:w-300 w-75 -translate-x-1/2"
+		loading="lazy"
+	/>
+	<img
+		src={glowSide.src}
+		alt=""
+		class="pointer-events-none absolute top-0 -left-32 h-full lg:w-66 w-25"
+		loading="lazy"
+	/>
+	<img
+		src={glowSide.src}
+		alt=""
+		class="pointer-events-none absolute top-0 -right-32 h-full lg:w-66 w-25"
+		loading="lazy"
+	/>
+
+	<!-- fade to footer bg -->
+	<div
+		class="pointer-events-none absolute inset-0 bg-linear-to-b from-transparent from-60% to-[#0A0718]"
+		aria-hidden="true"
+	>
+	</div>
 
 	<!-- floating creators + chips (mobile base, lg: desktop) -->
-	<div class="pointer-events-none absolute inset-0 max-w-[102rem] mx-auto" aria-hidden="true">
+	<div
+		class="pointer-events-none absolute inset-0 max-w-[102rem] mx-auto"
+		aria-hidden="true"
+	>
 		<!-- share icon -->
-		<div class="cta-float absolute top-[38%] left-[-3%] w-8.75 z-10 lg:top-[11%] lg:left-[10%] lg:w-16.25" data-fx="18" data-fy="12" data-fr="4">
+		<div
+			class="cta-float absolute top-[38%] left-[-3%] w-8.75 z-10 lg:top-[11%] lg:left-[10%] lg:w-16.25"
+			data-fx="18"
+			data-fy="12"
+			data-fr="4"
+		>
 			<img src={shareIcon.src} alt="" loading="lazy" />
 		</div>
 		<!-- sunglasses creator -->
-		<div class="cta-float absolute top-[40%] left-[-2%] w-20 rotate-[-11deg] rounded-md overflow-hidden lg:top-[12%] lg:left-[13%] lg:w-40" data-fx="28" data-fy="16" data-fr="6">
+		<div
+			class="cta-float absolute top-[40%] left-[-2%] w-20 rotate-[-11deg] rounded-md overflow-hidden lg:top-[12%] lg:left-[13%] lg:w-40"
+			data-fx="28"
+			data-fy="16"
+			data-fr="6"
+		>
 			<Image src={creatorOne} alt="" loading="lazy" />
 		</div>
 		<!-- plus icon -->
-		<div class="cta-float absolute top-[25%] right-[22%] w-7.5 z-10 lg:top-[58%] lg:right-[18%] lg:w-9.25" data-fx="-16" data-fy="10" data-fr="-4">
+		<div
+			class="cta-float absolute top-[25%] right-[22%] w-7.5 z-10 lg:top-[58%] lg:right-[18%] lg:w-9.25"
+			data-fx="-16"
+			data-fy="10"
+			data-fr="-4"
+		>
 			<img src={plusIcon.src} alt="" loading="lazy" />
 		</div>
 		<!-- woman creator -->
-		<div class="cta-float absolute top-[14%] right-[3%] w-20 rotate-3 rounded-md overflow-hidden lg:top-[47%] lg:right-[12%] lg:w-25 lg:rounded-3 lg:rotate-[5deg] lg:z-10" data-fx="-24" data-fy="18" data-fr="-6">
+		<div
+			class="cta-float absolute top-[14%] right-[3%] w-20 rotate-3 rounded-md overflow-hidden lg:top-[47%] lg:right-[12%] lg:w-25 lg:rounded-3 lg:rotate-[5deg] lg:z-10"
+			data-fx="-24"
+			data-fy="18"
+			data-fr="-6"
+		>
 			<Image src={creatorThree} alt="" loading="lazy" />
 		</div>
 		<!-- orange creator -->
-		<div class="cta-float absolute bottom-[22%] right-[10%] w-16.25 h-16.25 rotate-3 rounded-md overflow-hidden lg:bottom-auto lg:top-[7%] lg:right-[23%] lg:w-33.75 lg:h-36.25 lg:rotate-[5deg] lg:rounded-3" data-fx="-22" data-fy="20" data-fr="5">
+		<div
+			class="cta-float absolute bottom-[22%] right-[10%] w-16.25 h-16.25 rotate-3 rounded-md overflow-hidden lg:bottom-auto lg:top-[7%] lg:right-[23%] lg:w-33.75 lg:h-36.25 lg:rotate-[5deg] lg:rounded-3"
+			data-fx="-22"
+			data-fy="20"
+			data-fr="5"
+		>
 			<Image src={creatorFour} alt="" loading="lazy" />
 		</div>
 		<!-- followers chip -->
-		<div class="cta-float absolute bottom-[14%] right-[2%] w-22.5 -rotate-6 lg:bottom-auto lg:top-[17%] lg:right-[12%] lg:w-46.25 lg:rotate-[-10deg]" data-fx="-28" data-fy="12" data-fr="-8">
+		<div
+			class="cta-float absolute bottom-[14%] right-[2%] w-22.5 -rotate-6 lg:bottom-auto lg:top-[17%] lg:right-[12%] lg:w-46.25 lg:rotate-[-10deg]"
+			data-fx="-28"
+			data-fy="12"
+			data-fr="-8"
+		>
 			<img src={followersChip.src} alt="" loading="lazy" />
 		</div>
-		<div class="cta-float lg:block absolute bottom-[16%] left-[8%] w-12.5 rotate-30 lg:top-[32%] lg:right-[10%] lg:bottom-auto lg:left-auto" data-fx="20" data-fy="14" data-fr="6">
+		<div
+			class="cta-float lg:block absolute bottom-[16%] left-[8%] w-12.5 rotate-30 lg:top-[32%] lg:right-[10%] lg:bottom-auto lg:left-auto"
+			data-fx="20"
+			data-fy="14"
+			data-fr="6"
+		>
 			<img src={brandemicLogo.src} alt="" loading="lazy" />
 		</div>
 
 		<!-- desktop-only decorations -->
-		<div class="cta-float hidden lg:block absolute top-[53%] left-[19%] w-24 rotate-20 rounded-md overflow-hidden" data-fx="24" data-fy="16" data-fr="5">
+		<div
+			class="cta-float hidden lg:block absolute top-[53%] left-[19%] w-24 rotate-20 rounded-md overflow-hidden"
+			data-fx="24"
+			data-fy="16"
+			data-fr="5"
+		>
 			<Image src={creatorTwo} alt="" loading="lazy" />
 		</div>
 		<!-- hyper logo -->
-		<div class="cta-float hidden absolute bottom-[16%] left-[8%] w-22.5 rotate-[-20deg] lg:bottom-[20%] lg:left-[6%] lg:w-30 lg:block" data-fx="22" data-fy="14" data-fr="-6">
+		<div
+			class="cta-float hidden absolute bottom-[16%] left-[8%] w-22.5 rotate-[-20deg] lg:bottom-[20%] lg:left-[6%] lg:w-30 lg:block"
+			data-fx="22"
+			data-fy="14"
+			data-fr="-6"
+		>
 			<img src={hyperLogo.src} alt="" loading="lazy" />
 		</div>
-		<div class="cta-float hidden lg:block absolute top-[65%] left-[15%] w-28.75 rotate-[-10deg]" data-fx="18" data-fy="12" data-fr="5">
+		<div
+			class="cta-float hidden lg:block absolute top-[65%] left-[15%] w-28.75 rotate-[-10deg]"
+			data-fx="18"
+			data-fy="12"
+			data-fr="5"
+		>
 			<Image src={followers570k} alt="" loading="lazy" />
 		</div>
 	</div>
 
-	<div class="relative flex h-full flex-col items-center justify-center gap-3 lg:gap-10">
-		<h2 id="cta-heading" data-cta-heading class="text-center text-[2rem] capitalize text-white max-md:text-3xl lg:text-[3.625rem]">
+	<div
+		class="relative flex h-full flex-col items-center justify-center gap-3 lg:gap-10"
+	>
+		<h2
+			id="cta-heading"
+			data-cta-heading
+			class="text-center text-[2rem] capitalize text-white max-md:text-3xl lg:text-[3.625rem]"
+		>
 			Ready to get influenzed?
 		</h2>
 		<div data-cta-button>

@@ -5,7 +5,7 @@ Where unsure, the build follows the design as-is; nothing below was "fixed" sile
 
 ## Content gaps (need copy/decision from you)
 
-1. **FAQ answers missing** — the design has 6 FAQ questions but only ONE answer (for "How accurate is the fraud detection?"). The other 5 questions have no answer text anywhere in the file. `src/data/faqs.ts` has clearly-marked `TODO` placeholder answers that must be replaced before launch.
+1. ~~**FAQ answers missing** — the design has 6 FAQ questions but only ONE answer (for "How accurate is the fraud detection?"). The other 5 questions have no answer text anywhere in the file.~~ **Resolved** — the section was rewritten to eight questions with real copy, so the placeholder scaffolding in `src/data/faqs.ts` is gone.
 2. **Testimonials are placeholders** — all 3 cards are the same person ("James Smith, IPLIX") with the same quote and same photo. Built as designed; swap real testimonials in `src/data/testimonials.ts` when available.
 3. **Resources nav dropdown** — "Resources ▾" in the header has no designed dropdown panel. Built as a simple dropdown listing the footer's Resources links (Product Demo, Blogs, FAQs, Contact Us), all pointing to `#`.
 4. **CTA URLs** — Login/Sign Up/Get in Touch all point to the placeholder in `src/data/site.ts` (`SIGNUP_URL` / `LOGIN_URL` / `CONTACT_URL`). Swap when the app URLs exist.
@@ -13,7 +13,7 @@ Where unsure, the build follows the design as-is; nothing below was "fixed" sile
 ## Design inconsistencies (left as designed)
 
 5. **"400M+" vs "450M+" creators** — pricing plan rows say "Analyze 400M+ Creators" while both hero sections say "450M+ creators". Left exactly as designed.
-6. **Use-case card copy duplicated** — ADVERTISING and E-COMMERCE cards have the *identical* description as PUBLIC RELATIONS ("Assists in creator discovery, ambassador shortlisting…"). Left as designed.
+6. ~~**Use-case card copy duplicated** — ADVERTISING and E-COMMERCE cards have the *identical* description as PUBLIC RELATIONS ("Assists in creator discovery, ambassador shortlisting…").~~ **Resolved** — the section was rewritten to nine audiences with distinct one-line copy, so nothing repeats.
 7. **StatsGrid duplicate value** — both "Fraud Detection accuracy" and "Historical data per creator" show "99.8%". The historical-data card's body copy mentions "24 months", so the 99.8% may be a copy-paste; left as designed.
 8. **Pricing credit row typo** — "Per Media Media Kit Unlock" (doubled word) in the How-Credits-Work card. Left as designed.
 9. **"Agnecy" typo** — appears only inside exported UI screenshot images (filter panel mock), not in any live text we render, so nothing to fix in code. A design-file fix + re-export would be needed to remove it from the images.
@@ -40,6 +40,7 @@ Where unsure, the build follows the design as-is; nothing below was "fixed" sile
 23. **`mokobora_listing.png` is unused** — the Figma frame it was assumed to represent ("Frame 47934") turned out to be the creator filters panel, which has its own export.
 24. **Radius scale gotcha**: the theme maps `rounded-lg` to 2rem and `rounded-3xl` to 8.75rem — much bigger than Tailwind defaults. Components use explicit arbitrary values (`rounded-[20px]` etc.) where the design specifies exact radii.
 25. **Dev-server quirk**: after adding new `.astro` files, `astro dev` sometimes serves stale Tailwind CSS (new arbitrary classes missing) — restart `astro dev` if a fresh component renders unstyled.
+26. **Features-page creator showcase was three exported PNGs, one of them a placeholder.** `creator_listing_three.png` still read "One more here / @username", and all three used the Figma frame's two-line list layout with its "Aggregate Followers / Engagement Rate" labels and figures that disagree with the app. Replaced with the app's own `ProfileCard` rendered as markup (`.wf-strip` in `styles/workflow.css`), so it tracks the same source as the hero mockup. The three `creator_listing_*.png` have been deleted.
 
 ## Figma file notes
 

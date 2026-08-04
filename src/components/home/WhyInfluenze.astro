@@ -1,10 +1,10 @@
 ---
 import { FEATURES_URL } from "../../data/site";
 import {
-	HOW_IT_WORKS_EYEBROW,
-	HOW_IT_WORKS_BUTTON,
-	HOW_IT_WORKS_STEPS,
-} from "../../data/howItWorks";
+	WHY_INFLUENZE_EYEBROW,
+	WHY_INFLUENZE_BUTTON,
+	WHY_INFLUENZE_STEPS,
+} from "../../data/whyInfluenze";
 import iconSearch from "../../assets/images/common/icons/search.svg";
 import iconEye from "../../assets/images/common/icons/eye.svg";
 import iconRocket from "../../assets/images/common/icons/rocket.svg";
@@ -17,11 +17,11 @@ const stepIcons: Record<string, ImageMetadata> = {
 };
 ---
 
-<section aria-labelledby="how-it-works-heading" class="-mt-20 overflow-hidden relative z-5">
+<section aria-labelledby="why-influenze-heading" class="-mt-20 overflow-hidden relative z-5">
 	<div class="relative mx-auto flex flex-col items-center px-6 text-center">
-		<p class="text-[1rem] lg:text-[1.125rem] uppercase leading-[normal] text-brand-primary">{HOW_IT_WORKS_EYEBROW}</p>
+		<p class="text-[1rem] lg:text-[1.125rem] uppercase leading-[normal] text-brand-primary">{WHY_INFLUENZE_EYEBROW}</p>
 		<h2
-			id="how-it-works-heading"
+			id="why-influenze-heading"
 			class="mt-5 lg:mt-8 max-w-130 text-[1.875rem] capitalize leading-[normal] text-white lg:text-[2.25rem] [text-box:trim-both_cap_alphabetic]"
 		>
 			We are the first step for <span class="text-brand-primary">every influencer Campaign</span>
@@ -39,18 +39,18 @@ const stepIcons: Record<string, ImageMetadata> = {
 				data-reveal-stagger="0.15"
 			>
 				{
-					[...HOW_IT_WORKS_STEPS, ...HOW_IT_WORKS_STEPS].map((step, i) => (
+					[...WHY_INFLUENZE_STEPS, ...WHY_INFLUENZE_STEPS].map((step, i) => (
 						<article
 							class:list={[
 								"rounded-sm bg-linear-to-r from-[#19123A] via-[#19123A] to-[#575757] p-px",
-								i >= HOW_IT_WORKS_STEPS.length && "hidden",
+								i >= WHY_INFLUENZE_STEPS.length && "hidden",
 							]}
-							data-marquee-clone={i >= HOW_IT_WORKS_STEPS.length ? "" : undefined}
-							aria-hidden={i >= HOW_IT_WORKS_STEPS.length ? "true" : undefined}
+							data-marquee-clone={i >= WHY_INFLUENZE_STEPS.length ? "" : undefined}
+							aria-hidden={i >= WHY_INFLUENZE_STEPS.length ? "true" : undefined}
 							data-reveal-item
 						>
 							<div class="flex min-h-47 h-full items-center rounded-sm bg-background-primary px-6 py-7 lg:px-15 lg:py-10">
-								<div class="flex w-75 max-w-85.75 lg:w-82.75 lg:max-w-full flex-col gap-5 text-left">
+								<div class="flex w-75 max-w-85 lg:w-92 lg:max-w-full flex-col gap-5 text-left">
 									<div class="flex items-center gap-4">
 										<img src={stepIcons[step.icon].src} alt="" class="h-12 w-12 rounded-sm" loading="lazy" />
 										<h3 class="text-[1.25rem] lg:text-md capitalize leading-[normal] text-white [text-box:trim-both_cap_alphabetic]">{step.title}</h3>
@@ -64,8 +64,8 @@ const stepIcons: Record<string, ImageMetadata> = {
 			</div>
 		</div>
 
-		<Button href={FEATURES_URL} variant="nav" class="mt-8 lg:mt-12">
-			{HOW_IT_WORKS_BUTTON}
+		<Button href={FEATURES_URL} class="mt-8 lg:mt-12">
+			{WHY_INFLUENZE_BUTTON}
 		</Button>
 	</div>
 </section>

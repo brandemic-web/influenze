@@ -1,0 +1,28 @@
+---
+/** Filled platform verification rosette (blue badge + white tick). */
+interface Props {
+	size?: string;
+	class?: string;
+}
+
+const { size = "0.875rem", class: className = "" } = Astro.props;
+---
+
+<svg
+	viewBox="0 0 24 24"
+	style={`width:${size};height:${size}`}
+	class={`shrink-0 ${className}`}
+	aria-hidden="true"
+>
+	<path
+		fill="#1d9bf0"
+		d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"
+	></path>
+	<path
+		d="m9 12 2 2 4-4"
+		fill="none"
+		stroke="#ffffff"
+		stroke-width="2.4"
+		stroke-linecap="round"
+		stroke-linejoin="round"></path>
+</svg>

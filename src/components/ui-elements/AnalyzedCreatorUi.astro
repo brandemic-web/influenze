@@ -1,0 +1,192 @@
+---
+import { Image } from "astro:assets";
+import Icon from "./Icon.astro";
+import type { IconName } from "./icons";
+import watsapp from "../../assets/images/common/logos_and_icons/watsapp_icon.svg";
+import creatorFive from "../../assets/images/common/cta_section/cta_creator_four.png";
+
+/**
+ * Analyzed Creator UI — profile card with the contact popover open and the
+ * enquire actions on the bottom edge.
+ * Avatar is a placeholder.
+ */
+
+/** The contact rows this card knows how to render. */
+export type ContactChannel = "Phone" | "Email" | "Whatsapp";
+
+/**
+ * Icon per channel: phone and email are inline mono glyphs tinted by the row,
+ * WhatsApp is its own multi-colour logo asset. A `Record` over the union means
+ * adding a channel to the type is a compile error until it has an icon here.
+ */
+const CONTACT_ICONS: Record<
+	ContactChannel,
+	{ glyph: IconName } | { logo: ImageMetadata }
+> = {
+	Phone: { glyph: "phone" },
+	Email: { glyph: "mail" },
+	Whatsapp: { logo: watsapp },
+};
+
+interface Props {
+	title?: string;
+	name?: string;
+	tier?: string;
+	tierIcon?: string;
+	location?: string;
+	gender?: string;
+	language?: string;
+	enquireLabel?: string;
+	/** Contact rows, in order. */
+	contacts?: ContactChannel[];
+	class?: string;
+}
+
+const {
+	title = "Analyzed Creator",
+	name = "Justin Jose",
+	tier = "Macro Influencer",
+	tierIcon = "💎",
+	location = "India",
+	gender = "Male",
+	language = "EN",
+	enquireLabel = "Enquire",
+	contacts = ["Phone", "Email", "Whatsapp"],
+	class: className = "",
+} = Astro.props;
+---
+
+<div
+	class:list={[
+		"relative w-[40.25rem] max-w-full pr-20 pb-2.5 font-sans text-white",
+		className,
+	]}
+>
+	<!-- Profile card -->
+	<div
+		class="h-[47.0625rem] w-[35.25rem] max-w-full rounded-[1.75rem] bg-[#262242] px-11 pt-11"
+	>
+		<h3 class="text-center text-[1.75rem] leading-none">{title}</h3>
+
+		{/* placeholder avatar — swap for a real image later */}
+		<span
+			class="mx-auto mt-9 block aspect-square w-71.5 h-71.5 overflow-hidden rounded-full bg-white/10"
+		>
+			<Image
+				src={creatorFive}
+				alt="Image Of a Content Creator"
+				widths={[286, 572]}
+				sizes="17.875rem"
+			/>
+		</span>
+
+		<p class="mt-5 text-center text-[2.5rem] leading-[1.2]">{name}</p>
+
+		<p class="mt-8 text-center">
+			<span
+				class="inline-flex items-center gap-2 rounded-[0.4375rem] bg-[#322c58] px-3 py-1.5 text-[1.0625rem]"
+			>
+				<span class="leading-none">{tierIcon}</span>
+				{tier}
+			</span>
+		</p>
+
+		<div
+			class="mt-7 flex items-center justify-center gap-5 border-y border-white/12 py-6 text-[0.8125rem] text-ui-subtle"
+		>
+			<span class="inline-flex items-center gap-1.5">
+				<svg class="size-4 flex-none" viewBox="0 0 16 16" aria-hidden="true">
+					<path
+						d="M8 14s4.5-4.2 4.5-7.3A4.5 4.5 0 0 0 3.5 6.7C3.5 9.8 8 14 8 14Z"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="1.3"></path>
+					<circle
+						cx="8"
+						cy="6.6"
+						r="1.6"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="1.3"></circle>
+				</svg>
+				{location}
+			</span>
+			<span>{gender}</span>
+			<span>{language}</span>
+		</div>
+	</div>
+
+	<!-- Enquire actions: pill centred on the card, round button hanging to its right -->
+	<div
+		class="absolute -bottom-7 left-0 flex w-[35.25rem] max-w-full justify-center"
+	>
+		<div class="relative">
+			<button
+				type="button"
+				data-analyzed-enquire
+				class="inline-flex cursor-pointer items-center gap-3 rounded-full border border-brand-primary bg-[#0a2418] px-6 py-6 text-[1.375rem] leading-none font-medium text-white hover:bg-[#0e3421]"
+			>
+				<svg
+					class="size-7 flex-none text-brand-primary"
+					viewBox="0 0 20 20"
+					aria-hidden="true"
+				>
+					<path
+						d="M10 3.5c3.6 0 6.5 2.4 6.5 5.4S13.6 14.3 10 14.3c-.7 0-1.4-.1-2-.3l-3 1.7.8-2.7c-1.4-1-2.3-2.5-2.3-4.1 0-3 2.9-5.4 6.5-5.4Z"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="1.4"
+						stroke-linecap="round"
+						stroke-linejoin="round"></path>
+				</svg>
+				{enquireLabel}
+				<Icon name="chevron-down" class="size-5" strokeWidth={1.6} />
+			</button>
+
+			<button
+				type="button"
+				aria-label="Add to list"
+				class="absolute top-1/2 left-full ml-5 inline-flex size-18 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-[#3a2f6b] text-ui-lilac hover:bg-[#463a80]"
+			>
+				<svg class="size-8 flex-none" viewBox="0 0 24 24" aria-hidden="true">
+					<path
+						d="M4 7h13M4 12h9M4 17h9m5-5v6m-3-3h6"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="1.7"
+						stroke-linecap="round"></path>
+				</svg>
+			</button>
+		</div>
+	</div>
+
+	<!-- Contact popover -->
+	<ul
+		data-analyzed-popover
+		class="absolute top-1/2 right-0 flex w-[17.625rem] list-none flex-col rounded-[1.75rem] rounded-bl-none bg-[#302649] px-9"
+	>
+		{
+			contacts.map((contact) => {
+				const icon = CONTACT_ICONS[contact];
+				return (
+					<li class="flex items-center gap-4 border-b border-white/15 py-9 last:border-b-0">
+						{/* The row's own label names the channel, so the icon is decorative. */}
+						{"glyph" in icon ? (
+							<Icon name={icon.glyph} class="size-6.25 text-ui-icon" />
+						) : (
+							<img
+								src={icon.logo.src}
+								alt=""
+								width={icon.logo.width}
+								height={icon.logo.height}
+								class="size-7.25"
+								loading="lazy"
+							/>
+						)}
+						<span class="text-[1.6875rem] leading-none">{contact}</span>
+					</li>
+				);
+			})
+		}
+	</ul>
+</div>

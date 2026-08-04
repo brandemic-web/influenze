@@ -1,0 +1,169 @@
+---
+/**
+ * Account Stats
+ *
+ * The card itself is transparent over the tab card; only padding. The media kit
+ * has its own palette (`MKitColors`), so the hexes here are deliberately
+ * literals rather than the wf-* tokens used elsewhere.
+ */
+import Icon from "../../../../common/Icon.astro";
+import type { WorkflowIconName } from "../../../../../../../data/workflowIcons";
+
+/** One of the five engagement bands; each carries four coordinated colours. */
+type Level = "high" | "average" | "low";
+
+interface Props {
+	rate: string;
+	tierLabel: string;
+	level: Level;
+	headline: string;
+	/** Creator and median positions on the benchmark bar, as percentages. */
+	marker: number;
+	median: number;
+	medianLabel: string;
+	/** Readonly because these come straight out of the data module's `as const`. */
+	axis: readonly [string, string];
+	body: readonly { readonly text: string; readonly accent?: boolean }[];
+	followers: string;
+	posts: string;
+	views: string;
+	likes: string;
+	comments: string;
+	/** `cardColor` — the media kit default, or #18171f on the compare screen. */
+	surface?: string;
+}
+
+const props = Astro.props;
+const surface = props.surface ?? "#25292c";
+
+// Each band is the app's `_colorsForLevel` four-tuple in mkit_tiers.dart:
+// primary_color, backgroundColor, card_text_color, content_text_color.
+const levels = {
+	high: { label: "HIGH", value: "#3fbd71", badgeBg: "#284a35", badgeText: "#42f388", accent: "#32e889" },
+	average: { label: "AVERAGE", value: "#e3c73a", badgeBg: "#413c26", badgeText: "#ffda23", accent: "#ffda23" },
+	low: { label: "LOW", value: "#ff4b52", badgeBg: "#5b2929", badgeText: "#ff4b52", accent: "#8f4242" },
+} as const;
+const c = levels[props.level];
+
+const tiles: { label: string; value: string; icon: WorkflowIconName; tint: string; wide?: boolean }[] = [
+	{ label: "Total Followers", value: props.followers, icon: "usersRound", tint: "#3fbd71", wide: true },
+	{ label: "Total Posts", value: props.posts, icon: "galleryVertical", tint: "#f2994a" },
+	{ label: "Average Reel Views", value: props.views, icon: "eyeSmall", tint: "#ea5757" },
+	{ label: "Average Likes", value: props.likes, icon: "thumbsUp", tint: "#c23584" },
+	{ label: "Average Comments", value: props.comments, icon: "messageCircle", tint: "#935ad6" },
+];
+const [wide, ...grid] = tiles;
+const tileClass = "flex flex-col rounded-[0.3125rem] p-3";
+---
+
+<!-- Taller than the tab card, so the timeline scrolls this whole block. -->
+<div class="p-4" data-wf-mediakit-scroll>
+	<div class="p-3">
+		<div class="flex items-center pb-3.5">
+			<span class="grid size-9 shrink-0 place-items-center rounded-[0.3125rem]" style={`background:${surface}`}>
+				<Icon name="chartColumnIncreasing" size="1.25rem" class="text-wf-green-mid" />
+			</span>
+			<span class="ml-3 text-[0.875rem] font-semibold whitespace-nowrap text-wf-text">Account Stats</span>
+		</div>
+
+		<section class="rounded-[0.3125rem] p-3" style={`background:${surface}`}>
+			<p class="text-[0.625rem] font-medium text-wf-text">Engagement Rate</p>
+
+			<div class="mt-6 flex items-center">
+				<span class="text-[2.5rem] leading-none" style={`color:${c.value}`}>{props.rate}</span>
+				<span
+					class="ml-2.5 rounded-[1rem] bg-[#202427] py-2 px-2.5 text-[0.625rem] whitespace-nowrap text-wf-text"
+					>{props.tierLabel}</span
+				>
+			</div>
+
+			<!-- Benchmark bar: grey track with a green band centred on the median. -->
+			<div class="mt-7">
+				<div class="flex items-center justify-between text-[0.5rem] text-[#6e777c]">
+					<span>{props.axis[0]}</span><span>{props.axis[1]}</span>
+				</div>
+				<div class="relative mt-1 h-1.25">
+					<div
+						class="absolute inset-0 rounded-[0.625rem]"
+						style={`background:linear-gradient(to right,#2f3539 0%,#3fbd71 ${props.median}%,#2f3539 100%)`}
+					>
+					</div>
+
+					<!-- Median: dashed line, captions on the side away from the creator. -->
+					<div class="absolute -top-2.5 h-8.25 w-0" style={`left:${props.median}%`}>
+						<span
+							class="absolute inset-y-0 left-0 w-px"
+							style="background:repeating-linear-gradient(to bottom,#ffffff33 0 3px,transparent 3px 4px)"></span>
+						<span
+							class:list={["absolute -top-3.75 flex flex-col", props.marker > props.median ? "right-1" : "left-1"]}
+						>
+							<span class="text-[0.75rem] whitespace-nowrap text-wf-text">{props.medianLabel}</span>
+							<span class="mt-px block h-px w-11 bg-[#ffffff33]"></span>
+						</span>
+						<span
+							class:list={[
+								"absolute bottom-0 text-[0.5rem] whitespace-nowrap text-[#6e777c]",
+								props.marker > props.median ? "right-1" : "left-1",
+							]}>Category Median</span
+						>
+					</div>
+
+					<!-- Creator marker: 1x33 bar capped by an 8x4 triangle. -->
+					<div class="absolute -top-2.5 h-8.25 w-0" style={`left:${props.marker}%`}>
+						<span class="absolute inset-y-0 left-0 w-px" style={`background:${c.value}`}></span>
+						<span
+							class="absolute top-0 left-[-0.203125rem] block size-0 border-x-4 border-t-4 border-x-transparent"
+							style={`border-top-color:${c.value}`}></span>
+					</div>
+				</div>
+			</div>
+
+			<span
+				class="mt-8 block w-fit rounded-xs p-2 text-[0.625rem] font-semibold"
+				style={`background:${c.badgeBg};color:${c.badgeText}`}
+			>
+				{c.label} ENGAGEMENT
+			</span>
+
+			<h6 class="mt-3 text-[0.9375rem] font-semibold text-wf-text">{props.headline}</h6>
+
+			<p class="mt-3.5 text-[0.75rem] leading-[1.75] text-[#c0c9cf]">
+				{
+					props.body.map((part) =>
+						part.accent ? (
+							<span class="font-bold" style={`color:${c.accent}`}>
+								{part.text}
+							</span>
+						) : (
+							<span>{part.text}</span>
+						)
+					)
+				}
+			</p>
+		</section>
+
+		<div class={`${tileClass} mt-2`} style={`background:${surface}`}>
+			<span class="text-[0.625rem] font-medium text-wf-text">{wide.label}</span>
+			<span class="mt-6 flex items-center justify-between">
+				<span class="text-[1.25rem] font-semibold text-wf-text">{wide.value}</span>
+				<Icon name={wide.icon} size="0.875rem" style={`color:${wide.tint}`} />
+			</span>
+		</div>
+
+		{
+			[grid.slice(0, 2), grid.slice(2)].map((row) => (
+				<div class="mt-2 flex gap-2">
+					{row.map((tile) => (
+						<div class={`${tileClass} flex-1`} style={`background:${surface}`}>
+							<span class="text-[0.625rem] font-medium text-wf-text">{tile.label}</span>
+							<span class="mt-6 flex items-center justify-between">
+								<span class="text-[1.25rem] font-semibold text-wf-text">{tile.value}</span>
+								<Icon name={tile.icon} size="0.875rem" style={`color:${tile.tint}`} />
+							</span>
+						</div>
+					))}
+				</div>
+			))
+		}
+	</div>
+</div>
