@@ -41,15 +41,19 @@ export function formatPrice(value: number): string {
 }
 
 /**
- * Stop positions along the track, in percent, one per tier — measured off the
- * Figma frame rather than spaced evenly. The rail spans x=414→1314 (900 wide)
- * and the dot centres sit at x=398.5 / 745.5 / 1092.5, giving 0 / 36.8 / 75.4.
+ * Stop positions along the track, in percent, one per tier — aligned to the tier
+ * tabs above it, so each tab sits over the stretch of rail its tier covers.
  *
- * Figma draws NO dot at the track end: the rail simply continues past Scale
- * into Enterprise territory, and the "Rs 50,000+" caption sits under the third
- * dot rather than at the far right. Hence VISIBLE_DOTS below.
+ * The tab row is the rail's width, holding four equal columns with a 0.75rem
+ * gap, so each column starts at i × (width + gap) / railWidth: 0 / 25.33 /
+ * 50.66 / 75.99. Those ratios hold at every viewport because the row width and
+ * the gap both scale with the root font size. Keep in step with the tablist's
+ * `lg:grid-cols-4` and `gap-3`.
+ *
+ * There is no dot at the track end: the rail continues past Enterprise's stop,
+ * and the "Rs 50,000+" caption sits under the third dot. Hence VISIBLE_DOTS.
  */
-export const STOP_POSITIONS = [0, 36.8, 75.4, 100];
+export const STOP_POSITIONS = [0, 25.33, 50.66, 75.99];
 
 /** How many leading stops render a visible dot (Figma shows three). */
 export const VISIBLE_DOTS = 3;

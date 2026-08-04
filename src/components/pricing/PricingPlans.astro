@@ -98,9 +98,15 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
     {PRICING_HEADING.sub}
   </p>
 
-  <!-- ── Tier tabs ─────────────────────────────────────────────────── -->
+  <!--
+    ── Tier tabs ───────────────────────────────────────────────────
+    The row is sized to match the slider rail below it. The rail's width is the
+    panel card's content box less the inner wrapper's margin, so the padding
+    here mirrors that sum: card border (1px) + card padding + wrapper margin.
+    Keep in step with the card's `px-*` and the rail wrapper's `mx-*`.
+  -->
   <div
-    class="relative mt-10 flex flex-wrap items-center justify-center gap-3 px-6"
+    class="relative mx-auto mt-10 flex max-w-6xl flex-wrap items-center justify-center gap-3 px-6.25 sm:px-8.25 lg:grid lg:grid-cols-4 lg:px-30.5"
     role="tablist"
     aria-label="Choose a plan"
   >
@@ -123,11 +129,11 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
           type="button"
           role="tab"
           aria-selected={i === initialIndex ? "true" : "false"}
-          class="group inline-flex cursor-pointer rounded-full bg-linear-to-r from-brand-primary to-[#0F5B33] p-[1.5px] transition-transform duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary aria-selected:bg-none aria-selected:bg-button-primary"
+          class="group inline-flex cursor-pointer rounded-full bg-linear-to-r from-brand-primary to-[#0F5B33] p-[1.5px] transition-transform duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary aria-selected:bg-none aria-selected:bg-button-primary lg:w-full"
           data-tab
           data-index={i}
         >
-          <span class="inline-flex w-full items-center justify-center rounded-full bg-surface-pill px-10 py-4.5 text-[0.75rem] uppercase leading-none text-white transition-colors duration-300 group-hover:bg-brand-primary group-hover:text-button-text group-aria-selected:bg-button-primary group-aria-selected:text-button-text max-lg:py-3.5 lg:px-16 lg:text-xs">
+          <span class="inline-flex w-full items-center justify-center rounded-full bg-surface-pill px-10 py-4.5 text-[0.75rem] uppercase leading-none text-white transition-colors duration-300 group-hover:bg-brand-primary group-hover:text-button-text group-aria-selected:bg-button-primary group-aria-selected:text-button-text max-lg:py-3.5 lg:px-14 lg:text-xs">
             {tier.name}
           </span>
         </button>
@@ -261,7 +267,7 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
               loading="lazy"
             />
             <div
-              class="w-full rounded-md border border-white/10 bg-black/35 py-4 pr-7 pl-10 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] lg:w-65"
+              class="w-full rounded-md border border-white/10 bg-black/35 py-4 pr-7 pl-10 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]"
             >
               <p
                 class="text-[2.25rem] leading-none text-brand-primary sm:text-[3.625rem]"
