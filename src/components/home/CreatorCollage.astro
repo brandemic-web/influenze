@@ -12,7 +12,7 @@ import bubbleF from "../../assets/images/home_page/choose_creators/bubble_image_
 import bubbleG from "../../assets/images/home_page/choose_creators/bubble_image_seven.png";
 import addedToZaamna from "../../assets/images/home_page/choose_creators/added_to_zaamna.png";
 import addedToNykaa from "../../assets/images/home_page/choose_creators/added_to_nykaa.png";
-import FollowerTag from "./FollowerTag.astro";
+import StatTag from "./StatTag.astro";
 ---
 
 <section
@@ -53,13 +53,17 @@ import FollowerTag from "./FollowerTag.astro";
 			exactly as they did when they were direct children.
 		-->
 		<div class="absolute inset-0" data-orbit>
-			<!-- Bubble + its follower tag travel together on the wrapper. -->
+			<!-- Bubble + its stat tag travel together on the wrapper. -->
 			<div
 				class="absolute top-[-30%] right-[2%] w-[28%] lg:top-[34%] lg:left-[-1.5%] lg:right-auto lg:w-[12%]"
 				data-bubble
 			>
 				<Image src={bubbleA} alt="" class="w-full" loading="lazy" />
-				<FollowerTag count="31.6K" class="top-[75%] right-[61%] lg:top-[-1%] lg:right-auto lg:left-[65%]" />
+				<StatTag
+					label="Engagement Rate"
+					value="2.5%"
+					class="top-[75%] right-[61%] lg:top-[-1%] lg:right-auto lg:left-[65%]"
+				/>
 			</div>
 
 			<Image
@@ -90,7 +94,11 @@ import FollowerTag from "./FollowerTag.astro";
 					loading="lazy"
 					data-bubble-tag
 				/>
-				<FollowerTag count="156K" class="top-[83%] left-[34%] lg:top-[24%] lg:right-[85%] lg:left-auto" />
+				<StatTag
+					label="Followers"
+					value="156K"
+					class="top-[83%] left-[34%] lg:top-[24%] lg:right-[85%] lg:left-auto"
+				/>
 			</div>
 
 			<Image
@@ -120,7 +128,11 @@ import FollowerTag from "./FollowerTag.astro";
 					loading="lazy"
 					data-bubble-tag
 				/>
-				<FollowerTag count="566K" class="top-[-16%] left-[-88%] lg:top-0 lg:right-[70%] lg:left-auto" />
+				<StatTag
+					label="Avg Likes"
+					value="21.4K"
+					class="top-[-16%] left-[-88%] lg:top-0 lg:right-[70%] lg:left-auto"
+				/>
 			</div>
 
 			<Image

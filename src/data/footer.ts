@@ -6,7 +6,7 @@ export interface FooterColumn {
 export const FOOTER_COLUMNS: FooterColumn[] = [
 	{
 		title: "Learn",
-		links: [{ label: "Pricing", href: "/pricing" }],
+		links: [{ label: "Pricing", href: "/pricing" }, { label: "Features", href: "/features" }],
 	},
 	{
 		title: "Resources",
