@@ -71,7 +71,9 @@ export const PRICING_TIERS: PricingTier[] = [
 		id: "enterprise",
 		name: "Enterprise",
 		minSpend: SLIDER_MAX,
-		bonusPct: 0,
+		// The slider's own 1,00,000 dot still shows a price (custom only kicks in
+		// past that dot), so it keeps the +10-per-tier bonus pattern going.
+		bonusPct: 30,
 		custom: true,
 	},
 ];

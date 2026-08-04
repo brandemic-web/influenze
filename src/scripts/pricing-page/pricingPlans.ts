@@ -23,6 +23,7 @@ import {
 	clamp,
 	spendFromPos,
 	posFromSpend,
+	isCustomPos,
 	tierIndexFromSpend,
 	creditsFor,
 	bonusLabel,
@@ -51,6 +52,14 @@ function initPanel(panel: HTMLElement): void {
 	let spend = Number(panel.dataset.defaultSpend ?? min);
 	let annual = false;
 
+	/**
+	 * The handle's position is its own state, not something derived from `spend`.
+	 * Past the last dot every position maps to the same top spend, so deriving it
+	 * would snap the handle back to that dot the moment you let go — the whole
+	 * stretch has to stay reachable.
+	 */
+	let pos = posFromSpend(spend, tiers);
+
 	// Elements whose CSS transition is suspended while dragging so the bolt
 	// tracks the pointer 1:1, then restored so the snap animates.
 	const animated = [handle, fill].filter(
@@ -64,11 +73,13 @@ function initPanel(panel: HTMLElement): void {
 			.forEach((el) => (el.textContent = value));
 	}
 
-	/** Repaint the whole panel from the current `spend` / `annual` state. */
+	/** Repaint the whole panel from the current `pos` / `spend` / `annual` state. */
 	function render(movePosition = true): void {
 		const index = tierIndexFromSpend(spend, tiers);
 		const tier = tiers[index];
-		const pos = posFromSpend(spend, tiers);
+		// Past the last dot the spend is off the top of the priced range, so the
+		// panel quotes: the "talk to us" body takes the price body's place.
+		const quoting = isCustomPos(pos);
 
 		if (movePosition) moveTo(pos);
 
@@ -76,9 +87,8 @@ function initPanel(panel: HTMLElement): void {
 			tab.setAttribute("aria-selected", i === index ? "true" : "false"),
 		);
 
-		// Enterprise quotes rather than prices, so it swaps in the custom body.
 		bodies.forEach((body) => {
-			const wanted = tier.custom ? "custom" : "price";
+			const wanted = quoting ? "custom" : "price";
 			body.hidden = body.dataset.panel !== wanted;
 		});
 
@@ -90,7 +100,9 @@ function initPanel(panel: HTMLElement): void {
 			handle.setAttribute("aria-valuenow", String(spend));
 			handle.setAttribute(
 				"aria-valuetext",
-				`${formatPrice(spend)} per month — ${tier.name}`,
+				quoting
+					? `Above ${formatPrice(max)} per month — custom plan`
+					: `${formatPrice(spend)} per month — ${tier.name}`,
 			);
 		}
 	}
@@ -101,9 +113,21 @@ function initPanel(panel: HTMLElement): void {
 		if (handle) handle.style.left = `${pos}%`;
 	}
 
+	/**
+	 * Commit a position. Inside the priced range the position snaps to the
+	 * stepped spend it represents; past the last dot it is kept as dropped.
+	 */
+	function setPos(next: number, movePosition = true): void {
+		pos = clamp(next, 0, 100);
+		spend = spendFromPos(pos, tiers);
+		if (!isCustomPos(pos)) pos = posFromSpend(spend, tiers);
+		render(movePosition);
+	}
+
 	/** Commit a new spend value and repaint. */
 	function setSpend(value: number, movePosition = true): void {
 		spend = clamp(Math.round(value), min, max);
+		pos = posFromSpend(spend, tiers);
 		render(movePosition);
 	}
 
@@ -143,9 +167,9 @@ function initPanel(panel: HTMLElement): void {
 		 * hence `movePosition = false`.
 		 */
 		const dragTo = (clientX: number): void => {
-			const pos = posFromClientX(clientX);
-			moveTo(pos);
-			setSpend(spendFromPos(pos, tiers), false);
+			const next = posFromClientX(clientX);
+			moveTo(next);
+			setPos(next, false);
 		};
 
 		const onPointerMove = (e: PointerEvent) => {
@@ -166,8 +190,9 @@ function initPanel(panel: HTMLElement): void {
 		const onPointerUp = (e: PointerEvent) => {
 			if (!dragging) return;
 			stopDragging();
-			// Settle the handle onto the exact position for the snapped spend.
-			setSpend(spendFromPos(posFromClientX(e.clientX), tiers));
+			// Settle the handle: inside the priced range it snaps to its stepped
+			// spend, past the last dot it stays exactly where it was dropped.
+			setPos(posFromClientX(e.clientX));
 		};
 
 		// The OS can cancel an in-progress touch drag (edge-swipe-back,
@@ -193,7 +218,7 @@ function initPanel(panel: HTMLElement): void {
 		// Clicking the rail itself jumps the handle there, like a native range.
 		track.addEventListener("pointerdown", (e) => {
 			if (e.target !== track) return;
-			setSpend(spendFromPos(posFromClientX(e.clientX), tiers));
+			setPos(posFromClientX(e.clientX));
 		});
 
 		handle.addEventListener("keydown", (e) => {
@@ -205,7 +230,9 @@ function initPanel(panel: HTMLElement): void {
 						: 0;
 			if (!step) return;
 			e.preventDefault();
-			setSpend(spend + step);
+			// Stepping out of the quote zone lands back on the top price.
+			if (isCustomPos(pos) && step < 0) setSpend(max);
+			else setSpend(spend + step);
 		});
 	}
 

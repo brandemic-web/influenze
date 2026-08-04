@@ -47,6 +47,7 @@ import {
 import {
   stopPositions,
   VISIBLE_DOTS,
+  CAPTION_STOP,
   posFromSpend,
   tierIndexFromSpend,
   creditsFor,
@@ -58,10 +59,18 @@ import {
 const tiersJson = JSON.stringify(PRICING_TIERS);
 const stops = stopPositions();
 
-// The upper caption sits under the last VISIBLE dot, not at the track end, so it
-// labels that dot's own tier rather than the slider's maximum.
-const maxCaptionPos = stops[VISIBLE_DOTS - 1];
-const maxCaptionSpend = PRICING_TIERS[VISIBLE_DOTS - 1].minSpend;
+/**
+ * One caption per visible dot, labelling that tier's entry price. CAPTION_STOP
+ * (Scale) carries the trailing "+" because it is the top of the self-serve
+ * range — everything above it is quoted.
+ */
+const railCaptions = stops.slice(0, VISIBLE_DOTS).map((pos, i) => ({
+	pos,
+	label:
+		(i === 0 ? "Rs. " : "Rs. ") +
+		formatAmount(PRICING_TIERS[i].minSpend) +
+		(i === CAPTION_STOP ? "" : ""),
+}));
 
 // First paint: everything derives from DEFAULT_SPEND so the markup already
 // matches what the script would compute, and the panel is correct without JS.
@@ -160,9 +169,8 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
           data-fill></span>
 
         <!--
-					Tier stops. Figma renders a dot for the first three tiers only —
-					the rail runs past Scale into Enterprise territory with no dot at
-					the end — so this slices to VISIBLE_DOTS.
+					One dot per tier stop, up to VISIBLE_DOTS. The rail runs on past the
+					last dot rather than ending at it.
 				-->
         {
           stops.slice(0, VISIBLE_DOTS).map((pos, i) => (
@@ -202,17 +210,32 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
       </div>
 
       <!--
-				Rail captions. Figma anchors the max caption under the THIRD dot
-				(x≈1093, the same centre as the dot) rather than at the track end,
-				so it is positioned rather than pushed right with justify-between.
+				Rail captions — one under each dot, showing that tier's entry price.
+				They are positioned rather than spaced, so each sits on its dot's
+				centre. The first hugs the left edge instead of centring, which would
+				push it off the rail.
 			-->
-      <div class="relative mt-1 h-5 text-[1.125rem] text-brand-primary">
-        <span class="absolute left-0">Rs. {formatAmount(SLIDER_MIN)}</span>
-        <span
-          class="absolute -translate-x-1/2 whitespace-nowrap"
-          style={`left:${maxCaptionPos}%`}
-          >Rs {formatAmount(maxCaptionSpend)}+</span
-        >
+      <!--
+        Four labels across a phone-width rail collide at the desktop size, so
+        they shrink below `lg` — the rail is ~340px there and each label needs
+        to clear its neighbours.
+      -->
+      <div
+        class="relative mt-1 h-5 text-[0.625rem] text-brand-primary lg:text-[1.125rem]"
+      >
+        {
+          railCaptions.map((caption, i) => (
+            <span
+              class:list={[
+                "absolute whitespace-nowrap",
+                i === 0 ? "left-0" : "-translate-x-1/2",
+              ]}
+              style={i === 0 ? undefined : `left:${caption.pos}%`}
+            >
+              {caption.label}+
+            </span>
+          ))
+        }
       </div>
     </div>
 
@@ -221,12 +244,13 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
       class="relative mt-9 rounded-[1.25rem] border border-white/12 bg-[rgba(73,40,179,0.22)] px-7 pt-9 pb-8 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.14),0_12px_40px_-12px_rgba(0,0,0,0.45)] lg:pt-10"
       data-panel="price"
       hidden={initialTier.custom}
+
     >
       <div
         class="flex flex-col gap-9 lg:flex-row lg:items-start lg:justify-between"
       >
         <!-- price + annual toggle -->
-        <div class="pl-9.5">
+        <div class="pl-0 lg:pl-9.5">
           <p class="flex items-baseline text-white">
             <span
               class="text-[2.625rem] leading-none sm:text-[3.625rem]"
