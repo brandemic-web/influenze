@@ -39,6 +39,38 @@ const featureIcons: Record<string, ImageMetadata> = {
 ---
 
 <section class="relative" aria-labelledby="creators-ai-heading">
+	{/*
+		Holds the collage back for the moment it takes the beats to render their
+		opening frame.
+
+		The panels below render in their *settled* state so the section survives
+		without JS — which means the browser happily paints a finished search, and
+		the beats then rewind it to hidden and fade it in. That reads as the collage
+		blinking out before it animates. This runs during parse, before the stage is
+		even reached, so the stage's first paint is already the opening frame.
+
+		`is:inline` because a bundled module script is deferred, which is exactly the
+		delay being closed. It clears itself if the bundle never arrives, so a broken
+		or blocked script leaves a visible, static collage rather than a blank box —
+		and `visibility` (not `display`) keeps the layout reserved either way.
+	*/}
+	<script is:inline>
+		(() => {
+			const section = document.currentScript.parentElement;
+			section.dataset.creatorsArming = "";
+
+			const disarm = () => delete section.dataset.creatorsArming;
+			// Normally the beats disarm this themselves, the moment they have rendered
+			// their opening frame. `load` is the net that matters: it waits on deferred
+			// modules and fires whether they ran, errored, or 404'd. The timeout only
+			// covers `load` never arriving at all — a hung subresource — so it is set
+			// well clear of any real bundle, since firing it early is what would put
+			// the flash back.
+			addEventListener("load", disarm, { once: true });
+			setTimeout(disarm, 10000);
+		})();
+	</script>
+
 	<div
 		class="pointer-events-none absolute inset-x-0 top-[-35%] lg:top-[-40%] h-[150%] lg:h-400 bg-[linear-gradient(178.32deg,#010101_1.67%,#21144B_11.9%,#8058FF_43.98%,#251949_75.14%,#000000_98.38%)] z-0"
 		aria-hidden="true"
@@ -112,7 +144,7 @@ const featureIcons: Record<string, ImageMetadata> = {
 				<!-- stage viewport: height tracks the scaled stage at each breakpoint -->
 				<div class="relative h-75 w-full sm:h-102 md:h-128 lg:h-170">
 					<div
-						class="absolute left-0 top-0 h-170 w-167 origin-top-left scale-[0.44] sm:scale-[0.6] md:scale-[0.75] lg:scale-100"
+						class="creators-stage absolute left-0 top-0 h-170 w-167 origin-top-left scale-[0.44] sm:scale-[0.6] md:scale-[0.75] lg:scale-100"
 					>
 						<!-- Search Globally -->
 						<div
@@ -184,6 +216,8 @@ const featureIcons: Record<string, ImageMetadata> = {
 							<div data-panel-item class="absolute left-0 top-4">
 								<AddToListUi />
 							</div>
+
+							<DemoCursor />
 						</div>
 
 						<!-- Scale Campaigns Confidently -->
@@ -218,10 +252,18 @@ const featureIcons: Record<string, ImageMetadata> = {
 	.creators-panel {
 		contain: layout;
 	}
+	/*
+		The hold described on the inline script at the top of the section. Scoped to
+		the stage rather than the whole section so the heading, feature list and CTA
+		still paint immediately — only the pieces the beats rewind are held back.
+	*/
+	[data-creators-arming] .creators-stage {
+		visibility: hidden;
+	}
 </style>
 
 <script>
 	import "../../scripts/reveals";
 	import "../../scripts/creators-ai-tabs";
-	import "../../scripts/creators-ai-panels";
+	import "../../scripts/home-page/creators-ai";
 </script>
