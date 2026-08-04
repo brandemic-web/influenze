@@ -123,7 +123,7 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
     <!--
 			Tabs are styled to match the homepage buttons — the "nav" variant of
 			common/Button.astro: the outer element is a purple → mint gradient
-			"border" whose 1.5px padding reveals a ring around the dark inner span.
+			"border" whose 0.09375rem padding reveals a ring around the dark inner span.
 			Button.astro can't be reused directly here because it renders an <a href>
 			with no selected state, and a tablist needs <button>s. Keep these classes
 			in sync with Button.astro's nav variant.
@@ -139,7 +139,7 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
           type="button"
           role="tab"
           aria-selected={i === initialIndex ? "true" : "false"}
-          class="group inline-flex cursor-pointer rounded-full bg-linear-to-r from-brand-primary to-[#0F5B33] p-[1.5px] transition-transform duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary aria-selected:bg-none aria-selected:bg-button-primary lg:w-full"
+          class="group inline-flex cursor-pointer rounded-full bg-linear-to-r from-brand-primary to-[#0F5B33] p-[0.09375rem] transition-transform duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary aria-selected:bg-none aria-selected:bg-button-primary lg:w-full"
           data-tab
           data-index={i}
         >
