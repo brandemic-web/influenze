@@ -74,97 +74,129 @@ export interface Creator {
 	/** Omitted where we do not have it — the row simply leaves the slot out. */
 	gender?: string;
 	language: string;
+	/** Draws the platform's blue rosette beside the name. */
+	verified?: boolean;
 	checked?: boolean;
 }
 
 /**
- * The four rows the story's list holds — screen 8 renders exactly these, and
- * they open the results list on screen 3.
+ * The Analyze results list — what the search returns, in the order the app
+ * ranked them. Seven rows so the list has somewhere to scroll.
  *
- * Real creator figures pulled from the app. Slots are deliberately in the order
- * the animation was authored against: `checked` sits on rows 1 and 3, which are
- * the two the cursor ticks for Compare, and the profiled creator stays third so
- * beat 2's press lands where it always did.
+ * Figures are real, pulled from the app against the `hyperfitx` lookalike seed.
  */
-export const CREATORS: Creator[] = [
+export const RESULT_CREATORS: Creator[] = [
 	{
-		name: "KAWAL",
-		handle: "kawalofficial",
+		name: "Selwyn D'souza",
+		handle: "sellydsouzaaa",
 		tierLabel: "💎 Macro",
-		followers: "202.4K",
-		avgLikes: "3.1K",
-		engagement: "1.52%",
-		engagementLevel: "AVERAGE",
-		location: "India",
-		language: "EN",
-		checked: true,
-	},
-	{
-		name: "SALONI S",
-		handle: "salonipatelofficiall",
-		tierLabel: "💎 Macro",
-		followers: "566.6K",
-		avgLikes: "18.3K",
-		engagement: "3.24%",
+		followers: "190.4K",
+		avgLikes: "9.0K",
+		engagement: "4.73%",
 		engagementLevel: "HIGH",
-		location: "India",
-		gender: "Female",
+		location: "Bangalore, India",
+		gender: "Male",
 		language: "EN",
+		verified: true,
 	},
 	{
-		name: "Justin Joy",
-		handle: "hyperfitx",
+		name: "Neeraj Choudhary",
+		handle: "neeraj__",
 		tierLabel: "💎 Macro",
-		followers: "156.7k",
-		avgLikes: "738",
-		engagement: "0.47%",
-		engagementLevel: "LOW",
+		followers: "193.6K",
+		avgLikes: "9.5K",
+		engagement: "4.89%",
+		engagementLevel: "HIGH",
 		location: "India",
 		gender: "Male",
 		language: "EN",
-		checked: true,
+		verified: true,
 	},
 	{
-		name: "Gaelyn Mendonca",
-		handle: "vjgaelyn",
+		name: "Poorav",
+		handle: "pooo.raw",
 		tierLabel: "💎 Macro",
-		followers: "916.3K",
-		avgLikes: "2.2K",
-		engagement: "0.24%",
-		engagementLevel: "LOW",
+		followers: "282.4K",
+		avgLikes: "7.4K",
+		engagement: "2.62%",
+		engagementLevel: "HIGH",
+		location: "Bangalore, India",
+		gender: "Male",
+		language: "EN",
+		verified: true,
+	},
+	{
+		name: "AevyTV",
+		handle: "aevytvdaily",
+		tierLabel: "💎 Macro",
+		followers: "396.4K",
+		avgLikes: "4.7K",
+		engagement: "1.19%",
+		engagementLevel: "AVERAGE",
 		location: "India",
 		language: "EN",
+		verified: true,
+	},
+	{
+		name: "everythingbengaluru",
+		handle: "boredinbengaluru",
+		tierLabel: "💎 Macro",
+		followers: "191.6K",
+		avgLikes: "3.6K",
+		engagement: "1.88%",
+		engagementLevel: "ABOVE AVERAGE",
+		location: "Bangalore, India",
+		language: "EN",
+		verified: true,
+	},
+	{
+		name: "Yogish G",
+		handle: "street.comic",
+		tierLabel: "💎 Macro",
+		followers: "245.6K",
+		avgLikes: "2.5K",
+		engagement: "1.01%",
+		engagementLevel: "BELOW AVERAGE",
+		location: "India",
+		gender: "Male",
+		language: "EN",
+		verified: true,
+	},
+	{
+		name: "Daniel J Samuel",
+		handle: "danieljsamuel_",
+		tierLabel: "💎 Macro",
+		followers: "214.5K",
+		avgLikes: "8.8K",
+		engagement: "4.12%",
+		engagementLevel: "HIGH",
+		location: "India",
+		gender: "Male",
+		language: "EN",
+		verified: true,
 	},
 ];
 
 /**
- * Padding for the Analyze results list so it has somewhere to scroll. Only the
- * single-line analyze row is ever drawn for these, so their location and
- * language never reach the screen.
+ * The story list's members, and so the rows screen 8 draws. Both are `checked`
+ * because the story ticks the pair on its way into Compare — screen 8's authored
+ * frame paints them already selected.
+ *
+ * Poorav is the list's founding member; Selwyn is the one the story adds on
+ * screen 6, so by screen 7 the list holds two.
  */
-const RESULT_PADDING: Creator[] = [
-	{
-		name: "Hamid Barkzi",
-		handle: "hamidbarkzi07",
-		tierLabel: "💎 Macro",
-		followers: "391.5K",
-		avgLikes: "5.7K",
-		engagement: "1.46%",
-		engagementLevel: "AVERAGE",
-		location: "India",
-		language: "EN",
-	},
-	{
-		name: "Kavian Almasifar",
-		handle: "kevinalmasifar",
-		tierLabel: "💎 Macro",
-		followers: "335.3K",
-		avgLikes: "7.9K",
-		engagement: "2.35%",
-		engagementLevel: "ABOVE AVERAGE",
-		location: "India",
-		language: "EN",
-	},
+export const LIST_CREATORS: Creator[] = ["sellydsouzaaa", "pooo.raw"].map((handle) => {
+	const row = RESULT_CREATORS.find((creator) => creator.handle === handle);
+	if (!row) throw new Error(`workflowMockup: no creator with handle "${handle}"`);
+	return { ...row, checked: true };
+});
+
+/**
+ * The three rows the features page's creator showcase draws, top to bottom.
+ * Deliberately its own cast rather than the story's: the strip is a marketing
+ * flourish on another page and has no reason to move when the story's does.
+ */
+const SHOWCASE_CREATORS: Creator[] = [
 	{
 		name: "Nikhil Chinapa",
 		handle: "nikhilchinapa",
@@ -178,63 +210,58 @@ const RESULT_PADDING: Creator[] = [
 		language: "EN",
 	},
 	{
-		name: "Raghu Dixit",
-		handle: "theraghudixitproject",
+		name: "Justin Joy",
+		handle: "hyperfitx",
 		tierLabel: "💎 Macro",
-		followers: "451.1K",
-		avgLikes: "2.5K",
-		engagement: "0.56%",
+		followers: "156.7k",
+		avgLikes: "738",
+		engagement: "0.47%",
 		engagementLevel: "LOW",
 		location: "India",
+		gender: "Male",
+		language: "EN",
+	},
+	{
+		name: "SALONI S",
+		handle: "salonipatelofficiall",
+		tierLabel: "💎 Macro",
+		followers: "566.6K",
+		avgLikes: "18.3K",
+		engagement: "3.24%",
+		engagementLevel: "HIGH",
+		location: "India",
+		gender: "Female",
 		language: "EN",
 	},
 ];
 
-/**
- * The Analyze results list — the four signed-off rows first, then padding, so
- * screen 3's opening frame is unchanged and the extra rows only show once the
- * list scrolls. `CREATORS` stays at four because screen 8 renders it at the
- * taller list density and would clip.
- */
-export const RESULT_CREATORS: Creator[] = [...CREATORS, ...RESULT_PADDING];
-
-/**
- * The three rows the features page's creator showcase draws, top to bottom.
- * The strip fades out towards its foot, so the order is a display choice rather
- * than a ranking — whoever leads is the one read in full.
- */
-export const SHOWCASE_HANDLES = [
-	"nikhilchinapa",
-	"hyperfitx",
-	"salonipatelofficiall",
-] as const;
+export const SHOWCASE_HANDLES = SHOWCASE_CREATORS.map((creator) => creator.handle);
 
 /**
  * The creator the story opens from the results list. Screens 4 and 5 are this
  * profile, so their name and stats have to keep matching this row.
  */
-export const PROFILED_HANDLE = "hyperfitx";
+export const PROFILED_HANDLE = "sellydsouzaaa";
 
 /** Resolves a row so screens never restate a creator's name or figures. */
 export function creatorByHandle(handle: string): Creator {
-	const creator = RESULT_CREATORS.find((row) => row.handle === handle);
+	const creator = [...RESULT_CREATORS, ...SHOWCASE_CREATORS].find((row) => row.handle === handle);
 	if (!creator) throw new Error(`workflowMockup: no creator with handle "${handle}"`);
 	return creator;
 }
 
 /**
- * The two rows the story ticks for Compare, in the order screen 9 columns them:
- * the creator we just profiled, then the one nearest his follower range. Must
- * stay in step with the `checked` flags above, which paint the same two rows in
- * screen 8's authored frame.
+ * The two rows the story compares, in the order screen 9 columns them: the
+ * creator it just profiled, then the list's other member. These are exactly
+ * `LIST_CREATORS`, which is what screen 8 paints as already ticked.
  */
-export const COMPARED_HANDLES = [PROFILED_HANDLE, "kawalofficial"] as const;
+export const COMPARED_HANDLES = [PROFILED_HANDLE, "pooo.raw"] as const;
 
 /**
  * The list the story adds that creator to. Screen 6 marks this row so the cursor
- * can find it; it is also the first card on screen 7.
+ * can find it; it is also the only card on screen 7.
  */
-export const STORY_LIST = "Zamna Campaign 2026";
+export const STORY_LIST = "Vox Pop";
 
 /**
  * The handle the story types into the Lookalike field on screens 1-2, which is
@@ -246,7 +273,7 @@ export const STORY_LIST = "Zamna Campaign 2026";
  * the row the story opens, since that would select a creator as its own lookalike.
  * It does legitimately appear *among* the results, which is what the app does.
  */
-export const LOOKALIKE_HANDLE = "salonipatelofficiall";
+export const LOOKALIKE_HANDLE = "hyperfitx";
 
 export const RESULT_FILTERS = [
 	{ label: "Platform", value: "Instagram" },
@@ -256,76 +283,74 @@ export const RESULT_FILTERS = [
 ] as const;
 
 /**
- * The card's fourth avatar tile shows `count - 3`, so overflow is derived.
+ * The only list in the story, and the one screen 6 adds a creator to.
  *
- * `preview` is whose portraits fill a card's tiles — four, since screen 6's rows
- * show that many and screen 7's cards show three plus the overflow count. The
- * story list previews its own members; the other two are only ever seen as
- * thumbnails, so they just draw from the same seven creators.
+ * `count` is what the *dialog* shows — the list before the story touches it, so
+ * Poorav alone. Screen 7 renders it after the add, so it counts `LIST_CREATORS`
+ * instead and the two never have to be kept in step by hand.
+ *
+ * `preview` is whose portraits fill a card's tiles; a list this small simply
+ * draws fewer of them.
  */
 export const CREATOR_LISTS = [
 	{
-		name: "Zamna Campaign 2026",
-		count: 12,
+		name: STORY_LIST,
+		count: 1,
 		updated: "last updated 2m ago",
-		preview: ["kawalofficial", "salonipatelofficiall", "hyperfitx", "vjgaelyn"],
-	},
-	{
-		name: "Steelcase XV",
-		count: 19,
-		updated: "last updated 5d ago",
-		preview: ["vjgaelyn", "theraghudixitproject", "hamidbarkzi07", "kevinalmasifar"],
-	},
-	{
-		name: "Mokobora XV",
-		count: 17,
-		updated: "last updated 5d ago",
-		preview: ["kevinalmasifar", "hamidbarkzi07", "salonipatelofficiall", "theraghudixitproject"],
+		preview: ["pooo.raw"],
 	},
 ] as const;
 
 /**
  * Media-kit tiles shown on the creator profile and the compare screen.
  *
- * `followers` here is the media kit's aggregated total across platforms, so it
- * legitimately differs from the per-platform figure in `CREATORS` (157K vs
- * 156.7k) — the app shows the same split.
+ * `axis` is the bar's two end labels, and `marker`/`median` are positions along
+ * it as a percentage of its width. The app derives all three from the rate and
+ * the tier median — `EngagementGraph` takes `min = median x 0.5` and
+ * `max = rate x 1.5` — so they are computed here the same way rather than eyeballed.
  */
 export const MEDIA_KIT_STATS = {
-	justin: {
-		engagement: "0.47%",
+	selwyn: {
+		engagement: "4.73%",
 		tier: "💎 Macro Influencer",
 		headline: "Macro Influencer (100k - 1M followers)",
-		followers: "157K",
-		posts: "1.14K",
-		reelViews: "31.4K",
-		likes: "738",
-		comments: "21",
-		level: "low",
-		// 0.47 against a 1.01 median: 0.5x0.47 to 1.5x1.01.
-		axis: ["0.2", "1.5"],
-		marker: 21,
-		median: 50,
+		followers: "190K",
+		posts: "2.1K",
+		reelViews: "137K",
+		likes: "9.01K",
+		comments: "66",
+		level: "high",
+		// 4.73 against a 1.01 median: 0.5x1.01 to 1.5x4.73.
+		axis: ["0.5", "7.1"],
+		marker: 64,
+		median: 8,
 	},
-	kawal: {
-		engagement: "1.52%",
+	poorav: {
+		engagement: "2.62%",
 		tier: "💎 Macro Influencer",
 		headline: "Macro Influencer (100k - 1M followers)",
-		followers: "202.4K",
-		// `posts` and `reelViews` are the only figures here not taken from the app —
-		// they are not on the results row, so they need KAWAL's own media kit.
-		posts: "1.08K",
-		reelViews: "62.3K",
-		likes: "3.1K",
-		// Sized so likes + comments ≈ the 1.52% rate on 202.4K followers.
-		comments: "26",
-		level: "average",
-		// 1.52 against the same median: 0.5x1.01 to 1.5x1.52, so his rate sits
-		// above the median rather than off the end of Justin's narrower axis.
-		axis: ["0.5", "2.3"],
-		marker: 57,
-		median: 28,
+		followers: "282K",
+		posts: "395",
+		reelViews: "123K",
+		likes: "7.4K",
+		comments: "18",
+		level: "high",
+		// 2.62 against the same median, so the axis stops short of Selwyn's.
+		axis: ["0.5", "3.9"],
+		marker: 62,
+		median: 15,
 	},
+} as const;
+
+/**
+ * The About tab's profile block for the creator the story opens. Kept beside the
+ * row rather than in the screen so the two can't state different follower counts.
+ */
+export const PROFILED_ABOUT = {
+	followersInFull: "190,373",
+	topGender: { value: "Male", share: "50.4%" },
+	topCountry: { value: "India", share: "90.3%" },
+	bio: "humour based on your pain\nrepped by @circuitmgmt\n\u{1F4E7} - selly@circuitmgmt.com",
 } as const;
 
 /**

@@ -43,10 +43,21 @@ import { CREATOR_LISTS, STORY_LIST } from "../../../../data/workflowMockup";
 						class="flex items-center rounded-[1rem] border border-wf-dialog-border bg-wf-list-row px-3 py-2.5"
 						data-wf-list-target={list.name === STORY_LIST ? "" : undefined}
 					>
+						{/*
+							`AvatarGrid` — always its full 2x2 of 26px tiles on `lavender45`, radius
+							7. An empty slot is a bare tile rather than a `CreatorAvatar`: that
+							component's placeholder is a gradient, and a gradient is a
+							`background-image`, so it would paint straight over the flat fill the app
+							uses here.
+						*/}
 						<span class="grid size-15 shrink-0 grid-cols-2 content-start">
-							{list.preview.map((handle) => (
-								<CreatorAvatar size="1.625rem" radius="0.4375rem" handle={handle} class="m-0.5 block bg-wf-surface" />
-							))}
+							{[0, 1, 2, 3].map((slot) =>
+								list.preview[slot] ? (
+									<CreatorAvatar size="1.625rem" radius="0.4375rem" handle={list.preview[slot]} class="m-0.5 block" />
+								) : (
+									<span class="m-0.5 block size-6.5 rounded-[0.4375rem] bg-wf-surface" />
+								)
+							)}
 						</span>
 						<span class="ml-3 flex min-w-0 flex-1 flex-col">
 							<span class="mb-3 text-[0.875rem] whitespace-nowrap text-wf-text">{list.name}</span>

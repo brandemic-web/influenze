@@ -103,7 +103,7 @@ const LEVEL_COLOUR: Record<EngagementLevel, string> = {
 			<div slot="identity" class="flex flex-col gap-1">
 				<span class="flex items-center gap-1">
 					<span class="whitespace-nowrap text-[1rem] text-wf-text">{creator.name}</span>
-					<VerifiedBadge size="0.75rem" />
+					{creator.verified && <VerifiedBadge size="0.75rem" />}
 				</span>
 				<span class="flex items-center" style={`gap:${isList ? "0.25rem" : "0.5rem"}`}>
 					<span class="flex min-w-0 items-center gap-1">

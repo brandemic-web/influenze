@@ -20,6 +20,7 @@ import MediaKitDetail from "./media-kit/MediaKitDetail.astro";
 import {
 	MACRO_BENCHMARK,
 	MEDIA_KIT_STATS,
+	PROFILED_ABOUT,
 	PROFILED_HANDLE,
 	creatorByHandle,
 } from "../../../../../data/workflowMockup";
@@ -31,7 +32,7 @@ interface Props {
 const { tab } = Astro.props;
 
 const creator = creatorByHandle(PROFILED_HANDLE);
-const stats = MEDIA_KIT_STATS.justin;
+const stats = MEDIA_KIT_STATS.selwyn;
 /** The detail spells the tier out where the results row abbreviates it. */
 const tierLabel = stats.tier;
 const { name, handle, location, gender, language } = creator;
@@ -42,14 +43,12 @@ const tabs = [
 ] as const;
 
 /** About tab, `buildAboutContent`. The follower count is spelled out in full here. */
-const followersInFull = "156,741";
+const { followersInFull, topGender, topCountry, bio } = PROFILED_ABOUT;
 const demographics = [
 	{ label: "Engagement rate", value: creator.engagement, note: "Instagram" },
-	{ label: "Top gender", value: "Male", note: "81%" },
-	{ label: "Top country", value: "India", note: "93.5%" },
+	{ label: "Top gender", value: topGender.value, note: topGender.share },
+	{ label: "Top country", value: topCountry.value, note: topCountry.share },
 ];
-const bio =
-	"Giving voice to every opinion, unfiltered. Founder & CEO @hypervisuals.in Director @dotme.in Building @brandemic_design @thinklimitless.in";
 ---
 
 <div class="absolute top-37.5 left-116.5 flex h-166 w-221 flex-col" data-wf-detail>
@@ -150,7 +149,7 @@ const bio =
 								))}
 							</div>
 
-							<p class="mt-10.5 text-[0.8125rem] leading-normal text-[#c5bedb]">{bio}</p>
+							<p class="mt-10.5 text-[0.8125rem] leading-normal whitespace-pre-line text-[#c5bedb]">{bio}</p>
 						</div>
 					) : (
 						<MediaKitDetail

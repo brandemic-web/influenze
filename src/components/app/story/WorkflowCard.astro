@@ -18,7 +18,8 @@
  * of the mockup's width, which covers too much of the animation playing behind
  * them, so every length runs through one factor rather than being re-measured —
  * the design's proportions and line breaks survive whatever size we settle on.
- * `.wf-card` reads it too, so the overhang past the canvas edge shrinks with it.
+ * `OVERHANG` runs through it too, so sliding the card right does not change how
+ * far past the canvas edge it reaches relative to its own size.
  *
  * The `<p>`s pick up the stage's cap-trim, which is what Figma's own
  * `text-box-trim: trim-both` on these layers asks for, so neither needs
@@ -33,30 +34,54 @@ interface Props {
 const { card } = Astro.props;
 
 /** Turn this down to shrink the whole card; 1 is Figma's own size. */
-const SCALE = 0.55;
+const SCALE = 0.77;
+
+/**
+ * How far the card hangs past the canvas's right edge, in the same Figma pixels
+ * as everything else — so it scales with `SCALE` and the design's proportions
+ * hold. Turn it up to slide the card right, off the animation behind it.
+ *
+ * There is a real ceiling on this. The mockup already fills its 80rem column, so
+ * everything past the canvas edge eats into the page's own margin — and `body` is
+ * `overflow-x-clip`, so going too far silently cuts the card's right edge off
+ * rather than giving the page a scrollbar. The overhang has to stay inside half
+ * the difference between the viewport and 1280px: at these values the card needs
+ * roughly a 1565px viewport to sit fully on the page, and raising either constant
+ * raises that floor.
+ */
+const OVERHANG = 184;
+
+/**
+ * Where the card sits down the canvas, in canvas rem. Deliberately *not* run
+ * through `rem()`: this is a position on the stage rather than a length inside
+ * the card, so resizing the card should not slide it up and down as a side
+ * effect. A bigger card simply grows downward from here.
+ */
+const TOP = 5.625;
 
 const rem = (figmaPx: number) => `${((figmaPx * 1.125 * SCALE) / 16).toFixed(3)}rem`;
-
-/** Which part carries the violet. See `WorkflowCardVariant`. */
-const tone = {
-	lead: { title: "text-white", step: "text-[#8058ff]", body: "text-[#cecece]/70" },
-	dark: { title: "text-[#8058ff]", step: "text-[#3c3c3c]", body: "text-[#cecece]/70" },
-	violet: { title: "text-white", step: "text-white/[0.31]", body: "text-[#b9b9b9]" },
-}[card.variant];
 ---
 
 <div
-	class:list={[
-		"wf-card flex items-center justify-between",
-		card.variant === "violet" ? "wf-card-violet" : "border border-[#19123a] bg-[#131212]",
-	]}
-	style={`--wf-card-scale:${SCALE};width:${rem(564)};border-radius:${rem(8)};padding:${rem(30)}`}
+	class="wf-card relative flex items-center justify-between overflow-hidden border border-[#19123a] bg-[#131212]"
+	style={`top:${TOP}rem;width:${rem(564)};right:${rem(-OVERHANG)};border-radius:${rem(8)};padding:${rem(30)}`}
 	data-wf-card={card.step}
 	aria-hidden="true"
 >
-	<div class="flex flex-col" style={`width:${rem(328)};gap:${rem(20)}`}>
-		<p class={tone.title} style={`font-size:${rem(24)}`}>{card.title}</p>
-		<p class={tone.body} style={`font-size:${rem(18)};line-height:${rem(28)}`}>{card.body}</p>
+	{/*
+		The violet is the card's *settled* state, not a variant: every card arrives
+		black and fills in. It is a layer rather than a background swap because the
+		fill is a radial gradient, and a gradient is not a tweenable value — an
+		opacity on top of the black is. `spotlight()` owns it; with no script the
+		card simply stays black, which is a legitimate resting state.
+	*/}
+	<span class="wf-card-violet absolute inset-0 opacity-0" data-wf-card-fill></span>
+
+	<div class="relative flex flex-col" style={`width:${rem(328)};gap:${rem(20)}`}>
+		<p class="text-white" style={`font-size:${rem(24)}`}>{card.title}</p>
+		<p class="text-[#b9b9b9]" style={`font-size:${rem(18)};line-height:${rem(28)}`}>{card.body}</p>
 	</div>
-	<span class:list={["leading-[1.1] whitespace-nowrap", tone.step]} style={`font-size:${rem(110)}`}>{card.step}</span>
+	<span class="relative leading-[1.1] whitespace-nowrap text-white/31" style={`font-size:${rem(110)}`}>
+		{card.step}
+	</span>
 </div>

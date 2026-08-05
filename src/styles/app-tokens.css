@@ -106,6 +106,10 @@
  * The mockup is authored on the app's native 1440x900 canvas (90rem x 56.25rem)
  * and scaled down to whatever width the hero gives it, so every value inside can
  * stay a plain, readable rem at 1:1 app pixels.
+ *
+ * Nothing queries this container any more — the scale is measured in JS — but the
+ * containment stays: it makes the mockup a stacking context, which is what keeps
+ * the pointer and the card layer painting inside the hero rather than over it.
  */
 .wf-mockup {
 	container-type: inline-size;
@@ -114,9 +118,7 @@
 }
 
 /*
- * Both layers are the same canvas. `100cqw` has to be resolved by a *child* of
- * the container — an element never queries itself — which is why the scale is
- * written here rather than hoisted to a custom property on `.wf-mockup`.
+ * Both layers are the same canvas.
  *
  * Both are taken out of flow, and that is load-bearing rather than tidiness:
  * `scale` is a transform, so a layer's *layout* box stays the full 56.25rem
@@ -133,11 +135,16 @@
 	width: 90rem;
 	height: 56.25rem;
 	transform-origin: top left;
-	/* Fallback for browsers without CSS trig: exact at the >=lg hero width. */
-	scale: 0.888889;
-	/* tan(atan2(a, b)) divides two lengths into a unitless ratio, which is the
-	   only pure-CSS way to express "scale the canvas to fit its container". */
-	scale: tan(atan2(100cqw, 90rem));
+	/*
+	 * "Scale the canvas to fit its container" is a division of two lengths, which
+	 * CSS can only express as tan(atan2(a, b)) — and Safari 26 computes that
+	 * wrongly whenever a container-query or viewport unit is involved, badly
+	 * enough to render the canvas oversized or upside down. scripts/canvasScale
+	 * measures the two widths and publishes the ratio on the container instead.
+	 * The fallback is exact at the >=lg hero width and only shows before that
+	 * script has run.
+	 */
+	scale: var(--wf-scale, 0.888889);
 }
 
 /*
@@ -153,12 +160,11 @@
  * A strip of app UI on its own, away from the hero: the features page's creator
  * showcase renders the real results table (components/features/CreatorShowcase).
  *
- * Same scaling trick as the hero canvas, with one difference — the width is the
+ * Scaled the same way as the hero canvas, with one difference — the width is the
  * Analyze results list's *own* row width rather than the whole app frame: the
  * 58.25rem panel less its two 1.5rem gutters. So the rows come out at exactly the
  * proportions the app draws them at, and the strip still spans whatever the page
- * gives it. Both the width and the divisor are rem, so the ratio is unaffected by
- * the fluid root font-size.
+ * gives it.
  *
  * The container carries the ratio for the same reason `.wf-mockup` does: `scale`
  * is a transform, so the canvas's layout box stays its full unscaled height and
@@ -179,9 +185,9 @@
 	left: 0;
 	width: 55.25rem;
 	transform-origin: top left;
-	/* Fallback for browsers without CSS trig: exact at the >=lg strip width. */
-	scale: 0.753;
-	scale: tan(atan2(100cqw, 55.25rem));
+	/* Scaled by scripts/canvasScale — see the note on `.wf-stage`. The fallback
+	   is exact at the >=lg strip width. */
+	scale: var(--wf-scale, 0.753);
 }
 
 /*
@@ -259,17 +265,17 @@
  * `visibility` as well as `opacity`: a card left at `opacity: 0` would still
  * take the hit-testing if anything in here ever became interactive.
  */
+/* `top` and `right` are set per card in WorkflowCard.astro, with the rest of its geometry. */
 .wf-card {
 	position: absolute;
-	top: 7.875rem;
-	right: calc(-10.758rem * var(--wf-card-scale, 1));
 	opacity: 0;
 	visibility: hidden;
 	pointer-events: none;
 }
 
 /*
- * Card 2's violet fill. Figma paints a flat #8058ff rectangle and masks a
+ * The cards' violet fill — their settled state, faded in over the black by
+ * `spotlight()`. Figma paints a flat #8058ff rectangle and masks a
  * radial ellipse over its right-hand side; the ellipse's outer stop is that
  * same #8058ff, so one gradient does the work of both and no mask is needed.
  *

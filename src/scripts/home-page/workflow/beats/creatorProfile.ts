@@ -89,7 +89,11 @@ export function creatorProfile(layers: CreatorProfileLayers, pointer: Pointer) {
 		.set(el.parts, { opacity: 1, y: 0 }, "swap")
 		.set(sidebar, { opacity: 1, filter: "none" }, "swap")
 		// ── the profile rises into the panel ─────────────────────────────────
-		.from(el.detail, { opacity: 0, y: 14, duration: 0.5, immediateRender: false }, "swap");
+		.from(el.detail, { opacity: 0, y: 14, duration: 0.5, immediateRender: false }, "swap")
+		// The profile is fully up here. Card 2 hangs off this rather than off `swap`:
+		// arriving with the panel made it read as part of the product UI instead of
+		// as something laid over it.
+		.addLabel("settled");
 
 	// ── reach for the Media Kit tab ──────────────────────────────────────────
 	tl.add(pointer.moveTo(el.mediaKitTab, { duration: 0.7 }), "+=0.35").add(pointer.press(), ">-0.05");

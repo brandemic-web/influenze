@@ -260,7 +260,7 @@ const resetClass = "mt-0.5 flex";
 													<span class="block h-px w-full bg-wf-chip-row-rule" />
 												</div>
 												<div class="pt-2">
-													<FollowerMetricsSlider stop={0} from={3} />
+													<FollowerMetricsSlider stop={3} />
 												</div>
 												{/*
 													The app's two read-outs, stacked in one grid cell so swapping them
@@ -270,10 +270,10 @@ const resetClass = "mt-0.5 flex";
 													left, so that is the one the static frames show.
 												*/}
 												<div class="grid pt-5 text-[0.75rem] text-wf-text">
-													<p class="col-start-1 row-start-1 opacity-0" data-wf-benchmark>
+													<p class="col-start-1 row-start-1" data-wf-benchmark>
 														minimum benchmark: <b class="font-bold text-wf-green-mid">&gt;{tierBenchmark}</b>
 													</p>
-													<p class="col-start-1 row-start-1" data-wf-all-ranges>
+													<p class="col-start-1 row-start-1 opacity-0" data-wf-all-ranges>
 														displaying all ranges <b class="font-bold text-wf-green-mid">min</b> to{" "}
 														<b class="font-bold text-wf-green-mid">max</b>
 													</p>

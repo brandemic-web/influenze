@@ -14,7 +14,7 @@ import CreatorAvatar from "../../common/CreatorAvatar.astro";
 import Icon from "../../common/Icon.astro";
 import PlatformIcon from "../../common/PlatformIcon.astro";
 import ToolbarAction from "./widgets/ToolbarAction.astro";
-import { CREATOR_LISTS, STORY_LIST } from "../../../../data/workflowMockup";
+import { CREATOR_LISTS, LIST_CREATORS, STORY_LIST } from "../../../../data/workflowMockup";
 
 /** Squircle tiles: the app clips a custom path; 32% is the closest CSS match. */
 const tileClass = "block size-[7.40625rem] border border-[#463c60] bg-wf-chip";
@@ -61,12 +61,27 @@ const tileStyle = "border-radius:32%";
 						class="flex h-97.25 w-73.75 shrink-0 flex-col rounded-[1.5rem] border border-[#2a2634] bg-wf-surface p-4"
 						data-wf-list-target={list.name === STORY_LIST ? "" : undefined}
 					>
+							{/*
+								Screen 7 is *after* the story's add, so the card draws the list's
+								members rather than the dialog's before-figure.
+
+								The grid is always its full 2x2 — an unfilled slot keeps the tile
+								and just has no portrait in it, the way the app's own card holds
+								its shape. The last slot is the overflow count only when there is
+								an overflow to report.
+							*/}
 							<div class="grid size-65.75 shrink-0 grid-cols-2 gap-2.5 p-2">
-								{list.preview.slice(0, 3).map((handle) => (
-									<CreatorAvatar size="7.40625rem" radius="32%" handle={handle} class="border border-[#463c60] bg-wf-chip" />
-								))}
+								{[0, 1, 2].map((slot) =>
+									LIST_CREATORS[slot] ? (
+										<CreatorAvatar size="7.40625rem" radius="32%" handle={LIST_CREATORS[slot].handle} class="border border-[#463c60] bg-wf-chip" />
+									) : (
+										<span class={tileClass} style={tileStyle} />
+									)
+								)}
 								<span class={`${tileClass} grid place-items-center`} style={tileStyle}>
-									<span class="text-md font-medium text-[#6c5ba1]">+{list.count - 3}</span>
+									{LIST_CREATORS.length > 3 && (
+										<span class="text-md font-medium text-[#6c5ba1]">+{LIST_CREATORS.length - 3}</span>
+									)}
 								</span>
 							</div>
 

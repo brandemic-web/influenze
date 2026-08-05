@@ -73,15 +73,20 @@ export function leaveCompare(layers: LeaveCompareLayers, pointer: Pointer) {
 
 	// ── read all the way down ────────────────────────────────────────────────
 	// Cursor moves over the columns first, so the scroll happens under it.
+	// Unhurried, for the same reason as beat 4's: card 4 is up across this scroll,
+	// so its duration is also how long that card is readable.
 	tl.add(pointer.moveTo(el.columns[0].viewport, { at: { x: 0.5, y: 0.35 }, duration: 0.6 }), "+=0.2").to(
 		el.columns.map(({ content }) => content),
-		{ y: () => -range(), duration: 1.6, ease: "power2.inOut" },
+		{ y: () => -range(), duration: 3.4, ease: "power1.inOut" },
 		"+=0.1"
 	);
 
 	// ── back to the list ─────────────────────────────────────────────────────
 	const OUT = 0.22;
-	tl.add(pointer.moveTo(el.back, { duration: 0.7 }), "+=0.35")
+	// Card 4 goes out on this mark, so it clears as the cursor sets off for Back
+	// rather than sitting over the exit. See workflowCards.ts.
+	tl.addLabel("toBack", "+=0.35")
+		.add(pointer.moveTo(el.back, { duration: 0.7 }), "toBack")
 		.add(pointer.press())
 		.addLabel("leave")
 		.to(el.fromBody, { opacity: 0, duration: OUT, ease: "power2.in" }, "leave");

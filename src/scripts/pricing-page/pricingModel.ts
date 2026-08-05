@@ -62,14 +62,18 @@ export const STOP_POSITIONS = [0, 24.66, 50, 75.34];
 export const VISIBLE_DOTS = 4;
 
 /**
- * Where the priced range ends. The rail runs on past the last dot; anything in
- * that stretch is above the top price, so the panel quotes instead of pricing.
+ * Where the last dot sits. The rail runs on past it, and that whole stretch maps
+ * to the same top spend — it exists so the handle stays draggable past the last
+ * tier rather than jamming against it.
+ *
+ * Note this is a *position* concept only. Whether the panel prices or quotes is
+ * decided by the tier (`custom`), which Enterprise reaches at the dot itself.
  */
-export const CUSTOM_ZONE_START = STOP_POSITIONS[STOP_POSITIONS.length - 1];
+export const LAST_DOT_POS = STOP_POSITIONS[STOP_POSITIONS.length - 1];
 
-/** Is this position in the quote-only stretch past the last dot? */
-export function isCustomPos(pos: number): boolean {
-	return pos > CUSTOM_ZONE_START;
+/** Is this position in the flat stretch past the last dot? */
+export function isPastLastDot(pos: number): boolean {
+	return pos > LAST_DOT_POS;
 }
 
 /**

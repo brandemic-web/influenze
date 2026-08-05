@@ -7,8 +7,8 @@ import type { Pointer } from "../utils/pointer";
  *
  * Picks up where beat 1 left off, with the cursor still on Apply & Search: the
  * empty state clears, the panel arrives as one piece, the list scrolls a little
- * to show there is more of it, and the cursor opens Justin Joy — the creator
- * screens 4 and 5 profile.
+ * to show there is more of it and settles back, and the cursor opens the top row
+ * — the creator screens 4 and 5 profile.
  *
  * Unlike beat 1 this one does change layer, because screen 3's results table is
  * markup screen 1 simply does not have. The swap is hidden rather than
@@ -78,14 +78,18 @@ export function resultsList(layers: ResultsListLayers, pointer: Pointer) {
 	// assembling one after another.
 	tl.from(el.parts, { opacity: 0, y: 8, duration: 0.45, immediateRender: false });
 
-	// ── a little scroll through the results ──────────────────────────────────
-	// Cursor moves over the list first, so the scroll happens under it like a wheel.
+	// ── a look down the results, and back ────────────────────────────────────
+	// Cursor parks over the list and the rows move under it, the way a wheel works.
+	// It scrolls back to the top before anything is clicked: the press below is
+	// aimed at a row, and leaving the list scrolled would slide that row out from
+	// under the cursor.
 	tl.add(pointer.moveTo(el.scroller, { at: { x: 0.5, y: 0.35 }, duration: 0.55 }), "+=0.2")
-		.to(el.scroller, { y: () => -rowPitch() * 1.3, duration: 0.9, ease: "power2.inOut" }, "+=0.1");
+		.to(el.scroller, { y: () => -rowPitch() * 1.3, duration: 0.9, ease: "power2.inOut" }, "+=0.1")
+		.to(el.scroller, { y: 0, duration: 0.7, ease: "power2.inOut" }, "+=0.4");
 
-	// ── open Justin Joy ──────────────────────────────────────────────────────
+	// ── open the profiled creator ────────────────────────────────────────────
 	// Aimed at the name rather than the row's centre, which is where the metrics
-	// are. Resolved after the scroll, so it follows the row to its new position.
+	// are.
 	//
 	// The press is the only feedback: the app's row hover and pressed states are
 	// not in `lib` anywhere I could check, and beat 3 opening the profile is the

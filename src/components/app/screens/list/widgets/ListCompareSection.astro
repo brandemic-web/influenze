@@ -26,7 +26,7 @@ const [profiled, against] = COMPARED_HANDLES.map(creatorByHandle);
  */
 const subjects = [profiled, against].map((creator, i) => ({
 	creator,
-	stats: i === 0 ? MEDIA_KIT_STATS.justin : MEDIA_KIT_STATS.kawal,
+	stats: i === 0 ? MEDIA_KIT_STATS.selwyn : MEDIA_KIT_STATS.poorav,
 	meta: [creator.location, creator.gender, creator.language].filter(Boolean).join(" · "),
 }));
 ---

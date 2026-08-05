@@ -3,7 +3,6 @@ import CreatorAvatar from "../common/CreatorAvatar.astro";
 import Icon from "../common/Icon.astro";
 import type { WorkflowIconName } from "../../../data/workflowIcons";
 import watsapp from "../../../assets/images/common/logos_and_icons/watsapp_icon.svg";
-import { PROFILED_HANDLE } from "../../../data/workflowMockup";
 
 /**
  * Creator detail panel — the detail screen's identity column.
@@ -43,13 +42,18 @@ interface Props {
 
 const {
 	title = "Analyzed Creator",
+	/**
+	 * Name and portrait are this card's own, not the hero story's. It used to take
+	 * its handle from `PROFILED_HANDLE`, which meant re-casting the story silently
+	 * swapped this face out from under its name.
+	 */
 	name = "Justin Joy",
 	tier = "💎 Macro Influencer",
 	location = "India",
 	gender = "Male",
 	language = "EN",
 	enquireLabel = "Enquire",
-	handle = PROFILED_HANDLE,
+	handle = "hyperfitx",
 	/** `ContactKind.values` order — the app builds the menu in exactly this one. */
 	contacts = ["Email", "Whatsapp", "Phone"],
 	class: className = "",

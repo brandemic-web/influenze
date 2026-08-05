@@ -38,9 +38,14 @@ interface Props {
 const { class: className = "" } = Astro.props;
 ---
 
-<div class:list={["wf-mockup w-full", className]} data-workflow>
+{/*
+	`data-canvas-fit` / `data-canvas` are the handles scripts/canvasScale measures
+	to scale the canvas to this container — the stage stands in for both layers,
+	which are the same 90rem wide.
+*/}
+<div class:list={["wf-mockup w-full", className]} data-workflow data-canvas-fit>
 	{/* `.wf-stage` positions itself — see the note on the layers in workflow.css. */}
-	<div class="wf-stage overflow-hidden rounded-[1.75rem] bg-wf-page">
+	<div class="wf-stage overflow-hidden rounded-[1.75rem] bg-wf-page" data-canvas>
 		<StoryStep step={1} active><Analyze /></StoryStep>
 		<StoryStep step={3}><Analyze results /></StoryStep>
 		<StoryStep step={4}><AnalyzedCreator tab="about" /></StoryStep>
@@ -66,5 +71,6 @@ const { class: className = "" } = Astro.props;
 </div>
 
 <script>
+	import "../../scripts/canvasScale";
 	import "../../scripts/home-page/workflow";
 </script>

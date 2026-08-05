@@ -102,9 +102,12 @@ export function mediaKitTab(layers: MediaKitTabLayers, pointer: Pointer) {
 	// ── scroll the media kit ─────────────────────────────────────────────────
 	// Cursor moves off the tab and into the card first, so the scroll happens under
 	// it like a wheel — the same reasoning as the rail scroll in beat 1.
+	// The scroll is deliberately unhurried: card 2 is up across it and bows out at
+	// `scrolled` below, so this duration is what decides how long that card is
+	// readable as well as how the kit reads.
 	tl.add(pointer.moveTo(el.toBody, { at: { x: 0.5, y: 0.35 }, duration: 0.55 }), "+=0.25").to(
 		el.mediaKit,
-		{ y: () => -scrollRange() * SCROLL_FRACTION, duration: 1.1, ease: "power2.inOut" },
+		{ y: () => -scrollRange() * SCROLL_FRACTION, duration: 2.4, ease: "power1.inOut" },
 		"+=0.1"
 	);
 

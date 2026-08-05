@@ -15,7 +15,7 @@ import ProfileCardColumns from "../../common/ProfileCardColumns.astro";
 import ListCompareSection from "./widgets/ListCompareSection.astro";
 import ListDetailShell from "./widgets/ListDetailShell.astro";
 import ToolbarAction from "./widgets/ToolbarAction.astro";
-import { CREATORS, STORY_LIST } from "../../../../data/workflowMockup";
+import { LIST_CREATORS, STORY_LIST } from "../../../../data/workflowMockup";
 
 interface Props {
 	/** Compare mode: the two-column comparison in place of the creator list. */
@@ -83,7 +83,7 @@ const { compare = false, blurred = false } = Astro.props;
 
 				<div class="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden">
 					{
-						CREATORS.map((creator) => (
+						LIST_CREATORS.map((creator) => (
 							<div class="flex shrink-0 items-start">
 								<Icon name="dragDots" size="1rem" class="mt-4 mr-3 shrink-0 text-[#51466f]" />
 								<div class="min-w-0 flex-1">

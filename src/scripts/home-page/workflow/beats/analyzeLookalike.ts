@@ -124,19 +124,18 @@ export function analyzeLookalike(screen: HTMLElement, pointer: Pointer) {
 	const locationHint = el.locationInput.textContent ?? "";
 	const dimmedLabel = getComputedStyle(el.label).color;
 
-	// The slider publishes its own snap offsets, the stop the drag starts on and
-	// the authored one it lands on, so neither end is restated here. The tier opens
-	// on its own average cut and the story pulls the handle *left* to stop 0 — thumb
-	// hard left, whole track green — which is the app's "accept every range".
+	// The slider publishes its own snap offsets and the stop it rests on, so the
+	// position is not restated here. The tier opens on its own average cut and the
+	// story leaves it there, so this is only ever used to repaint that one stop
+	// when the loop comes back round.
 	const stops = (el.slider.dataset.wfSliderStops ?? "").split(",").map(Number);
-	const restAt = stops[Number(el.slider.dataset.wfSliderFrom ?? 0)] ?? 0;
-	const pickedAt = stops[Number(el.slider.dataset.wfSliderStop ?? 0)] ?? restAt;
+	const restAt = stops[Number(el.slider.dataset.wfSliderStop ?? 0)] ?? 0;
 	const captionOn = token("text-quiet");
 	const captionOff = token("text-muted");
 
 	/**
 	 * Place the handle and light the captions still inside the accepted range —
-	 * everything from the thumb rightward, so pulling left opens more of them up.
+	 * everything from the thumb rightward.
 	 */
 	const paintSlider = (at: number) => {
 		el.slider.style.setProperty("--wf-slider-at", String(at / 100));
@@ -144,9 +143,6 @@ export function analyzeLookalike(screen: HTMLElement, pointer: Pointer) {
 			caption.style.color = at <= (stops[i + 1] ?? Infinity) ? captionOn : captionOff;
 		});
 	};
-
-	/** How far the handle travels, in the same stage pixels the cursor moves in. */
-	const dragDistance = () => (el.slider.offsetWidth - rootFontSize()) * ((pickedAt - restAt) / 100);
 
 	/**
 	 * Put the rail back to an untouched filter panel.
@@ -175,8 +171,8 @@ export function analyzeLookalike(screen: HTMLElement, pointer: Pointer) {
 		gsap.set(el.tierDot, { borderColor: token("control-border"), backgroundColor: "transparent" });
 		gsap.set(el.tierPip, { display: "none", opacity: 0 });
 		gsap.set(el.tierRange, { color: token("text-value") });
-		// The tier opens showing its own minimum; the "all ranges" line is what the
-		// drag swaps in, so it starts out of sight even though the markup authors it.
+		// The tier reads out its own minimum. The "all ranges" line is the other half
+		// of that grid cell and is never shown now that nothing drags the handle.
 		gsap.set(el.benchmark, { opacity: 1 });
 		gsap.set(el.allRanges, { opacity: 0 });
 		el.label.textContent = emptyLabel;
@@ -309,33 +305,10 @@ export function analyzeLookalike(screen: HTMLElement, pointer: Pointer) {
 		.to(el.tierPip, { opacity: 1, duration: 0.2 }, "tier+=0.66")
 		.add(expand(el.tierBody, 0.4), "tier+=0.62");
 
-	// ── drag the engagement handle ───────────────────────────────────────────
-	// The handle opens on the tier's own average cut; dragging it left drops the
-	// minimum until the filter accepts every range, which is what the results
-	// actually show. Cursor and handle share a duration and ease, so they stay
-	// locked together without measuring anything per frame.
-	const DRAG = 1;
-	const slide = () => {
-		const state = { at: restAt };
-		return gsap.to(state, {
-			at: pickedAt,
-			duration: DRAG,
-			ease: "power2.inOut",
-			onUpdate: () => paintSlider(state.at),
-		});
-	};
-
-	tl.addLabel("drag", "+=0.35")
-		.add(pointer.moveTo(el.thumb, { duration: 0.5 }), "drag")
-		.add(pointer.grab(), "drag+=0.5")
-		.addLabel("pull", "drag+=0.64")
-		.add(slide(), "pull")
-		.add(pointer.dragBy(dragDistance, { duration: DRAG }), "pull")
-		.add(pointer.release())
-		// Each read-out is only true at one end of the travel, so they trade places
-		// as the handle settles rather than either being visible on the way.
-		.to(el.benchmark, { opacity: 0, duration: 0.25 }, "pull+=0.75")
-		.to(el.allRanges, { opacity: 1, duration: 0.3 }, "pull+=0.85");
+	// The engagement handle is deliberately left where the tier opens it — on the
+	// tier's own average cut, which is the filter the results are shown for. It
+	// used to be dragged left to "all ranges"; that beat is gone, so the benchmark
+	// read-out is simply the one the markup ships with.
 
 	// ── run the search ───────────────────────────────────────────────────────
 	tl.addLabel("apply", "+=0.45")

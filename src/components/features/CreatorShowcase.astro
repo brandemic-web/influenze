@@ -25,8 +25,9 @@ const rows = SHOWCASE_HANDLES.map(creatorByHandle);
 	</h2>
 
 	<div class="mx-auto mt-7 max-w-200 px-6 lg:mt-4" data-reveal>
-		<div class="wf-strip">
-			<div class="wf-strip-canvas flex flex-col gap-4">
+		{/* See WorkflowMockup for what scripts/canvasScale does with these. */}
+		<div class="wf-strip" data-canvas-fit>
+			<div class="wf-strip-canvas flex flex-col gap-4" data-canvas>
 				{rows.map((creator) => (
 					<div data-reveal-item>
 						<ProfileCard creator={creator} />
@@ -41,5 +42,6 @@ const rows = SHOWCASE_HANDLES.map(creatorByHandle);
 </section>
 
 <script>
+	import "../../scripts/canvasScale";
 	import "../../scripts/reveals";
 </script>

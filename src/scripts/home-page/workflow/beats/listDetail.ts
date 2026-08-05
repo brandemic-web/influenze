@@ -1,5 +1,5 @@
 import gsap from "gsap";
-import { CREATORS } from "../../../../data/workflowMockup";
+import { COMPARED_HANDLES } from "../../../../data/workflowMockup";
 import { token } from "../utils/dom";
 import type { Pointer } from "../utils/pointer";
 
@@ -22,8 +22,12 @@ import type { Pointer } from "../utils/pointer";
  * out, the layers swap behind an empty card, and the new body fades in.
  */
 
-/** The creators the compare screen puts side by side, in the order it shows them. */
-const COMPARED = CREATORS.filter((creator) => creator.checked).map((creator) => creator.handle);
+/**
+ * The creators the compare screen puts side by side, in the order it shows them.
+ * Straight from the data rather than derived from the rows' `checked` flags, so
+ * the tick order and the column order can never disagree.
+ */
+const COMPARED = COMPARED_HANDLES;
 
 export interface ListDetailLayers {
 	/** The My Lists layer being left. */
