@@ -6,7 +6,7 @@ import gsap from "gsap";
  * Read one of the mockup's `wf-` colour tokens.
  *
  * Beats animate *to* values the components already own, so none of them restate a
- * hex. This is the lookup for the ones that live in `styles/workflow.css`.
+ * hex. This is the lookup for the ones that live in `styles/app-tokens.css`.
  */
 export function token(name: string) {
 	return getComputedStyle(document.documentElement).getPropertyValue(`--color-wf-${name}`).trim();

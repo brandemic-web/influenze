@@ -1,0 +1,177 @@
+---
+/**
+ * Creator detail — `creator_detail.dart`, which owns both tabs and both bodies,
+ * so this does too rather than taking one through a slot.
+ *
+ * Renders *inside* the results panel with no surface of its own: a `padding
+ * h24 v20` content box holding the header, a rule, then a row of the identity
+ * column (0.28 x viewport = 403, vertically centred) · 40 · the tab card.
+ *
+ * Frame coordinates: content box at 466,150 sized 884 x 664.
+ *
+ * The creator is the story's profiled one and is read from the data rather than
+ * passed in — the two frames this appears in are the same creator, and stating
+ * them separately is how their figures used to drift apart.
+ */
+import CreatorAvatar from "../../../common/CreatorAvatar.astro";
+import Icon from "../../../common/Icon.astro";
+import PlatformIcon from "../../../common/PlatformIcon.astro";
+import MediaKitDetail from "./media-kit/MediaKitDetail.astro";
+import {
+	MACRO_BENCHMARK,
+	MEDIA_KIT_STATS,
+	PROFILED_HANDLE,
+	creatorByHandle,
+} from "../../../../../data/workflowMockup";
+
+interface Props {
+	tab: "about" | "mediaKit";
+}
+
+const { tab } = Astro.props;
+
+const creator = creatorByHandle(PROFILED_HANDLE);
+const stats = MEDIA_KIT_STATS.justin;
+/** The detail spells the tier out where the results row abbreviates it. */
+const tierLabel = stats.tier;
+const { name, handle, location, gender, language } = creator;
+
+const tabs = [
+	{ id: "about", label: "About" },
+	{ id: "mediaKit", label: "Media Kit" },
+] as const;
+
+/** About tab, `buildAboutContent`. The follower count is spelled out in full here. */
+const followersInFull = "156,741";
+const demographics = [
+	{ label: "Engagement rate", value: creator.engagement, note: "Instagram" },
+	{ label: "Top gender", value: "Male", note: "81%" },
+	{ label: "Top country", value: "India", note: "93.5%" },
+];
+const bio =
+	"Giving voice to every opinion, unfiltered. Founder & CEO @hypervisuals.in Director @dotme.in Building @brandemic_design @thinklimitless.in";
+---
+
+<div class="absolute top-37.5 left-116.5 flex h-166 w-221 flex-col" data-wf-detail>
+	<header class="flex shrink-0 items-center pt-5 pb-5 pl-4.5">
+		<h3 class="text-md whitespace-nowrap text-wf-text">Analyzed Creator</h3>
+		<span class="ml-auto text-[0.875rem] font-medium whitespace-nowrap text-wf-green-mid">Back</span>
+		<span class="ml-4.5 grid size-7 place-items-center rounded-sm bg-wf-violet">
+			<Icon name="externalLink" size="0.875rem" class="text-white" />
+		</span>
+	</header>
+
+	<span class="block h-px shrink-0 bg-wf-rule"></span>
+
+	<div class="flex min-h-0 flex-1 items-center pt-6">
+		<!-- Identity column: a scroll view in the app, so it centres on its content. -->
+		<div class="flex w-100.75 shrink-0 flex-col items-center px-10">
+			<CreatorAvatar size="10.625rem" handle={handle} />
+			<p class="mt-6 text-center text-[1.75rem] whitespace-nowrap text-wf-text">{name}</p>
+			<span class="mt-3 rounded-[0.375rem] bg-wf-surface px-2 py-2 text-[0.75rem] whitespace-nowrap text-wf-tier-text">
+				{tierLabel}
+			</span>
+
+			<!-- The app's `Divider(height: 36)` — a 1px rule centred in a 36px box. -->
+			<span class="my-[1.09375rem] block h-px w-full bg-wf-rule"></span>
+
+			<div class="flex items-center justify-center text-[0.625rem] whitespace-nowrap text-wf-meta">
+				<Icon name="mapPin" size="0.625rem" />
+				<span class="ml-1">{location}</span>
+				{gender && <span class="ml-3">{gender}</span>}
+				{language && <span class="ml-3">{language}</span>}
+			</div>
+
+			<span class="my-[1.09375rem] block h-px w-full bg-wf-rule"></span>
+
+			<div class="mt-1 flex items-center">
+				<span class="flex items-center rounded-[1.25rem] border border-wf-green-mid bg-mkit-tile px-3.5 py-2.5">
+					<Icon name="messageCircle" size="0.875rem" class="text-wf-green-mid" />
+					<span class="ml-1.5 text-[0.625rem] whitespace-nowrap text-wf-text">Enquire</span>
+					<Icon name="arrowIcon" size="0.75rem" class="ml-1 text-wf-green-dim" />
+				</span>
+				<span
+						class="ml-2.5 grid size-8.5 place-items-center rounded-full border border-wf-menu-border bg-wf-menu"
+						data-wf-add-to-list
+					>
+					<Icon name="addToList" size="0.75rem" class="text-wf-violet-soft" />
+				</span>
+			</div>
+		</div>
+
+		<div class="w-10 shrink-0"></div>
+
+		<div class="flex h-full min-w-0 flex-1 flex-col overflow-hidden rounded-[0.375rem] bg-wf-surface">
+			<div class="flex shrink-0 items-end gap-4.5 pt-6 pl-4.5">
+				{
+					tabs.map((item) => (
+						<span
+							class:list={[
+								"border-b-[0.1875rem] px-1.5 pb-3 text-[0.875rem] whitespace-nowrap",
+								item.id === tab
+									? "border-[#9674ff] text-wf-text"
+									: "border-transparent text-[#ffffff33]",
+							]}
+							data-wf-tab={item.id}
+						>
+							{item.label}
+						</span>
+					))
+				}
+			</div>
+			<span class="block h-px shrink-0 bg-[#3d3d5b]"></span>
+
+			<div class="min-h-0 flex-1 overflow-hidden" data-wf-tab-body>
+				{
+					tab === "about" ? (
+						<div class="p-6">
+							<p class="flex items-center gap-1.5 text-[0.75rem] whitespace-nowrap">
+								<span class="text-[#c5bedb]">Followers</span>
+								<span class="text-wf-green-mid">{followersInFull}</span>
+							</p>
+
+							<div class="mt-2.5 flex">
+								<span class="flex items-center rounded-sm bg-wf-tile p-2">
+									<PlatformIcon platform="instagram" tile="1.25rem" glyph="0.625rem" radius="0.25rem" />
+									<span class="ml-2.5 text-[0.75rem] whitespace-nowrap text-[#ac91ff]">{handle}</span>
+									<span class="ml-2.5 text-[0.625rem] whitespace-nowrap text-wf-text">{creator.followers}</span>
+								</span>
+							</div>
+
+							<p class="mt-8 text-[0.75rem] font-medium whitespace-nowrap text-[#c5bedb]">Top Demographics</p>
+
+							<div class="mt-2.5 flex gap-1">
+								{demographics.map((tile) => (
+									<div class="flex h-21.5 flex-1 flex-col rounded-sm bg-wf-tile p-3">
+										<span class="whitespace-nowrap text-[0.625rem] text-white/80">{tile.label}</span>
+										<span class="mt-auto whitespace-nowrap text-[1rem] text-wf-text">{tile.value}</span>
+										<span class="mt-1 whitespace-nowrap text-[0.5rem] font-medium text-wf-green-mid">{tile.note}</span>
+									</div>
+								))}
+							</div>
+
+							<p class="mt-10.5 text-[0.8125rem] leading-normal text-[#c5bedb]">{bio}</p>
+						</div>
+					) : (
+						<MediaKitDetail
+							rate={stats.engagement}
+							tierLabel={stats.tier}
+							level={stats.level}
+							headline={stats.headline}
+							marker={stats.marker}
+							median={stats.median}
+							medianLabel={MACRO_BENCHMARK.medianLabel}
+							axis={stats.axis}
+							body={MACRO_BENCHMARK.body}
+							followers={stats.followers}
+							posts={stats.posts}
+							views={stats.reelViews}
+							likes={stats.likes}
+							comments={stats.comments}
+						/>
+					)
+				}
+			</div>
+		</div>
+	</div>
+</div>

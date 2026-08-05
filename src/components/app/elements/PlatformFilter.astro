@@ -1,0 +1,50 @@
+---
+import PlatformIcon, {
+	type Platform,
+} from "../common/PlatformIcon.astro";
+
+/**
+ * Platform filter — the Analyze rail's platform picker.
+ */
+interface Props {
+	class?: string;
+}
+
+const { class: className = "" } = Astro.props;
+
+/** Order and labels mirror `AppConstants.platforms`. */
+const platforms: { platform: Platform; label: string }[] = [
+	{ platform: "instagram", label: "Instagram" },
+	{ platform: "youtube", label: "Youtube" },
+	{ platform: "tiktok", label: "TikTok" },
+];
+---
+
+<div
+	class:list={[
+		"w-92.5 max-w-full rounded-md border border-wf-rail-border bg-wf-rail px-3.5 pt-3.5 pb-4 font-sans text-white",
+		className,
+	]}
+>
+	<span class="text-[0.8125rem] font-medium text-ui-subtle">Platform</span>
+
+	<div class="mt-2.5 flex gap-2.5" role="group" aria-label="Platform">
+		{
+			platforms.map(({ platform, label }, i) => (
+				<button
+					type="button"
+					aria-pressed={i === 0 ? "true" : "false"}
+					class:list={[
+						"inline-flex cursor-pointer items-center gap-2 rounded-[0.25rem] border px-2.5 py-2 text-[0.875rem] font-medium text-white",
+						i === 0
+							? "border-wf-chip-on-border bg-wf-chip-on"
+							: "border-wf-chip-border bg-wf-chip hover:border-wf-chip-on-border",
+					]}
+				>
+					<PlatformIcon platform={platform} />
+					{label}
+				</button>
+			))
+		}
+	</div>
+</div>

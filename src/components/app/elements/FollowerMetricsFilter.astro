@@ -1,0 +1,117 @@
+---
+import { FOLLOWER_TIERS } from "../../../data/workflowMockup";
+
+/**
+ * Follower metrics filter — the tier list, with one tier expanded.
+ */
+interface Props {
+	class?: string;
+}
+
+const { class: className = "" } = Astro.props;
+
+/**
+ * The tier this element shows picked. The workflow story picks Macro; this one
+ * ends on Mega, so the row is chosen by label rather than the data's own flag.
+ */
+const SELECTED_TIER = "👑 Mega Influencer";
+---
+
+<div
+	class:list={[
+		"w-87.5 max-w-full rounded-md border border-wf-rail-border bg-wf-rail px-3 pt-3.5 pb-3.5 font-sans text-white",
+		className,
+	]}
+>
+	<span class="text-[0.8125rem] font-medium text-ui-subtle">Follower Metrics</span>
+
+	<ul class="mt-2.5 flex list-none flex-col gap-1 p-0">
+		{
+			FOLLOWER_TIERS.map((tier) => {
+				const on = tier.label === SELECTED_TIER;
+				return (
+					<li
+						data-metrics-row={on ? true : undefined}
+						class:list={["rounded-[0.25rem] p-2.5", on && "bg-wf-chip-row-on"]}
+					>
+						<div class="flex items-center">
+							{/*
+								`SelectionIndicator(isRadio: true, size: 12, iconSize: 4)` —
+								a 12px rounded box that fills lavender15 and shows a 4px pip.
+							*/}
+							<span
+								data-metrics-check={on ? true : undefined}
+								class:list={[
+									"grid size-3 shrink-0 place-items-center rounded-[0.25rem] border",
+									on
+										? "border-wf-violet-bright bg-wf-violet-bright"
+										: "border-wf-control-border",
+								]}
+							>
+								<span
+									data-metrics-dot={on ? true : undefined}
+									class:list={["size-1 rounded-full bg-white", !on && "hidden"]}
+								/>
+							</span>
+							<span
+								class:list={[
+									"ml-2 text-[0.8125rem]",
+									on && "font-medium",
+								]}
+							>
+								{tier.label}
+							</span>
+							<span
+								class:list={[
+									"ml-auto text-[0.75rem]",
+									on ? "text-white" : "text-ui-lilac",
+								]}
+							>
+								{tier.range}
+							</span>
+						</div>
+
+						{/*
+							Selected tier's expansion. Markup is the *settled* state; the
+							section's timeline (creators-ai-panels) rewinds it to an
+							unselected row and plays the selection forward, so it degrades
+							to the design without JS.
+						*/}
+						{on && (
+							<div data-metrics-expand class="overflow-hidden">
+								<div class="py-2">
+									<span class="block h-px w-full bg-wf-chip-row-rule" />
+								</div>
+
+								<div class="relative mt-1.5 h-1 rounded-full bg-wf-track">
+									<span
+										data-metrics-slider
+										class="absolute inset-y-0 left-0 block w-full origin-left rounded-full bg-wf-green-mid"
+									/>
+									<span
+										data-metrics-knob
+										class="absolute top-1/2 left-0 size-4 -translate-y-1/2 rounded-full bg-white"
+									/>
+								</div>
+
+								<div class="mt-2 flex justify-between text-[0.625rem] text-ui-muted">
+									<span>min</span>
+									<span>poor</span>
+									<span>average</span>
+									<span>good</span>
+									<span>max</span>
+								</div>
+
+								<p class="mt-5 text-[0.75rem] text-ui-subtle">
+									displaying all ranges{" "}
+									<span class="font-bold text-wf-green-mid">min</span> to{" "}
+									<span class="font-bold text-wf-green-mid">max</span>
+								</p>
+							</div>
+						)}
+					</li>
+				);
+			})
+		}
+	</ul>
+</div>

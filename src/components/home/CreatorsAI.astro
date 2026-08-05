@@ -1,18 +1,18 @@
 ---
 import Button from "../common/Button.astro";
-import { SIGNUP_URL } from "../../data/site";
+import { FEATURES_URL } from "../../data/site";
 import { CREATORS_AI_FEATURES, CREATORS_AI_BUTTON } from "../../data/creatorsAI";
 import { panelId, tabId } from "../../scripts/creators-ai";
-import SearchUi from "../ui-elements/SearchUi.astro";
-import PlatformUi from "../ui-elements/PlatformUi.astro";
-import FollowerMetricsUi from "../ui-elements/FollowerMetricsUi.astro";
-import MetricTilesUi from "../ui-elements/MetricTilesUi.astro";
-import FollowerQualityUi from "../ui-elements/FollowerQualityUi.astro";
-import AudienceAffinitiesUi from "../ui-elements/AudienceAffinitiesUi.astro";
-import CompareUi from "../ui-elements/CompareUi.astro";
-import AddToListUi from "../ui-elements/AddToListUi.astro";
-import AnalyzedCreator from "../ui-elements/AnalyzedCreatorUi.astro";
-import DemoCursor from "../ui-elements/DemoCursor.astro";
+import AnalyzeFilterSidebar from "../app/elements/AnalyzeFilterSidebar.astro";
+import PlatformFilter from "../app/elements/PlatformFilter.astro";
+import FollowerMetricsFilter from "../app/elements/FollowerMetricsFilter.astro";
+import TopDemographics from "../app/elements/TopDemographics.astro";
+import FollowerQuality from "../app/elements/FollowerQuality.astro";
+import AffinitiesCard from "../app/elements/AffinitiesCard.astro";
+import CompareCreatorColumn from "../app/elements/CompareCreatorColumn.astro";
+import AddToListDialog from "../app/elements/AddToListDialog.astro";
+import AnalyzedCreator from "../app/elements/CreatorDetailPanel.astro";
+import DemoCursor from "../app/story/DemoCursor.astro";
 import iconSearch from "../../assets/images/common/icons/search.svg";
 import iconUsers from "../../assets/images/common/icons/users.svg";
 import iconSquareCheck from "../../assets/images/common/icons/square_check_big.svg";
@@ -62,7 +62,7 @@ const featureIcons: Record<string, ImageMetadata> = {
 			class="relative mt-8 flex w-full flex-col items-center gap-8 rounded-[1.75rem] border border-white/15 bg-white/10 shadow-[0_0.5rem_2rem_rgba(0,0,0,0.18),inset_0_0.0625rem_0_rgba(255,255,255,0.18)] backdrop-blur-md backdrop-saturate-150 px-5 pb-8 pt-12 lg:h-199.25 lg:flex-row lg:items-center lg:justify-between lg:py-5.75 lg:pl-[min(9.25rem,8%)] lg:pr-4.75"
 		>
 			<div class="absolute -top-6 left-0 right-0 mx-auto w-max">
-				<Button href={SIGNUP_URL} newTab>{CREATORS_AI_BUTTON}</Button>
+				<Button href={FEATURES_URL}>{CREATORS_AI_BUTTON}</Button>
 			</div>
 
 			<!-- feature list — doubles as the tab list for the visuals on the right -->
@@ -123,18 +123,26 @@ const featureIcons: Record<string, ImageMetadata> = {
 							class="creators-panel absolute inset-0"
 						>
 							<!--
-								Each card sits in its own untransformed wrapper so the
-								intro stagger can own `transform` without clobbering the
-								component's own scale.
+								The three cards span ~598 of the stage's 668, so the group is
+								nudged right to sit centred. The cursor stays outside it: its
+								park position is in stage coordinates, and it reads its targets
+								from the DOM at play time, so it follows the shift on its own.
 							-->
-							<div data-search-card class="absolute left-0 top-0">
-								<SearchUi />
-							</div>
-							<div data-search-card class="absolute left-66 top-30.25">
-								<PlatformUi class="scale-80" />
-							</div>
-							<div data-search-card class="absolute left-69 top-48.75">
-								<FollowerMetricsUi class="scale-84" />
+							<div class="absolute inset-0 translate-x-8.75">
+								<!--
+									Each card sits in its own untransformed wrapper so the
+									intro stagger can own `transform` without clobbering the
+									component's own scale.
+								-->
+								<div data-search-card class="absolute left-0 top-0">
+									<AnalyzeFilterSidebar />
+								</div>
+								<div data-search-card class="absolute left-66 top-30.25">
+									<PlatformFilter class="scale-80" />
+								</div>
+								<div data-search-card class="absolute left-69 top-48.75">
+									<FollowerMetricsFilter class="scale-84" />
+								</div>
 							</div>
 
 							<DemoCursor />
@@ -150,13 +158,20 @@ const featureIcons: Record<string, ImageMetadata> = {
 							class="creators-panel absolute inset-0 invisible opacity-0"
 						>
 							<div data-panel-item class="absolute left-[17%] top-0">
-								<MetricTilesUi />
+								<TopDemographics />
 							</div>
-							<div data-panel-item class="absolute left-0 top-36">
-								<FollowerQualityUi />
+							<!--
+								Tops follow the Figma group (688:5097): a 25px gap under the
+								tiles, and the affinities card starting ~56% down the follower
+								quality card so the two overlap. Figma's own y values can't be
+								copied straight across — its placeholders are screenshots of the
+								older, taller cards — so the *gaps* are what carry over.
+							-->
+							<div data-panel-item class="absolute left-0 top-27.5">
+								<FollowerQuality />
 							</div>
-							<div data-panel-item class="absolute left-[47%] top-78">
-								<AudienceAffinitiesUi />
+							<div data-panel-item class="absolute left-[47%] top-58">
+								<AffinitiesCard />
 							</div>
 
 							<DemoCursor />
@@ -171,18 +186,25 @@ const featureIcons: Record<string, ImageMetadata> = {
 							data-creators-panel
 							class="creators-panel absolute inset-0 invisible opacity-0"
 						>
-							<img
-								data-panel-item
-								src={shareIcon.src}
-								alt=""
-								class="absolute w-28 right-24.75 top-17.75"
-								loading="lazy"
-							/>
-							<div data-panel-item class="absolute left-[5%] top-38 z-10">
-								<CompareUi />
-							</div>
-							<div data-panel-item class="absolute left-0 top-4">
-								<AddToListUi />
+							<!--
+								Same as panel 1: the group spans ~613 of the stage's 668 — from
+								the list dialog's left edge to the compare panel's right — so it
+								is nudged right by half the slack to sit centred.
+							-->
+							<div class="absolute inset-0 translate-x-6.75">
+								<img
+									data-panel-item
+									src={shareIcon.src}
+									alt=""
+									class="absolute w-28 right-24.75 top-17.75"
+									loading="lazy"
+								/>
+								<div data-panel-item class="absolute left-[5%] top-38 z-10">
+									<CompareCreatorColumn />
+								</div>
+								<div data-panel-item class="absolute left-0 top-4">
+									<AddToListDialog />
+								</div>
 							</div>
 						</div>
 
@@ -195,8 +217,22 @@ const featureIcons: Record<string, ImageMetadata> = {
 							data-creators-panel
 							class="creators-panel absolute inset-0 invisible opacity-0"
 						>
-							<div data-panel-item class="absolute -top-25 left-1">
-								<AnalyzedCreator class="scale-75" />
+							<!--
+								The card is the whole panel, so it centres rather than being
+								placed by hand. The wrapper owns the intro tween's transform, so
+								the scale sits on the card inside it.
+
+								`pb-24` is what makes it look centred in the *well* rather than
+								on the stage: the well insets the stage by `pt-22` (88px) and is
+								10px shorter than it, so a stage-centred card carries ~121px of
+								air above and ~23px below. Centring inside a box shortened by
+								twice the difference splits that evenly.
+							-->
+							<div
+								data-panel-item
+								class="absolute inset-0 grid place-items-center pb-24"
+							>
+								<AnalyzedCreator class="scale-120" />
 							</div>
 
 							<DemoCursor />

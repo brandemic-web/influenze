@@ -10,11 +10,16 @@ gsap.registerPlugin(SplitText);
  * for the harness they all plug into.
  */
 
-/** Tier row colour once the Mega Account option is selected. */
-const ROW_ACTIVE = "#282341";
-/** Checkbox fill / unselected border colour. */
-const CHECK_FILL = "#6838ff";
-const CHECK_BORDER = "rgba(104,56,255,0.6)";
+/**
+ * The app's tier-row colours — `lavender69`, `lavender15` and `lavender14` in
+ * influenze/lib/common/colors.dart, same as the `wf-` tokens the markup uses.
+ * They are literals here because GSAP tweens computed colours, not var() names.
+ */
+/** Tier row fill once the Mega Influencer option is selected. */
+const ROW_ACTIVE = "#322b45";
+/** Selection indicator fill / unselected border colour. */
+const CHECK_FILL = "#865fff";
+const CHECK_BORDER = "#615381";
 /** Seconds between characters while "typing". */
 const TYPE_SPEED = 0.055;
 /** Distance (px) cards travel up from on a reveal. */
@@ -84,8 +89,8 @@ registerPanelDemo(panelId(0), (ctx) => {
 		.set(cards, { y: RISE, autoAlpha: 0 })
 		.set(cursor, { autoAlpha: 0, scale: 1, x: CURSOR_HOME.x, y: CURSOR_HOME.y })
 		.set(ring, { autoAlpha: 0, scale: 0.3 })
-		.set(row, { backgroundColor: "rgba(40,35,65,0)" })
-		.set(check, { backgroundColor: "rgba(104,56,255,0)", borderColor: CHECK_BORDER })
+		.set(row, { backgroundColor: "rgba(50,43,69,0)" })
+		.set(check, { backgroundColor: "rgba(134,95,255,0)", borderColor: CHECK_BORDER })
 		.set(dot, { autoAlpha: 0, scale: 0 })
 		.set(expand, { height: 0, autoAlpha: 0 })
 		.set(slider, { scaleX: 0, transformOrigin: "right center" })
@@ -97,14 +102,15 @@ registerPanelDemo(panelId(0), (ctx) => {
 		// ── 1 · the three cards land, staggered ──────────────────────────────
 		.to(cards, { y: 0, autoAlpha: 1, duration: 0.7, stagger: 0.2 }, 0.1)
 
-		// ── 2 · pointer travels to the Mega Account checkbox and clicks ──────
+		// ── 2 · pointer travels to the Mega Influencer checkbox and clicks ───
 		.to(cursor, { autoAlpha: 1, duration: 0.25 }, ">-0.15");
 
 	hopAndClick(tl, ctx, cursor, ring, check, "<");
 
 	tl
 		// selection takes hold: box fills, row lights up, slider block unfolds
-		.to(check, { backgroundColor: CHECK_FILL, borderColor: "rgba(104,56,255,0)", duration: 0.25 }, "<0.05")
+		// (the app fills and borders the indicator in the same lavender15)
+		.to(check, { backgroundColor: CHECK_FILL, borderColor: CHECK_FILL, duration: 0.25 }, "<0.05")
 		.to(dot, { autoAlpha: 1, scale: 1, duration: 0.28, ease: "back.out(3)" }, "<0.05")
 		.to(row, { backgroundColor: ROW_ACTIVE, duration: 0.35 }, "<")
 		.to(expand, { height: "auto", autoAlpha: 1, duration: 0.5 }, "<")

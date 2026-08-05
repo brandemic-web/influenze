@@ -1,0 +1,21 @@
+---
+/**
+ * Import / Export control — `IoPillButton`, which despite the name has no
+ * background, padding or radius: just a tinted glyph and a label.
+ */
+import Icon from "../../../common/Icon.astro";
+import type { WorkflowIconName } from "../../../../../data/workflowIcons";
+
+interface Props {
+	label: string;
+	icon: WorkflowIconName;
+	class?: string;
+}
+
+const { label, icon, class: className = "" } = Astro.props;
+---
+
+<span class:list={["flex items-center gap-1 text-[0.75rem] whitespace-nowrap text-wf-text", className]}>
+	<Icon name={icon} size="0.75rem" class="text-[#a589ff]" />
+	{label}
+</span>

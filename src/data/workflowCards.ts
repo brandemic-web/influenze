@@ -7,7 +7,7 @@
  *
  * Unlike the rest of the mockup these are **marketing artwork, not app UI**, so
  * Design is the source of truth for them — the opposite of the rule in
- * `components/home/workflow/APP-SPEC.md`.
+ * `components/app/APP-SPEC.md`.
  */
 
 /**

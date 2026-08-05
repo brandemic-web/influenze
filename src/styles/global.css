@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import "./workflow.css";
+@import "./app-tokens.css";
 
 @font-face {
     font-family: "Open Sauce One";
@@ -112,7 +112,7 @@
     --color-mint-dark: #33E889;
 
     /*
-     * Palette for the product UI mocks in src/components/ui-elements. These are
+     * Palette for the product UI mocks in src/components/app/elements. These are
      * screenshot colours, not site chrome — kept in their own `ui-*` namespace so
      * they can't be mistaken for brand tokens.
      */

@@ -1,7 +1,6 @@
 ---
 import { Image } from "astro:assets";
 import { FEATURE_BLOCKS } from "../../data/featureBlocks";
-import ShareToEmailUi from "../ui-elements/ShareToEmailUi.astro";
 
 import bubblesTrio from "../../assets/images/home_page/featured_tabs/discover_and_analyze_image.png";
 import filtersPanel from "../../assets/images/common/ui_images/creator_filters_panel.png";
@@ -14,6 +13,7 @@ import hami_insta_handle from "../../assets/images/featured_page/blocks/hamid_in
 import ui_widgets from "../../assets/images/featured_page/blocks/ui_widgets.png";
 import csv_progress from "../../assets/images/featured_page/blocks/csv_export_progress.png";
 import csv_export_complete from "../../assets/images/featured_page/blocks/csv_export_complete.png";
+import shareToEmail from "../../assets/images/featured_page/blocks/share.svg";
 
 const [
 	discovery,
@@ -259,18 +259,15 @@ const [
 				{sharing.description}
 			</p>
 		</div>
-		{/*
-			The one well that holds markup rather than an image, so it is also the one
-			that cannot letterbox its content: the dialog is sized in rem and the root
-			font-size is larger on small screens than it is at `lg`, which makes the
-			dialog outgrow a 16/10 box and get cut off by the clip. Below `lg` the well
-			takes its height from the dialog instead; from `lg` up the dialog is
-			comfortably inside the ratio, so the shape matches every other block.
-		*/}
 		<div
-			class="flex aspect-auto w-full items-center justify-center overflow-hidden rounded-[1.25rem] bg-white/50 p-6 lg:aspect-16/10 lg:w-1/2 lg:p-4"
+			class="flex aspect-16/10 w-full items-center justify-center overflow-hidden rounded-[1.25rem] bg-white/50 p-6 lg:w-1/2 lg:p-4"
 		>
-			<ShareToEmailUi />
+			<img
+				src={shareToEmail.src}
+				alt="Share to email dialog with a recipient, an expiry date and a Send button"
+				class="max-h-full w-auto max-w-full object-contain"
+				loading="lazy"
+			/>
 		</div>
 	</div>
 </article>

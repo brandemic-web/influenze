@@ -8,9 +8,9 @@
  * table, and the metrics read fine unlabelled at three rows.
  *
  * `.wf-strip` scales the strip to the page the way the hero canvas does; see
- * styles/workflow.css for the geometry.
+ * styles/app-tokens.css for the geometry.
  */
-import ProfileCard from "../home/workflow/common/ProfileCard.astro";
+import ProfileCard from "../app/common/ProfileCard.astro";
 import { SHOWCASE_HANDLES, creatorByHandle } from "../../data/workflowMockup";
 
 const rows = SHOWCASE_HANDLES.map(creatorByHandle);

@@ -1,0 +1,62 @@
+---
+/**
+ * One explainer card laid over the workflow mockup.
+ *
+ * A sibling of the screen layers, like `WorkflowPointer`, for the same reason:
+ * the layers get hidden as the story advances and this has to outlive them. It
+ * lives in stage coordinates so it scales with the canvas, and starts hidden —
+ * GSAP owns opacity and visibility from there, so a script that never runs
+ * leaves no stray card on the hero.
+ *
+ * **Every length here is a Figma pixel**, converted by `rem()`. The cards are
+ * authored beside Figma's 1280-wide app frames, and the stage is the app's own
+ * 1440-wide canvas (see `.wf-stage`), so x1.125 is what keeps a card the same
+ * fraction of the mockup's width the design gives it, and /16 turns that into
+ * rem.
+ *
+ * `SCALE` then shrinks the card off the design's size. Figma draws these at 44%
+ * of the mockup's width, which covers too much of the animation playing behind
+ * them, so every length runs through one factor rather than being re-measured —
+ * the design's proportions and line breaks survive whatever size we settle on.
+ * `.wf-card` reads it too, so the overhang past the canvas edge shrinks with it.
+ *
+ * The `<p>`s pick up the stage's cap-trim, which is what Figma's own
+ * `text-box-trim: trim-both` on these layers asks for, so neither needs
+ * `wf-untrimmed`.
+ */
+import type { WorkflowCard } from "../../../data/workflowCards";
+
+interface Props {
+	card: WorkflowCard;
+}
+
+const { card } = Astro.props;
+
+/** Turn this down to shrink the whole card; 1 is Figma's own size. */
+const SCALE = 0.55;
+
+const rem = (figmaPx: number) => `${((figmaPx * 1.125 * SCALE) / 16).toFixed(3)}rem`;
+
+/** Which part carries the violet. See `WorkflowCardVariant`. */
+const tone = {
+	lead: { title: "text-white", step: "text-[#8058ff]", body: "text-[#cecece]/70" },
+	dark: { title: "text-[#8058ff]", step: "text-[#3c3c3c]", body: "text-[#cecece]/70" },
+	violet: { title: "text-white", step: "text-white/[0.31]", body: "text-[#b9b9b9]" },
+}[card.variant];
+---
+
+<div
+	class:list={[
+		"wf-card flex items-center justify-between",
+		card.variant === "violet" ? "wf-card-violet" : "border border-[#19123a] bg-[#131212]",
+	]}
+	style={`--wf-card-scale:${SCALE};width:${rem(564)};border-radius:${rem(8)};padding:${rem(30)}`}
+	data-wf-card={card.step}
+	aria-hidden="true"
+>
+	<div class="flex flex-col" style={`width:${rem(328)};gap:${rem(20)}`}>
+		<p class={tone.title} style={`font-size:${rem(24)}`}>{card.title}</p>
+		<p class={tone.body} style={`font-size:${rem(18)};line-height:${rem(28)}`}>{card.body}</p>
+	</div>
+	<span class:list={["leading-[1.1] whitespace-nowrap", tone.step]} style={`font-size:${rem(110)}`}>{card.step}</span>
+</div>

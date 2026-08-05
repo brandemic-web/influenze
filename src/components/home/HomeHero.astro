@@ -2,13 +2,13 @@
 import { SIGNUP_URL } from "../../data/site";
 import { HERO_WORDS } from "../../data/heroWords";
 import Button from "../common/Button.astro";
-import WorkflowMockup from "./workflow/WorkflowMockup.astro";
+import WorkflowMockup from "../app/WorkflowMockup.astro";
 import backgroundArcs from "../../assets/images/home_page/hero/bg_svg_lines_hero.svg";
 import darkLayerSide from "../../assets/images/home_page/hero/dark_layer_side.svg";
 import darkLayerCenter from "../../assets/images/home_page/hero/dark_layer_center.svg";
 ---
 
-<section class="relative h-170 lg:h-344 overflow-x-hidden lg:overflow-visible">
+<section class="relative h-auto mb-2 lg:mb-auto lg:h-344 overflow-x-hidden lg:overflow-visible">
 	<!-- gradient backdrop-->
 	<div
 		class="pointer-events-none absolute inset-x-0 top-0 lg:h-344 h-160 bg-[linear-gradient(179.95deg,#11092B_0%,#6838FF_5.85%,#010101_99.94%)]"

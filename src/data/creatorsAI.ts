@@ -5,7 +5,7 @@ export interface CreatorAIFeature {
 	description: string;
 }
 
-export const CREATORS_AI_BUTTON = "View Features";
+export const CREATORS_AI_BUTTON = "Features";
 
 /**
  * The four feature rows on the left of the "world's creators" section.

@@ -1,0 +1,186 @@
+---
+import CreatorAvatar from "../common/CreatorAvatar.astro";
+import Icon from "../common/Icon.astro";
+import type { WorkflowIconName } from "../../../data/workflowIcons";
+import watsapp from "../../../assets/images/common/logos_and_icons/watsapp_icon.svg";
+import { PROFILED_HANDLE } from "../../../data/workflowMockup";
+
+/**
+ * Creator detail panel — the detail screen's identity column.
+ */
+
+/** The contact rows this card knows how to render. */
+export type ContactChannel = "Phone" | "Email" | "Whatsapp";
+
+/**
+ * Icon per channel: phone and email are inline mono glyphs tinted by the row,
+ * WhatsApp is its own multi-colour logo asset. A `Record` over the union means
+ * adding a channel to the type is a compile error until it has an icon here.
+ */
+const CONTACT_ICONS: Record<
+	ContactChannel,
+	{ glyph: WorkflowIconName } | { logo: ImageMetadata }
+> = {
+	Phone: { glyph: "phone" },
+	Email: { glyph: "mail" },
+	Whatsapp: { logo: watsapp },
+};
+
+interface Props {
+	title?: string;
+	name?: string;
+	tier?: string;
+	location?: string;
+	gender?: string;
+	language?: string;
+	enquireLabel?: string;
+	/** Portrait to show, matched to a file in profile_images. */
+	handle?: string;
+	/** Contact rows, in order. */
+	contacts?: ContactChannel[];
+	class?: string;
+}
+
+const {
+	title = "Analyzed Creator",
+	name = "Justin Joy",
+	tier = "💎 Macro Influencer",
+	location = "India",
+	gender = "Male",
+	language = "EN",
+	enquireLabel = "Enquire",
+	handle = PROFILED_HANDLE,
+	/** `ContactKind.values` order — the app builds the menu in exactly this one. */
+	contacts = ["Email", "Whatsapp", "Phone"],
+	class: className = "",
+} = Astro.props;
+---
+
+<div
+	class:list={[
+		/*
+		 * `pb-5` is the room the enquire button needs where it overhangs the card's
+		 * bottom edge; `pt-5` matches it so the card sits centred inside this box
+		 * rather than one overhang's worth above it — which is what centring the
+		 * element on a stage would otherwise do.
+		 */
+		"relative w-100.75 max-w-full pt-5 pb-5 font-sans text-white",
+		className,
+	]}
+>
+	<!-- Identity column — `buildLeftPanel`, 403px wide with 40px side padding -->
+	<div
+		class="w-100.75 max-w-full rounded-[1.75rem] bg-wf-panel px-10 pt-9 pb-14"
+	>
+		{/* `headerTitle` — the detail's own header sits above the column */}
+		<h3 class="text-center text-[1.375rem] leading-none">{title}</h3>
+
+		{/*
+			`buildProfileImage` — 170px circle. Uses the shared `CreatorAvatar` so the
+			source is the creator's square portrait; a rectangular photo cropped to a
+			circle at this size reads as zoomed right in.
+		*/}
+		<div class="mt-8 flex justify-center">
+			<CreatorAvatar size="10.625rem" handle={handle} />
+		</div>
+
+		{/* `analyzedCreatorName` — 28/400 */}
+		<p class="mt-6 truncate text-center text-[1.75rem] leading-[1.2]">{name}</p>
+
+		{/* Tier pill — `blue` fill, radius 6, `analyzedCreatorTier` 12/400 lavender52 */}
+		<p class="mt-2 text-center">
+			<span
+				class="inline-block rounded-[0.375rem] bg-wf-surface px-2 py-1 text-[0.75rem] text-wf-tier-text"
+			>
+				{tier}
+			</span>
+		</p>
+
+		{/* `Divider(color: lavender11, height: 36)` */}
+		<span class="my-[1.09375rem] block h-px w-full bg-wf-rule"></span>
+
+		{/* `creatorInfo` — 10/400 on lavender28, with a 10px map pin */}
+		<div
+			class="flex items-center justify-center text-[0.625rem] whitespace-nowrap text-wf-meta"
+		>
+			<Icon name="mapPin" size="0.625rem" />
+			<span class="ml-1">{location}</span>
+			{gender && <span class="ml-3">{gender}</span>}
+			{language && <span class="ml-3">{language}</span>}
+		</div>
+
+		<span class="my-[1.09375rem] block h-px w-full bg-wf-rule"></span>
+	</div>
+
+	<!--
+		Enquire actions, centred on the column and sitting on its bottom edge.
+		`EnquireButton`: grey7 fill inside a green3 border, radius 20, a 14px
+		message glyph and a 10px label. `AddToListButton` beside it.
+	-->
+	<div class="absolute bottom-0 left-0 flex w-100.75 max-w-full justify-center">
+		<div class="flex items-center gap-2.5">
+			{/* The popover anchors to this button, as `_anchorKey` does in the app. */}
+			<div class="relative">
+				<button
+					type="button"
+					data-analyzed-enquire
+					class="inline-flex cursor-pointer items-center rounded-[1.25rem] border border-wf-green-mid bg-mkit-tile px-3.5 py-2.5"
+				>
+					<Icon name="messageCircle" size="0.875rem" class="text-wf-green-mid" />
+					<span class="ml-1.5 text-[0.625rem] leading-none whitespace-nowrap">
+						{enquireLabel}
+					</span>
+					{/* `green12` */}
+					<Icon name="arrowIcon" size="0.75rem" class="ml-1 text-wf-green-dim" />
+				</button>
+
+				<!--
+					Contact popover — `showContactMenu` in common/widgets/enquire_button.dart:
+					maxWidth 128 on `lavender27` inside a `lavender53` border, with the corners
+					rounded 2 on the left and 20 on the right. It opens *above* the anchor —
+					`topLeft.dy - menuHeight - gap` with `gap: 14` — and shifted `horizontalShift:
+					50` to the right of it, which is where it sits here.
+				-->
+				<ul
+					data-analyzed-popover
+					class="absolute bottom-[calc(100%+0.875rem)] left-20 flex w-32 list-none flex-col rounded-tl-xs rounded-tr-[1.25rem] rounded-br-[1.25rem] rounded-bl-xs border border-wf-menu-border bg-wf-menu py-0.5"
+				>
+					{
+						contacts.map((contact) => {
+							const icon = CONTACT_ICONS[contact];
+							return (
+								/* 32px rows, 10px vertical padding, `lavender11` rule between */
+								<li class="flex h-8 items-center px-3 not-last:border-b not-last:border-wf-rule">
+									{/* The row's own label names the channel, so the icon is decorative. */}
+									{"glyph" in icon ? (
+										<Icon name={icon.glyph} size="0.875rem" class="text-wf-menu-icon" />
+									) : (
+										<img
+											src={icon.logo.src}
+											alt=""
+											width={icon.logo.width}
+											height={icon.logo.height}
+											class="size-3.5"
+											loading="lazy"
+										/>
+									)}
+									{/* `enquireText` — 10/400 */}
+									<span class="ml-1.5 text-[0.625rem] leading-none">{contact}</span>
+								</li>
+							);
+						})
+					}
+				</ul>
+			</div>
+
+			<button
+				type="button"
+				aria-label="Add to list"
+				class="grid size-8.5 shrink-0 cursor-pointer place-items-center rounded-full border border-wf-menu-border bg-wf-menu"
+			>
+				<Icon name="addToList" size="0.75rem" class="text-wf-violet-soft" />
+			</button>
+		</div>
+	</div>
+
+</div>

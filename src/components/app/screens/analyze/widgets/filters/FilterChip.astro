@@ -1,0 +1,29 @@
+---
+/**
+ * Filter chip used by Reach Out and the lookalike tab switcher — `padding 8`,
+ * radius 4, 1px border, 14px icon, 12px label. Note the app does not recolour
+ * the icon on selection: it stays `#b8a2ff` in both states.
+ */
+import Icon from "../../../../common/Icon.astro";
+import type { WorkflowIconName } from "../../../../../../data/workflowIcons";
+
+interface Props {
+	label: string;
+	icon?: WorkflowIconName;
+	selected?: boolean;
+	class?: string;
+}
+
+const { label, icon, selected = false, class: className = "" } = Astro.props;
+---
+
+<div
+	class:list={[
+		"flex items-center gap-2 rounded-[0.25rem] border p-2 text-[0.75rem] text-wf-text",
+		selected ? "border-wf-chip-on-border bg-wf-chip-on" : "border-wf-chip-border bg-wf-chip",
+		className,
+	]}
+>
+	{icon && <Icon name={icon} size="0.875rem" class="text-[#b8a2ff]" />}
+	<span class="whitespace-nowrap">{label}</span>
+</div>

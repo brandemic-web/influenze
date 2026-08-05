@@ -1,0 +1,42 @@
+---
+/**
+ * A creator/user photo.
+ *
+ * Given a `handle` it renders that creator's portrait (see
+ * src/data/creatorPortraits.ts); without one — or before a creator has a photo —
+ * it stays the gradient placeholder it always was. Every instance keeps its
+ * `data-wf-avatar` tag either way.
+ *
+ * One 340px variant is emitted per creator and reused at every size on the page:
+ * that is 2x the largest avatar the mockup draws (the 10.625rem detail portrait),
+ * and the sources are square so the crop is a straight fill.
+ *
+ * Loaded eagerly on purpose. The mockup sits in the hero, and the screens the
+ * story has not reached yet are only `visibility: hidden`, so a deferred portrait
+ * would risk popping in part-way through a beat. Seven of these come to ~90KB.
+ */
+import { Image } from "astro:assets";
+import { portraitFor } from "../../../data/creatorPortraits";
+
+interface Props {
+	size?: string;
+	/** `full` for people, a rem value for the rounded tiles in list cards. */
+	radius?: string;
+	class?: string;
+	/** Creator handle, matched to a file in profile_images. */
+	handle?: string;
+}
+
+const { size = "2rem", radius = "9999px", class: className = "", handle } = Astro.props;
+
+const portrait = handle ? portraitFor(handle) : undefined;
+---
+
+<div
+	data-wf-avatar
+	class={`shrink-0 overflow-hidden bg-[linear-gradient(140deg,#3b3560_0%,#221d38_60%,#2c2745_100%)] ${className}`}
+	style={`width:${size};height:${size};border-radius:${radius}`}
+	aria-hidden="true"
+>
+	{portrait && <Image src={portrait} alt="" width={340} class="size-full object-cover" loading="eager" />}
+</div>
