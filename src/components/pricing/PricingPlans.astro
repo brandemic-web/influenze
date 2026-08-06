@@ -139,7 +139,7 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
           type="button"
           role="tab"
           aria-selected={i === initialIndex ? "true" : "false"}
-          class="group inline-flex cursor-pointer rounded-full bg-linear-to-r from-brand-primary to-[#0F5B33] p-[0.09375rem] transition-transform duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary aria-selected:bg-none aria-selected:bg-button-primary lg:w-full"
+          class="group inline-flex cursor-pointer rounded-full bg-linear-to-r from-brand-primary to-[#0F5B33] p-[0.09375rem] transition-[transform,--tw-gradient-from,--tw-gradient-to] duration-300 hover:from-brand-primary hover:to-brand-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary aria-selected:bg-none aria-selected:bg-button-primary lg:w-full"
           data-tab
           data-index={i}
         >
@@ -239,157 +239,230 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
       </div>
     </div>
 
-    <!-- ── Price / credits body (all tiers except Enterprise) ────── -->
+    <!--
+      ── Plan body ─────────────────────────────────────────────────
+      One card, two swappable content states (price/credits vs. the
+      Enterprise "talk to us" block)
+    -->
     <div
-      class="relative mt-9 rounded-[1.25rem] border border-white/12 bg-[rgba(73,40,179,0.22)] px-7 pt-9 pb-8 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.14),0_12px_40px_-12px_rgba(0,0,0,0.45)] lg:pt-10"
-      data-panel="price"
-      hidden={initialTier.custom}
-
+      class="relative mt-9 flex flex-col justify-center rounded-[1.25rem] border border-white/12 bg-[rgba(73,40,179,0.22)] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.14),0_12px_40px_-12px_rgba(0,0,0,0.45)] lg:min-h-86"
     >
+      <!-- Price / credits (all tiers except Enterprise) -->
       <div
-        class="flex flex-col gap-9 lg:flex-row lg:items-start lg:justify-between"
+        class="px-7 pt-9 pb-8 lg:pt-10"
+        data-panel="price"
+        hidden={initialTier.custom}
       >
-        <!-- price + annual toggle -->
-        <div class="pl-0 lg:pl-9.5">
-          <p class="flex items-baseline text-white">
-            <span
-              class="text-[2.625rem] leading-none sm:text-[3.625rem]"
-              data-field="price">{formatPrice(DEFAULT_SPEND)}</span
-            >
-            <span class="ml-1 text-[1rem] text-white">/mo</span>
-          </p>
-          <p class="mt-4 text-[1rem] text-white">{PRICE_NOTE}</p>
-
-          <div class="mt-7 flex items-center gap-3">
-            <button
-              type="button"
-              role="switch"
-              aria-checked="false"
-              aria-label="Pay annually"
-              class="flex h-6 w-10 shrink-0 cursor-pointer items-center rounded-full bg-white/20 p-1 transition-colors aria-checked:bg-brand-primary"
-              data-annual-toggle
-            >
+        <div
+          class="flex flex-col gap-9 lg:flex-row lg:items-start lg:justify-between"
+        >
+          <!-- price + annual toggle -->
+          <div class="pl-0 lg:pl-9.5">
+            <p class="flex items-baseline text-white">
               <span
-                class="size-4 rounded-full bg-white shadow-sm transition-transform data-[on=true]:translate-x-4"
-                data-annual-knob
-                data-on="false"></span>
-            </button>
-            <span class="text-[1rem] text-white"
-              >{ANNUAL_LABEL}{" "}<span class="text-brand-primary"
-                >+{ANNUAL_BONUS_PCT}% credits</span
-              ></span
-            >
-          </div>
-        </div>
+                class="text-[2.625rem] leading-none sm:text-[3.625rem]"
+                data-field="price">{formatPrice(DEFAULT_SPEND)}</span
+              >
+              <span class="ml-1 text-[1rem] text-white">/mo</span>
+            </p>
+            <p class="mt-4 text-[1rem] text-white">{PRICE_NOTE}</p>
 
-        <!-- credits + rollover -->
-        <div class="lg:shrink-0">
-          <div class="relative flex justify-start lg:justify-end">
-            <Image
-              src={bolt}
-              alt=""
-              width="88"
-              class="pointer-events-none absolute -top-3 left-0 z-10 w-22 -translate-x-1/2"
-              loading="lazy"
-            />
-            <div
-              class="w-full rounded-md border border-white/10 bg-black/35 py-4 pr-7 pl-10 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]"
-            >
-              <p
-                class="text-[2.25rem] leading-none text-brand-primary sm:text-[3.625rem]"
-                data-field="credits"
+            <div class="mt-7 flex items-center gap-3">
+              <button
+                type="button"
+                role="switch"
+                aria-checked="false"
+                aria-label="Pay annually"
+                class="flex h-6 w-10 shrink-0 cursor-pointer items-center rounded-full bg-white/20 p-1 transition-colors aria-checked:bg-brand-primary"
+                data-annual-toggle
               >
-                {formatAmount(initialCredits)}
-              </p>
-              <p
-                class="mt-2 whitespace-nowrap text-[1rem] text-brand-primary"
-                data-field="creditsBonus"
+                <span
+                  class="size-4 rounded-full bg-white shadow-sm transition-transform data-[on=true]:translate-x-4"
+                  data-annual-knob
+                  data-on="false"></span>
+              </button>
+              <span class="text-[1rem] text-white"
+                >{ANNUAL_LABEL}{" "}<span class="text-brand-primary"
+                  >+{ANNUAL_BONUS_PCT}% credits</span
+                ></span
               >
-                {bonusLabel(initialTier)}
-              </p>
             </div>
           </div>
 
-          <div
-            class="mt-4 flex items-center justify-start gap-2.5 lg:justify-end"
-          >
-            <span
-              class="inline-flex items-center gap-2.5 rounded-[100px] border border-white/10 bg-surface-card px-4 py-3 text-[1rem] capitalize text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]"
-            >
-              <svg
-                class="size-4.5 shrink-0 text-brand-primary"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                aria-hidden="true"
+          <!-- credits + rollover -->
+          <div class="lg:shrink-0">
+            <div class="relative flex justify-start lg:justify-end">
+              <Image
+                src={bolt}
+                alt=""
+                width="88"
+                class="pointer-events-none absolute -top-3 left-0 z-10 w-22 -translate-x-1/2"
+                loading="lazy"
+              />
+              <div
+                class="w-full rounded-md border border-white/10 bg-black/35 py-4 pr-7 pl-10 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]"
               >
-                <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"
-                ></path>
-                <path d="M3 3v5h5"></path>
-                <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"
-                ></path>
-                <path d="M16 16h5v5"></path>
-              </svg>
-              {CREDITS_ROLLOVER}
-            </span>
+                <p
+                  class="text-[2.25rem] leading-none text-brand-primary sm:text-[3.625rem]"
+                  data-field="credits"
+                >
+                  {formatAmount(initialCredits)}
+                </p>
+                <p
+                  class="mt-2 whitespace-nowrap text-[1rem] text-brand-primary"
+                  data-field="creditsBonus"
+                >
+                  {bonusLabel(initialTier)}
+                </p>
+              </div>
+            </div>
+
+            <div
+              class="mt-4 flex items-center justify-start gap-2.5 lg:justify-end"
+            >
+              <span
+                class="inline-flex items-center gap-2.5 rounded-[100px] border border-white/10 bg-surface-card px-4 py-3 text-[1rem] capitalize text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]"
+              >
+                <svg
+                  class="size-4.5 shrink-0 text-brand-primary"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"
+                  ></path>
+                  <path d="M3 3v5h5"></path>
+                  <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"
+                  ></path>
+                  <path d="M16 16h5v5"></path>
+                </svg>
+                {CREDITS_ROLLOVER}
+              </span>
+            </div>
           </div>
         </div>
+
+        <!-- Subscribe -->
+        <a
+          href={SIGNUP_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="mt-5.5 flex w-full items-center justify-center gap-1 rounded-full bg-button-primary px-6 py-2.5 text-[1rem] leading-none text-button-text transition-colors duration-300 hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary"
+        >
+          {SUBSCRIBE_LABEL}
+          <svg
+            class="size-7.5 shrink-0"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M5 12h14M12 5l7 7-7 7"></path>
+          </svg>
+        </a>
       </div>
 
-      <!-- Subscribe -->
-      <a
-        href={SIGNUP_URL}
-        target="_blank"
-        rel="noopener noreferrer"
-        class="mt-5.5 flex w-full items-center justify-center gap-1 rounded-full bg-button-primary px-6 py-2.5 text-[1rem] leading-none text-button-text transition-colors duration-300 hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary"
-      >
-        {SUBSCRIBE_LABEL}
-        <svg
-          class="size-7.5 shrink-0"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-        >
-          <path d="M5 12h14M12 5l7 7-7 7"></path>
-        </svg>
-      </a>
-    </div>
-
-    <!-- ── Custom body (Enterprise tier) ────────────────────────── -->
-    <div
-      class="relative mt-9 rounded-[1.25rem] border border-white/12 bg-[rgba(73,40,179,0.22)] px-5 py-10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.14),0_12px_40px_-12px_rgba(0,0,0,0.45)] sm:px-8 lg:px-12"
-      data-panel="custom"
-      hidden={!initialTier.custom}
-    >
+      <!--
+        Custom (Enterprise tier)
+      -->
       <div
-        class="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between"
+        class="px-7 pt-9 pb-8 lg:pt-10"
+        data-panel="custom"
+        hidden={!initialTier.custom}
       >
-        <div class="max-w-150">
-          <p class="text-[0.875rem] uppercase tracking-wide text-brand-primary">
-            {CUSTOM_PLAN.eyebrow}
-          </p>
-          <h2
-            class="mt-4 text-[1.75rem] capitalize leading-[1.15] text-white lg:text-[2.5rem]"
-          >
-            {CUSTOM_PLAN.title}
-          </h2>
-          <p class="mt-5 text-[0.9375rem] leading-6 text-white/70">
-            {CUSTOM_PLAN.body}
-          </p>
+        <div
+          class="flex flex-col gap-9 lg:flex-row lg:items-start lg:justify-between"
+        >
+          <!-- "Custom" in the price slot + what the tier adds -->
+          <div class="pl-0 lg:pl-9.5">
+            <p class="flex items-baseline text-white">
+              <span class="text-[2.625rem] leading-none sm:text-[3.625rem]"
+                >{CUSTOM_PLAN.priceLabel}</span
+              >
+              <span class="ml-1 text-[1rem] text-white"
+                >{CUSTOM_PLAN.priceSuffix}</span
+              >
+            </p>
+            <p class="mt-4 text-[1rem] text-white">{CUSTOM_PLAN.note}</p>
+          </div>
+          
+          <div class="lg:shrink-0">
+            <div class="relative flex justify-start lg:justify-end">
+              <Image
+                src={bolt}
+                alt=""
+                width="88"
+                class="pointer-events-none absolute -top-3 left-0 z-10 w-22 -translate-x-1/2"
+                loading="lazy"
+              />
+              <div
+                class="w-full rounded-md border border-white/10 bg-black/35 py-4 pr-7 pl-10 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]"
+              >
+                <p
+                  class="text-[2.25rem] leading-none text-brand-primary sm:text-[3.625rem]"
+                >
+                  {formatAmount(SLIDER_MAX)}+
+                </p>
+                <p
+                  class="mt-2 whitespace-nowrap text-[1rem] text-brand-primary"
+                >
+                  {CUSTOM_PLAN.creditsCaption}
+                </p>
+              </div>
+            </div>
+
+            <div
+              class="mt-4 flex items-center justify-start gap-2.5 lg:justify-end"
+            >
+              <span
+                class="inline-flex items-center gap-2.5 rounded-[100px] border border-white/10 bg-surface-card px-4 py-3 text-[1rem] capitalize text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]"
+              >
+                <svg
+                  class="size-4.5 shrink-0 text-brand-primary"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                {CUSTOM_PLAN.badge}
+              </span>
+            </div>
+          </div>
         </div>
 
+        <!-- Same button as Subscribe, in the same place, to a mailto -->
         <a
-          href={`mailto:${CUSTOM_PLAN.contactEmail}`}
-          class="inline-flex shrink-0 items-center justify-center rounded-full bg-button-primary px-8 py-4.5 text-[0.875rem] leading-none text-button-text transition-colors duration-300 hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary"
+          href={`mailto:${CUSTOM_PLAN.contactEmail}?subject=${encodeURIComponent(CUSTOM_PLAN.contactSubject)}`}
+          class="mt-5.5 flex w-full items-center justify-center gap-1 rounded-full bg-button-primary px-6 py-2.5 text-[1rem] leading-none text-button-text transition-colors duration-300 hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary"
         >
           {CUSTOM_PLAN.ctaLabel}
+          <svg
+            class="size-7.5 shrink-0"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M5 12h14M12 5l7 7-7 7"></path>
+          </svg>
         </a>
       </div>
     </div>

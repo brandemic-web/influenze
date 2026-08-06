@@ -125,10 +125,9 @@ const {
 		<div class="flex items-center gap-2.5">
 			{/* The popover anchors to this button, as `_anchorKey` does in the app. */}
 			<div class="relative">
-				<button
-					type="button"
+				<span
 					data-analyzed-enquire
-					class="inline-flex cursor-pointer items-center rounded-[1.25rem] border border-wf-green-mid bg-mkit-tile px-3.5 py-2.5"
+					class="inline-flex items-center rounded-[1.25rem] border border-wf-green-mid bg-mkit-tile px-3.5 py-2.5"
 				>
 					<Icon name="messageCircle" size="0.875rem" class="text-wf-green-mid" />
 					<span class="ml-1.5 text-[0.625rem] leading-none whitespace-nowrap">
@@ -136,7 +135,7 @@ const {
 					</span>
 					{/* `green12` */}
 					<Icon name="arrowIcon" size="0.75rem" class="ml-1 text-wf-green-dim" />
-				</button>
+				</span>
 
 				<!--
 					Contact popover — `showContactMenu` in common/widgets/enquire_button.dart:
@@ -177,13 +176,12 @@ const {
 				</ul>
 			</div>
 
-			<button
-				type="button"
-				aria-label="Add to list"
-				class="grid size-8.5 shrink-0 cursor-pointer place-items-center rounded-full border border-wf-menu-border bg-wf-menu"
+			<span
+				class="grid size-8.5 shrink-0 place-items-center rounded-full border border-wf-menu-border bg-wf-menu"
+				aria-hidden="true"
 			>
 				<Icon name="addToList" size="0.75rem" class="text-wf-violet-soft" />
-			</button>
+			</span>
 		</div>
 	</div>
 

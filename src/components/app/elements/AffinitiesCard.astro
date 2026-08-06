@@ -64,17 +64,16 @@ const SELECTED = "interests";
 		<span class="ml-3 truncate text-[0.875rem] font-semibold">Audience Affinities</span>
 	</div>
 
-	<div class="flex gap-2" role="group" aria-label="Affinity type">
+	<div class="flex gap-2">
 		{
 			AFFINITY_GROUPS.map((group) => (
-				<button
-					type="button"
+				<span
 					data-affinity-tab={group.key}
-					aria-pressed={group.key === SELECTED ? "true" : "false"}
-					class="affinity-tab cursor-pointer rounded-full px-3 py-2 text-[0.625rem]"
+					data-affinity-on={group.key === SELECTED ? "true" : "false"}
+					class="affinity-tab rounded-full px-3 py-2 text-[0.625rem]"
 				>
 					{group.label}
-				</button>
+				</span>
 			))
 		}
 	</div>
@@ -120,21 +119,14 @@ const SELECTED = "interests";
 			background-color 0.3s ease,
 			color 0.3s ease;
 	}
-	.affinity-tab[aria-pressed="false"] {
+	.affinity-tab[data-affinity-on="false"] {
 		background-color: #202427;
 		color: #fff;
 		font-weight: 500;
 	}
-	.affinity-tab[aria-pressed="false"]:hover {
-		background-color: #2b3033;
-	}
-	.affinity-tab[aria-pressed="true"] {
+	.affinity-tab[data-affinity-on="true"] {
 		background-color: #fff;
 		color: #0e0f10;
 		font-weight: 600;
 	}
 </style>
-
-<script>
-	import "../../../scripts/audience-affinities";
-</script>

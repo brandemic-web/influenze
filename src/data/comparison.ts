@@ -30,9 +30,6 @@ export const COMPARISON_HEADING = {
 	accent: "Compares",
 };
 
-export const COMPARISON_SUBCOPY =
-	"Not just another data platform we verify, score, and surface only what matters.";
-
 export const COMPARISON_COMPETITORS = ["Qoruz", "Upfluence", "Culture X"];
 
 export const COMPARISON_ROWS: ComparisonRow[] = [

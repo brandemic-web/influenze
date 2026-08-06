@@ -17,7 +17,6 @@ import logo from "../../assets/images/common/logos_and_icons/influenze_logo_nav.
 import glowBand from "../../assets/images/home_page/compare_table/glow_band.svg";
 import {
 	COMPARISON_HEADING,
-	COMPARISON_SUBCOPY,
 	COMPARISON_COMPETITORS,
 	COMPARISON_ROWS,
 } from "../../data/comparison";
@@ -50,11 +49,6 @@ const rowCount = COMPARISON_ROWS.length;
 				>{COMPARISON_HEADING.accent}</span
 			>
 		</h2>
-		<p
-			class="mt-5 max-w-105 text-[0.75rem] leading-4.5 text-[#CECECE]/70 lg:mt-7 lg:text-[1.125rem] lg:leading-6.5"
-		>
-			{COMPARISON_SUBCOPY}
-		</p>
 	</div>
 
 	<!--
@@ -66,7 +60,7 @@ const rowCount = COMPARISON_ROWS.length;
 		it again with `-mb-8` plus a reduced `mt`, leaving the outer spacing as it
 		was. From lg up the scroller is `overflow-visible`, so none of that applies.
 	-->
-	<div class="relative z-2 mt-6 overflow-x-auto overscroll-x-contain px-6 py-8 -mb-8 lg:mt-20 lg:mb-0 lg:overflow-visible lg:py-0">
+	<div class="relative z-2 mt-6 overflow-x-auto overscroll-x-contain px-6 py-8 -mb-8 lg:mt-24 lg:mb-0 lg:overflow-visible lg:py-0">
 		<div
 			class="mx-auto grid w-max max-w-363.75 grid-cols-[repeat(5,calc((100vw-3rem)/2.5))] items-stretch rounded-[1.25rem] border border-[#ffffff52] bg-white/2 lg:w-auto lg:grid-cols-[1.59fr_1.05fr_1fr_1fr_1fr]"
 			role="table"

@@ -21,21 +21,6 @@ import darkLayerCenter from "../../assets/images/home_page/hero/dark_layer_cente
 		class="pointer-events-none absolute top-36 left-1/2 w-full -translate-x-1/2 lg:block"
 		aria-hidden="true"
 	>
-		<img
-			src={darkLayerSide.src}
-			alt=""
-			class="absolute top-1/2 left-0 -translate-x-1/2 -translate-y-1/2 z-2"
-		/>
-		<img
-			src={darkLayerSide.src}
-			alt=""
-			class="absolute top-1/2 right-0 translate-x-1/2 -translate-y-1/2 z-2"
-		/>
-		<img
-			src={darkLayerCenter.src}
-			alt=""
-			class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-2"
-		/>
 		<!-- zoomed/cropped on mobile so the arcs read at small widths, natural width from lg up -->
 		<img
 			src={backgroundArcs.src}
@@ -45,45 +30,64 @@ import darkLayerCenter from "../../assets/images/home_page/hero/dark_layer_cente
 		/>
 	</div>
 
+	{/* `isolate` keeps the glows' negative z-index inside this block — without it they'd paint behind the gradient backdrop. */}
 	<div
-		class="relative flex flex-col items-center px-6 pt-25 lg:px-0 lg:pt-61"
+		class="relative isolate flex flex-col items-center px-6 pt-25 lg:px-0 lg:pt-61"
 		data-reveal
 		data-reveal-stagger="0.12"
 	>
-		<h1
-			class="text-center leading-[1.05] tracking-[-0.165rem] [text-box:trim-both_cap_alphabetic] lg:leading-34"
-			data-reveal-item
-		>
-			<span class="font-light text-[2.75rem] text-brand-primary lg:text-[5.5rem]">Find The Right</span><br />
-			{/*
-				`inline-block` so the swap can translate — an inline box ignores `y`.
-				`uppercase` keeps the design's caps whatever casing the data carries.
+		<div class="contents lg:relative lg:flex lg:w-full lg:flex-col lg:items-center">
+			<img
+				src={darkLayerSide.src}
+				alt=""
+				class="pointer-events-none h-[50%] absolute top-0 left-0 -z-10 translate-y-0 -translate-x-1/2 lg:top-1/2 lg:-translate-y-1/2 lg:max-w-none lg:h-auto"
+			/>
+			<img
+				src={darkLayerSide.src}
+				alt=""
+				class="pointer-events-none h-[50%] absolute top-0 right-0 -z-10 translate-y-0 translate-x-1/2 lg:top-1/2 lg:-translate-y-1/2 lg:max-w-none lg:h-auto"
+			/>
+			<img
+				src={darkLayerCenter.src}
+				alt=""
+				class="pointer-events-none absolute top-0 left-1/2 -z-10 translate-y-0 -translate-x-1/2 lg:top-1/2 lg:-translate-y-1/2 lg:max-w-none"
+			/>
 
-				The word has to stay on one line: `leading-1` and the h1's cap-trim were
-				written for a single unwrappable word, so a wrapped one draws its two
-				lines on top of each other. The longest word in HERO_WORDS measures
-				~8.2em, so below `lg` the size is whatever keeps that inside the padded
-				viewport — capped at the design's 3.625rem, which it reaches around
-				540px. `lg` has room for all of them at full size.
-			*/}
-			<span
-				class="inline-block font-normal text-[clamp(2rem,calc((100vw-3rem)/8.4),3.625rem)] leading-1 whitespace-nowrap text-white uppercase lg:text-[8.25rem]"
-				data-hero-word>{HERO_WORDS[0]}</span
+			<h1
+				class="text-center leading-[1.05] tracking-[-0.165rem] [text-box:trim-both_cap_alphabetic] lg:leading-34"
+				data-reveal-item
 			>
-		</h1>
+				<span class="font-light text-[2.75rem] text-brand-primary lg:text-[5.5rem]">Find The Right</span><br />
+				{/*
+					`inline-block` so the swap can translate — an inline box ignores `y`.
+					`uppercase` keeps the design's caps whatever casing the data carries.
 
-		<!-- glass copy card -->
-		<div
-			class="order-3 lg:order-2 mt-4 w-full max-w-77 lg:max-w-113.5 rounded-sm border border-white bg-[linear-gradient(180deg,rgba(255,255,255,0.2)_0%,rgba(100,77,173,0.2)_100%)] px-4 py-6 lg:mt-8.25 lg:w-113.25 lg:px-10 lg:py-8"
-			data-reveal-item
-		>
-			<p class="text-center text-[0.875rem] leading-6 text-white [text-box:trim-both_cap_alphabetic] lg:text-sm lg:leading-7.25">
-				Get access to the world's largest database of <span class="font-semibold text-brand-primary">450M+ creators</span> across Instagram, Youtube, TikTok &amp; LinkedIn
-			</p>
-		</div>
+					The word has to stay on one line: `leading-1` and the h1's cap-trim were
+					written for a single unwrappable word, so a wrapped one draws its two
+					lines on top of each other. The longest word in HERO_WORDS measures
+					~8.2em, so below `lg` the size is whatever keeps that inside the padded
+					viewport — capped at the design's 3.625rem, which it reaches around
+					540px. `lg` has room for all of them at full size.
+				*/}
+				<span
+					class="inline-block font-normal text-[clamp(2rem,calc((100vw-3rem)/8.4),3.625rem)] leading-1 whitespace-nowrap text-white uppercase lg:text-[8.25rem]"
+					data-hero-word>{HERO_WORDS[0]}</span
+				>
+			</h1>
 
-		<div class="order-4 lg:order-3 -mt-2 lg:mt-3.75" data-reveal-item>
-			<Button href={SIGNUP_URL} newTab>Free Trial</Button>
+			<!-- glass copy card -->
+			<div
+				class="order-3 lg:order-2 mt-4 w-full max-w-77 lg:max-w-113.5 rounded-sm border border-white bg-[linear-gradient(180deg,rgba(255,255,255,0.2)_0%,rgba(100,77,173,0.2)_100%)] px-4 py-6 lg:mt-8.25 lg:w-113.25 lg:px-10 lg:py-8"
+				data-reveal-item
+			>
+				<p class="text-center text-[0.875rem] leading-6 text-white [text-box:trim-both_cap_alphabetic] lg:text-sm lg:leading-7.25">
+					Get access to the world's largest database of <span class="font-semibold text-brand-primary">450M+ creators</span> across Instagram, Youtube, TikTok &amp; LinkedIn
+				</p>
+			</div>
+
+			<div class="order-4 lg:order-3 -mt-2 lg:mt-3.75" data-reveal-item>
+				<Button href={SIGNUP_URL} newTab>Free Trial</Button>
+			</div>
 		</div>
 
 		<!-- product mockup: real markup so GSAP can play the workflow through it -->

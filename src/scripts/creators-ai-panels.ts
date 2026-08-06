@@ -32,7 +32,7 @@ const CURSOR_HOME = { x: 560, y: 620 };
  * Affinity list swap (s). Fade only, and on the list as a whole rather than the
  * rows — a per-row `y` tween puts a transform on text that is already sitting
  * inside the fractionally scaled stage, which reads as a jitter at the smaller
- * breakpoints. Mirrors the same pair in `audience-affinities.ts`.
+ * breakpoints.
  */
 const LIST_FADE_OUT = 0.22;
 const LIST_FADE_IN = 0.32;
@@ -65,11 +65,12 @@ registerPanelDemo(panelId(0), (ctx) => {
 	// whole panel script down with it.
 	const handleText = handleField?.querySelector<HTMLElement>("[data-search-text]");
 	const handleCaret = handleField?.querySelector<HTMLElement>("[data-search-caret]");
+	const handleHint = handleField?.querySelector<HTMLElement>("[data-search-hint]");
 	const regionText = regionField?.querySelector<HTMLElement>("[data-search-text]");
 	const regionCaret = regionField?.querySelector<HTMLElement>("[data-search-caret]");
 
 	if (!cursor || !ring || !row || !check || !dot || !expand || !slider || !knob
-		|| !handleField || !handleText || !handleCaret
+		|| !handleField || !handleText || !handleCaret || !handleHint
 		|| !regionField || !regionText || !regionCaret
 		|| !pill || cards.length < 3) return;
 
@@ -96,6 +97,7 @@ registerPanelDemo(panelId(0), (ctx) => {
 		.set(slider, { scaleX: 0, transformOrigin: "right center" })
 		.set(knob, { autoAlpha: 0, x: 200 })
 		.set([...handleChars, ...regionChars], { display: "none", opacity: 0 })
+		.set(handleHint, { display: "block" })
 		.set([handleCaret, regionCaret], { autoAlpha: 0 })
 		.set(pill, { display: "none" })
 
@@ -124,6 +126,7 @@ registerPanelDemo(panelId(0), (ctx) => {
 			duration: HOP,
 			ease: "power3.inOut",
 		}, ">0.2")
+		.set(handleHint, { display: "none" })
 		.set(handleCaret, { autoAlpha: 1 })
 		.to(handleChars, {
 			display: "inline-block",
@@ -162,8 +165,7 @@ registerPanelDemo(panelId(0), (ctx) => {
 
 /* ── Panel 2 · Know The Audience ─────────────────────────────────────────────
  * The three cards stagger up, then the pointer clicks the Interests toggle on
- * the Audience Affinities card and the top-five list swaps over. The toggle
- * stays live for the visitor afterwards — see `audience-affinities.ts`.
+ * the Audience Affinities card and the top-five list swaps over.
  */
 registerPanelDemo(panelId(1), (ctx) => {
 	const { panel } = ctx;
@@ -188,10 +190,10 @@ registerPanelDemo(panelId(1), (ctx) => {
 		.set(items, { y: RISE, autoAlpha: 0 })
 		.set(cursor, { autoAlpha: 0, scale: 1, x: CURSOR_HOME.x, y: CURSOR_HOME.y })
 		.set(ring, { autoAlpha: 0, scale: 0.3 })
-		.set(interestsList, { autoAlpha: 0, attr: { "data-affinity-selected": "false" } })
-		.set(brandsList, { autoAlpha: 1, attr: { "data-affinity-selected": "true" } })
-		.set(interestsTab, { attr: { "aria-pressed": "false" } })
-		.set(brandsTab, { attr: { "aria-pressed": "true" } })
+		.set(interestsList, { autoAlpha: 0 })
+		.set(brandsList, { autoAlpha: 1 })
+		.set(interestsTab, { attr: { "data-affinity-on": "false" } })
+		.set(brandsTab, { attr: { "data-affinity-on": "true" } })
 
 		// ── 1 · the three cards land, staggered ──────────────────────────────
 		.to(items, { y: 0, autoAlpha: 1, duration: 0.7, stagger: 0.18 }, 0.1)
@@ -203,10 +205,8 @@ registerPanelDemo(panelId(1), (ctx) => {
 
 	return tl
 		// ── 3 · the toggle flips and the top five swap over ──────────────────
-		.set(interestsTab, { attr: { "aria-pressed": "true" } }, ">-0.1")
-		.set(brandsTab, { attr: { "aria-pressed": "false" } }, "<")
-		.set(interestsList, { attr: { "data-affinity-selected": "true" } }, "<")
-		.set(brandsList, { attr: { "data-affinity-selected": "false" } }, "<")
+		.set(interestsTab, { attr: { "data-affinity-on": "true" } }, ">-0.1")
+		.set(brandsTab, { attr: { "data-affinity-on": "false" } }, "<")
 		.to(brandsList, { autoAlpha: 0, duration: LIST_FADE_OUT, ease: "power2.in" }, "<")
 		.fromTo(interestsList,
 			{ autoAlpha: 0 },
@@ -216,8 +216,7 @@ registerPanelDemo(panelId(1), (ctx) => {
 
 /* ── Panel 3 · Choose The Right Creators ────────────────────────────────────
  * The pieces stagger up in DOM order, then the Compare card scrolls its own
- * body down to show that there's more below the fold. It stays scrollable by
- * hand afterwards — the animation only nudges the visitor into trying it.
+ * body down to show that there's more below the fold. 
  */
 registerPanelDemo(panelId(2), ({ panel, reducedMotion }) => {
 	const items = gsap.utils.toArray<HTMLElement>("[data-panel-item]", panel);

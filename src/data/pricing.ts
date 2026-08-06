@@ -54,12 +54,10 @@ export const SLIDER_MIN = 1_000;
 export const SLIDER_MAX = 100_000;
 
 /**
- * Monthly spend selected on first paint: the bottom of the Growth tier, so the
- * panel opens on Growth at its entry price. Figma pinned this at ₹22,000, also
- * Growth — the tier is the part that matters, and opening at the tier's floor
- * reads better than mid-tier.
+ * Monthly spend selected on first paint: the bottom of the Starter tier, so
+ * the panel opens on Starter at its entry price of ₹1,000.
  */
-export const DEFAULT_SPEND = 20_000;
+export const DEFAULT_SPEND = SLIDER_MIN;
 
 /** Extra credits granted for paying annually, as a percentage. */
 export const ANNUAL_BONUS_PCT = 5;
@@ -81,13 +79,19 @@ export const PRICING_TIERS: PricingTier[] = [
 	},
 ];
 
-/** Copy for the Enterprise tier, which quotes instead of pricing. */
+/**
+ * Copy for the Enterprise tier, which quotes instead of pricing.
+ */
 export const CUSTOM_PLAN = {
-	eyebrow: "Custom",
-	title: "Looking for More Flexibility?",
-	body: "Get a tailored plan with White-labeling, a custom creator link-in-bio, and features built for your team. Available for teams of 3 or more users.",
+	priceLabel: "Custom",
+	priceSuffix: "/mo",
+	note: "Quoted to your usage + Taxes",
+	creditsCaption: "Credits/mo and up",
+	/** Qualifier pill — the one thing that gates this tier. */
+	badge: "For larger teams",
 	ctaLabel: "Get in Touch",
 	contactEmail: "harsh@dotme.in",
+	contactSubject: "Enterprise plan enquiry",
 };
 
 export const PRICE_NOTE = "Billed monthly + Taxes";

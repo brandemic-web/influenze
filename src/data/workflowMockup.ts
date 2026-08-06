@@ -178,20 +178,6 @@ export const RESULT_CREATORS: Creator[] = [
 ];
 
 /**
- * The story list's members, and so the rows screen 8 draws. Both are `checked`
- * because the story ticks the pair on its way into Compare — screen 8's authored
- * frame paints them already selected.
- *
- * Poorav is the list's founding member; Selwyn is the one the story adds on
- * screen 6, so by screen 7 the list holds two.
- */
-export const LIST_CREATORS: Creator[] = ["sellydsouzaaa", "pooo.raw"].map((handle) => {
-	const row = RESULT_CREATORS.find((creator) => creator.handle === handle);
-	if (!row) throw new Error(`workflowMockup: no creator with handle "${handle}"`);
-	return { ...row, checked: true };
-});
-
-/**
  * The three rows the features page's creator showcase draws, top to bottom.
  * Deliberately its own cast rather than the story's: the strip is a marketing
  * flourish on another page and has no reason to move when the story's does.
@@ -213,13 +199,14 @@ const SHOWCASE_CREATORS: Creator[] = [
 		name: "Justin Joy",
 		handle: "hyperfitx",
 		tierLabel: "💎 Macro",
-		followers: "156.7k",
-		avgLikes: "738",
-		engagement: "0.47%",
+		followers: "156.8K",
+		avgLikes: "556",
+		engagement: "0.35%",
 		engagementLevel: "LOW",
 		location: "India",
 		gender: "Male",
 		language: "EN",
+		verified: true,
 	},
 	{
 		name: "SALONI S",
@@ -258,6 +245,19 @@ export function creatorByHandle(handle: string): Creator {
 export const COMPARED_HANDLES = [PROFILED_HANDLE, "pooo.raw"] as const;
 
 /**
+ * The story list's members, and so the rows screen 8 draws.
+ *
+ * Poorav and Justin are the list's standing members — the two the add-to-list
+ * dialog already shows on screen 6 — and Selwyn is the one the story adds there,
+ * so by screen 7 the list holds three. He leads because screens 8 and 9 are about
+ * the creator just profiled.
+ */
+export const LIST_CREATORS: Creator[] = [PROFILED_HANDLE, "pooo.raw", "hyperfitx"].map((handle) => ({
+	...creatorByHandle(handle),
+	checked: (COMPARED_HANDLES as readonly string[]).includes(handle),
+}));
+
+/**
  * The list the story adds that creator to. Screen 6 marks this row so the cursor
  * can find it; it is also the only card on screen 7.
  */
@@ -285,9 +285,9 @@ export const RESULT_FILTERS = [
 /**
  * The only list in the story, and the one screen 6 adds a creator to.
  *
- * `count` is what the *dialog* shows — the list before the story touches it, so
- * Poorav alone. Screen 7 renders it after the add, so it counts `LIST_CREATORS`
- * instead and the two never have to be kept in step by hand.
+ * `count` and `preview` are what the *dialog* shows: the list before the story
+ * touches it, so Poorav and Justin. Screen 7 renders it after the add, so it
+ * counts `LIST_CREATORS` instead and the two never have to be kept in step.
  *
  * `preview` is whose portraits fill a card's tiles; a list this small simply
  * draws fewer of them.
@@ -295,9 +295,9 @@ export const RESULT_FILTERS = [
 export const CREATOR_LISTS = [
 	{
 		name: STORY_LIST,
-		count: 1,
+		count: 2,
 		updated: "last updated 2m ago",
-		preview: ["pooo.raw"],
+		preview: ["pooo.raw", "hyperfitx"],
 	},
 ] as const;
 

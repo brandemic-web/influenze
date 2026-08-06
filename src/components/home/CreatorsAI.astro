@@ -170,8 +170,13 @@ const featureIcons: Record<string, ImageMetadata> = {
 							<div data-panel-item class="absolute left-0 top-27.5">
 								<FollowerQuality />
 							</div>
+							<!--
+								The overlap puts grey5 on grey5, so the card's own edge reads as
+								nothing — the drop shadow is what lifts it off the follower
+								quality card underneath.
+							-->
 							<div data-panel-item class="absolute left-[47%] top-58">
-								<AffinitiesCard />
+								<AffinitiesCard class="shadow-[0_0.75rem_2rem_rgba(0,0,0,0.45)]" />
 							</div>
 
 							<DemoCursor />
