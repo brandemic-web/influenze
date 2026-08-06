@@ -1,6 +1,7 @@
 import gsap from "gsap";
-import { RAIL_TIER_SCROLL } from "../../../../data/workflowMockup";
+import { CREDITS, RAIL_TIER_SCROLL } from "../../../../data/workflowMockup";
 import { typeText } from "../../../gsap/typeText";
+import { setCredits, spendCredits } from "../utils/credits";
 import { swapInline, token } from "../utils/dom";
 import type { Pointer } from "../utils/pointer";
 
@@ -178,6 +179,7 @@ export function analyzeLookalike(screen: HTMLElement, pointer: Pointer) {
 		el.label.textContent = emptyLabel;
 		el.locationInput.textContent = locationHint;
 		paintSlider(restAt);
+		setCredits(screen, CREDITS.start);
 	};
 
 	const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
@@ -315,7 +317,8 @@ export function analyzeLookalike(screen: HTMLElement, pointer: Pointer) {
 		.add(pointer.moveTo(el.apply, { duration: 0.65 }), "apply")
 		.add(pointer.press(), "apply+=0.65")
 		.to(el.apply, { scale: 0.95, duration: 0.1 }, "apply+=0.7")
-		.to(el.apply, { scale: 1, duration: 0.2 });
+		.to(el.apply, { scale: 1, duration: 0.2 })
+		.call(spendCredits(screen, CREDITS.start, CREDITS.afterSearch), undefined, "apply+=0.8");
 
 	// The odd one out: this beat hands its reset back as well as its timeline,
 	// because the beat that loops home needs it. See `reset` above.

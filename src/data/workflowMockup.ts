@@ -14,6 +14,37 @@
 export const APP_USER = { name: "Harsh", handle: "harsh" } as const;
 
 /**
+ * How many profiles a search analyses — the "Analyzed 10" the results header
+ * reads out, and the count the search is billed for.
+ */
+export const ANALYZED_COUNT = 10;
+
+/** The app charges per creator: 5 to analyse one, 50 to unlock one's profile. */
+const PER_ANALYZED = 5;
+const PER_UNLOCK = 50;
+
+const CREDITS_START = 2540;
+const SEARCH_COST = ANALYZED_COUNT * PER_ANALYZED;
+
+/**
+ * The nav credits chip, at each point the story spends.
+ *
+ * Apply & Search bills for the ten profiles it analyses; opening one of them
+ * bills the unlock. Every screen is authored holding the balance it should show
+ * when it comes into view, and beats 1 and 2 tick the chip from one of these to
+ * the next on the layer the spend happens on — so the swap that follows lands on
+ * a chip already reading the new number.
+ */
+export const CREDITS = {
+	start: CREDITS_START,
+	afterSearch: CREDITS_START - SEARCH_COST,
+	afterProfile: CREDITS_START - SEARCH_COST - PER_UNLOCK,
+} as const;
+
+/** The chip's thousands separator — shared so the tween writes what the nav rendered. */
+export const formatCredits = (value: number) => value.toLocaleString("en-US");
+
+/**
  * Parameter dropdown options, in the app's order — `DiscoveryFilter` in
  * analyze/widgets/filters/discovery_filters_section.dart. Every option except
  * "None" carries an info tooltip.
@@ -275,11 +306,20 @@ export const STORY_LIST = "Vox Pop";
  */
 export const LOOKALIKE_HANDLE = "hyperfitx";
 
+/** The tier the story picks in the rail, read out of `FOLLOWER_TIERS`. */
+const PICKED_TIER = FOLLOWER_TIERS.find((tier) => "selected" in tier && tier.selected)?.label ?? "";
+
+/**
+ * Every filter the story applies, in the order `buildGroups` in
+ * analyze_applied_filters_bar.dart appends them. The strip is wider than the
+ * results panel at this many groups, which is why it fades at its right edge.
+ */
 export const RESULT_FILTERS = [
 	{ label: "Platform", value: "Instagram" },
 	{ label: "Sort", value: "Audience Lookalikes" },
-	{ label: "Creator Location", value: "India" },
 	{ label: "Audience Lookalike", value: `@${LOOKALIKE_HANDLE}` },
+	{ label: "Creator Location", value: "India" },
+	{ label: "Follower Count", value: PICKED_TIER },
 ] as const;
 
 /**

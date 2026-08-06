@@ -9,13 +9,13 @@
 import Icon from "../../../common/Icon.astro";
 import ProfileCard from "../../../common/ProfileCard.astro";
 import ProfileCardColumns from "../../../common/ProfileCardColumns.astro";
-import { RESULT_CREATORS, RESULT_FILTERS } from "../../../../../data/workflowMockup";
+import { ANALYZED_COUNT, RESULT_CREATORS, RESULT_FILTERS } from "../../../../../data/workflowMockup";
 ---
 
 <!-- buildHeader: fromLTRB(18, 20, 0, 20) -->
 <div class="flex shrink-0 items-center pt-5 pr-6 pb-5 pl-4.5" data-wf-results-part>
 	<span class="flex items-center gap-1 text-md whitespace-nowrap text-wf-text">
-		Analyzed <span class="text-wf-green-mid">10</span>
+		Analyzed <span class="text-wf-green-mid">{ANALYZED_COUNT}</span>
 		<span class="w-2"></span>
 		Total Results <span class="text-wf-green-mid">1248</span>
 	</span>
@@ -29,17 +29,21 @@ import { RESULT_CREATORS, RESULT_FILTERS } from "../../../../../data/workflowMoc
 <span class="block h-px shrink-0 bg-wf-rule" data-wf-results-part></span>
 
 <!-- AnalyzeAppliedFiltersBar: fromLTRB(18, 20, 24, 20), groups spaced 24 -->
-<div class="flex shrink-0 items-center gap-6 overflow-hidden pt-5 pr-6 pb-5 pl-4.5" data-wf-results-part>
-	{
-		RESULT_FILTERS.map((filter) => (
-			<span class="flex shrink-0 items-center gap-2.5">
-				<span class="text-[0.75rem] font-medium whitespace-nowrap text-wf-text-soft">{filter.label}</span>
-				<span class="rounded-[0.25rem] bg-wf-chip-on px-2 pt-1 pb-1.25 text-[0.75rem] whitespace-nowrap text-wf-text">
-					{filter.value}
+<div class="shrink-0 pt-5 pr-6 pb-5 pl-4.5" data-wf-results-part>
+	<div
+		class="flex items-center gap-6 overflow-hidden mask-[linear-gradient(to_right,#000_94%,transparent_100%)]"
+	>
+		{
+			RESULT_FILTERS.map((filter) => (
+				<span class="flex shrink-0 items-center gap-2.5">
+					<span class="text-[0.75rem] font-medium whitespace-nowrap text-wf-text-soft">{filter.label}</span>
+					<span class="rounded-[0.25rem] bg-wf-chip-on px-2 pt-1 pb-1.25 text-[0.75rem] whitespace-nowrap text-wf-text">
+						{filter.value}
+					</span>
 				</span>
-			</span>
-		))
-	}
+			))
+		}
+	</div>
 </div>
 
 <span class="block h-px shrink-0 bg-wf-rule" data-wf-results-part></span>

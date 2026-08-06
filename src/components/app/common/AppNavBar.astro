@@ -5,15 +5,16 @@
 import logoNav from "../../../assets/images/common/logos_and_icons/influenze_logo_nav.svg";
 import CreatorAvatar from "./CreatorAvatar.astro";
 import Icon from "./Icon.astro";
-import { APP_USER } from "../../../data/workflowMockup";
+import { APP_USER, CREDITS, formatCredits } from "../../../data/workflowMockup";
 
 interface Props {
 	/** Which primary nav item reads as the current section. */
 	active?: "analyze" | "lists" | "roster";
 	showCredits?: boolean;
+	credits?: number;
 }
 
-const { active = "analyze", showCredits = true } = Astro.props;
+const { active = "analyze", showCredits = true, credits = CREDITS.start } = Astro.props;
 
 const navItems = [
 	{ id: "analyze", label: "Analyze" },
@@ -61,10 +62,13 @@ const navItems = [
 
 		{
 			showCredits && (
-				<span class="flex items-center gap-2.5 rounded-full border border-wf-credit-border bg-[linear-gradient(to_right,var(--color-wf-credit-from),var(--color-wf-credit-to))] px-3 py-2">
+				<span
+					class="flex items-center gap-2.5 rounded-full border border-wf-credit-border bg-[linear-gradient(to_right,var(--color-wf-credit-from),var(--color-wf-credit-to))] px-3 py-2"
+					data-wf-credits-pill
+				>
 					<Icon name="coins" size="1rem" class="text-wf-green" />
 					<span class="text-[0.875rem] whitespace-nowrap text-wf-green">Credits</span>
-					<span class="-ml-1.5 text-[0.875rem] whitespace-nowrap text-wf-green-deep">2,540</span>
+					<span class="-ml-1.5 text-[0.875rem] whitespace-nowrap text-wf-green-deep" data-wf-credits>{formatCredits(credits)}</span>
 				</span>
 			)
 		}

@@ -28,6 +28,15 @@ export interface MyListsLayers {
 	/** The My Lists layer. */
 	to: HTMLElement;
 }
+function collectAdded(row: HTMLElement | null) {
+	const el = {
+		portrait: row?.querySelector<HTMLElement>("[data-wf-list-added]") ?? null,
+		countIdle: row?.querySelector<HTMLElement>('[data-wf-list-count="idle"]') ?? null,
+		countDone: row?.querySelector<HTMLElement>('[data-wf-list-count="done"]') ?? null,
+	};
+
+	return Object.values(el).every(Boolean) ? (el as { [K in keyof typeof el]: NonNullable<(typeof el)[K]> }) : null;
+}
 
 /** Every element the beat drives, or null if the markup is not what we expect. */
 function collect({ from, to }: MyListsLayers) {
@@ -53,6 +62,7 @@ function collect({ from, to }: MyListsLayers) {
 export function myLists(layers: MyListsLayers, pointer: Pointer) {
 	const el = collect(layers);
 	if (!el) return null;
+	const added = collectAdded(layers.from.querySelector<HTMLElement>("[data-wf-list-target]"));
 
 	const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
 
@@ -65,6 +75,12 @@ export function myLists(layers: MyListsLayers, pointer: Pointer) {
 		.set(el.addIdle, { opacity: 1 })
 		.set(el.addDone, { opacity: 0 });
 
+	if (added) {
+		tl.set(added.portrait, { opacity: 0, scale: 0.6 })
+			.set(added.countIdle, { opacity: 1 })
+			.set(added.countDone, { opacity: 0 });
+	}
+
 	// ── add the creator to the list ──────────────────────────────────────────
 	tl.add(pointer.moveTo(el.add, { duration: 0.7 }))
 		.add(pointer.press())
@@ -73,6 +89,16 @@ export function myLists(layers: MyListsLayers, pointer: Pointer) {
 		.to(el.add, { backgroundColor: token("action-muted"), duration: 0.28 }, "added")
 		.to(el.addIdle, { opacity: 0, duration: 0.16 }, "added")
 		.to(el.addDone, { opacity: 1, duration: 0.22 }, "added+=0.1");
+
+	if (added) {
+		tl.to(
+			added.portrait,
+			{ opacity: 1, scale: 1, duration: 0.34, ease: "back.out(2)", transformOrigin: "center" },
+			"added+=0.12"
+		)
+			.to(added.countIdle, { opacity: 0, duration: 0.16 }, "added+=0.2")
+			.to(added.countDone, { opacity: 1, duration: 0.22 }, "added+=0.3");
+	}
 
 	// ── close the dialog ─────────────────────────────────────────────────────
 	// Unwound in the reverse order it arrived: card first, then the scrim and blur

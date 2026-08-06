@@ -14,14 +14,14 @@ import CreatorAvatar from "../../common/CreatorAvatar.astro";
 import Icon from "../../common/Icon.astro";
 import PlatformIcon from "../../common/PlatformIcon.astro";
 import ToolbarAction from "./widgets/ToolbarAction.astro";
-import { CREATOR_LISTS, LIST_CREATORS, STORY_LIST } from "../../../../data/workflowMockup";
+import { CREATOR_LISTS, CREDITS, LIST_CREATORS, STORY_LIST } from "../../../../data/workflowMockup";
 
 /** Squircle tiles: the app clips a custom path; 32% is the closest CSS match. */
 const tileClass = "block size-[7.40625rem] border border-[#463c60] bg-wf-chip";
 const tileStyle = "border-radius:32%";
 ---
 
-<AppShell active="lists">
+<AppShell active="lists" credits={CREDITS.afterProfile}>
 	<div class="absolute top-32.5 left-16.5 h-176 w-327 overflow-hidden rounded-md bg-wf-panel">
 		<div class="flex h-full flex-col p-10">
 			<p class="text-center text-md font-light text-wf-text">My Lists</p>

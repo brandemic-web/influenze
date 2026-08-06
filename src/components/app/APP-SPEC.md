@@ -107,6 +107,11 @@ credits pill · 16 · profile pill.
 - credits pill — `px12 py8`, radius 100, border `green1` `#256745`,
   gradient `#15613A → #1b3e2c`; icon 16, gap 10, `Credits` 14px `#33e889`,
   gap 4, value 14px `#1aae55`.
+  The value is **story state, not a constant**: the app bills 5 credits a profile,
+  so Apply & Search costs 50 for the ten it analyses and opening a creator costs
+  the 50-per-handle unlock — `2,540 → 2,490 → 2,440`. Balances live in `CREDITS`
+  (`data/workflowMockup.ts`); every screen is authored holding the one it should
+  show, and beats 1 and 2 tick the chip on the layer the spend happens on.
 - profile pill — `pl12 pr4 py4`, bg `green2` `#1b3e2c`, radius 100;
   label 14px `#33e889`, gap 10, avatar 32 circle.
   App says `Hello!`; the mockup uses **`Hi, Harsh`** by choice.

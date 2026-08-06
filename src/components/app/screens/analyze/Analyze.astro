@@ -18,7 +18,7 @@ import AnalyzeFilterSidebar from "./widgets/AnalyzeFilterSidebar.astro";
 import AnalyzeResultsList from "./widgets/AnalyzeResultsList.astro";
 import AnalyzeResultsPanel from "./widgets/AnalyzeResultsPanel.astro";
 import AnalyzeSearchBar from "./widgets/AnalyzeSearchBar.astro";
-import { RAIL_TIER_SCROLL } from "../../../../data/workflowMockup";
+import { CREDITS, RAIL_TIER_SCROLL } from "../../../../data/workflowMockup";
 
 interface Props {
 	/** The search has run: ranked results, and the rail filled and scrolled to the tiers. */
@@ -28,7 +28,7 @@ interface Props {
 const { results = false } = Astro.props;
 ---
 
-<AppShell active="analyze">
+<AppShell active="analyze" credits={results ? CREDITS.afterSearch : CREDITS.start}>
 	<AnalyzeSearchBar />
 
 	{

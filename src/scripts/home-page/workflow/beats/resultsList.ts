@@ -1,5 +1,6 @@
 import gsap from "gsap";
-import { PROFILED_HANDLE } from "../../../../data/workflowMockup";
+import { CREDITS, PROFILED_HANDLE } from "../../../../data/workflowMockup";
+import { setCredits, spendCredits } from "../utils/credits";
 import type { Pointer } from "../utils/pointer";
 
 /**
@@ -62,6 +63,7 @@ export function resultsList(layers: ResultsListLayers, pointer: Pointer) {
 	tl.call(() => {
 		layers.to.removeAttribute("data-wf-active");
 		layers.from.setAttribute("data-wf-active", "");
+		setCredits(layers.to, CREDITS.afterSearch);
 	})
 		.set(el.scroller, { y: 0 })
 		.to(el.empty, { opacity: 0, y: -10, duration: 0.28 })
@@ -94,7 +96,9 @@ export function resultsList(layers: ResultsListLayers, pointer: Pointer) {
 	// The press is the only feedback: the app's row hover and pressed states are
 	// not in `lib` anywhere I could check, and beat 3 opening the profile is the
 	// real answer to the click.
-	tl.add(pointer.moveTo(el.profiled, { at: { x: 0.3 }, duration: 0.6 }), "+=0.1").add(pointer.press(), ">-0.05");
+	tl.add(pointer.moveTo(el.profiled, { at: { x: 0.3 }, duration: 0.6 }), "+=0.1")
+		.add(pointer.press(), ">-0.05")
+		.call(spendCredits(layers.to, CREDITS.afterSearch, CREDITS.afterProfile));
 
 	return tl;
 }

@@ -10,7 +10,7 @@ import CenteredModalOverlay from "../../common/CenteredModalOverlay.astro";
 import CreatorAvatar from "../../common/CreatorAvatar.astro";
 import Icon from "../../common/Icon.astro";
 import AnalyzedCreator from "./AnalyzedCreator.astro";
-import { CREATOR_LISTS, STORY_LIST } from "../../../../data/workflowMockup";
+import { CREATOR_LISTS, PROFILED_HANDLE, STORY_LIST } from "../../../../data/workflowMockup";
 ---
 
 <CenteredModalOverlay width="30rem">
@@ -38,44 +38,70 @@ import { CREATOR_LISTS, STORY_LIST } from "../../../../data/workflowMockup";
 	<div class="mt-4 h-55 overflow-hidden px-6 pb-2">
 		<div class="flex flex-col gap-2">
 			{
-				CREATOR_LISTS.map((list) => (
-					<div
-						class="flex items-center rounded-[1rem] border border-wf-dialog-border bg-wf-list-row px-3 py-2.5"
-						data-wf-list-target={list.name === STORY_LIST ? "" : undefined}
-					>
-						{/*
-							`AvatarGrid` — always its full 2x2 of 26px tiles on `lavender45`, radius
-							7. An empty slot is a bare tile rather than a `CreatorAvatar`: that
-							component's placeholder is a gradient, and a gradient is a
-							`background-image`, so it would paint straight over the flat fill the app
-							uses here.
-						*/}
-						<span class="grid size-15 shrink-0 grid-cols-2 content-start">
-							{[0, 1, 2, 3].map((slot) =>
-								list.preview[slot] ? (
-									<CreatorAvatar size="1.625rem" radius="0.4375rem" handle={list.preview[slot]} class="m-0.5 block" />
-								) : (
-									<span class="m-0.5 block size-6.5 rounded-[0.4375rem] bg-wf-surface" />
-								)
-							)}
-						</span>
-						<span class="ml-3 flex min-w-0 flex-1 flex-col">
-							<span class="mb-3 text-[0.875rem] whitespace-nowrap text-wf-text">{list.name}</span>
-							<span class="text-[0.625rem] whitespace-nowrap text-wf-meta">{list.count} Creators</span>
-						</span>
-						<span
-							class="ml-3 grid h-9 min-w-16 shrink-0 place-items-center rounded-[1.25rem] bg-wf-action px-3 text-[0.625rem] text-wf-text"
-							data-wf-add
+				CREATOR_LISTS.map((list) => {
+					const target = list.name === STORY_LIST;
+					return (
+						<div
+							class="flex items-center rounded-[1rem] border border-wf-dialog-border bg-wf-list-row px-3 py-2.5"
+							data-wf-list-target={target ? "" : undefined}
 						>
-							<span class="wf-untrimmed col-start-1 row-start-1" data-wf-add-label="idle">
-								Add
+							{/*
+								`AvatarGrid` — always its full 2x2 of 26px tiles on `lavender45`, radius
+								7. An empty slot is a bare tile rather than a `CreatorAvatar`: that
+								component's placeholder is a gradient, and a gradient is a
+								`background-image`, so it would paint straight over the flat fill the app
+								uses here.
+							*/}
+							<span class="grid size-15 shrink-0 grid-cols-2 content-start">
+								{[0, 1, 2, 3].map((slot) =>
+									list.preview[slot] ? (
+										<CreatorAvatar
+											size="1.625rem"
+											radius="0.4375rem"
+											handle={list.preview[slot]}
+											class="m-0.5 block"
+										/>
+									) : target && slot === list.preview.length ? (
+										<span class="relative m-0.5 block size-6.5">
+											<span class="absolute inset-0 rounded-[0.4375rem] bg-wf-surface" />
+											<span class="absolute inset-0 opacity-0" data-wf-list-added>
+												<CreatorAvatar size="1.625rem" radius="0.4375rem" handle={PROFILED_HANDLE} class="block" />
+											</span>
+										</span>
+									) : (
+										<span class="m-0.5 block size-6.5 rounded-[0.4375rem] bg-wf-surface" />
+									)
+								)}
 							</span>
-							<span class="wf-untrimmed col-start-1 row-start-1 opacity-0" data-wf-add-label="done">
-								Added
+							<span class="ml-3 flex min-w-0 flex-1 flex-col">
+								<span class="mb-3 text-[0.875rem] whitespace-nowrap text-wf-text">{list.name}</span>
+								{target ? (
+									<span class="grid text-[0.625rem] whitespace-nowrap text-wf-meta">
+										<span class="wf-untrimmed col-start-1 row-start-1" data-wf-list-count="idle">
+											{list.count} Creators
+										</span>
+										<span class="wf-untrimmed col-start-1 row-start-1 opacity-0" data-wf-list-count="done">
+											{list.count + 1} Creators
+										</span>
+									</span>
+								) : (
+									<span class="text-[0.625rem] whitespace-nowrap text-wf-meta">{list.count} Creators</span>
+								)}
 							</span>
-						</span>
-					</div>
-				))
+							<span
+								class="ml-3 grid h-9 min-w-16 shrink-0 place-items-center rounded-[1.25rem] bg-wf-action px-3 text-[0.625rem] text-wf-text"
+								data-wf-add
+							>
+								<span class="wf-untrimmed col-start-1 row-start-1" data-wf-add-label="idle">
+									Add
+								</span>
+								<span class="wf-untrimmed col-start-1 row-start-1 opacity-0" data-wf-add-label="done">
+									Added
+								</span>
+							</span>
+						</div>
+					);
+				})
 			}
 		</div>
 	</div>
