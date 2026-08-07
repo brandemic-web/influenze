@@ -44,6 +44,7 @@ components/app/                 everything that reproduces the product
 styles/app-tokens.css           the app's palette — `wf-*` and `mkit-*`
 data/workflowIcons.ts           icon slot → the app's SVG file
 data/workflowMockup.ts          the creators, lists and figures both trees show
+data/mediaKitCharts.ts          the media kit's chart scales, ported from the app
 assets/icons/workflow/  mkit/   the app's own SVG assets
 
 scripts/home-page/workflow/
@@ -75,6 +76,14 @@ Both draw from `common/`, `styles/app-tokens.css` and `data/workflowIcons.ts`, s
 a colour or glyph is only ever defined once. Where an element departs from the app
 deliberately, its header says so.
 
+**One import crosses between the trees**: `elements/CompareCreatorColumn` renders
+the screens tree's `GrowthChart` and `PricingCard` rather than its own copies. It
+is the exception because those two are almost entirely fixed-size geometry off a
+shared scale, and this element is authored at app pixels like they are — so a
+second copy would only be a second thing to keep in step. Note what the element
+does *not* get: it sits outside `.wf-stage`, so the cap-trim never reaches it and
+both cards render a shade looser there than in the hero.
+
 An element is named after the app widget it reproduces, so where a widget appears
 in both trees the two files share a name and only the folder differs.
 
@@ -87,7 +96,7 @@ in both trees the two files share a name and only the folder differs.
 | `FollowerQuality` | `media_kit/detail/audience_card.dart` — `followerQuality` | — |
 | `AffinitiesCard` | `media_kit/detail/affinities_card.dart` | — |
 | `AddToListDialog` | `analyze/widgets/add_to_list_dialog.dart` | same name |
-| `CompareCreatorColumn` | `list/widgets/compare_creator_column.dart` + `media_kit/detail/stats_card.dart` | `ListCompareSection` |
+| `CompareCreatorColumn` | `list/widgets/compare_creator_column.dart` + `media_kit/detail/stats_card.dart` + `pricing_card.dart` | `ListCompareSection` |
 | `CreatorDetailPanel` | `analyze/widgets/creator_detail.dart` — `buildLeftPanel` | `CreatorDetail` |
 
 ## Shell — `common/widgets/app_shell.dart`, `app_nav_bar.dart`
@@ -250,6 +259,12 @@ each card carries its own `padding-bottom 12`. Order (non-LinkedIn):
 **Account Stats** → Pricing → Audience → Top Posts → Affinities. On LinkedIn
 Account Stats is not rendered at all.
 
+**Two of the five are reproduced**: Account Stats (engagement card, five tiles,
+two growth charts) and Pricing. Audience, Affinities and Top Posts are not — the
+story never scrolls that far. `MediaKitDetail.astro` is the tab body and holds
+Account Stats inline; the charts and Pricing are their own files beside it,
+named after the app's own widgets.
+
 `StatsCard` itself is **transparent** over `#181823`: `padding-bottom 12` then
 `padding 12`.
 
@@ -295,6 +310,85 @@ percentage as **700** accent spans.
 `Total Posts` + `Average Reel Views`, then `Average Likes` + `Average Comments`.
 Icon tints: followers `#3fbd71`, posts `#f2994a`, views `#ea5757`,
 likes `#c23584`, comments `#935ad6`. Figma showed a 2×2 grid of four — wrong.
+
+### Growth charts — `GrowthChartWidget` + `CustomLineChart`
+Two of them close out Account Stats, 12 above each. Card `padding l12 r24 t12 b12`,
+radius 5; title 10px/500 white, then **40**, then a **172**-tall block: the plot,
+**16**, a **16**-tall label row. Both axes reserve **40** — a fixed left column,
+and the label row indented by the same — so the plot is `w−40 × 140`.
+
+The app configures them through a dozen flags; the two combinations it actually
+instantiates are `GrowthChart.astro`'s `variants` table:
+
+| | `Follower Growth` | `Average Likes Growth` |
+|---|---|---|
+| divisions | 5 | 3 |
+| line | 2px, area fill under it | 1px, 4px dots |
+| gridlines | solid `grey10` `#6c727d` | dashed `[4,2]` `grey16` `#272b2f` |
+| x labels | `Feb` | `FEB` (`bottomTitlesUppercase`) |
+| label tints | y `#6c727d`, x `#a1a8b2` | both `grey1` `#9b9b9b` |
+| title | — | 12px `thumbs_up`, **untinted** so it keeps its own `#9476f3` |
+
+Line and dots are `green1` `#20c795`. The area fill is `green4` `#479165` solid to
+the plot's **half height** then out to nothing — written as a zero-alpha green,
+because CSS's `transparent` is transparent *black* and would darken the fade.
+
+**Everything else is derived, not authored** (`data/mediaKitCharts.ts`): the scale
+is the series padded by a tenth of its own range at each end, cut into `divisions`
+rows, each labelled with `intl`'s `NumberFormat.compact()` (three significant
+digits — `9.01K`, not `9K`). Only the monthly values are authored, so a label
+cannot drift from the line beside it. **The last month of each series is the tile
+above it** — `followerGrowth` ends on Total Followers, `likesGrowth` on Average
+Likes — which is what the app's data does and what makes the pair read as one card.
+
+Geometry is percentages throughout, because the plot's width is a flex result: the
+media kit tab and a compare column are different widths and the canvas then
+rescales with the viewport. So the line is one `<path>` on a 0–100 grid inside a
+`preserveAspectRatio="none"` SVG, with **`vector-effect="non-scaling-stroke"`** to
+stop the non-uniform stretch reaching the stroke — without it the weight would
+differ between the two call sites. The area is the same points as a `clip-path`
+polygon over a plain gradient, which avoids a gradient `id` (screens 5 and 8
+render twice, so any id inside them would be emitted twice).
+
+## Pricing — `media_kit/detail/pricing_card.dart`
+
+Transparent like Account Stats: `padding-bottom 12` then `padding 12`, with four
+tiles carrying `cardColor`. Header is the Account Stats header with
+`chart_candlestick.svg` and a **Beta** pill after the title (`px10 pb3`, bg
+`#202427`, radius 16, 10px/400 `lavender1` `#9476f3`). Then 14.
+
+- estimated range tile — `padding 12`, radius 5: the range **20px/600** white,
+  then 14, then the "Estimated from followers…" line 12px/400 `#c0c9cf`
+- chart tile — `padding l12 r16 t16 b12`: `Price by post type` 10px/500 white,
+  **24**, then a **200**-tall chart. `fl_chart` reserves **40** at the left and
+  **40** at the foot, so the plot is `w−40 × 160`. Five dashed `[4,3]` `grey9`
+  `#3a4044` gridlines from zero to the axis top; y labels 9px/500 `#6c727d`,
+  right-aligned 8 clear of the plot. One floating rod per post type — **8 wide,
+  fully rounded**, `green3` `#3fbd71` — spanning min to max, centred in equal
+  slots with a half-slot of air at each end (`BarChartAlignment.spaceAround`).
+  Under each, 8 clear of the baseline: the label 9px/500 `#a1a8b2` over its range
+  8px/400 white, centred in a 68-wide box.
+- driving factors — `padding 12`: `What's driving this price?` 10px/500 white, 12,
+  then each factor `padding-bottom 10` (the last one too) as a **4px** `#3fbd71`
+  dot at `top 8 right 8` beside 12px/400 `#c0c9cf` at line-height 1.5
+
+Four of those gaps are **deliberately not the app's number** in the markup, for the
+same reason the tier pill's padding isn't: Flutter sizes a text box to its line
+height and the stage trims to cap height, so copying the app's value reads tight.
+The description sits 20 under the range rather than 14, a bar's price range 6 under
+its label rather than 2, and a factor row 18 rather than 10 with its dot at `top 4`
+and the body at `leading-normal`. Signed off by eye against the app.
+
+Derived the same way as the growth charts: the headline range is the min and max
+across every bar, the axis top is the app's `_niceMax` (1400 → 2000), and money is
+the app's **own** `formatCompactNumber` — one decimal, so `$1.2K` where the growth
+charts' `intl` would say `1.21K`. Only the four ranges are authored.
+
+The app's `[ Videos | Post ]` segmented toggle is **not** reproduced: it only
+appears where a platform has more than one post-type group, and Instagram — the
+only platform the story shows — has one. Currency and the factor sentences are
+shared across creators in `PRICING`, because every creator the story shows lands
+in the same bands and the app's own copy is chosen by band.
 
 ## List screens shell — `list/list_details.dart`
 
@@ -411,12 +505,18 @@ name · meta 10px/400 `#a89ccb`). The meta line is **plain text joined with
 `" · "` — no map-pin icon**, unlike the analyze profile. Then 20 · a 1px
 `#322b46` rule inset 12 each side.
 
-Stat content **reuses `StatsCard` verbatim**, with two differences:
-`cardColor` **`#18171f`** (not `#25292c`) so every tile and the engagement card
-darken, and `showEngagementText: false` which drops the trailing
-"…sits within the Good band…" paragraph. Cards carry their own
+Stat content **reuses `StatsCard` and `PricingCard` verbatim**, with two
+differences: `cardColor` **`#18171f`** (not `#25292c`) so every tile, chart and
+the engagement card darken, and `showEngagementText: false` which drops the
+trailing "…sits within the Good band…" paragraph. Cards carry their own
 `padding-bottom 12`; no inter-card gaps. Compare also height-matches the Stats
 and Pricing cards across columns (`HeightMatchedCard`).
+
+Here that reuse is literal: both columns render the same `MediaKitDetail` the
+Media Kit tab does, with `surface="#18171f"`. `HeightMatchedCard` is **not**
+reproduced — the story's two creators have the same tiles, the same number of
+gridlines and the same factor sentences, so the columns come out level anyway.
+Add a creator whose cards differ in height and this is what will show.
 
 ## Animation handoff
 
@@ -538,7 +638,13 @@ to be brought into line first.
   (`borderBottomColor` + `color`), so `CreatorDetail` stays the only place those
   colours are written down. Same trick as beat 3's dim.
 - **The scroll range is measured**: the media kit's own height less the height of
-  the box clipping it. `SCROLL_FRACTION` (0.6) is the "a bit".
+  the box clipping it. `SCROLL_FRACTION` (0.85) is how far through it goes.
+- **That range is no longer small.** With the growth charts and the pricing card
+  in, the kit is ~1950 tall in a ~610 box, so 0.85 of it is ~1140px travelled
+  inside the beat's 2.4s — about six times the distance the fraction was chosen
+  against. The beat still works, because both numbers are measured, but the
+  pacing is worth a second look: slow the tween, or lower the fraction so it
+  settles on the pricing headline rather than deep into the factors.
 - Every scroll in the story now happens **under the cursor**, wheel-style — the
   rail in beat 1, the results list in beat 2, the media kit here.
 
@@ -904,6 +1010,15 @@ no width constraint.
 - [x] Screens 4–5 — recomposed: the detail now renders inside the results panel
       with the sidebar dimmed behind it (`DimmedFilterSidebar.astro`), and `MediaKitDetail`
       rebuilt to the five-tile Account Stats layout
+- [x] Media kit — Account Stats' two growth charts (`GrowthChart.astro`) and the
+      whole pricing card (`PricingCard.astro`), so the tab and both compare
+      columns now run to **Creator's Estimated Price**. Both charts and the price
+      chart derive their scales, labels and geometry from raw figures in
+      `data/mediaKitCharts.ts` rather than being authored as positions; only the
+      monthly values and the four price ranges are data. Audience, Affinities and
+      Top Posts are still not reproduced. `elements/CompareCreatorColumn` renders
+      the same two components (`PricingCard` `bare`, so its tiles keep the
+      column's gutters), which is the one import that crosses the two trees.
 - [x] Screen 6 — `add_to_list_dialog.dart`. Two elements in the Figma frame exist
       nowhere in `lib`: the ShortLists/Lists switcher and the "Unlocks Media Kit,
       50 Credits per handle" notice. ShortLists is an **upcoming feature**, so the

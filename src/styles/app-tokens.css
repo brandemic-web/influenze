@@ -334,6 +334,19 @@
 	--color-mkit-axis: #6e777c; /* grey17 — scale end labels */
 	--color-mkit-body: #c0c9cf; /* grey18 — tier description copy */
 
+	/* charts — the growth lines and the price chart */
+	--color-mkit-chart-line: #20c795; /* green1 — the growth line and its dots */
+	--color-mkit-chart-fill: #479165; /* green4 — the area under it */
+	--color-mkit-green: #3fbd71; /* green3 (mkit) — price bars and factor bullets */
+	--color-mkit-grid: #6c727d; /* grey10 — the follower chart's solid gridlines */
+	--color-mkit-grid-dash: #272b2f; /* grey16 — the likes chart's dashed ones */
+	--color-mkit-grid-price: #3a4044; /* grey9 — the price chart's dashed ones */
+	--color-mkit-chart-y: #6c727d; /* grey10 — leftChartTitle */
+	--color-mkit-chart-x: #a1a8b2; /* grey11 — bottomChartTitle */
+	/* lavender1 — the pricing card's Beta pill, and thumbs_up.svg's own colour
+	   where the app draws it untinted (the likes chart's title glyph) */
+	--color-mkit-lavender: #9476f3;
+
 	/* stat glyph tints — `gridStatCard`'s iconColor */
 	--color-mkit-followers: #32e889; /* green3 */
 	--color-mkit-posts: #f2994a; /* orange1 */

@@ -32,6 +32,7 @@ const ICON_FILES = {
 	arrowIcon: "arrow_icon.svg",
 	asterisk: "asterisk.svg",
 	badge: "badge.svg",
+	chartCandlestick: "chart_candlestick.svg",
 	chartColumnIncreasing: "chart_column_increasing.svg",
 	check: "check.svg",
 	circleX: "circle_x.svg",

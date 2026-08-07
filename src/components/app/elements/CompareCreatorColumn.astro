@@ -8,10 +8,13 @@ import eyeSmall from "../../../assets/icons/mkit/eye_small.svg";
 import thumbsUp from "../../../assets/icons/mkit/thumbs_up.svg";
 import messageCircle from "../../../assets/icons/mkit/message_circle.svg";
 import arrowDownFill from "../../../assets/icons/mkit/arrow_down_fill.svg";
+import GrowthChart from "../screens/analyze/widgets/media-kit/GrowthChart.astro";
+import PricingCard from "../screens/analyze/widgets/media-kit/PricingCard.astro";
 import {
 	COMPARED_HANDLES,
 	MACRO_BENCHMARK,
 	MEDIA_KIT_STATS,
+	PRICING,
 	creatorByHandle,
 } from "../../../data/workflowMockup";
 
@@ -299,6 +302,35 @@ const cardTitleClass = "block text-[0.625rem] font-medium text-white";
 									</div>
 								);
 							})}
+						</div>
+
+						{/* The two growth charts close out Account Stats, 12 above each. */}
+						<div class="mt-3">
+							<GrowthChart
+								variant="followers"
+								title="Follower Growth"
+								history={stats.followerGrowth}
+								surface="#18171f"
+							/>
+						</div>
+						<div class="mt-3">
+							<GrowthChart
+								variant="likes"
+								title="Average Likes Growth"
+								history={stats.likesGrowth}
+								surface="#18171f"
+							/>
+						</div>
+
+						{/* `PricingCard` — `bare`, so its tiles keep the column's gutters. */}
+						<div class="mt-3">
+							<PricingCard
+								bare
+								bars={stats.priceBars}
+								currency={PRICING.currency}
+								factors={PRICING.factors}
+								surface="#18171f"
+							/>
 						</div>
 					</div>
 				);

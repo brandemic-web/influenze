@@ -39,6 +39,14 @@ const LIST_FADE_IN = 0.32;
 
 /** Fraction of the Compare card's scrollable height the demo travels. */
 const SCROLL_REVEAL = 0.85;
+/**
+ * How long that travel takes (s). Raised from 2.2 when the growth charts and the
+ * pricing card went into the column: the range grew from a few hundred pixels to
+ * ~1500, and since the fraction is measured on play, the same duration turned the
+ * reveal into a whip. The card's aperture is only 580 at `zoom: 0.65`, so content
+ * crossing it reads faster here than the same speed does in the hero.
+ */
+const SCROLL_DURATION = 4;
 
 /* ── Panel 1 · Search Globally ──────────────────────────────────────────────
  * A pointer walks the UI: the three cards land, the Mega Account tier is
@@ -234,7 +242,7 @@ registerPanelDemo(panelId(2), ({ panel, reducedMotion }) => {
 		// Measured on play, so a re-run picks up whatever the card's content is now.
 		.to(scroller, {
 			scrollTop: () => (scroller.scrollHeight - scroller.clientHeight) * SCROLL_REVEAL,
-			duration: 2.2,
+			duration: SCROLL_DURATION,
 			ease: "power1.inOut",
 		}, ">0.4");
 });

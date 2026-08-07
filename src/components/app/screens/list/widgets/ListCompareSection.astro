@@ -10,7 +10,13 @@
 import CreatorAvatar from "../../../common/CreatorAvatar.astro";
 import VerifiedBadge from "../../../common/VerifiedBadge.astro";
 import MediaKitDetail from "../../analyze/widgets/media-kit/MediaKitDetail.astro";
-import { COMPARED_HANDLES, MACRO_BENCHMARK, MEDIA_KIT_STATS, creatorByHandle } from "../../../../../data/workflowMockup";
+import {
+	COMPARED_HANDLES,
+	MACRO_BENCHMARK,
+	MEDIA_KIT_STATS,
+	PRICING,
+	creatorByHandle,
+} from "../../../../../data/workflowMockup";
 
 const [profiled, against] = COMPARED_HANDLES.map(creatorByHandle);
 
@@ -69,6 +75,11 @@ const subjects = [profiled, against].map((creator, i) => ({
 						views={stats.reelViews}
 						likes={stats.likes}
 						comments={stats.comments}
+						followerGrowth={stats.followerGrowth}
+						likesGrowth={stats.likesGrowth}
+						priceBars={stats.priceBars}
+						currency={PRICING.currency}
+						factors={PRICING.factors}
 					/>
 				</div>
 			</div>

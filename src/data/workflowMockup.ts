@@ -342,12 +342,23 @@ export const CREATOR_LISTS = [
 ] as const;
 
 /**
- * Media-kit tiles shown on the creator profile and the compare screen.
+ * Media-kit tiles, growth charts and pricing shown on the creator profile and
+ * the compare screen.
  *
  * `axis` is the bar's two end labels, and `marker`/`median` are positions along
  * it as a percentage of its width. The app derives all three from the rate and
  * the tier median — `EngagementGraph` takes `min = median x 0.5` and
  * `max = rate x 1.5` — so they are computed here the same way rather than eyeballed.
+ *
+ * The two growth series are **raw monthly values, not positions**: everything
+ * drawn from them — the padded scale, the gridlines, their compact labels and
+ * the line itself — is derived in `data/mediaKitCharts.ts`, exactly as the app
+ * derives it. So they are the one place a figure can be edited, and the last
+ * month of each has to stay in step with the tile above it: `followerGrowth`
+ * ends on `followers` and `likesGrowth` on `likes`.
+ *
+ * `priceBars` are the four Instagram post types in `MediaKitPricingHelper.igGroups`
+ * order. The headline range is the min and max across them, so it is derived too.
  */
 export const MEDIA_KIT_STATS = {
 	selwyn: {
@@ -364,6 +375,30 @@ export const MEDIA_KIT_STATS = {
 		axis: ["0.5", "7.1"],
 		marker: 64,
 		median: 8,
+		followerGrowth: [
+			{ month: "feb", value: 178_500 },
+			{ month: "mar", value: 180_700 },
+			{ month: "apr", value: 186_000 },
+			{ month: "may", value: 189_200 },
+			{ month: "jun", value: 192_700 },
+			{ month: "jul", value: 192_100 },
+			{ month: "aug", value: 190_373 },
+		],
+		likesGrowth: [
+			{ month: "feb", value: 3_460 },
+			{ month: "mar", value: 5_300 },
+			{ month: "apr", value: 10_500 },
+			{ month: "may", value: 17_500 },
+			{ month: "jun", value: 22_950 },
+			{ month: "jul", value: 13_500 },
+			{ month: "aug", value: 9_010 },
+		],
+		priceBars: [
+			{ label: "per reel", min: 965, max: 1_400 },
+			{ label: "per story", min: 563, max: 844 },
+			{ label: "per post", min: 804, max: 1_200 },
+			{ label: "per carousel", min: 884, max: 1_300 },
+		],
 	},
 	poorav: {
 		engagement: "2.62%",
@@ -379,7 +414,53 @@ export const MEDIA_KIT_STATS = {
 		axis: ["0.5", "3.9"],
 		marker: 62,
 		median: 15,
+		followerGrowth: [
+			{ month: "feb", value: 277_800 },
+			{ month: "mar", value: 279_900 },
+			{ month: "apr", value: 285_000 },
+			{ month: "may", value: 287_000 },
+			{ month: "jun", value: 285_300 },
+			{ month: "jul", value: 283_600 },
+			{ month: "aug", value: 282_150 },
+		],
+		likesGrowth: [
+			{ month: "feb", value: 9_300 },
+			{ month: "mar", value: 9_350 },
+			{ month: "apr", value: 9_400 },
+			{ month: "may", value: 9_920 },
+			{ month: "jun", value: 7_900 },
+			{ month: "jul", value: 6_820 },
+			{ month: "aug", value: 7_400 },
+		],
+		priceBars: [
+			{ label: "per reel", min: 1_300, max: 1_900 },
+			{ label: "per story", min: 740, max: 1_100 },
+			{ label: "per post", min: 1_100, max: 1_600 },
+			{ label: "per carousel", min: 1_200, max: 1_700 },
+		],
 	},
+} as const;
+
+/**
+ * The currency the pricing card quotes in, and the factors under it.
+ *
+ * Both are shared rather than per creator: the app reads the symbol from the
+ * media kit's `currency` field, and the factors from `price_explanations`, whose
+ * descriptions are a fixed set of sentences chosen by band. Every creator the
+ * story shows lands in the same bands, so both columns really do read the same —
+ * which is why they live here rather than being copied into each one.
+ *
+ * Order is `MediaKitPricingHelper.factorOrder`: follower level, engagement,
+ * audience location, audience credibility.
+ */
+export const PRICING = {
+	currency: "$",
+	factors: [
+		"Follower count is within the mid-range, representing moderate reach and visibility.",
+		"Engagement rate is within the average range, reflecting standard audience interaction levels.",
+		"Audience is primarily in Tier 3 countries, where purchasing power and prices are lower.",
+		"Audience credibility score is average, indicating a mix of authentic and general followers.",
+	],
 } as const;
 
 /**

@@ -1,13 +1,15 @@
 ---
 /**
- * Account Stats
+ * The Media Kit tab's body.
  *
- * The card itself is transparent over the tab card; only padding. The media kit
- * has its own palette (`MKitColors`), so the hexes here are deliberately
- * literals rather than the wf-* tokens used elsewhere.
+ * The media kit has its own palette (`MKitColors`), so the hexes here are
+ * deliberately literals rather than the wf-* tokens used elsewhere.
  */
 import Icon from "../../../../common/Icon.astro";
+import GrowthChart from "./GrowthChart.astro";
+import PricingCard from "./PricingCard.astro";
 import type { WorkflowIconName } from "../../../../../../data/workflowIcons";
+import type { GrowthPoint, PriceBar } from "../../../../../../data/mediaKitCharts";
 
 /** One of the five engagement bands; each carries four coordinated colours. */
 type Level = "high" | "average" | "low";
@@ -29,7 +31,11 @@ interface Props {
 	views: string;
 	likes: string;
 	comments: string;
-	/** `cardColor` — the media kit default, or #18171f on the compare screen. */
+	followerGrowth: readonly GrowthPoint[];
+	likesGrowth: readonly GrowthPoint[];
+	priceBars: readonly PriceBar[];
+	currency: string;
+	factors: readonly string[];
 	surface?: string;
 }
 
@@ -70,7 +76,8 @@ const medianSide = props.marker > props.median ? "left-1" : "right-1";
 
 <!-- Taller than the tab card, so the timeline scrolls this whole block. -->
 <div class="p-4" data-wf-mediakit-scroll>
-	<div class="p-3">
+	<!-- StatsCard: padding-bottom 12 around padding 12. -->
+	<div class="p-3 pb-6">
 		<div class="flex items-center pb-3.5">
 			<span class="grid size-9 shrink-0 place-items-center rounded-[0.3125rem]" style={`background:${surface}`}>
 				<Icon name="chartColumnIncreasing" size="1.25rem" class="text-wf-green-mid" />
@@ -177,5 +184,15 @@ const medianSide = props.marker > props.median ? "left-1" : "right-1";
 				</div>
 			))
 		}
+
+		<!-- The two growth charts close out Account Stats, 12 above each. -->
+		<div class="mt-3">
+			<GrowthChart variant="followers" title="Follower Growth" history={props.followerGrowth} surface={surface} />
+		</div>
+		<div class="mt-3">
+			<GrowthChart variant="likes" title="Average Likes Growth" history={props.likesGrowth} surface={surface} />
+		</div>
 	</div>
+
+	<PricingCard bars={props.priceBars} currency={props.currency} factors={props.factors} surface={surface} />
 </div>
