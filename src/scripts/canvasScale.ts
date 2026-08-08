@@ -32,7 +32,11 @@ function fit(container: HTMLElement) {
 	if (!canvas) return;
 
 	const canvasWidth = parseFloat(getComputedStyle(canvas).width);
-	const containerWidth = container.getBoundingClientRect().width;
+	// `offsetWidth`, not the painted rect: the landscape viewer turns an ancestor a
+	// quarter turn, and a rect reports the axis-aligned box of the rotated result —
+	// which is the container's height, so the canvas came out scaled to the wrong
+	// axis. The layout width is what the canvas is being fitted to either way.
+	const containerWidth = container.offsetWidth;
 	if (!canvasWidth || !containerWidth) return;
 
 	container.style.setProperty("--wf-scale", String(containerWidth / canvasWidth));

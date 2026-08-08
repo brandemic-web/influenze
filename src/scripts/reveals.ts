@@ -1,4 +1,6 @@
+import gsap from "gsap";
 import { revealStagger } from "./gsap/revealStagger";
+import { DESKTOP_MIN } from "./breakpoints";
 
 /**
  * Declarative reveal wiring. Add `data-reveal` to a container and
@@ -6,8 +8,15 @@ import { revealStagger } from "./gsap/revealStagger";
  *
  * Optional tuning via data attributes on the container:
  *   data-reveal-y, data-reveal-stagger, data-reveal-duration, data-reveal-start
+ *
+ * Add `data-reveal-desktop-only` to skip the reveal below `lg` — the items just
+ * sit in place. Registered through gsap.matchMedia (as marquee.ts does) so
+ * crossing the breakpoint on resize adds or reverts the reveal rather than
+ * leaving items stuck at whatever the other viewport left behind.
  */
 const num = (v?: string) => (v == null || v === "" ? undefined : parseFloat(v));
+
+const mm = gsap.matchMedia();
 
 function initReveals() {
 	const containers = document.querySelectorAll<HTMLElement>("[data-reveal]");
@@ -21,13 +30,21 @@ function initReveals() {
 			? Array.from(tagged)
 			: (Array.from(container.children) as HTMLElement[]);
 
-		revealStagger(items, {
-			trigger: container,
-			y: num(container.dataset.revealY),
-			stagger: num(container.dataset.revealStagger),
-			duration: num(container.dataset.revealDuration),
-			start: container.dataset.revealStart,
-		});
+		const run = () => {
+			revealStagger(items, {
+				trigger: container,
+				y: num(container.dataset.revealY),
+				stagger: num(container.dataset.revealStagger),
+				duration: num(container.dataset.revealDuration),
+				start: container.dataset.revealStart,
+			});
+		};
+
+		if (container.hasAttribute("data-reveal-desktop-only")) {
+			mm.add(`(min-width: ${DESKTOP_MIN}px)`, run);
+		} else {
+			run();
+		}
 	});
 }
 

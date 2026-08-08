@@ -1,5 +1,6 @@
 import gsap from "gsap";
 import { PANEL_DONE, PANEL_ENTER } from "./creators-ai";
+import { DESKTOP_MIN } from "./breakpoints";
 
 /**
  * Click-driven tabs for the "world's creators" section: clicking a feature
@@ -15,10 +16,17 @@ import { PANEL_DONE, PANEL_ENTER } from "./creators-ai";
 const TRANSITION = 0.8;
 /** Fade duration (s) of a tab's active/inactive state. */
 const TAB_FADE = 0.4;
-/** Opacity of the tabs that aren't active. Mirrors the CSS fallback in CreatorsAI.astro. */
+/** Opacity of the tabs that aren't active, once there is room to list them all. */
 const INACTIVE_OPACITY = 0.5;
 /** Quiet beat (s) between a panel's demo finishing and the auto-advance. */
 const AUTO_DELAY = 2;
+/**
+ * How long (s) a stacked slide waits on a demo that never reports back. A panel
+ * whose builder bailed — missing markup, say — never fires PANEL_DONE, and while
+ * stacked that would leave the other three features unreachable rather than
+ * merely stopping the rotation.
+ */
+const STALL_FALLBACK = 12;
 /** How long (s) a manual tab selection holds the auto-advance off. */
 const MANUAL_HOLD = 6;
 /** Fraction of the visuals that has to be on screen for the rotation to run. */
@@ -44,6 +52,23 @@ function initCreatorsAITabs() {
 	const lastIndex = tabs.length - 1;
 	let index = 0;
 
+	/**
+	 * Below lg the features are stacked in one grid cell (see CreatorsAI.astro), so
+	 * an inactive tab has to fade out completely rather than dim to 0.5 — otherwise
+	 * all four read on top of each other. Fades use `autoAlpha`, so 0 also flips
+	 * `visibility` and takes the hidden features out of the tab order.
+	 *
+	 * The query must stay identical to the one in CreatorsAI.astro, `no-preference`
+	 * included: the rotation is what reveals the other three features, and it does
+	 * not run under reduced motion, so those readers keep the full list.
+	 *
+	 * Read per tween rather than captured once: the reader may resize mid-rotation.
+	 */
+	const stacked = window.matchMedia(
+		`(max-width: ${DESKTOP_MIN - 1}px) and (prefers-reduced-motion: no-preference)`,
+	);
+	const inactiveAlpha = () => (stacked.matches ? 0 : INACTIVE_OPACITY);
+
 	const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 	/** The queued advance, if one is armed. */
 	let pending: gsap.core.Tween | null = null;
@@ -65,10 +90,13 @@ function initCreatorsAITabs() {
 	 */
 	function scheduleAuto() {
 		cancelAuto();
-		if (reducedMotion || !inView || !settled) return;
+		if (reducedMotion || !inView) return;
+		// An unsettled slide normally just waits. Stacked, it cannot afford to wait
+		// forever — see STALL_FALLBACK.
+		if (!settled && !stacked.matches) return;
 
 		const hold = (holdUntil - performance.now()) / 1000;
-		pending = gsap.delayedCall(Math.max(AUTO_DELAY, hold), () => {
+		pending = gsap.delayedCall(Math.max(settled ? AUTO_DELAY : STALL_FALLBACK, hold), () => {
 			goTo(index === lastIndex ? 0 : index + 1);
 		});
 	}
@@ -105,10 +133,14 @@ function initCreatorsAITabs() {
 				onStart: () => gsap.set(fading, { willChange: "opacity" }),
 				onComplete: () => gsap.set(fading, { willChange: "auto" }),
 			})
-			.to(tabs[previous], { opacity: INACTIVE_OPACITY, duration: TAB_FADE }, 0)
-			.to(tabs[next], { opacity: 1, duration: TAB_FADE }, 0)
+			.to(tabs[previous], { autoAlpha: inactiveAlpha(), duration: TAB_FADE }, 0)
+			.to(tabs[next], { autoAlpha: 1, duration: TAB_FADE }, 0)
 			.to(panels[previous], { autoAlpha: 0, duration: TRANSITION * 0.6, ease: "power2.in" }, 0)
 			.to(panels[next], { autoAlpha: 1, duration: TRANSITION, ease: "power2.out" }, 0);
+
+		// Arms the stall fallback for the slide just entered. A no-op unless stacked,
+		// since an unsettled slide otherwise waits on its own PANEL_DONE.
+		scheduleAuto();
 
 		return true;
 	}
@@ -121,12 +153,21 @@ function initCreatorsAITabs() {
 		if (!goTo(next)) scheduleAuto();
 	}
 
+	/** Repaints the tabs' resting state with no cross-fade. */
+	function paintTabs() {
+		gsap.set(tabs, { autoAlpha: inactiveAlpha() });
+		gsap.set(tabs[index], { autoAlpha: 1 });
+	}
+
 	// Initial state, with no cross-fade.
 	syncAria();
-	gsap.set(tabs, { opacity: INACTIVE_OPACITY });
-	gsap.set(tabs[index], { opacity: 1 });
+	paintTabs();
 	gsap.set(panels, { autoAlpha: 0 });
 	gsap.set(panels[index], { autoAlpha: 1 });
+
+	// Crossing the breakpoint changes what "inactive" looks like. Without this, a
+	// phone-width reader who rotates to landscape keeps three invisible features.
+	stacked.addEventListener("change", paintTabs);
 
 	panels.forEach((panel, i) => {
 		panel.addEventListener(PANEL_DONE, () => {
@@ -151,13 +192,49 @@ function initCreatorsAITabs() {
 		});
 	});
 
+	// Mobile arrows. Below lg the features are stacked and the tabs are inert, so
+	// these are the only manual control there. They wrap, matching the rotation, and
+	// go through selectManually so a tap earns the same hold a tab click does.
+	root.querySelectorAll<HTMLElement>("[data-creators-prev],[data-creators-next]").forEach(
+		(arrow) => {
+			const step = arrow.hasAttribute("data-creators-next") ? 1 : -1;
+			arrow.addEventListener("click", () => {
+				selectManually((index + step + tabs.length) % tabs.length);
+			});
+		},
+	);
+
 	// Rotating while the visuals are off screen would strand the visitor on a
 	// mid-sequence slide, so the timer only runs while they're actually visible.
 	const stage = panels[0].parentElement ?? root;
+	/** Whether the first panel has been told to play. */
+	let started = false;
+
 	new IntersectionObserver((entries) => {
 		inView = entries[0].isIntersecting;
-		if (inView) scheduleAuto();
-		else cancelAuto();
+		if (!inView) {
+			cancelAuto();
+			return;
+		}
+
+		/*
+		 * The starting panel's demo begins on the same signal that starts the
+		 * rotation, so the two cannot disagree about when the section is in view.
+		 *
+		 * It used to have a ScrollTrigger of its own at `top 75%`. Beside the feature
+		 * list at lg that lines up with this observer, but below lg the stage is
+		 * stacked *under* the feature block and sits far lower on the page — so the
+		 * rotation would start, wait out its stall fallback and advance while that
+		 * demo had never been asked to play, leaving the cursor moving over an empty
+		 * stage until the loop came back round to it. `registerPanelDemo` keeps the
+		 * ScrollTrigger as a fallback and ignores it once a demo has played.
+		 */
+		if (!started) {
+			started = true;
+			panels[index].dispatchEvent(new CustomEvent(PANEL_ENTER));
+		}
+
+		scheduleAuto();
 	}, { threshold: IN_VIEW_RATIO }).observe(stage);
 }
 

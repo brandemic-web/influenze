@@ -65,11 +65,11 @@ const stops = stopPositions();
  * range — everything above it is quoted.
  */
 const railCaptions = stops.slice(0, VISIBLE_DOTS).map((pos, i) => ({
-	pos,
-	label:
-		(i === 0 ? "Rs. " : "Rs. ") +
-		formatAmount(PRICING_TIERS[i].minSpend) +
-		(i === CAPTION_STOP ? "" : ""),
+  pos,
+  label:
+    (i === 0 ? "Rs. " : "Rs. ") +
+    formatAmount(PRICING_TIERS[i].minSpend) +
+    (i === CAPTION_STOP ? "" : ""),
 }));
 
 // First paint: everything derives from DEFAULT_SPEND so the markup already
@@ -81,7 +81,7 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
 ---
 
 <section
-  class="relative overflow-hidden pt-37.5 pb-12 lg:pt-50 lg:pb-32"
+  class="relative overflow-hidden pt-26 pb-12 lg:pt-50 lg:pb-32"
   aria-labelledby="pricing-heading"
   data-plan-panel
   data-tiers={tiersJson}
@@ -90,48 +90,64 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
   <img
     src={wave.src}
     alt=""
-    class="pointer-events-none absolute inset-x-0 inset-y-0 top-28 w-full object-cover opacity-80 lg:-top-10"
+    class="pointer-events-none absolute inset-x-0 inset-y-0 top-0 h-[60%] w-full object-cover opacity-80 lg:-top-10 lg:h-auto"
     loading="lazy"
   />
 
   <!-- ── Heading ───────────────────────────────────────────────────── -->
   <h1
     id="pricing-heading"
-    class="relative mx-auto max-w-225 px-6 text-center text-9xl capitalize leading-[1.1] max-lg:text-4xl max-md:text-2xl lg:mx-auto"
+    class="relative mx-auto max-w-225 px-6 text-center text-9xl capitalize leading-[1.1] max-lg:text-4xl max-md:text-[1.875rem] max-md:leading-[1.2] max-md:tracking-[-0.0375rem] lg:mx-auto"
   >
     <span class="block text-white">{PRICING_HEADING.lead}</span><span
       class="block text-brand-primary">{PRICING_HEADING.accent}</span
     >
   </h1>
-  <p class="relative mt-1.25 text-center text-[1.125rem] capitalize text-white">
+  <p
+    class="relative mt-1.25 text-center text-[1rem] capitalize text-white lg:text-[1.125rem]"
+  >
     {PRICING_HEADING.sub}
   </p>
 
   <!--
     ── Tier tabs ───────────────────────────────────────────────────
-    The row is sized to match the slider rail below it, so each tab sits over the
-    stretch of rail its tier covers (see STOP_POSITIONS in pricingModel.ts). The
-    rail's width is the panel card's content box less the inner wrapper's margin,
-    so the padding here mirrors that sum: card border (1px) + card padding +
-    wrapper margin. Keep in step with the card's `px-*` and the rail's `mx-*`.
+    From `lg` the row is sized to match the slider rail below it, so each tab sits
+    over the stretch of rail its tier covers (see STOP_POSITIONS in
+    pricingModel.ts). The rail's width is the panel card's content box less the
+    inner wrapper's margin, so the padding here mirrors that sum: card border
+    (1px) + card padding + wrapper margin. Keep in step with the card's `px-*`
+    and the rail's `mx-*`.
+
+    Below `lg` Figma draws the same four tiers as one segmented control instead:
+    a single mint-ringed pill the width of the card, holding four gapless equal
+    columns, with the selected tier as a solid fill. The per-tab gradient ring is
+    therefore only switched on from `lg` up. The dots keep STOP_POSITIONS at both
+    sizes — the mobile mock places them there too, even though without the gaps
+    they no longer read as gap midpoints.
   -->
   <div
-    class="relative mx-auto mt-10 flex max-w-6xl flex-wrap items-center justify-center gap-3 px-6.25 sm:px-8.25 lg:grid lg:grid-cols-4 lg:px-30.5"
+    class="relative mx-3 mt-8 grid max-w-6xl grid-cols-4 items-center rounded-full border border-brand-primary bg-surface-pill lg:mx-auto lg:mt-10 lg:gap-3 lg:rounded-none lg:border-none lg:bg-transparent lg:px-30.5"
     role="tablist"
     aria-label="Choose a plan"
   >
     <!--
-			Tabs are styled to match the homepage buttons — the "nav" variant of
-			common/Button.astro: the outer element is a purple → mint gradient
-			"border" whose 0.09375rem padding reveals a ring around the dark inner span.
-			Button.astro can't be reused directly here because it renders an <a href>
-			with no selected state, and a tablist needs <button>s. Keep these classes
-			in sync with Button.astro's nav variant.
+			From `lg` up, tabs are styled to match the homepage buttons — the "nav"
+			variant of common/Button.astro: the outer element is a purple → mint
+			gradient "border" whose 0.09375rem padding reveals a ring around the dark
+			inner span. Button.astro can't be reused directly here because it renders
+			an <a href> with no selected state, and a tablist needs <button>s. Keep
+			these classes in sync with Button.astro's nav variant.
 
 			The variant's resting state is an inactive tab; its green fill (a hover
 			state there) is the selected tab. When selected the gradient is dropped so
 			ring and fill match and the pill reads as borderless, per Figma. Sizing
 			stays Figma's: px-16 / py-5, 16px text, cap-trimmed.
+
+			Below `lg` the ring belongs to the row, not the tab, so the gradient and
+			its padding are switched off and only the selected fill remains. The
+			inactive span keeps the row's own surface colour, so it reads as bare
+			until it is picked. Sizing is the mobile Figma's: full column width,
+			py-0.9375rem, 12px text in sentence case.
 		-->
     {
       PRICING_TIERS.map((tier, i) => (
@@ -139,11 +155,11 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
           type="button"
           role="tab"
           aria-selected={i === initialIndex ? "true" : "false"}
-          class="group inline-flex cursor-pointer rounded-full bg-linear-to-r from-brand-primary to-[#0F5B33] p-[0.09375rem] transition-[transform,--tw-gradient-from,--tw-gradient-to] duration-300 hover:from-brand-primary hover:to-brand-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary aria-selected:bg-none aria-selected:bg-button-primary lg:w-full"
+          class="group inline-flex w-full cursor-pointer rounded-full transition-colors duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary aria-selected:bg-button-primary lg:bg-linear-to-r lg:from-brand-primary lg:to-[#0F5B33] lg:p-[0.09375rem] lg:transition-[transform,--tw-gradient-from,--tw-gradient-to] lg:hover:from-brand-primary lg:hover:to-brand-primary lg:aria-selected:bg-none"
           data-tab
           data-index={i}
         >
-          <span class="inline-flex w-full items-center justify-center rounded-full bg-surface-pill px-10 py-4.5 text-[0.75rem] uppercase leading-none text-white transition-colors duration-300 group-hover:bg-brand-primary group-hover:text-button-text group-aria-selected:bg-button-primary group-aria-selected:text-button-text max-lg:py-3.5 lg:px-14 lg:text-xs">
+          <span class="inline-flex w-full items-center justify-center rounded-full bg-surface-pill py-3.75 text-[0.75rem] leading-none text-white transition-colors duration-300 group-hover:bg-brand-primary group-hover:text-button-text group-aria-selected:bg-button-primary group-aria-selected:text-button-text lg:px-14 lg:py-4.5 lg:text-xs lg:uppercase">
             {tier.name}
           </span>
         </button>
@@ -153,18 +169,18 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
 
   <!-- ── Panel card ────────────────────────────────────────────────── -->
   <div
-    class="glass-rim relative mx-4 mt-11 max-w-6xl rounded-[1.25rem] border border-transparent bg-[#0a071885] px-4 pt-12 pb-10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.14),inset_0_-1px_0_0_rgba(255,255,255,0.04),0_24px_70px_-12px_rgba(0,0,0,0.55)] sm:px-6 lg:px-24.25 lg:pt-14 lg:pb-14 lg:mx-auto"
+    class="glass-rim relative mx-3 mt-4.5 max-w-6xl rounded-[1.25rem] border border-transparent bg-[#0a071885] px-4 pt-5 pb-9 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.14),inset_0_-1px_0_0_rgba(255,255,255,0.04),0_24px_70px_-12px_rgba(0,0,0,0.55)] sm:px-6 lg:mx-auto lg:mt-11 lg:px-24.25 lg:pt-14 lg:pb-14"
   >
     <!-- ── Spend slider ──────────────────────────────────────────── -->
-    <div class="relative mx-2 lg:mx-6">
+    <div class="relative mx-3 lg:mx-6">
       <div class="relative h-11" data-track>
         <!-- track base -->
         <span
-          class="pointer-events-none absolute inset-x-0 top-1/2 h-1.75 -translate-y-1/2 rounded-full bg-black/25"
+          class="pointer-events-none absolute inset-x-0 top-1/2 h-1.25 -translate-y-1/2 rounded-full bg-black/25 lg:h-1.75"
         ></span>
         <!-- filled / glowing portion -->
         <span
-          class="pointer-events-none absolute left-0 top-1/2 h-1.75 -translate-y-1/2 rounded-full bg-brand-primary shadow-[0_0_14px_6px_rgba(58,255,152,0.5)] transition-[width] duration-300"
+          class="pointer-events-none absolute left-0 top-1/2 h-1.25 -translate-y-1/2 rounded-full bg-brand-primary shadow-[0_0_14px_6px_rgba(58,255,152,0.5)] transition-[width] duration-300 lg:h-1.75"
           style={`width:${initialPos}%`}
           data-fill></span>
 
@@ -184,7 +200,7 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
               data-pos={pos}
               data-index={i}
             >
-              <span class="block size-4.75 rounded-full bg-white" />
+              <span class="block size-3 rounded-full bg-white lg:size-4.75" />
             </button>
           ))
         }
@@ -201,7 +217,7 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
           aria-valuenow={DEFAULT_SPEND}
           aria-valuetext={`${formatPrice(DEFAULT_SPEND)} per month — ${initialTier.name}`}
           tabindex="0"
-          class="absolute -top-6 z-30 w-16.25 -translate-x-1/2 cursor-grab touch-none select-none transition-[left] duration-300 active:cursor-grabbing focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary"
+          class="absolute -top-1.75 z-30 w-8 -translate-x-1/2 cursor-grab touch-none select-none transition-[left] duration-300 active:cursor-grabbing focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary lg:-top-6 lg:w-16.25"
           style={`left:${initialPos}%`}
           data-handle
           loading="eager"
@@ -216,12 +232,13 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
 				push it off the rail.
 			-->
       <!--
-        Four labels across a phone-width rail collide at the desktop size, so
-        they shrink below `lg` — the rail is ~340px there and each label needs
-        to clear its neighbours.
+        Four labels across a phone-width rail collide, so below `lg` Figma keeps
+        only the two that bound the range — the ₹20,000 and ₹50,000 stops drop
+        out and the survivors stay at the desktop's 14px rather than shrinking.
+        The dots themselves are unaffected; all four still render.
       -->
       <div
-        class="relative mt-1 h-5 text-[0.625rem] text-brand-primary lg:text-[1.125rem]"
+        class="relative mt-1 h-5 text-[0.875rem] text-brand-primary lg:text-[1.125rem]"
       >
         {
           railCaptions.map((caption, i) => (
@@ -229,6 +246,7 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
               class:list={[
                 "absolute whitespace-nowrap",
                 i === 0 ? "left-0" : "-translate-x-1/2",
+                i > 0 && i < VISIBLE_DOTS - 1 ? "hidden lg:block" : "",
               ]}
               style={i === 0 ? undefined : `left:${caption.pos}%`}
             >
@@ -245,29 +263,33 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
       Enterprise "talk to us" block)
     -->
     <div
-      class="relative mt-9 flex flex-col justify-center rounded-[1.25rem] border border-white/12 bg-[rgba(73,40,179,0.22)] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.14),0_12px_40px_-12px_rgba(0,0,0,0.45)] lg:min-h-86"
+      class="relative mt-7 flex flex-col justify-center rounded-[1.25rem] border border-white/12 bg-[rgba(73,40,179,0.22)] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.14),0_12px_40px_-12px_rgba(0,0,0,0.45)] lg:mt-9 lg:min-h-86"
     >
       <!-- Price / credits (all tiers except Enterprise) -->
       <div
-        class="px-7 pt-9 pb-8 lg:pt-10"
+        class="px-6.5 py-6 lg:px-7 lg:pt-10 lg:pb-8"
         data-panel="price"
         hidden={initialTier.custom}
       >
         <div
-          class="flex flex-col gap-9 lg:flex-row lg:items-start lg:justify-between"
+          class="flex flex-col gap-5.5 lg:flex-row lg:items-start lg:justify-between lg:gap-9"
         >
           <!-- price + annual toggle -->
           <div class="pl-0 lg:pl-9.5">
             <p class="flex items-baseline text-white">
               <span
-                class="text-[2.625rem] leading-none sm:text-[3.625rem]"
+                class="text-[2.5rem] leading-none lg:text-[3.625rem]"
                 data-field="price">{formatPrice(DEFAULT_SPEND)}</span
               >
-              <span class="ml-1 text-[1rem] text-white">/mo</span>
+              <span class="ml-1 text-[1.125rem] text-white lg:text-[1rem]"
+                >/mo</span
+              >
             </p>
-            <p class="mt-4 text-[1rem] text-white">{PRICE_NOTE}</p>
+            <p class="mt-1 text-[0.875rem] text-white lg:mt-4 lg:text-[1rem]">
+              {PRICE_NOTE}
+            </p>
 
-            <div class="mt-7 flex items-center gap-3">
+            <div class="mt-5 flex items-center gap-2 lg:gap-3 lg:mt-7">
               <button
                 type="button"
                 role="switch"
@@ -281,7 +303,7 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
                   data-annual-knob
                   data-on="false"></span>
               </button>
-              <span class="text-[1rem] text-white"
+              <span class="text-[0.75rem] text-white lg:text-[1rem]"
                 >{ANNUAL_LABEL}{" "}<span class="text-brand-primary"
                   >+{ANNUAL_BONUS_PCT}% credits</span
                 ></span
@@ -289,27 +311,36 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
             </div>
           </div>
 
-          <!-- credits + rollover -->
-          <div class="lg:shrink-0">
-            <div class="relative flex justify-start lg:justify-end">
+          <!--
+            credits + rollover
+
+            The bolt hangs off the credits box's edge — its left one from `lg`,
+            its right one below, per Figma. The wrapper is width-matched to the
+            box on mobile so `right-0` anchors to the box rather than to the
+            full column.
+          -->
+          <div class="flex flex-col items-start lg:shrink-0 lg:block">
+            <div
+              class="relative flex w-auto items-start justify-start lg:w-auto lg:justify-end"
+            >
               <Image
                 src={bolt}
                 alt=""
-                width="88"
-                class="pointer-events-none absolute -top-3 left-0 z-10 w-22 -translate-x-1/2"
+                width="80"
+                class="pointer-events-none absolute -top-4.5 right-0 z-10 w-20 translate-x-1/2 lg:-top-3 lg:right-auto lg:left-0 lg:w-22 lg:-translate-x-1/2"
                 loading="lazy"
               />
               <div
-                class="w-full rounded-md border border-white/10 bg-black/35 py-4 pr-7 pl-10 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]"
+                class="w-full rounded-[0.9375rem] bg-surface-card pl-3 pr-7 py-4.5 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] lg:rounded-md lg:border lg:border-white/10 lg:bg-black/35 lg:py-4 lg:pr-7 lg:pl-10 lg:text-left"
               >
                 <p
-                  class="text-[2.25rem] leading-none text-brand-primary sm:text-[3.625rem]"
+                  class="text-[2.5rem] leading-none text-brand-primary lg:text-[3.625rem]"
                   data-field="credits"
                 >
                   {formatAmount(initialCredits)}
                 </p>
                 <p
-                  class="mt-2 whitespace-nowrap text-[1rem] text-brand-primary"
+                  class="mt-1 whitespace-nowrap text-[0.75rem] text-brand-primary lg:mt-2 lg:text-[1rem]"
                   data-field="creditsBonus"
                 >
                   {bonusLabel(initialTier)}
@@ -318,13 +349,13 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
             </div>
 
             <div
-              class="mt-4 flex items-center justify-start gap-2.5 lg:justify-end"
+              class="mt-5 w-full flex items-center justify-start gap-2.5 lg:mt-4 lg:justify-end"
             >
               <span
-                class="inline-flex items-center gap-2.5 rounded-[100px] border border-white/10 bg-surface-card px-4 py-3 text-[1rem] capitalize text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]"
+                class="inline-flex w-full items-center justify-center gap-2 rounded-[100px] border border-white/10 bg-surface-card px-4 py-2.75 text-[0.75rem] capitalize text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] lg:w-auto lg:gap-2.5 lg:py-3 lg:text-[1rem]"
               >
                 <svg
-                  class="size-4.5 shrink-0 text-brand-primary"
+                  class="size-5 shrink-0 text-brand-primary lg:size-4.5"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -351,11 +382,11 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
           href={SIGNUP_URL}
           target="_blank"
           rel="noopener noreferrer"
-          class="mt-5.5 flex w-full items-center justify-center gap-1 rounded-full bg-button-primary px-6 py-2.5 text-[1rem] leading-none text-button-text transition-colors duration-300 hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary"
+          class="mt-5 flex w-full items-center justify-center gap-2.5 rounded-full bg-button-primary px-6 py-3.75 text-[0.75rem] leading-none text-button-text transition-colors duration-300 hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary lg:mt-5.5 lg:gap-1 lg:py-2.5 lg:text-[1rem]"
         >
           {SUBSCRIBE_LABEL}
           <svg
-            class="size-7.5 shrink-0"
+            class="size-3 shrink-0 lg:size-7.5"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -373,45 +404,59 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
         Custom (Enterprise tier)
       -->
       <div
-        class="px-7 pt-9 pb-8 lg:pt-10"
+        class="px-6.5 py-6 lg:px-7 lg:pt-10 lg:pb-8"
         data-panel="custom"
         hidden={!initialTier.custom}
       >
         <div
-          class="flex flex-col gap-9 lg:flex-row lg:items-start lg:justify-between"
+          class="flex flex-col gap-0 lg:flex-row lg:items-start lg:justify-between lg:gap-9"
         >
           <!-- "Custom" in the price slot + what the tier adds -->
           <div class="pl-0 lg:pl-9.5">
             <p class="flex items-baseline text-white">
-              <span class="text-[2.625rem] leading-none sm:text-[3.625rem]"
+              <span class="text-[2.5rem] leading-none lg:text-[3.625rem]"
                 >{CUSTOM_PLAN.priceLabel}</span
               >
-              <span class="ml-1 text-[1rem] text-white"
+              <span class="ml-1 text-[1.125rem] text-white lg:text-[1rem]"
                 >{CUSTOM_PLAN.priceSuffix}</span
               >
             </p>
-            <p class="mt-4 text-[1rem] text-white">{CUSTOM_PLAN.note}</p>
+            <p class="mt-1 text-[0.875rem] text-white lg:mt-4 lg:text-[1rem]">
+              {PRICE_NOTE}
+            </p>
+
+            <!--
+              Stands in for the price body's annual toggle, which this tier has
+              no use for: mt-5 + the 24px switch = 66px, so the credits box below
+              starts at the same height in both bodies while the columns are
+              stacked. From `lg` they sit side by side and the spacer is moot.
+              Keep in step with that toggle row's `mt-*` and height.
+            -->
+            <div class="h-16.5 lg:hidden"></div>
           </div>
-          
-          <div class="lg:shrink-0">
-            <div class="relative flex justify-start lg:justify-end">
+
+          <!-- credits + qualifier badge — mirrors the price body's column -->
+          <div class="flex flex-col items-start lg:shrink-0 lg:block">
+            <div
+              class="relative flex w-auto items-start justify-start lg:w-auto lg:justify-end"
+            >
               <Image
                 src={bolt}
                 alt=""
-                width="88"
-                class="pointer-events-none absolute -top-3 left-0 z-10 w-22 -translate-x-1/2"
+                width="80"
+                class="pointer-events-none absolute -top-4.5 right-0 z-10 w-20 translate-x-1/2 lg:-top-3 lg:right-auto lg:left-0 lg:w-22 lg:-translate-x-1/2"
                 loading="lazy"
               />
               <div
-                class="w-full rounded-md border border-white/10 bg-black/35 py-4 pr-7 pl-10 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]"
+                class="w-full rounded-[0.9375rem] bg-surface-card py-4.5 pr-7 pl-3 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] lg:rounded-md lg:border lg:border-white/10 lg:bg-black/35 lg:py-4 lg:pr-7 lg:pl-10 lg:text-left"
               >
                 <p
-                  class="text-[2.25rem] leading-none text-brand-primary sm:text-[3.625rem]"
+                  class="text-[2.5rem] leading-none text-brand-primary lg:text-[3.625rem]"
                 >
                   {formatAmount(SLIDER_MAX)}+
                 </p>
                 <p
-                  class="mt-2 whitespace-nowrap text-[1rem] text-brand-primary"
+                  class="mt-1 whitespace-nowrap text-[0.75rem] text-brand-primary lg:mt-2 lg:text-[1rem]"
                 >
                   {CUSTOM_PLAN.creditsCaption}
                 </p>
@@ -419,13 +464,13 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
             </div>
 
             <div
-              class="mt-4 flex items-center justify-start gap-2.5 lg:justify-end"
+              class="mt-5 flex w-full items-center justify-start gap-2.5 lg:mt-4 lg:justify-end"
             >
               <span
-                class="inline-flex items-center gap-2.5 rounded-[100px] border border-white/10 bg-surface-card px-4 py-3 text-[1rem] capitalize text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]"
+                class="inline-flex w-full items-center justify-center gap-2 rounded-[100px] border border-white/10 bg-surface-card px-4 py-2.75 text-[0.75rem] capitalize text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] lg:w-auto lg:gap-2.5 lg:py-3 lg:text-[1rem]"
               >
                 <svg
-                  class="size-4.5 shrink-0 text-brand-primary"
+                  class="size-5 shrink-0 text-brand-primary lg:size-4.5"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -448,11 +493,11 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
         <!-- Same button as Subscribe, in the same place, to a mailto -->
         <a
           href={`mailto:${CUSTOM_PLAN.contactEmail}?subject=${encodeURIComponent(CUSTOM_PLAN.contactSubject)}`}
-          class="mt-5.5 flex w-full items-center justify-center gap-1 rounded-full bg-button-primary px-6 py-2.5 text-[1rem] leading-none text-button-text transition-colors duration-300 hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary"
+          class="mt-5 flex w-full items-center justify-center gap-2.5 rounded-full bg-button-primary px-6 py-3.75 text-[0.75rem] leading-none text-button-text transition-colors duration-300 hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary lg:mt-5.5 lg:gap-1 lg:py-2.5 lg:text-[1rem]"
         >
           {CUSTOM_PLAN.ctaLabel}
           <svg
-            class="size-7.5 shrink-0"
+            class="size-3 shrink-0 lg:size-7.5"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -468,16 +513,18 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
     </div>
 
     <!-- ── Included in every plan ───────────────────────────────── -->
-    <div class="mt-12 lg:mt-14 lg:px-16.5">
-      <h2 class="text-[1.125rem] text-brand-primary">INCLUDED IN EVERY PLAN</h2>
+    <div class="mt-7.5 px-2.25 lg:mt-14 lg:px-16.5">
+      <h2 class="text-[1rem] text-brand-primary lg:text-[1.125rem]">
+        INCLUDED IN EVERY PLAN
+      </h2>
       <ul
-        class="mt-6 grid grid-cols-1 gap-x-10 gap-y-5.5 sm:grid-cols-2 lg:gap-x-20"
+        class="mt-5 grid grid-cols-1 gap-x-10 gap-y-3.5 sm:grid-cols-2 lg:mt-6 lg:gap-x-20 lg:gap-y-5.5"
       >
         {
           PLAN_FEATURES.map((feature) => (
-            <li class="flex items-center gap-4">
+            <li class="flex items-center gap-3 lg:gap-4">
               <svg
-                class="size-6 shrink-0 text-brand-primary"
+                class="size-5 shrink-0 text-brand-primary lg:size-6"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -489,7 +536,9 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
                 <circle cx="12" cy="12" r="10" />
                 <path d="m9 12 2 2 4-4" />
               </svg>
-              <span class="text-[1rem] capitalize text-white">{feature}</span>
+              <span class="text-[0.875rem] capitalize text-white lg:text-[1rem]">
+                {feature}
+              </span>
             </li>
           ))
         }
@@ -497,17 +546,19 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
     </div>
 
     <span
-      class="mt-12 block h-px w-full bg-white/30 lg:mx-6 lg:w-[calc(100%-3rem)]"
+      class="mt-9 block h-px w-full bg-white/30 lg:mx-6 lg:mt-12 lg:w-[calc(100%-3rem)]"
     ></span>
 
     <!-- ── How credits work ─────────────────────────────────────── -->
-    <div class="mt-10 lg:px-16.5">
-      <h2 class="text-[1.125rem] text-brand-primary">HOW CREDITS WORK</h2>
-      <ul class="mt-5 flex flex-col gap-2.5">
+    <div class="mt-8 px-2.25 lg:mt-10 lg:px-16.5">
+      <h2 class="text-[1rem] text-brand-primary lg:text-[1.125rem]">
+        HOW CREDITS WORK
+      </h2>
+      <ul class="mt-5 flex flex-col gap-2 lg:gap-2.5">
         {
           CREDIT_COSTS.map((row, i) => (
             <li class="relative flex items-center justify-between gap-4">
-              <span class="flex items-center gap-1.5 text-[0.9375rem] text-white">
+              <span class="flex items-center gap-1.5 text-[0.875rem] text-white lg:text-[0.9375rem]">
                 {row.label}
                 {row.detail && (
                   <span class="text-white/50">· {row.detail}</span>
@@ -558,7 +609,7 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
                   </span>
                 </span>
               </span>
-              <span class="shrink-0 rounded-[0.375rem] bg-[#255f3c] px-2.5 py-1 text-[0.8125rem] text-[#a1ffce]">
+              <span class="shrink-0 rounded-[0.375rem] bg-[#255f3c] px-2 py-1 text-[0.75rem] text-[#a1ffce] lg:px-2.5 lg:py-1 lg:text-[0.8125rem]">
                 {row.cost}
               </span>
             </li>
@@ -567,16 +618,15 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
       </ul>
     </div>
   </div>
-</section>
 
-<script>
-  import { initPricingPlans } from "../../scripts/pricing-page/pricingPlans";
+  <script>
+    import { initPricingPlans } from "../../scripts/pricing-page/pricingPlans";
 
-  initPricingPlans();
-</script>
+    initPricingPlans();
+  </script>
 
-<style>
-  /*
+  <style>
+    /*
 	 * .glass-rim — 1px gradient ring approximating Figma's "Glass" effect.
 	 *
 	 * The panel's edge in Figma is NOT a stroke: the rectangle has no stroke at
@@ -596,39 +646,40 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
 	 * Paired with `border-transparent` on the element so the ring lands exactly
 	 * on the border box and the card's geometry is unchanged.
 	 */
-  .glass-rim {
-    position: relative;
-  }
+    .glass-rim {
+      position: relative;
+    }
 
-  .glass-rim::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    padding: 1px;
-    border-radius: inherit;
-    /*
+    .glass-rim::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      padding: 1px;
+      border-radius: inherit;
+      /*
 		 * A 135deg axis runs top-left → bottom-right, which places BOTH the
 		 * top-right and bottom-left corners at the 50% midpoint. The midpoint
 		 * stops therefore set the rim colour on those two corners and must stay
 		 * clearly visible — taken near zero, the edge vanishes there. 0.2 is the
 		 * floor, a shade above the plain white/15 border this replaced.
 		 */
-    background: linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.55) 0%,
-      rgba(255, 255, 255, 0.3) 25%,
-      rgba(255, 255, 255, 0.2) 50%,
-      rgba(255, 255, 255, 0.3) 75%,
-      rgba(255, 255, 255, 0.45) 100%
-    );
-    -webkit-mask:
-      linear-gradient(#000 0 0) content-box,
-      linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-    mask:
-      linear-gradient(#000 0 0) content-box,
-      linear-gradient(#000 0 0);
-    mask-composite: exclude;
-    pointer-events: none;
-  }
-</style>
+      background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.55) 0%,
+        rgba(255, 255, 255, 0.3) 25%,
+        rgba(255, 255, 255, 0.2) 50%,
+        rgba(255, 255, 255, 0.3) 75%,
+        rgba(255, 255, 255, 0.45) 100%
+      );
+      -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+  </style>
+</section>

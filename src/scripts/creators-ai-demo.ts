@@ -52,12 +52,26 @@ function bindResize() {
 	let pending: gsap.core.Tween | null = null;
 	window.addEventListener("resize", () => {
 		pending?.kill();
-		// `invalidate()` drops the cached from/to values so the next play re-reads
-		// the pointer's targets at the new stage scale.
-		pending = gsap.delayedCall(RESIZE_DEBOUNCE, () => {
-			prune();
-			for (const { tl } of registered) tl.invalidate();
-		});
+		/*
+		 * This used to `invalidate()` every timeline here, to drop the cached from/to
+		 * values so the next play would re-read the pointer's targets at the new stage
+		 * scale. It did that, and one more thing: `invalidate()` re-renders every
+		 * `immediateRender` tween, and a `set()` at position 0 is one. So each demo's
+		 * opening "wind everything back" block was stamped onto the cards again — with
+		 * the playhead seconds past it, and nothing left ahead to fade them in. A
+		 * panel that had finished playing went blank on the next resize and stayed
+		 * blank until its tab came round again.
+		 *
+		 * That made it look intermittent: it needed a resize, which on a phone arrives
+		 * on rotation and every time the browser's address bar collapses on scroll.
+		 *
+		 * Re-measuring here was redundant anyway — `play()` invalidates before every
+		 * restart, so a demo always re-reads its targets at the geometry it is about to
+		 * play at. The only case this covered was a resize *during* a demo, and the
+		 * cursor's coordinates are in unscaled stage pixels, so a change of scale does
+		 * not move them.
+		 */
+		pending = gsap.delayedCall(RESIZE_DEBOUNCE, prune);
 	});
 }
 
@@ -125,10 +139,32 @@ export function registerPanelDemo(
 		tl.pause(0);
 
 		// Re-measure the pointer's targets — the stage's scale changes by breakpoint.
-		const play = () => tl.invalidate().restart(true);
+		let hasPlayed = false;
+		const play = () => {
+			hasPlayed = true;
+			tl.invalidate().restart(true);
+		};
 
 		if (autoPlay) {
-			ScrollTrigger.create({ trigger: stage, start: "top 75%", once: true, onEnter: play });
+			/*
+			 * A fallback, not the primary gate. The tab controller plays the starting
+			 * panel when the section reaches *its* in-view threshold, which is the one
+			 * the rotation is timed off; this only matters if that controller bailed out
+			 * on its markup checks, where otherwise the panel would sit at its hidden
+			 * "before" state for good.
+			 *
+			 * Guarded on `hasPlayed` because the two thresholds are not the same line —
+			 * below lg they are hundreds of pixels apart — so without it whichever fired
+			 * second would restart a demo that was already running.
+			 */
+			ScrollTrigger.create({
+				trigger: stage,
+				start: "top 75%",
+				once: true,
+				onEnter: () => {
+					if (!hasPlayed) play();
+				},
+			});
 		}
 		// Listener lives on the panel, so it is collected with it.
 		panel.addEventListener(PANEL_ENTER, play);

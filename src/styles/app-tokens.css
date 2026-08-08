@@ -274,6 +274,30 @@
 }
 
 /*
+ * The cards only show where there is width for them.
+ *
+ * Squeezed into a portrait box the mockup is a few hundred pixels wide and a card
+ * is 44% of it, so it covers the animation it is meant to explain — and its
+ * overhang past the canvas edge is clipped by `body`'s `overflow-x-clip` rather
+ * than fitting in the margin. `display` is the lever, not opacity or visibility:
+ * `spotlight()` writes both of those inline as it plays a card in, and an inline
+ * style would win.
+ *
+ * The landscape viewer is the exception. It presents the canvas landscape even
+ * while the device itself is still portrait, so the cards belong there — and that
+ * is the one place the mockup is wide enough to read them.
+ */
+@media (orientation: portrait) {
+	.wf-card {
+		display: none;
+	}
+
+	.wf-landscape .wf-card {
+		display: flex;
+	}
+}
+
+/*
  * The cards' violet fill — their settled state, faded in over the black by
  * `spotlight()`. Figma paints a flat #8058ff rectangle and masks a
  * radial ellipse over its right-hand side; the ellipse's outer stop is that

@@ -25,7 +25,7 @@ const rowCount = COMPARISON_ROWS.length;
 ---
 
 <section
-	class="relative overflow-hidden pt-5 pb-15 lg:pt-0 lg:pb-40"
+	class="relative overflow-hidden py-5 lg:pt-0 lg:pb-40"
 	aria-labelledby="comparison-heading"
 >
 	<!--
@@ -43,7 +43,7 @@ const rowCount = COMPARISON_ROWS.length;
 	<div class="relative z-2 flex flex-col items-center px-6 text-center">
 		<h2
 			id="comparison-heading"
-			class="text-[1.875rem] capitalize leading-[1.15] text-white lg:text-[4rem]"
+			class="text-md capitalize leading-[1.15] text-white lg:text-[4rem]"
 		>
 			{COMPARISON_HEADING.lead}<span class="text-brand-primary"
 				>{COMPARISON_HEADING.accent}</span
@@ -59,8 +59,14 @@ const rowCount = COMPARISON_ROWS.length;
 		overhang. So the scroller carries `py-8` to hold the overhang and cancels
 		it again with `-mb-8` plus a reduced `mt`, leaving the outer spacing as it
 		was. From lg up the scroller is `overflow-visible`, so none of that applies.
+
+		The native scrollbar is hidden and replaced by the rail below — see
+		scripts/home-page/comparison-rail.ts for why it cannot just be styled.
 	-->
-	<div class="relative z-2 mt-6 overflow-x-auto overscroll-x-contain px-6 py-8 -mb-8 lg:mt-24 lg:mb-0 lg:overflow-visible lg:py-0">
+	<div
+		class="compare-scroller relative z-2 mt-6 overflow-x-auto overscroll-x-contain px-6 py-8 -mb-8 lg:mt-24 lg:mb-0 lg:overflow-visible lg:py-0"
+		data-rail-scroller="comparison"
+	>
 		<div
 			class="mx-auto grid w-max max-w-363.75 grid-cols-[repeat(5,calc((100vw-3rem)/2.5))] items-stretch rounded-[1.25rem] border border-[#ffffff52] bg-white/2 lg:w-auto lg:grid-cols-[1.59fr_1.05fr_1fr_1fr_1fr]"
 			role="table"
@@ -191,4 +197,35 @@ const rowCount = COMPARISON_ROWS.length;
 			}
 		</div>
 	</div>
+
+	<!--
+		The permanent scroll rail. `mt-8` clears the raised Influenze column, whose
+		`-my-6` overhang reaches 24px below the grid once the scroller's `-mb-8`
+		has cancelled its padding. Hidden from lg up, and hidden again by the script
+		whenever there is nothing to scroll.
+	-->
+	<div
+		class="relative z-2 mx-6 mt-12 h-1.5 overflow-hidden rounded-full bg-white/12 lg:hidden"
+		data-rail="comparison"
+		aria-hidden="true"
+	>
+		<span
+			class="absolute inset-y-0 left-0 block w-6 touch-none rounded-full bg-white/45 will-change-transform"
+			data-rail-thumb></span>
+	</div>
 </section>
+
+<style>
+	/* The rail replaces the native bar; hiding it keeps only one visible. */
+	.compare-scroller {
+		scrollbar-width: none; /* Firefox */
+	}
+
+	.compare-scroller::-webkit-scrollbar {
+		display: none;
+	}
+</style>
+
+<script>
+	import "../../scripts/home-page/comparison-rail";
+</script>

@@ -28,18 +28,80 @@ export interface MoveOptions extends AimOptions {
 	ease?: string;
 }
 
+/**
+ * One element's own transform, as a matrix.
+ *
+ * `transform` alone is not enough to ask for: `rotate`, `scale` and `translate` are
+ * separate CSS properties, and this project reaches them through Tailwind's
+ * utilities — `.wf-stage`'s fit-to-container scale is a `scale`, and the landscape
+ * viewer's quarter turn is a `transform`. An element carrying only the former
+ * reports `transform: none`, so reading that property by itself returns the identity
+ * and silently loses the canvas scale.
+ *
+ * Composed in the order CSS applies them: rotate, then scale, then `transform`.
+ * `translate` is left out because callers drop the translation anyway.
+ */
+function elementMatrix(node: HTMLElement) {
+	const style = getComputedStyle(node);
+	const parts: string[] = [];
+
+	if (style.rotate !== "none") parts.push(`rotate(${style.rotate})`);
+	// Computed `scale` is space-separated ("0.44" or "0.44 0.44"); the function form
+	// this is parsed as wants commas.
+	if (style.scale !== "none") parts.push(`scale(${style.scale.trim().split(/\s+/).join(",")})`);
+	if (style.transform !== "none") parts.push(style.transform);
+
+	return parts.length ? new DOMMatrix(parts.join(" ")) : new DOMMatrix();
+}
+
 export function createPointer(stage: HTMLElement, el: HTMLElement) {
-	/** Painted width over layout width — the fit-to-container scale on `.wf-stage`. */
-	const scale = () => stage.getBoundingClientRect().width / stage.offsetWidth;
+	/**
+	 * Screen space back into the stage's own space: every `transform` from the stage
+	 * up to the root multiplied together and inverted, with the translation dropped
+	 * because only directions and distances are mapped through it.
+	 *
+	 * Painted width over layout width used to stand in for this, which is the same
+	 * number right up until something above the stage is rotated. The landscape
+	 * viewer turns the mockup a quarter turn on devices that refuse a real
+	 * orientation lock — iOS Safari, where `requestFullscreen` and
+	 * `screen.orientation.lock` both reject, so the CSS rotation is the whole
+	 * mechanism (see scripts/landscape-viewer). A rect is the axis-aligned box of the
+	 * rotated result, so that ratio came back as the stage's *height* over its width
+	 * and a screen-x delta landed on the stage's y: the cursor went down where it
+	 * should have gone right. Android never showed it because the orientation lock
+	 * succeeds there and nothing is rotated.
+	 */
+	function toStageSpace() {
+		let m = new DOMMatrix();
+		for (let node: HTMLElement | null = stage; node; node = node.parentElement) {
+			m = elementMatrix(node).multiply(m);
+		}
+		m.e = 0;
+		m.f = 0;
+		return m.inverse();
+	}
 
 	/** A target's aim point, in unscaled stage pixels. */
 	function aim(target: Element, { x: fx = 0.5, y: fy = 0.5 }: NonNullable<AimOptions["at"]> = {}) {
 		const stageBox = stage.getBoundingClientRect();
 		const box = target.getBoundingClientRect();
-		const s = scale();
+		const inv = toStageSpace();
+		const local = (dx: number, dy: number) => inv.transformPoint(new DOMPoint(dx, dy));
+
+		// Centres rather than edges: an affine map takes a box's centre to its image's
+		// centre, and that is also the centre of the image's bounding box — so a centre
+		// survives the rotation intact where `left`/`top` do not.
+		const offset = local(
+			box.left + box.width / 2 - (stageBox.left + stageBox.width / 2),
+			box.top + box.height / 2 - (stageBox.top + stageBox.height / 2),
+		);
+		// The target's extents have to come back through the same map before a fraction
+		// across it means anything in stage space.
+		const size = local(box.width, box.height);
+
 		return {
-			x: (box.left + box.width * fx - stageBox.left) / s,
-			y: (box.top + box.height * fy - stageBox.top) / s,
+			x: stage.offsetWidth / 2 + offset.x + (fx - 0.5) * Math.abs(size.x),
+			y: stage.offsetHeight / 2 + offset.y + (fy - 0.5) * Math.abs(size.y),
 		};
 	}
 

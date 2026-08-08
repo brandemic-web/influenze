@@ -14,6 +14,7 @@ import { restart } from "./beats/restart";
 import { resultsList } from "./beats/resultsList";
 import { holdForSpan, spotlight } from "./utils/spotlight";
 import { WORKFLOW_CARDS, type StoryMark } from "../../../data/workflowCards";
+import { LANDSCAPE_CLOSE, LANDSCAPE_OPEN } from "../../landscape-viewer";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -158,6 +159,35 @@ function initWorkflow(mockup: HTMLElement) {
 		once: true,
 		onEnter: () => master.play(),
 	});
+
+	/*
+	 * Entering or leaving the landscape view is a mode change: play the walkthrough
+	 * from the top rather than resuming wherever the loop happened to be at a
+	 * completely different size.
+	 *
+	 * The active layer has to be claimed here by hand. Screen swaps are `tl.call()`
+	 * callbacks, which do not run when a timeline is seeked backwards, and the loop
+	 * gets away with that because every beat winds its own screen back as it plays.
+	 * Beat 1 is the exception: it works *in place* on screen 1 and never sets
+	 * `data-wf-active`, because beat 11 hands that layer over at the loop point — the
+	 * only route into beat 1 the story normally has. Restarting with no beat 11 in
+	 * front of it left whichever screen was showing frozen in place until the story
+	 * reached its first swap, while the cursor had already replayed from the top.
+	 *
+	 * Only the layer needs restoring, not the screens' inner state: each beat resets
+	 * what it is about to touch, so the rest is wound back as the story arrives.
+	 *
+	 * Under reduced motion neither listener is reached — that path returns above with
+	 * a single static frame and no timeline to restart.
+	 */
+	const restartStory = () => {
+		for (const layer of Object.values(screen)) layer.removeAttribute("data-wf-active");
+		screen.analyze.setAttribute("data-wf-active", "");
+		master.restart();
+	};
+
+	mockup.addEventListener(LANDSCAPE_OPEN, restartStory);
+	mockup.addEventListener(LANDSCAPE_CLOSE, restartStory);
 }
 
 export function initWorkflowTimeline() {
