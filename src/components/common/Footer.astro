@@ -1,6 +1,6 @@
 ---
 import { Image } from "astro:assets";
-import bolt from "../../assets/images/common/logos_and_icons/footer_logo.svg";
+import bolt from "../../assets/images/common/logos_and_icons/footer_logo.webp";
 import wordmark from "../../assets/images/common/logos_and_icons/footer_text.png";
 import gradientBg from "../../assets/images/common/decor/footer_gradient_mask.svg";
 import influenze_mobile from "../../assets/images/common/logos_and_icons/influenze_wordmark_mobile.png";
@@ -24,10 +24,17 @@ const MOBILE_PLACEMENT: Record<string, string> = {
 	/>
 
 	<div class="relative mx-auto max-w-[108rem]">
+		<!--
+			Draws at w-45 (180px) on mobile and lg:w-95 (380px) from lg up, so these two
+			widths cover both at 2x. Without them Astro would ship the full 796px source
+			to a phone that paints it at 180.
+		-->
 		<Image
 			src={bolt}
 			alt=""
 			class="pointer-events-none absolute left-3.75 -top-8.5 w-45 lg:left-0 lg:bottom-1.25 lg:w-95 lg:top-auto"
+			widths={[360, 760]}
+			sizes="(min-width: 1024px) 380px, 180px"
 			loading="lazy"
 		/>
 

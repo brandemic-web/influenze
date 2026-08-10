@@ -11,9 +11,11 @@
  * that is 2x the largest avatar the mockup draws (the 10.625rem detail portrait),
  * and the sources are square so the crop is a straight fill.
  *
- * Loaded eagerly on purpose. The mockup sits in the hero, and the screens the
- * story has not reached yet are only `visibility: hidden`, so a deferred portrait
- * would risk popping in part-way through a beat. Seven of these come to ~90KB.
+ * Deferred by default. These used to load eagerly so a portrait could not pop in
+ * part-way through a beat, but the mockup sits in the hero and every portrait is
+ * on step 3 or later, so eager loading put ~90KB of off-screen images ahead of the
+ * hero's own paint. Pass `loading="eager"` for anything visible on first paint —
+ * the nav avatar does. If a beat is seen to pop, that is the knob to turn.
  */
 import { Image } from "astro:assets";
 import { portraitFor } from "../../../data/creatorPortraits";
@@ -25,9 +27,17 @@ interface Props {
 	class?: string;
 	/** Creator handle, matched to a file in profile_images. */
 	handle?: string;
+	/** `eager` for portraits painted on the first story step. */
+	loading?: "eager" | "lazy";
 }
 
-const { size = "2rem", radius = "9999px", class: className = "", handle } = Astro.props;
+const {
+	size = "2rem",
+	radius = "9999px",
+	class: className = "",
+	handle,
+	loading = "lazy",
+} = Astro.props;
 
 const portrait = handle ? portraitFor(handle) : undefined;
 ---
@@ -38,5 +48,5 @@ const portrait = handle ? portraitFor(handle) : undefined;
 	style={`width:${size};height:${size};border-radius:${radius}`}
 	aria-hidden="true"
 >
-	{portrait && <Image src={portrait} alt="" width={340} class="size-full object-cover" loading="eager" />}
+	{portrait && <Image src={portrait} alt="" width={340} class="size-full object-cover" loading={loading} />}
 </div>

@@ -12,8 +12,7 @@
  * to `(100vw - 3rem) / 2.5`, so two and a half columns sit in view at any phone
  * width and the half-column signals there is more to scroll to.
  */
-import { Image } from "astro:assets";
-import logo from "../../assets/images/common/logos_and_icons/influenze_logo_nav.svg";
+import logo from "../../assets/images/common/logos_and_icons/influenze_logo_nav.webp";
 import glowBand from "../../assets/images/home_page/compare_table/glow_band.svg";
 import {
 	COMPARISON_HEADING,
@@ -83,33 +82,54 @@ const rowCount = COMPARISON_ROWS.length;
 			>
 			</div>
 
-			<!-- ── Header row ─────────────────────────────────────────── -->
-			<div class="col-start-1 row-start-1"></div>
+			<!--
+				── Header row ───────────────────────────────────────────
 
-			<div
-				class="relative z-2 col-start-2 row-start-1 flex items-center justify-center px-4 py-8 lg:py-10"
-			>
-				<Image src={logo} alt="influenze.ai" class="h-6 w-auto lg:h-12" loading="lazy" />
+				`role="table"` requires its cells to sit inside `role="row"`, but every
+				cell here is placed directly on the grid by `grid-column`/`grid-row`, so
+				a real wrapper element would break the layout. `display: contents` is the
+				way out: the row exists in the accessibility tree while its box is
+				removed from the layout tree, so the cells stay direct grid items.
+			-->
+			<div role="row" style="display: contents">
+				<!-- Empty corner cell: the row labels below it are the row headers. -->
+				<div class="col-start-1 row-start-1" role="columnheader"></div>
+
+				<div
+					class="relative z-2 col-start-2 row-start-1 flex items-center justify-center px-4 py-8 lg:py-10"
+					role="columnheader"
+				>
+					<!-- Plain <img> so this shares the header's logo URL — see Header.astro. -->
+					<img
+						src={logo.src}
+						alt="influenze.ai"
+						width={logo.width}
+						height={logo.height}
+						class="h-6 w-auto lg:h-12"
+						loading="lazy"
+					/>
+				</div>
+
+				{
+					COMPARISON_COMPETITORS.map((name, i) => (
+						<div
+							class="relative z-2 flex items-center justify-center px-4 py-8 lg:py-10"
+							style={`grid-column: ${i + 3}; grid-row: 1`}
+							role="columnheader"
+						>
+							<span class="text-[1.125rem] text-white lg:text-md">{name}</span>
+						</div>
+					))
+				}
 			</div>
-
-			{
-				COMPARISON_COMPETITORS.map((name, i) => (
-					<div
-						class="relative z-2 flex items-center justify-center px-4 py-8 lg:py-10"
-						style={`grid-column: ${i + 3}; grid-row: 1`}
-						role="columnheader"
-					>
-						<span class="text-[1.125rem] text-white lg:text-md">{name}</span>
-					</div>
-				))
-			}
 
 			<!-- ── Rows ───────────────────────────────────────────────── -->
 			{
 				COMPARISON_ROWS.map((row, r) => {
 					const line = "border-t border-[#ffffff52]";
 					return (
-						<>
+						// `display: contents` again — see the header row above.
+						<div role="row" style="display: contents">
 							<div
 								class:list={[
 									"relative z-2 flex items-center px-4 py-5 text-left lg:px-13.5 lg:py-6",
@@ -191,7 +211,7 @@ const rowCount = COMPARISON_ROWS.length;
 									)}
 								</div>
 							))}
-						</>
+						</div>
 					);
 				})
 			}

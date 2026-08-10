@@ -26,7 +26,7 @@
  *   data-annual-toggle / data-annual-knob   the annual-billing switch
  */
 import { Image } from "astro:assets";
-import bolt from "../../assets/images/common/logos_and_icons/footer_logo.svg";
+import bolt from "../../assets/images/common/logos_and_icons/footer_logo.webp";
 import wave from "../../assets/images/common/decor/wave_bg.svg";
 import { SIGNUP_URL } from "../../data/site";
 import {
@@ -205,11 +205,20 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
           ))
         }
 
-        <!-- bolt handle -->
+        <!--
+          bolt handle
+
+          `alt` carries text rather than being empty on purpose. An empty `alt` maps an
+          <img> to `role="presentation"`, which collides with the `role="slider"` and
+          `tabindex` below — a presentational element is not allowed to be focusable or
+          to carry ARIA state. The announced name still comes from `aria-label`; this
+          only stops the element being marked decorative and interactive at once.
+        -->
         <Image
           src={bolt}
-          alt=""
-          width="65"
+          alt="Monthly spend"
+          widths={[64, 130]}
+          sizes="(min-width: 1024px) 65px, 32px"
           role="slider"
           aria-label="Drag to choose your monthly spend"
           aria-valuemin={SLIDER_MIN}

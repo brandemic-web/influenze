@@ -50,8 +50,28 @@ const { class: className = "" } = Astro.props;
 	data-canvas-fit
 	data-landscape-target="workflow"
 >
-	{/* `.wf-stage` positions itself — see the note on the layers in workflow.css. */}
-	<div class="wf-stage overflow-hidden rounded-[1.75rem] bg-wf-page" data-canvas>
+	{/*
+		`.wf-stage` positions itself — see the note on the layers in workflow.css.
+
+		Hidden from assistive tech. The stage is a picture of the product drawn in
+		markup rather than exported as an image, but it is still a picture: a screen
+		reader walking it hears nine copies of a fake app shell — nav bars, sidebars,
+		invented creator handles and credit balances — none of which is information a
+		visitor can act on. The explainer cards in `.wf-card-layer` below carry the
+		text that actually narrates the workflow, and they stay exposed.
+
+		This is also what keeps the page's landmarks readable: the fake shells emit 83
+		`<header>` and 14 `<nav>` elements between them, against 2 and 5 that are real.
+
+		Nothing inside the stage is focusable, which is what makes hiding it legal —
+		the landscape-view controls are deliberately siblings of this element, not
+		descendants. Keep it that way.
+	*/}
+	<div
+		class="wf-stage overflow-hidden rounded-[1.75rem] bg-wf-page"
+		data-canvas
+		aria-hidden="true"
+	>
 		<StoryStep step={1} active><Analyze /></StoryStep>
 		<StoryStep step={3}><Analyze results /></StoryStep>
 		<StoryStep step={4}><AnalyzedCreator tab="about" /></StoryStep>

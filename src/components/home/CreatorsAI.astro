@@ -141,7 +141,23 @@ const featureIcons: Record<string, ImageMetadata> = {
 					<div
 						class="absolute top-0 h-170 w-167 scale-[0.44] max-lg:left-1/2 max-lg:origin-top max-lg:-translate-x-1/2 sm:scale-[0.6] md:scale-[0.75] lg:left-0 lg:origin-top-left lg:scale-100"
 					>
-						<!-- Search Globally -->
+						<!--
+						Each panel's illustration carries `aria-hidden` on its content wrapper
+						rather than on the panel itself.
+
+						The panels are pictures of the product, assembled from the same app
+						components the hero mockup uses, and a screen reader walking one hears
+						invented handles, filter chips and metric labels. The tab buttons
+						already carry each feature's title and description as visible text, so
+						nothing is lost by hiding the picture — the panel keeps its role and
+						`aria-labelledby`, so the tab relationship still works.
+
+						It goes on the wrapper, not the panel, because creators-ai-tabs.ts owns
+						`aria-hidden` on the panel to track which tab is open. Putting both on
+						one element would mean the script un-hiding the illustration every time
+						a tab is selected.
+					-->
+					<!-- Search Globally -->
 						<div
 							id={panelId(0)}
 							role="tabpanel"
@@ -163,7 +179,7 @@ const featureIcons: Record<string, ImageMetadata> = {
 								stage coordinates, so it scales with the stage and one value
 								holds at every width below lg.
 							-->
-							<div class="absolute inset-0 max-lg:translate-x-4.25 max-lg:translate-y-14.25 lg:translate-x-8.75">
+							<div class="absolute inset-0 max-lg:translate-x-4.25 max-lg:translate-y-14.25 lg:translate-x-8.75" aria-hidden="true">
 								<!--
 									Each card sits in its own untransformed wrapper so the
 									intro stagger can own `transform` without clobbering the
@@ -198,7 +214,7 @@ const featureIcons: Record<string, ImageMetadata> = {
 									unused space below these cards. `inset-0` keeps this the same box as
 									the panel, so the percentage lefts below resolve exactly as before.
 								-->
-								<div class="absolute inset-0 max-lg:translate-x-2.25 max-lg:translate-y-11.75">
+								<div class="absolute inset-0 max-lg:translate-x-2.25 max-lg:translate-y-11.75" aria-hidden="true">
 	<div data-panel-item class="absolute left-[17%] top-0">
 									<TopDemographics />
 								</div>
@@ -241,7 +257,7 @@ const featureIcons: Record<string, ImageMetadata> = {
 								nudged down too, on the same reasoning as panel 0 — measured 110
 								stage px unused below and 16 above, so half the difference.
 							-->
-							<div class="absolute inset-0 translate-x-6.75 max-lg:translate-y-11.75">
+							<div class="absolute inset-0 translate-x-6.75 max-lg:translate-y-11.75" aria-hidden="true">
 								<img
 									data-panel-item
 									src={shareIcon.src}
@@ -285,6 +301,7 @@ const featureIcons: Record<string, ImageMetadata> = {
 							-->
 							<div
 								data-panel-item
+								aria-hidden="true"
 								class="absolute inset-0 grid place-items-center max-lg:pb-0 lg:pb-24"
 							>
 								<AnalyzedCreator class="scale-120" />

@@ -1,6 +1,10 @@
 ---
-import { Image } from "astro:assets";
-import logo from "../../assets/images/common/logos_and_icons/influenze_logo_nav.svg";
+// Served as the plain ESM URL rather than through `<Image>`. The source is already
+// 436x128 — exactly 2x the largest size this renders at — and 6KB, so resizing it
+// would save nothing and would emit a second copy under its own hash. AppNavBar and
+// ComparisonTable reach for the same asset the same way, so all eleven places the
+// logo appears on the homepage share one download.
+import logo from "../../assets/images/common/logos_and_icons/influenze_logo_nav.webp";
 import { NAV_ITEMS } from "../../data/nav";
 import Button from "./Button.astro";
 import MobileMenu from "./MobileMenu.astro";
@@ -17,7 +21,13 @@ const isActive = (item: { href: string; newTab?: boolean }) =>
 		class="mx-auto flex  max-w-410.75 items-center justify-between rounded-full border border-brand-primary bg-surface-header py-2.5 pr-4.5 pl-1.5 backdrop-blur-md lg:pl-10 lg:flex-row"
 	>
 		<a href="/" class="shrink-0" aria-label="influenze.ai home">
-			<Image src={logo} alt="influenze.ai" class="h-10 w-auto lg:h-16" />
+			<img
+				src={logo.src}
+				alt="influenze.ai"
+				width={logo.width}
+				height={logo.height}
+				class="h-10 w-auto lg:h-16"
+			/>
 		</a>
 
 		<nav class="hidden items-center gap-10 lg:flex xl:gap-15" aria-label="Main">

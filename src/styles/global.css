@@ -6,42 +6,49 @@
     src: url("/fonts/open-sauce-one-latin-700-normal.woff2") format("woff2");
     font-weight: 700;
     font-style: normal;
+    font-display: swap;
 }
 @font-face {
     font-family: "Open Sauce Two";
     src: url("/fonts/open-sauce-two-latin-300-normal.woff2") format("woff2");
     font-weight: 300;
     font-style: normal;
+    font-display: swap;
 }
 @font-face {
     font-family: "Open Sauce Two";
     src: url("/fonts/open-sauce-two-latin-400-normal.woff2") format("woff2");
     font-weight: 400;
     font-style: normal;
+    font-display: swap;
 }
 @font-face {
     font-family: "Open Sauce Two";
     src: url("/fonts/open-sauce-two-latin-500-normal.woff2") format("woff2");
     font-weight: 500;
     font-style: normal;
+    font-display: swap;
 }
 @font-face {
     font-family: "Open Sauce Two";
     src: url("/fonts/open-sauce-two-latin-600-normal.woff2") format("woff2");
     font-weight: 600;
     font-style: normal;
+    font-display: swap;
 }
 @font-face {
     font-family: "Open Sauce Two";
     src: url("/fonts/open-sauce-two-latin-700-normal.woff2") format("woff2");
     font-weight: 700;
     font-style: normal;
+    font-display: swap;
 }
 @font-face {
     font-family: "Open Sauce Two";
     src: url("/fonts/open-sauce-two-latin-800-normal.woff2") format("woff2");
     font-weight: 800;
     font-style: normal;
+    font-display: swap;
 }
 
 @theme {
@@ -128,9 +135,37 @@
 }
 
 @layer base {
+    /*
+     * Desktop is laid out on the 1728px design grid, so 1rem is pinned to 1/108th
+     * of the viewport and everything sized in rem scales with the window. Up to
+     * the design width the root never exceeds 16px.
+     */
     @media (min-width: 1024px) {
         html {
             font-size: clamp(12px, calc(100vw / 108), 16px);
+        }
+    }
+
+    /*
+     * Past the design width we keep scaling instead of stranding a 1728px layout
+     * in the middle of a large monitor or TV.
+     *
+     * There is deliberately no upper cap. The widest containers in the layout are
+     * 108rem, so `100vw / 108` makes the content exactly as wide as the viewport
+     * and can never overflow — a ceiling here would only reintroduce dead gutters
+     * on the big screens this rule exists to serve.
+     *
+     * `100vh / 45` is a loose backstop for very short or ultra-wide viewports,
+     * where pure width scaling would make a section taller than the screen. It
+     * allows roughly 1.35x the design height (972px) before it binds, so on any
+     * normal 16:9 or 16:10 display the width term wins and this changes nothing.
+     *
+     * The 16px floor keeps this continuous with the rule above — at 1728px both
+     * rules land on exactly 16px, so there is no jump at the breakpoint.
+     */
+    @media (min-width: 1728px) {
+        html {
+            font-size: max(16px, min(calc(100vw / 108), calc(100vh / 45)));
         }
     }
 

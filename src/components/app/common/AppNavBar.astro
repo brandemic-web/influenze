@@ -2,7 +2,7 @@
 /**
  * Influenze app nav bar
  */
-import logoNav from "../../../assets/images/common/logos_and_icons/influenze_logo_nav.svg";
+import logoNav from "../../../assets/images/common/logos_and_icons/influenze_logo_nav.webp";
 import CreatorAvatar from "./CreatorAvatar.astro";
 import Icon from "./Icon.astro";
 import { APP_USER, CREDITS, formatCredits } from "../../../data/workflowMockup";
@@ -24,7 +24,13 @@ const navItems = [
 ---
 
 <header class="absolute inset-x-0 top-0 flex h-20 items-center px-16.5">
-	<img src={logoNav.src} alt="influenze.ai" class="h-10 w-auto" />
+	<img
+		src={logoNav.src}
+		alt="influenze.ai"
+		width={logoNav.width}
+		height={logoNav.height}
+		class="h-10 w-auto"
+	/>
 
 	<!-- The app nudges the links 10px left so they read as centred. -->
 	<nav class="absolute top-1/2 left-1/2 flex -translate-x-[calc(50%+0.625rem)] -translate-y-1/2 items-center gap-8">
@@ -75,7 +81,8 @@ const navItems = [
 
 		<span class="flex items-center gap-2.5 rounded-full bg-wf-user-pill py-1 pr-1 pl-3">
 			<span class="text-[0.875rem] whitespace-nowrap text-wf-green">Hi, {APP_USER.name}</span>
-			<CreatorAvatar size="2rem" handle={APP_USER.handle} />
+			<!-- Painted on the first story step, so this one loads up front. -->
+			<CreatorAvatar size="2rem" handle={APP_USER.handle} loading="eager" />
 		</span>
 	</div>
 </header>

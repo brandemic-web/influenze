@@ -21,12 +21,21 @@ import darkLayerCenter from "../../assets/images/home_page/hero/dark_layer_cente
 		class="pointer-events-none absolute top-18 left-1/2 w-full -translate-x-1/2 lg:block lg:top-36"
 		aria-hidden="true"
 	>
-		<!-- zoomed/cropped on mobile so the arcs read at small widths, natural width from lg up -->
+		<!--
+			zoomed/cropped on mobile so the arcs read at small widths, natural width from lg up
+
+			Decorative, but it measures as the page's LCP element on mobile — it covers
+			more of the viewport than any single block of hero text. It's ~1KB, so the
+			priority hint costs nothing and stops it queueing behind the collage images.
+		-->
 		<img
 			src={backgroundArcs.src}
 			alt=""
-			class="absolute left-1/2 w-[120%] max-w-none -translate-x-1/2 lg:left-0 lg:w-full lg:max-w-full lg:translate-x-0 z-0 " 
+			class="absolute left-1/2 w-[120%] max-w-none -translate-x-1/2 lg:left-0 lg:w-full lg:max-w-full lg:translate-x-0 z-0 "
 			loading="eager"
+			fetchpriority="high"
+			width={backgroundArcs.width}
+			height={backgroundArcs.height}
 		/>
 	</div>
 
