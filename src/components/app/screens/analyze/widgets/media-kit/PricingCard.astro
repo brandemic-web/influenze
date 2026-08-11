@@ -1,0 +1,136 @@
+---
+/**
+ * Creator's Estimated Price. Transparent over the tab card like Account Stats; only
+ * its four inner tiles carry `cardColor`, the fourth being a floating-bar range chart
+ * drawn from percentages (see `GrowthChart.astro`). The app's `[ Videos | Post ]`
+ * toggle is absent — it only appears where a platform has more than one post group.
+ */
+import Icon from "../../../../common/Icon.astro";
+import { priceScale, type PriceBar } from "../../../../../../data/mediaKitCharts";
+
+interface Props {
+	bars: readonly PriceBar[];
+	currency: string;
+	factors: readonly string[];
+	surface?: string;
+	/**
+	 * Drops the card's own `Padding(bottom 12){ Padding(all 12) }`.
+	 *
+	 * For `elements/CompareCreatorColumn`, which draws Account Stats without the
+	 * app's 12 as well — its column supplies the gutters — so keeping it here
+	 * would leave the pricing tiles 12 narrower than the stat tiles above them.
+	 */
+	bare?: boolean;
+}
+
+const props = Astro.props;
+const surface = props.surface ?? "#25292c";
+const outerPad = props.bare ? "" : "pb-3";
+const innerPad = props.bare ? "" : "p-3";
+
+const { headline, gridlines, bars } = priceScale(props.bars, props.currency);
+
+const tileClass = "rounded-[0.3125rem] p-3";
+/** `gridData`'s `dashArray: [4, 3]`, in grey9. */
+const DASHED_GRID =
+	"repeating-linear-gradient(to right,var(--color-mkit-grid-price) 0 4px,transparent 4px 7px)";
+---
+
+{/* The card's own padding-bottom 12; no gap widget separates it from Account Stats. */}
+<div class={outerPad}>
+	<div class={innerPad}>
+		<div class="flex items-center">
+			<span class="grid size-9 shrink-0 place-items-center rounded-[0.3125rem]" style={`background:${surface}`}>
+				<Icon name="chartCandlestick" size="1.25rem" class="text-wf-green-mid" />
+			</span>
+			<span class="ml-3 text-[0.875rem] font-semibold whitespace-nowrap text-wf-text"
+				>Creator's Estimated Price</span
+			>
+			{/* pt0/pb3 in the app; here the trim is what leaves the pill its height. */}
+			<span class="ml-2 rounded-[1rem] bg-mkit-tile px-2.5 py-1 text-[0.625rem] whitespace-nowrap text-mkit-lavender"
+				>Beta</span
+			>
+		</div>
+
+		<section class={`${tileClass} mt-3.5`} style={`background:${surface}`}>
+			<span class="block text-[1.25rem] font-semibold whitespace-nowrap text-wf-text">{headline}</span>
+			<p class="mt-5 text-[0.75rem] text-mkit-body">
+				Estimated from followers, engagement, and audience data. Actual prices may vary with negotiation and other
+				factors.
+			</p>
+		</section>
+
+		{/* Chart tile: padding l12 r16 t16 b12. */}
+		<section class="mt-2 rounded-[0.3125rem] pt-4 pr-4 pb-3 pl-3" style={`background:${surface}`}>
+			<span class="text-[0.625rem] font-medium whitespace-nowrap text-wf-text">Price by post type</span>
+
+			{/*
+				200 tall, of which the axes reserve 40 at the left and 40 at the foot,
+				so the plot itself is 160. The y-axis column spans exactly the plot's
+				height, which is what lets its labels share the gridlines' percentages.
+			*/}
+			<div class="relative mt-6 h-50">
+				<div class="absolute top-0 bottom-10 left-0 w-10">
+					{
+						gridlines.map(({ at, label }) => (
+							<span
+								class="absolute right-2 -translate-y-1/2 text-[0.5625rem] font-medium whitespace-nowrap text-mkit-chart-y"
+								style={`top:${at}%`}
+							>
+								{label}
+							</span>
+						))
+					}
+				</div>
+
+				<div class="absolute top-0 right-0 bottom-10 left-10">
+					{
+						gridlines.map(({ at }) => (
+							<span class="absolute inset-x-0 h-px -translate-y-1/2" style={`top:${at}%;background:${DASHED_GRID}`} />
+						))
+					}
+
+					{/* One 8-wide fully rounded rod per post type, floating between min and max. */}
+					{
+						bars.map(({ at, bottom, height }) => (
+							<span
+								class="absolute w-2 -translate-x-1/2 rounded-full bg-mkit-green"
+								style={`left:${at}%;bottom:${bottom}%;height:${height}%`}
+							/>
+						))
+					}
+				</div>
+
+				{/* Bottom axis: 8 of space, then the label over its range. */}
+				<div class="absolute right-0 bottom-0 left-10 h-10 pt-2">
+					<div class="relative h-full">
+						{
+							bars.map(({ at, label, range }) => (
+								<span class="absolute flex w-17 -translate-x-1/2 flex-col items-center" style={`left:${at}%`}>
+									<span class="text-[0.5625rem] font-medium whitespace-nowrap text-mkit-chart-x">{label}</span>
+									<span class="mt-1.5 text-[0.5rem] whitespace-nowrap text-wf-text">{range}</span>
+								</span>
+							))
+						}
+					</div>
+				</div>
+			</div>
+		</section>
+
+		{
+			props.factors.length > 0 && (
+				<section class={`${tileClass} mt-3`} style={`background:${surface}`}>
+					<span class="text-[0.625rem] font-medium whitespace-nowrap text-wf-text">What's driving this price?</span>
+					<div class="mt-3">
+						{props.factors.map((factor) => (
+							<div class="flex pb-4.5">
+								<span class="mt-1 mr-2 size-1 shrink-0 rounded-full bg-mkit-green" />
+								<p class="text-[0.75rem] leading-normal text-mkit-body">{factor}</p>
+							</div>
+						))}
+					</div>
+				</section>
+			)
+		}
+	</div>
+</div>

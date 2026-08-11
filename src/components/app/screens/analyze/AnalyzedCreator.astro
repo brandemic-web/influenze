@@ -1,0 +1,28 @@
+---
+/**
+ * The Analyze screen with a creator opened — once `selectedCreator`
+ * is set: the rail dims behind the detail, the results panel is left empty, and
+ * `CreatorDetail` is laid over it.
+ *
+ * Two frames again, one file: `tab` is the only thing that separates them, and it
+ * is the same prop `creator_detail.dart` switches on.
+ */
+import AppShell from "../../common/AppShell.astro";
+import AnalyzeResultsPanel from "./widgets/AnalyzeResultsPanel.astro";
+import CreatorDetail from "./widgets/CreatorDetail.astro";
+import DimmedFilterSidebar from "./widgets/DimmedFilterSidebar.astro";
+import { CREDITS, RAIL_TIER_SCROLL } from "../../../../data/workflowMockup";
+
+interface Props {
+	tab: "about" | "mediaKit";
+}
+
+const { tab } = Astro.props;
+---
+
+<AppShell active="analyze" credits={CREDITS.afterProfile}>
+	<DimmedFilterSidebar scroll={RAIL_TIER_SCROLL} />
+	<AnalyzeResultsPanel />
+
+	<CreatorDetail tab={tab} />
+</AppShell>

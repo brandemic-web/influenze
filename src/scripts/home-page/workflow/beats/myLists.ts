@@ -3,23 +3,12 @@ import { token } from "../utils/dom";
 import type { Pointer } from "../utils/pointer";
 
 /**
- * Beat 6 — confirm the list, close the dialog, cross to My Lists.
+ * Beat 6 — three clicks: Add (settles to "Added"), the dialog's ✕, then My Lists.
  *
- * Three clicks: Add on the story's list row (which settles to "Added"), the
- * dialog's close ✕, then My Lists in the nav.
- *
- * Closing the dialog needs no layer change. Screen 6 renders byte-for-byte what
- * screen 5 renders once its blur, scrim and card are neutralised (see beat 5), so
- * unwinding those three leaves the story sitting on screen 6's layer looking
- * exactly like screen 5 — and the nav inside that backdrop is what the cursor then
- * clicks.
- *
- * The crossing to screen 7 is the story's first real *navigation*, so it is the
- * first swap that cannot be hidden: the two screens share a nav bar and an empty
- * card, but the nav pill is a different shape in each — the active item carries
- * `px16 py8` and the inactive ones carry nothing, so the whole row shifts. That
- * snap is left visible on purpose. It happens on the click that caused it, which
- * is what the app does when the section rebuilds.
+ * Closing needs no layer change: unwinding beat 5's blur, scrim and card leaves
+ * screen 6 looking exactly like screen 5. 6 → 7 is the first swap that *can't* be
+ * hidden — the active nav pill is a different shape, so the row shifts. That snap
+ * is deliberate; it lands on the click that caused it, like the app's own rebuild.
  */
 
 export interface MyListsLayers {
@@ -27,6 +16,15 @@ export interface MyListsLayers {
 	from: HTMLElement;
 	/** The My Lists layer. */
 	to: HTMLElement;
+}
+function collectAdded(row: HTMLElement | null) {
+	const el = {
+		portrait: row?.querySelector<HTMLElement>("[data-wf-list-added]") ?? null,
+		countIdle: row?.querySelector<HTMLElement>('[data-wf-list-count="idle"]') ?? null,
+		countDone: row?.querySelector<HTMLElement>('[data-wf-list-count="done"]') ?? null,
+	};
+
+	return Object.values(el).every(Boolean) ? (el as { [K in keyof typeof el]: NonNullable<(typeof el)[K]> }) : null;
 }
 
 /** Every element the beat drives, or null if the markup is not what we expect. */
@@ -53,10 +51,11 @@ function collect({ from, to }: MyListsLayers) {
 export function myLists(layers: MyListsLayers, pointer: Pointer) {
 	const el = collect(layers);
 	if (!el) return null;
+	const added = collectAdded(layers.from.querySelector<HTMLElement>("[data-wf-list-target]"));
 
 	const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
 
-	// Put things back the way beat 5 leaves them, so the beat is self-contained.
+	// Wind the layers back first, so the beat is replayable from anywhere.
 	tl.call(() => {
 		layers.to.removeAttribute("data-wf-active");
 		layers.from.setAttribute("data-wf-active", "");
@@ -64,6 +63,12 @@ export function myLists(layers: MyListsLayers, pointer: Pointer) {
 		.set(el.add, { backgroundColor: token("action") })
 		.set(el.addIdle, { opacity: 1 })
 		.set(el.addDone, { opacity: 0 });
+
+	if (added) {
+		tl.set(added.portrait, { opacity: 0, scale: 0.6 })
+			.set(added.countIdle, { opacity: 1 })
+			.set(added.countDone, { opacity: 0 });
+	}
 
 	// ── add the creator to the list ──────────────────────────────────────────
 	tl.add(pointer.moveTo(el.add, { duration: 0.7 }))
@@ -73,6 +78,16 @@ export function myLists(layers: MyListsLayers, pointer: Pointer) {
 		.to(el.add, { backgroundColor: token("action-muted"), duration: 0.28 }, "added")
 		.to(el.addIdle, { opacity: 0, duration: 0.16 }, "added")
 		.to(el.addDone, { opacity: 1, duration: 0.22 }, "added+=0.1");
+
+	if (added) {
+		tl.to(
+			added.portrait,
+			{ opacity: 1, scale: 1, duration: 0.34, ease: "back.out(2)", transformOrigin: "center" },
+			"added+=0.12"
+		)
+			.to(added.countIdle, { opacity: 0, duration: 0.16 }, "added+=0.2")
+			.to(added.countDone, { opacity: 1, duration: 0.22 }, "added+=0.3");
+	}
 
 	// ── close the dialog ─────────────────────────────────────────────────────
 	// Unwound in the reverse order it arrived: card first, then the scrim and blur

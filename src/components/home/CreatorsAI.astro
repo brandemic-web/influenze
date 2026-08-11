@@ -1,18 +1,18 @@
 ---
 import Button from "../common/Button.astro";
-import { SIGNUP_URL } from "../../data/site";
+import { FEATURES_URL } from "../../data/site";
 import { CREATORS_AI_FEATURES, CREATORS_AI_BUTTON } from "../../data/creatorsAI";
 import { panelId, tabId } from "../../scripts/creators-ai";
-import SearchUi from "../ui-elements/SearchUi.astro";
-import PlatformUi from "../ui-elements/PlatformUi.astro";
-import FollowerMetricsUi from "../ui-elements/FollowerMetricsUi.astro";
-import MetricTilesUi from "../ui-elements/MetricTilesUi.astro";
-import FollowerQualityUi from "../ui-elements/FollowerQualityUi.astro";
-import AudienceAffinitiesUi from "../ui-elements/AudienceAffinitiesUi.astro";
-import CompareUi from "../ui-elements/CompareUi.astro";
-import AddToListUi from "../ui-elements/AddToListUi.astro";
-import AnalyzedCreator from "../ui-elements/AnalyzedCreatorUi.astro";
-import DemoCursor from "../ui-elements/DemoCursor.astro";
+import AnalyzeFilterSidebar from "../app/elements/AnalyzeFilterSidebar.astro";
+import PlatformFilter from "../app/elements/PlatformFilter.astro";
+import FollowerMetricsFilter from "../app/elements/FollowerMetricsFilter.astro";
+import TopDemographics from "../app/elements/TopDemographics.astro";
+import FollowerQuality from "../app/elements/FollowerQuality.astro";
+import AffinitiesCard from "../app/elements/AffinitiesCard.astro";
+import CompareCreatorColumn from "../app/elements/CompareCreatorColumn.astro";
+import AddToListDialog from "../app/elements/AddToListDialog.astro";
+import AnalyzedCreator from "../app/elements/CreatorDetailPanel.astro";
+import DemoCursor from "../app/story/DemoCursor.astro";
 import iconSearch from "../../assets/images/common/icons/search.svg";
 import iconUsers from "../../assets/images/common/icons/users.svg";
 import iconSquareCheck from "../../assets/images/common/icons/square_check_big.svg";
@@ -27,14 +27,11 @@ const featureIcons: Record<string, ImageMetadata> = {
 };
 
 /**
- * The visuals are real UI element components at their design size, laid out on a
- * fixed 668 x 680 px stage (w-167 x h-170) so every panel shares one coordinate
- * space. Below `lg` the whole stage is scaled down as a unit — that keeps the
- * collage's relative positions identical at every breakpoint, and the wrapper
- * heights below mirror stage height x scale.
- *
- * Panel/tab ids come from `scripts/creators-ai` — the same helpers the tab
- * controller and the panel demos use, so the three files can't drift.
+ * The visuals are real UI element components at design size on a fixed 668 x 680 stage,
+ * so every panel shares one coordinate space. Below `lg` the stage scales as a unit,
+ * keeping relative positions identical at every breakpoint; the wrapper heights below
+ * mirror stage height x scale. Panel/tab ids come from `scripts/creators-ai`, shared
+ * with the tab controller and the demos so the three files can't drift.
  */
 ---
 
@@ -45,36 +42,42 @@ const featureIcons: Record<string, ImageMetadata> = {
 	>
 	</div>
 	<div
-		class="relative z-10 mx-auto flex w-full max-w-393 flex-col items-center px-4 pb-10 pt-10 lg:pt-12 lg:pb-0"
+		class="relative z-10 mx-auto flex w-full max-w-393 flex-col items-center pb-7 pt-10 max-lg:px-6 lg:px-4 lg:pt-12 lg:pb-0"
 		data-creators-tabs
 	>
 		<h2
 			id="creators-ai-heading"
-			class="mb-8 w-full max-w-222.25 text-center text-[1.875rem] lg:text-3xl capitalize leading-[1.2] text-white lg:text-[3.4375rem] lg:leading-[normal] lg:[text-box:trim-both_cap_alphabetic]"
+			class="mb-2 w-full max-w-222.25 text-center text-md lg:mb-6 lg:text-3xl capitalize leading-[1.2] text-white lg:text-[3.4375rem] lg:leading-[normal] lg:[text-box:trim-both_cap_alphabetic]"
 		>
 			The world's creators,<br /><span class="text-brand-primary"
 				>found with AI</span
 			>
 		</h2>
 
-		<!-- outer glass panel -->
+		{/* outer glass panel */}
 		<div
-			class="relative mt-8 flex w-full flex-col items-center gap-8 rounded-[1.75rem] border border-white/15 bg-white/10 shadow-[0_0.5rem_2rem_rgba(0,0,0,0.18),inset_0_0.0625rem_0_rgba(255,255,255,0.18)] backdrop-blur-md backdrop-saturate-150 px-5 pb-8 pt-12 lg:h-199.25 lg:flex-row lg:items-center lg:justify-between lg:py-5.75 lg:pl-[min(9.25rem,8%)] lg:pr-4.75"
+			class="relative mt-8 flex w-full flex-col items-center gap-4 rounded-[1.75rem] border border-white/15 bg-white/10 shadow-[0_0.5rem_2rem_rgba(0,0,0,0.18),inset_0_0.0625rem_0_rgba(255,255,255,0.18)] backdrop-blur-md backdrop-saturate-150 px-6 pb-8 pt-12 lg:h-199.25 lg:gap-8 lg:flex-row lg:items-center lg:justify-between lg:py-5.75 lg:pl-[min(9.25rem,8%)] lg:pr-4.75"
 		>
 			<div class="absolute -top-6 left-0 right-0 mx-auto w-max">
-				<Button href={SIGNUP_URL} newTab>{CREATORS_AI_BUTTON}</Button>
+				<Button href={FEATURES_URL}>{CREATORS_AI_BUTTON}</Button>
 			</div>
 
-			<!-- feature list — doubles as the tab list for the visuals on the right -->
+			{/*
+				Feature list — doubles as the tab list for the visuals on the right. Four
+				features down the side from lg up; below lg they share one grid cell and only
+				the playing one shows, since four blocks plus the stage don't fit a phone. The
+				cell is as tall as the longest feature, so the swap doesn't shift layout. That
+				collapse lives in the style block — it depends on width *and* motion preference.
+			*/}
 			<div
-				class="flex w-full min-w-0 flex-col gap-6 lg:max-w-143.75 lg:gap-8"
+				class="creators-features flex w-full min-w-0 flex-col gap-6 lg:gap-8 lg:max-w-143.75"
 				role="tablist"
 				aria-orientation="vertical"
 			>
 				{
 					CREATORS_AI_FEATURES.map((feature, i) => (
 						<>
-							{i !== 0 && <div class="h-px w-full bg-white/40 lg:max-w-124" />}
+							{i !== 0 && <div class="creators-divider h-px w-full bg-white/40 lg:max-w-124" />}
 
 							<button
 								type="button"
@@ -109,12 +112,30 @@ const featureIcons: Record<string, ImageMetadata> = {
 			<div
 				class="w-full shrink-0 overflow-hidden rounded-[1.25rem] border border-white/20 bg-white/15 shadow-[inset_0_0.0625rem_0_rgba(255,255,255,0.22)] backdrop-blur-sm p-4 lg:h-189.5 lg:w-172.5 lg:p-0 lg:pl-5.5 lg:pt-22"
 			>
-				<!-- stage viewport: height tracks the scaled stage at each breakpoint -->
+				{/*
+					Stage viewport: height tracks the scaled stage at each breakpoint, and below
+					lg the stage is centred in it. `scale` steps at the breakpoints while the
+					well's width grows continuously, so a left-aligned stage drifts off-centre
+					(501px in a ~919px box at 1023). `origin-top` + `left-1/2` +
+					`-translate-x-1/2` centres it at any scale, and keeps the vertical origin at
+					the top so these heights still mirror stage height x scale. At lg the well is
+					exactly 668 wide, so desktop keeps its left-aligned placement.
+				*/}
 				<div class="relative h-75 w-full sm:h-102 md:h-128 lg:h-170">
 					<div
-						class="absolute left-0 top-0 h-170 w-167 origin-top-left scale-[0.44] sm:scale-[0.6] md:scale-[0.75] lg:scale-100"
+						class="absolute top-0 h-170 w-167 scale-[0.44] max-lg:left-1/2 max-lg:origin-top max-lg:-translate-x-1/2 sm:scale-[0.6] md:scale-[0.75] lg:left-0 lg:origin-top-left lg:scale-100"
 					>
-						<!-- Search Globally -->
+						{/*
+						`aria-hidden` sits on each illustration's content wrapper, not the panel.
+						These are pictures of the product, so a screen reader would hear invented
+						handles and metric labels; the tab buttons already carry the real title and
+						description, and the panel keeps its role and `aria-labelledby`.
+
+						On the wrapper because creators-ai-tabs.ts owns `aria-hidden` on the panel
+						to track which tab is open — sharing one element would have the script
+						un-hiding the illustration on every selection.
+					*/}
+					{/* Search Globally */}
 						<div
 							id={panelId(0)}
 							role="tabpanel"
@@ -122,25 +143,35 @@ const featureIcons: Record<string, ImageMetadata> = {
 							data-creators-panel
 							class="creators-panel absolute inset-0"
 						>
-							<!--
-								Each card sits in its own untransformed wrapper so the
-								intro stagger can own `transform` without clobbering the
-								component's own scale.
-							-->
-							<div data-search-card class="absolute left-0 top-0">
-								<SearchUi />
-							</div>
-							<div data-search-card class="absolute left-66 top-30.25">
-								<PlatformUi class="scale-80" />
-							</div>
-							<div data-search-card class="absolute left-69 top-48.75">
-								<FollowerMetricsUi class="scale-84" />
+							{/*
+								The three cards span ~598 of the stage's 668, so the group is nudged
+								right to centre. The cursor stays outside it — it parks in stage
+								coordinates and reads targets from the DOM at play time, so it follows
+								the shift by itself. `max-lg:translate-y-*` does the same on the block
+								axis: the cards stop 113 stage px short of the bottom, so half that
+								centres them. Being in stage coordinates, one value holds below lg.
+							*/}
+							<div class="absolute inset-0 max-lg:translate-x-4.25 max-lg:translate-y-14.25 lg:translate-x-8.75" aria-hidden="true">
+								{/*
+									Each card sits in its own untransformed wrapper so the
+									intro stagger can own `transform` without clobbering the
+									component's own scale.
+								*/}
+								<div data-search-card class="absolute left-0 top-0">
+									<AnalyzeFilterSidebar />
+								</div>
+								<div data-search-card class="absolute left-66 top-30.25">
+									<PlatformFilter class="scale-80" />
+								</div>
+								<div data-search-card class="absolute left-69 top-48.75">
+									<FollowerMetricsFilter class="scale-84" />
+								</div>
 							</div>
 
 							<DemoCursor />
 						</div>
 
-						<!-- Know The Audience -->
+						{/* Know The Audience */}
 						<div
 							id={panelId(1)}
 							role="tabpanel"
@@ -149,20 +180,40 @@ const featureIcons: Record<string, ImageMetadata> = {
 							data-creators-panel
 							class="creators-panel absolute inset-0 invisible opacity-0"
 						>
-							<div data-panel-item class="absolute left-[17%] top-0">
-								<MetricTilesUi />
-							</div>
-							<div data-panel-item class="absolute left-0 top-36">
-								<FollowerQualityUi />
-							</div>
-							<div data-panel-item class="absolute left-[47%] top-78">
-								<AudienceAffinitiesUi />
-							</div>
+							{/*
+									Wrapper exists only to carry the below-lg block-axis centring; the
+									cursor has to stay outside it, as in panel 0. Measured 94 stage px of
+									unused space below these cards. `inset-0` keeps this the same box as
+									the panel, so the percentage lefts below resolve exactly as before.
+								*/}
+								<div class="absolute inset-0 max-lg:translate-x-2.25 max-lg:translate-y-11.75" aria-hidden="true">
+	<div data-panel-item class="absolute left-[17%] top-0">
+									<TopDemographics />
+								</div>
+								{/*
+									Tops follow the Figma group (688:5097): a 25px gap under the
+									tiles, and the affinities card starting ~56% down the follower
+									quality card so the two overlap. Figma's own y values can't be
+									copied straight across — its placeholders are screenshots of the
+									older, taller cards — so the *gaps* are what carry over.
+								*/}
+								<div data-panel-item class="absolute left-0 top-27.5">
+									<FollowerQuality />
+								</div>
+								{/*
+									The overlap puts grey5 on grey5, so the card's own edge reads as
+									nothing — the drop shadow is what lifts it off the follower
+									quality card underneath.
+								*/}
+								<div data-panel-item class="absolute left-[47%] top-58">
+									<AffinitiesCard class="shadow-[0_0.75rem_2rem_rgba(0,0,0,0.45)]" />
+								</div>
+								</div>
 
 							<DemoCursor />
 						</div>
 
-						<!-- Choose The Right Creators -->
+						{/* Choose The Right Creators */}
 						<div
 							id={panelId(2)}
 							role="tabpanel"
@@ -171,22 +222,31 @@ const featureIcons: Record<string, ImageMetadata> = {
 							data-creators-panel
 							class="creators-panel absolute inset-0 invisible opacity-0"
 						>
-							<img
-								data-panel-item
-								src={shareIcon.src}
-								alt=""
-								class="absolute w-28 right-24.75 top-17.75"
-								loading="lazy"
-							/>
-							<div data-panel-item class="absolute left-[5%] top-38 z-10">
-								<CompareUi />
-							</div>
-							<div data-panel-item class="absolute left-0 top-4">
-								<AddToListUi />
+							{/*
+								Same as panel 1: the group spans ~613 of the stage's 668 — from
+								the list dialog's left edge to the compare panel's right — so it
+								is nudged right by half the slack to sit centred. Below lg it is
+								nudged down too, on the same reasoning as panel 0 — measured 110
+								stage px unused below and 16 above, so half the difference.
+							*/}
+							<div class="absolute inset-0 translate-x-6.75 max-lg:translate-y-11.75" aria-hidden="true">
+								<img
+									data-panel-item
+									src={shareIcon.src}
+									alt=""
+									class="absolute w-28 right-24.75 top-17.75"
+									loading="lazy"
+								/>
+								<div data-panel-item class="absolute left-[5%] top-38 z-10">
+									<CompareCreatorColumn />
+								</div>
+								<div data-panel-item class="absolute left-0 top-4">
+									<AddToListDialog />
+								</div>
 							</div>
 						</div>
 
-						<!-- Scale Campaigns Confidently -->
+						{/* Scale Campaigns Confidently */}
 						<div
 							id={panelId(3)}
 							role="tabpanel"
@@ -195,8 +255,20 @@ const featureIcons: Record<string, ImageMetadata> = {
 							data-creators-panel
 							class="creators-panel absolute inset-0 invisible opacity-0"
 						>
-							<div data-panel-item class="absolute -top-25 left-1">
-								<AnalyzedCreator class="scale-75" />
+							{/*
+								The card is the whole panel, so it centres rather than being placed by
+								hand; the wrapper owns the intro tween's transform, so the scale sits on
+								the card inside it. `pb-24` centres it in the *well* rather than on the
+								stage — the well insets the stage by 88px and is 10px shorter, so
+								shortening the box by twice the difference splits the air evenly. That
+								correction is desktop-only: below lg the well has no inset to cancel.
+							*/}
+							<div
+								data-panel-item
+								aria-hidden="true"
+								class="absolute inset-0 grid place-items-center max-lg:pb-0 lg:pb-24"
+							>
+								<AnalyzedCreator class="scale-120" />
 							</div>
 
 							<DemoCursor />
@@ -204,6 +276,48 @@ const featureIcons: Record<string, ImageMetadata> = {
 					</div>
 				</div>
 			</div>
+
+			{/*
+				Mobile navigation — the only manual control below lg, where the tabs are
+				`pointer-events: none`. Anchored to the outer glass panel, not the animation
+				well: centred on its left/right edges with half of each button hanging outside
+				(the `-left-px` cancels the panel's border). Half of `size-10` is 20px, which
+				is why the section's gutter widens to 24px below lg. A tap holds the rotation
+				off for MANUAL_HOLD, then it carries on, exactly as a tab click does.
+			*/}
+			<button
+				type="button"
+				data-creators-prev
+				aria-label="Previous feature"
+				class="absolute top-1/2 z-10 flex size-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-white/25 bg-white/10 text-white backdrop-blur-sm transition-colors hover:border-brand-primary hover:text-brand-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary lg:hidden -left-px -translate-x-1/2"
+			>
+				<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+					<path
+						d="M15 5l-7 7 7 7"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					/>
+				</svg>
+			</button>
+
+			<button
+				type="button"
+				data-creators-next
+				aria-label="Next feature"
+				class="absolute top-1/2 z-10 flex size-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-white/25 bg-white/10 text-white backdrop-blur-sm transition-colors hover:border-brand-primary hover:text-brand-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary lg:hidden -right-px translate-x-1/2"
+			>
+				<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+					<path
+						d="M9 5l7 7-7 7"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					/>
+				</svg>
+			</button>
 		</div>
 	</div>
 </section>
@@ -214,6 +328,37 @@ const featureIcons: Record<string, ImageMetadata> = {
 	}
 	.creators-tab[aria-selected="false"] {
 		opacity: 0.5;
+	}
+
+	/*
+	 * Below lg, collapse the four features into one: they share a grid cell and only the
+	 * playing one shows, so a phone gets one feature plus the stage instead of four.
+	 *
+	 * Gated on `no-preference` as well as width, and creators-ai-tabs.ts matches this
+	 * query exactly — the rotation is what swaps the visible feature and doesn't run
+	 * under reduced motion, so collapsing anyway would strand those readers on feature
+	 * one. `visibility`, not just opacity, keeps hidden features out of the tab order;
+	 * the script drives both inline via `autoAlpha` and this is the no-JS fallback.
+	 */
+	@media (max-width: 1023px) and (prefers-reduced-motion: no-preference) {
+		.creators-features {
+			display: grid;
+			gap: 0;
+		}
+
+		.creators-divider {
+			display: none;
+		}
+
+		.creators-tab {
+			grid-area: 1 / 1;
+			pointer-events: none;
+		}
+
+		.creators-tab[aria-selected="false"] {
+			opacity: 0;
+			visibility: hidden;
+		}
 	}
 	.creators-panel {
 		contain: layout;

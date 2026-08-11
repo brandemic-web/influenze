@@ -1,0 +1,37 @@
+---
+/**
+ * Top demographics — the About tab's three-tile row.
+ */
+interface Props {
+	class?: string;
+}
+
+const { class: className = "" } = Astro.props;
+
+const tiles = [
+	{ label: "Engagement rate", value: "1.8%", note: "Tiktok" },
+	{ label: "Top gender", value: "256k", note: "Female" },
+	{ label: "Top age", value: "25-34", note: "Years Old" },
+];
+---
+
+<div class:list={["flex gap-1 font-sans", className]}>
+	{
+		tiles.map((tile) => (
+			<div class="flex h-21.25 w-39 max-w-full flex-col rounded-sm bg-[#2c3033] p-3">
+				{/* `demographicsLabelText` — 10/400 */}
+				<span class="block truncate text-[0.625rem] text-white">
+					{tile.label}
+				</span>
+				{/* `demographicsValueText` — 16/400, pushed down by the app's Spacer */}
+				<span class="mt-auto block truncate text-[1rem] text-white">
+					{tile.value}
+				</span>
+				{/* `demographicsSubtitleText` — 8/500, green3 */}
+				<span class="mt-1 block truncate text-[0.5rem] font-medium text-wf-green-mid">
+					{tile.note}
+				</span>
+			</div>
+		))
+	}
+</div>

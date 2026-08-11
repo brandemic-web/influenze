@@ -1,0 +1,171 @@
+---
+/**
+ * A media kit growth chart — the app's `GrowthChartWidget` + `CustomLineChart`. The
+ * app configures these through a dozen flags; the two combinations it actually
+ * instantiates are the `variants` table below, under the app's own flag names.
+ *
+ * Geometry is percentages throughout, because the plot's width is a flex result. The
+ * scale itself is derived in `data/mediaKitCharts.ts`.
+ */
+import Icon from "../../../../common/Icon.astro";
+import { growthScale, type GrowthPoint } from "../../../../../../data/mediaKitCharts";
+
+interface Props {
+	/** Which of the app's two configurations to draw. */
+	variant: "followers" | "likes";
+	title: string;
+	history: readonly GrowthPoint[];
+	/** `cardColor` — the media kit default, or #18171f on the compare screen. */
+	surface: string;
+}
+
+const { variant, title, history, surface } = Astro.props;
+
+/**
+ * The app's two `GrowthChartWidget` call sites, column by column. `yTint`/`xTint`
+ * differ because the follower chart passes `yAxisLabelStyle`/`xAxisLabelStyle`
+ * explicitly and the likes chart lets `CustomLineChart` fall through to its own
+ * defaults, which recolour both to `grey1`.
+ */
+const variants = {
+	// yAxisDivisions 5, showAreaFill, no dots, gridLineColor grey10, lineWidth 2
+	followers: {
+		divisions: 5,
+		area: true,
+		dots: false,
+		dashedGrid: false,
+		lineWidth: 2,
+		upper: false,
+		yTint: "text-mkit-chart-y",
+		xTint: "text-mkit-chart-x",
+	},
+	// yAxisDivisions 3, no fill, showDots, gridLineColor grey16 dashed [4,2], lineWidth 1
+	likes: {
+		divisions: 3,
+		area: false,
+		dots: true,
+		dashedGrid: true,
+		lineWidth: 1,
+		upper: true,
+		yTint: "text-mkit-subtitle",
+		xTint: "text-mkit-subtitle",
+	},
+} as const;
+const c = variants[variant];
+
+const { gridlines, points, line } = growthScale(history, c.divisions);
+
+/** `bottomTitlesUppercase`, over the app's own capitalise-first-letter. */
+const labels = history.map(({ month }) =>
+	c.upper ? month.toUpperCase() : month.charAt(0).toUpperCase() + month.slice(1),
+);
+
+/**
+ * The area fill: `green4` solid to the halfway mark, then out to nothing —
+ * spelled with an explicit zero-alpha green rather than `transparent`, which in
+ * CSS is transparent *black* and would darken the fade.
+ */
+const AREA_FILL = "linear-gradient(to bottom,#479165 0%,#479165 50%,rgba(71,145,101,0) 100%)";
+/** `dashArray: [4, 2]`, drawn along the line rather than across it. */
+const DASHED_GRID =
+	"repeating-linear-gradient(to right,var(--color-mkit-grid-dash) 0 4px,transparent 4px 6px)";
+---
+
+{/* padding l12 r24 t12 b12 */}
+<div class="rounded-[0.3125rem] pt-3 pr-6 pb-3 pl-3" style={`background:${surface}`}>
+	<span class="flex items-center gap-1.5">
+		{variant === "likes" && <Icon name="thumbsUp" size="0.75rem" class="text-mkit-lavender" />}
+		<span class="text-[0.625rem] font-medium whitespace-nowrap text-wf-text">{title}</span>
+	</span>
+
+	{/* The 172-tall plot block: 140 of chart, 16 of gap, a 16-tall label row. */}
+	<div class="mt-10 flex h-43 flex-col">
+		<div class="flex min-h-0 flex-1">
+			{/* Left axis: a fixed 40 column, labels centred on their own gridline. */}
+			<div class="relative w-10 shrink-0">
+				{
+					gridlines.map(({ at, label }) => (
+						<span
+							class:list={["absolute left-0 -translate-y-1/2 text-[0.5625rem] font-medium whitespace-nowrap", c.yTint]}
+							style={`top:${at}%`}
+						>
+							{label}
+						</span>
+					))
+				}
+			</div>
+
+			<div class="relative min-w-0 flex-1">
+				{
+					gridlines.map(({ at }) => (
+						<span
+							class="absolute inset-x-0 h-px -translate-y-1/2"
+							style={`top:${at}%;background:${c.dashedGrid ? DASHED_GRID : "var(--color-mkit-grid)"}`}
+						/>
+					))
+				}
+
+				{
+					c.area && (
+						<span
+							class="absolute inset-0"
+							style={`background:${AREA_FILL};clip-path:polygon(0% 100%,${points
+								.map((p) => `${p.x}% ${p.y}%`)
+								.join(",")},100% 100%)`}
+						/>
+					)
+				}
+
+				{/*
+					The line. `preserveAspectRatio="none"` stretches the 0-100 grid to
+					whatever box the flex hands over, and `non-scaling-stroke` is what
+					keeps that from stretching the stroke with it — the weight stays the
+					app's, and still scales with the canvas like every other border here.
+				*/}
+				<svg
+					class="absolute inset-0 h-full w-full overflow-visible"
+					viewBox="0 0 100 100"
+					preserveAspectRatio="none"
+					aria-hidden="true"
+				>
+					<path
+						d={line}
+						fill="none"
+						stroke="var(--color-mkit-chart-line)"
+						stroke-width={c.lineWidth}
+						stroke-linecap="round"
+						vector-effect="non-scaling-stroke"></path>
+				</svg>
+
+				{
+					c.dots &&
+						points.map(({ x, y }) => (
+							<span
+								class="absolute size-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-mkit-chart-line"
+								style={`left:${x}%;top:${y}%`}
+							/>
+						))
+				}
+			</div>
+		</div>
+
+		{/* Bottom axis: the same 40 inset, each label centred in a 58-wide box. */}
+		<div class="mt-4 h-4 pl-10">
+			<div class="relative h-full">
+				{
+					labels.map((label, i) => (
+						<span
+							class:list={[
+								"absolute w-14.5 -translate-x-1/2 text-center text-[0.5625rem] font-medium",
+								c.xTint,
+							]}
+							style={`left:${points[i].x}%`}
+						>
+							{label}
+						</span>
+					))
+				}
+			</div>
+		</div>
+	</div>
+</div>

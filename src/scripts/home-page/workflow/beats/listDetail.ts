@@ -1,29 +1,18 @@
 import gsap from "gsap";
-import { CREATORS } from "../../../../data/workflowMockup";
+import { COMPARED_HANDLES } from "../../../../data/workflowMockup";
 import { token } from "../utils/dom";
 import type { Pointer } from "../utils/pointer";
 
 /**
- * Beat 7 — open the list, then pick two creators to compare.
- *
- * Answers beat 6's press on My Lists: the cursor opens the story's list card,
- * which crosses to the list detail with **nothing selected**, then ticks the two
- * creators the compare screen shows. Compare appears once the second one is on,
- * and the beat ends pressing it.
- *
- * Step 8's static frame is the *selected* state — the two ticks, Compare, and
- * the counts — because that is what it was signed off as. So this beat winds it
- * back to an untouched list first, the same way beat 1 winds back the filter rail.
- * No prop is needed for that: the timeline owns the state, and the authored frame
- * is what a viewer sees if the script never runs.
- *
- * 7 → 8 is a section-internal move — both screens are `AppShell active="lists"` —
- * so unlike beat 6's navigation there is no nav pill to snap. The card body fades
- * out, the layers swap behind an empty card, and the new body fades in.
+ * Beat 7 — open the list, tick the two creators the compare screen shows, press
+ * Compare. Screen 8's static frame is the *selected* state, so this winds it back
+ * to an untouched list first (same as beat 1 with the filter rail). 7 → 8 is
+ * section-internal, so unlike beat 6 there is no nav pill to snap.
  */
 
-/** The creators the compare screen puts side by side, in the order it shows them. */
-const COMPARED = CREATORS.filter((creator) => creator.checked).map((creator) => creator.handle);
+/** Taken from the data, not the rows' `checked` flags, so tick order and column
+ *  order can never disagree. */
+const COMPARED = COMPARED_HANDLES;
 
 export interface ListDetailLayers {
 	/** The My Lists layer being left. */

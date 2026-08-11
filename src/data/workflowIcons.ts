@@ -1,17 +1,10 @@
 /**
- * Icon set for the hero product-workflow mockup, read from the app's own SVG
- * assets in src/assets/icons/workflow at build time.
+ * Icon set for the workflow mockup, read from the app's own SVGs in
+ * src/assets/icons/workflow at build time. Each is the app's asset verbatim — same
+ * viewBox and stroke weight — with only the hard-coded colour swapped for
+ * `currentColor` so call sites can tint with `text-*`.
  *
- * The mockup ships as markup rather than an exported image so GSAP can animate
- * its parts, which means the glyphs have to be inline SVG. Each one is the
- * app's asset verbatim — its own viewBox grid and stroke weight are kept, so
- * the mockup matches the product pixel for pixel — with only the hard-coded
- * colour swapped for `currentColor` so call sites can tint with Tailwind's
- * text-* utilities.
- *
- * When the product changes an icon: drop the app's SVG into
- * src/assets/icons/workflow and, if the file name changed, repoint its slot in
- * ICON_FILES. Nothing else needs touching.
+ * To update: drop the app's SVG in, and repoint its slot in ICON_FILES if renamed.
  */
 
 const ICON_DIR = "../assets/icons/workflow";
@@ -32,6 +25,7 @@ const ICON_FILES = {
 	arrowIcon: "arrow_icon.svg",
 	asterisk: "asterisk.svg",
 	badge: "badge.svg",
+	chartCandlestick: "chart_candlestick.svg",
 	chartColumnIncreasing: "chart_column_increasing.svg",
 	check: "check.svg",
 	circleX: "circle_x.svg",
@@ -50,8 +44,10 @@ const ICON_FILES = {
 	mail: "mail.svg",
 	male: "male.svg",
 	mapPin: "map_pin.svg",
+	parameterMagic: "parameter_magic.svg",
 	messageCircle: "message_circle.svg",
 	phone: "phone.svg",
+	profileSearch: "profile_search.svg",
 	redirect: "redirect.svg",
 	removeFromList: "remove_from_list.svg",
 	search: "search.svg",

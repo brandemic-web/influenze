@@ -6,7 +6,7 @@ export interface NavLink {
 export interface NavItem extends NavLink {
 	/** Open in a new tab — for links that leave the site. */
 	newTab?: boolean;
-	/** Renders a ▾ dropdown with these links (no designed panel — see NOTES.md #3) */
+	/** Renders a ▾ dropdown with these links. */
 	dropdown?: NavLink[];
 	/** Small green badge rendered next to the label (e.g. "DotMe") */
 	badge?: string;

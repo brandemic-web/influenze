@@ -1,0 +1,68 @@
+---
+/**
+ * The engagement-benchmark slider inside a selected follower tier — the app's
+ * hand-built `EngagementStepSlider`, not a Material one. Six snap stops: an "all
+ * ranges" stop, then five even ones. Dragging right raises the minimum benchmark.
+ *
+ * Thumb and fill are both placed from one `--wf-slider-at` property, so the timeline
+ * animates a single number and the geometry stays here. The `data-wf-slider-*`
+ * attributes publish the stops, so no script restates them.
+ */
+interface Props {
+	/** Stop index 0–5, where 0 is the "all ranges" position. */
+	stop?: number;
+	/** Stop the story's drag pulls away from. Defaults to the authored one. */
+	from?: number;
+}
+
+const { stop = 3, from = stop } = Astro.props;
+
+/**
+ * Stop offsets as a percentage of the usable travel. The app reserves a 5px gap
+ * between the "all ranges" stop and the first real one; at the rail's width that
+ * is ~1.6% of travel, close enough to express proportionally.
+ */
+const stops = [0, 1.6, 26.2, 50.8, 75.4, 100];
+const at = stops[Math.min(Math.max(stop, 0), 5)];
+
+const captions = ["min", "poor", "average", "good", "max"];
+/**
+ * The slider sets a *minimum*, so the lit labels are the ones from the thumb
+ * rightward — the range being accepted. `engagementQualityLabel` in
+ * follower_metrics_filter.dart, where stop 0's "all ranges" lights all five.
+ */
+const litFrom = stop - 1;
+---
+
+<div
+	data-wf-slider
+	data-wf-slider-stops={stops.join(",")}
+	data-wf-slider-stop={stop}
+	data-wf-slider-from={from}
+	style={`--wf-slider-at:${at / 100}`}
+>
+	<div class="relative h-4 w-full">
+		{/* Track sits under the thumb's full travel, hence the 8px inset on the fill. */}
+		<div class="absolute inset-x-0 top-1.5 flex h-1">
+			<span class="h-full bg-wf-track" style="width:calc(0.5rem + (100% - 1rem) * var(--wf-slider-at))"></span>
+			<span class="h-full flex-1 bg-wf-green-mid"></span>
+		</div>
+		<span
+			class="absolute top-0 block size-4 rounded-full bg-white"
+			style="left:calc((100% - 1rem) * var(--wf-slider-at))"
+			data-wf-slider-thumb></span>
+	</div>
+
+	<div class="flex items-center justify-between pt-2">
+		{
+			captions.map((caption, index) => (
+				<span
+					class:list={["text-[0.75rem]", index >= litFrom ? "text-wf-text-quiet" : "text-wf-text-muted"]}
+					data-wf-slider-caption
+				>
+					{caption}
+				</span>
+			))
+		}
+	</div>
+</div>

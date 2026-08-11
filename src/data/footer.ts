@@ -3,6 +3,10 @@ export interface FooterColumn {
 	links: { label: string; href: string }[];
 }
 
+/**
+ * `href: "#"` marks a page that does not exist yet — the source of the 8
+ * `a11y-invalid-href` dev-toolbar findings per route. Swap in real URLs to clear.
+ */
 export const FOOTER_COLUMNS: FooterColumn[] = [
 	{
 		title: "Learn",
@@ -28,10 +32,7 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
 	},
 ];
 
-/**
- * Present as text layers in Figma but not visible in the rendered footer
- * (see NOTES.md #10). Append to FOOTER_COLUMNS to enable.
- */
+/** In Figma but not in the rendered design. Append to FOOTER_COLUMNS to enable. */
 export const USE_CASES_COLUMN: FooterColumn = {
 	title: "Use Cases",
 	links: [

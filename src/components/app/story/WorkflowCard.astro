@@ -1,0 +1,62 @@
+---
+/**
+ * One explainer card laid over the workflow mockup. A sibling of the screen layers,
+ * since it has to outlive them as the story advances. Starts hidden — GSAP owns
+ * opacity and visibility, so a script that never runs leaves no stray card.
+ *
+ * **Every length here is a Figma pixel**, converted by `rem()`: x1.125 maps the
+ * design's 1280-wide frame onto the stage's 1440 canvas, then /16 gives rem. `SCALE`
+ * shrinks the whole card off the design's size, so its proportions and line breaks
+ * survive whatever size we settle on.
+ */
+import type { WorkflowCard } from "../../../data/workflowCards";
+
+interface Props {
+	card: WorkflowCard;
+}
+
+const { card } = Astro.props;
+
+/** Turn this down to shrink the whole card; 1 is Figma's own size. */
+const SCALE = 0.77;
+
+/**
+ * How far the card hangs past the canvas's right edge, in Figma pixels. Turn it up to
+ * slide the card off the animation behind it — but note the ceiling: the mockup
+ * already fills its 80rem column, and `body` is `overflow-x-clip`, so too far
+ * silently crops the card. At these values it needs a ~1565px viewport to sit fully
+ * on the page, and raising either constant raises that floor.
+ */
+const OVERHANG = 184;
+
+/**
+ * Where the card sits down the canvas, in canvas rem. Deliberately *not* through
+ * `rem()` — it is a stage position, so resizing the card must not slide it.
+ */
+const TOP = 5.625;
+
+const rem = (figmaPx: number) => `${((figmaPx * 1.125 * SCALE) / 16).toFixed(3)}rem`;
+---
+
+<div
+	class="wf-card relative flex items-center justify-between overflow-hidden border border-[#19123a] bg-[#131212] shadow-[0_0.75rem_2rem_rgba(0,0,0,0.45)]"
+	style={`top:${TOP}rem;width:${rem(564)};right:${rem(-OVERHANG)};border-radius:${rem(8)};padding:${rem(30)}`}
+	data-wf-card={card.step}
+	aria-hidden="true"
+>
+	{/*
+		The violet is the card's *settled* state, not a variant — every card arrives black
+		and fills in. A layer rather than a background swap, because the fill is a radial
+		gradient and gradients don't tween. `spotlight()` owns it; with no script the card
+		stays black, which is a legitimate resting state.
+	*/}
+	<span class="wf-card-violet absolute inset-0 opacity-0" data-wf-card-fill></span>
+
+	<div class="relative flex flex-col" style={`width:${rem(328)};gap:${rem(20)}`}>
+		<p class="text-white" style={`font-size:${rem(24)}`}>{card.title}</p>
+		<p class="text-[#b9b9b9]" style={`font-size:${rem(18)};line-height:${rem(28)}`}>{card.body}</p>
+	</div>
+	<span class="relative leading-[1.1] whitespace-nowrap text-white/31" style={`font-size:${rem(110)}`}>
+		{card.step}
+	</span>
+</div>

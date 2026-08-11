@@ -2,28 +2,18 @@ import gsap from "gsap";
 import { horizontalLoop } from "../gsap/horizontalLoop";
 
 /**
- * Declarative right-to-left marquee. Add `data-marquee` to a wrapper and
- * `data-marquee-track` to the flex row inside it; the track's direct children
- * scroll right-to-left.
+ * Declarative right-to-left marquee. `data-marquee` on a wrapper, `data-marquee-track`
+ * on the flex row inside it; `data-marquee="always"` runs at every width, the default
+ * only below `lg`.
  *
- * Scope the animation with the attribute value:
- *   data-marquee            below the `lg` breakpoint only (default)
- *   data-marquee="always"   at every width
+ * Duplicate the items in the markup for gapless looping on wide viewports, tagging each
+ * copy `data-marquee-clone class="hidden" aria-hidden="true"` — clones stay hidden until
+ * the loop takes over, so the static fallback shows each item once.
  *
- * Duplicate the items in the markup so the loop has enough content to stay
- * gapless on wide viewports, and tag each copy with `data-marquee-clone`,
- * `class="hidden"` and `aria-hidden="true"`. Clones stay display:none until the
- * loop actually takes over, so the static fallback shows every item exactly once.
- *
- * The wrapper must be `overflow-x-auto` in the markup: when the loop does not
- * run — reduced-motion users, or if this script fails to load — the row stays
- * reachable by swipe/wheel instead of being clipped away. Once the loop is live
- * the wrapper is switched to `overflow-x: clip` (not `hidden`, which would
- * promote overflow-y to a nested scroll container).
- *
- * gsap.matchMedia reverts every tween/set it created once the query stops
- * matching, so clones re-hide and the row snaps back to its static layout on
- * resize.
+ * The wrapper must be `overflow-x-auto` in the markup, so the row stays swipeable when
+ * the loop doesn't run; it switches to `overflow-x: clip` once live (`hidden` would
+ * promote overflow-y to a nested scroll container). gsap.matchMedia reverts everything
+ * when the query stops matching, so resize snaps back cleanly.
  */
 const SCOPES: Record<string, string> = {
 	mobile: "(max-width: 1023px) and (prefers-reduced-motion: no-preference)",

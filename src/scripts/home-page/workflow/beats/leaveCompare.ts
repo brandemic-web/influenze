@@ -2,21 +2,12 @@ import gsap from "gsap";
 import type { Pointer } from "../utils/pointer";
 
 /**
- * Beat 9 — read the comparison, then come back out of it.
+ * Beat 9 — read the comparison down, press Back, reach for share. 9 → 8 is beat 8's
+ * swap run the other way, at the same 450ms; the list needs no restoring.
  *
- * The cursor scrolls both compare columns to the bottom, presses **Back** to
- * return to the list, and then presses the **share** control beside it. Beat 10
- * answers that press with the share modal.
- *
- * 9 → 8 is beat 8's mode swap run the other way, so it is the same fade through an
- * empty panel at the same 450ms. Nothing needs restoring on the list: beat 7 left
- * it with the two creators ticked and Compare showing, which is exactly the state
- * to come back to.
- *
- * The two columns scroll **together, by one shared distance**, because they read as
- * a single pane — the app scrolls the compare section as a whole and height-matches
- * the cards across it. The distance is the *smaller* of the two ranges, so neither
- * column can run past its own content and leave a gap.
+ * Both columns scroll together by one shared distance — the app treats the compare
+ * section as a single pane. That distance is the *smaller* of the two ranges, so
+ * neither column can run past its own content and leave a gap.
  */
 
 export interface LeaveCompareLayers {
@@ -62,7 +53,7 @@ export function leaveCompare(layers: LeaveCompareLayers, pointer: Pointer) {
 
 	const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
 
-	// Put the layers back the way beat 8 leaves them, so the beat is self-contained.
+	// Wind the layers back first, so the beat is replayable from anywhere.
 	tl.call(() => {
 		layers.to.removeAttribute("data-wf-active");
 		layers.from.setAttribute("data-wf-active", "");
@@ -72,16 +63,20 @@ export function leaveCompare(layers: LeaveCompareLayers, pointer: Pointer) {
 	);
 
 	// ── read all the way down ────────────────────────────────────────────────
-	// Cursor moves over the columns first, so the scroll happens under it.
+	// Wheel-style under the cursor, and unhurried for beat 4's reason: card 4 is up
+	// across this scroll, so the duration is also how long that card is readable.
 	tl.add(pointer.moveTo(el.columns[0].viewport, { at: { x: 0.5, y: 0.35 }, duration: 0.6 }), "+=0.2").to(
 		el.columns.map(({ content }) => content),
-		{ y: () => -range(), duration: 1.6, ease: "power2.inOut" },
+		{ y: () => -range(), duration: 3.4, ease: "power1.inOut" },
 		"+=0.1"
 	);
 
 	// ── back to the list ─────────────────────────────────────────────────────
 	const OUT = 0.22;
-	tl.add(pointer.moveTo(el.back, { duration: 0.7 }), "+=0.35")
+	// Card 4 goes out on this mark, so it clears as the cursor sets off for Back
+	// rather than sitting over the exit. See workflowCards.ts.
+	tl.addLabel("toBack", "+=0.35")
+		.add(pointer.moveTo(el.back, { duration: 0.7 }), "toBack")
 		.add(pointer.press())
 		.addLabel("leave")
 		.to(el.fromBody, { opacity: 0, duration: OUT, ease: "power2.in" }, "leave");

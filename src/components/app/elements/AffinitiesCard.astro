@@ -1,0 +1,132 @@
+---
+import trophy from "../../../assets/icons/mkit/trophy.svg";
+
+/**
+ * Affinities card — the media kit's creator affinities.
+ *
+ * Both lists are rendered into one grid cell so the card's height is the taller
+ * of the two and swapping between them can't shift the layout. The markup ships
+ * in its *settled* state (Interests selected) — the panel demo in
+ * `creators-ai-panels.ts` rewinds it to Brand Affinities and clicks across.
+ */
+interface Props {
+	class?: string;
+}
+
+const { class: className = "" } = Astro.props;
+
+const AFFINITY_GROUPS = [
+	{
+		key: "interests",
+		label: "Interests",
+		items: [
+			"Friends, Family & Relationships",
+			"Camera & Photography",
+			"Clothes, Shoes, Handbags & Accessories",
+			"Travel, Tourism & Aviation",
+			"Restaurants, Food & Grocery",
+		],
+	},
+	{
+		key: "brands",
+		label: "Brand Affinities",
+		items: [
+			"Travelgram",
+			"Apple",
+			"Royal Enfield",
+			"Nikon",
+			"National Geographic",
+		],
+	},
+];
+
+/** The group the markup renders as selected. */
+const SELECTED = "interests";
+---
+
+<div
+	data-affinity-ui
+	class:list={[
+		"w-84 max-w-full rounded-[0.3125rem] bg-mkit-card p-3 font-sans text-white",
+		className,
+	]}
+>
+	{/* Header — bare trophy, then `tileTitle` 14/600 */}
+	<div class="flex items-center pb-3">
+		<img
+			src={trophy.src}
+			alt=""
+			width="20"
+			height="20"
+			class="size-5 shrink-0"
+			loading="lazy"
+		/>
+		<span class="ml-3 truncate text-[0.875rem] font-semibold">Audience Affinities</span>
+	</div>
+
+	<div class="flex gap-2">
+		{
+			AFFINITY_GROUPS.map((group) => (
+				<span
+					data-affinity-tab={group.key}
+					data-affinity-on={group.key === SELECTED ? "true" : "false"}
+					class="affinity-tab rounded-full px-3 py-2 text-[0.625rem]"
+				>
+					{group.label}
+				</span>
+			))
+		}
+	</div>
+
+	{/* `sectionSubtitle` — 12/400 on grey1 */}
+	<p class="mt-4 text-[0.75rem] text-mkit-subtitle">
+		Main topics this creator covers
+	</p>
+
+	{/* `Divider(thickness: 2, height: 24)` — a 2px rule centred in a 24px box */}
+	<span class="my-2.75 block h-0.5 w-full bg-mkit-rule"></span>
+
+	<div class="grid">
+		{
+			AFFINITY_GROUPS.map((group) => (
+				<ol
+					data-affinity-list={group.key}
+					class:list={[
+						"col-start-1 row-start-1 flex list-none flex-col p-0",
+						group.key !== SELECTED && "invisible opacity-0",
+					]}
+				>
+					{group.items.map((name, index) => (
+						<li class="flex items-center gap-3 py-3">
+							{/* `mediaKitListSubtitle` — 12/500 on grey13 */}
+							<span class="shrink-0 text-[0.75rem] font-medium text-mkit-rule">
+								#{index + 1}
+							</span>
+							{/* `mediaKitListTitle` — 12/500 */}
+							<span class="truncate text-[0.75rem] font-medium">{name}</span>
+						</li>
+					))}
+				</ol>
+			))
+		}
+	</div>
+</div>
+
+<style>
+	/* `ChoiceChip` — grey3 fill unselected, white fill with grey4 label selected. */
+	.affinity-tab {
+		transition:
+			background-color 0.3s ease,
+			color 0.3s ease;
+	}
+	.affinity-tab[data-affinity-on="false"] {
+		background-color: #202427;
+		color: #fff;
+		font-weight: 500;
+	}
+	.affinity-tab[data-affinity-on="true"] {
+		background-color: #fff;
+		color: #0e0f10;
+		font-weight: 600;
+	}
+</style>

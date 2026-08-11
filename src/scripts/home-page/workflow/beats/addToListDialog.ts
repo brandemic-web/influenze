@@ -1,21 +1,11 @@
 import gsap from "gsap";
 
 /**
- * Beat 5 — the add-to-list dialog opens.
- *
- * Answers beat 4's press on add-to-list. Structurally the odd one out: screen 6
- * *contains* a copy of screen 5 as its blurred backdrop, so instead of animating
- * the old layer up to meet the new one, this swaps first and brings the new layer
- * down to meet the old one. With the blur off, the scrim clear and the card
- * hidden, screen 6 renders exactly what screen 5 renders — so the swap is
- * invisible and the dialog can then simply arrive.
- *
- * That backdrop is a fresh render, though, which means it has no idea beat 4
- * scrolled the media kit. Carrying that one value across is what keeps the
- * background from snapping back to the top as the layers change.
- *
- * The cursor does not move here: it pressed the button in beat 4 and a dialog
- * opening does not move the mouse.
+ * Beat 5 — the add-to-list dialog opens. Swap-first, unlike every other beat:
+ * screen 6 embeds a copy of screen 5 as its blurred backdrop, so with the blur off,
+ * the scrim clear and the card hidden the two layers are identical and the swap is
+ * invisible. The backdrop is a fresh render, so beat 4's media-kit scroll has to be
+ * carried across by hand. The cursor does not move — a dialog opening doesn't move it.
  */
 
 export interface AddToListLayers {
@@ -42,9 +32,9 @@ export function addToListDialog(layers: AddToListLayers) {
 	const el = collect(layers);
 	if (!el) return null;
 
-	// Read the authored blur before overriding it, so CenteredModalOverlay keeps owning the
-	// value. Both ends of the tween are then an explicit `blur(Npx)` — the only
-	// shape GSAP interpolates dependably. See the filter note in APP-SPEC.md.
+	// Read the authored blur before overriding it, so CenteredModalOverlay keeps
+	// owning it. Both tween ends are then explicit `blur(Npx)` — the only shape GSAP
+	// interpolates dependably.
 	const blurred = getComputedStyle(el.backdrop).filter;
 	const CLEAR = "blur(0px)";
 

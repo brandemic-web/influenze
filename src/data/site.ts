@@ -1,8 +1,4 @@
-/**
- * Central site config. The app CTA URLs below are placeholders — swap for the
- * real app URLs when they exist (see NOTES.md #4). Internal page routes are
- * real and kept here so a route change is a one-line edit.
- */
+/** Site-wide identity, meta copy and outbound CTA destinations. */
 export const SITE = {
 	name: "influenze.ai",
 	title: "Influenze.ai — Find and analyze the right creators",
@@ -11,9 +7,10 @@ export const SITE = {
 	domain: "influenze.ai",
 } as const;
 
+// App entry points. TODO: point these at the real product app before launch —
+// /login is not a route on this marketing site.
 export const SIGNUP_URL = "https://influenze.ai/login";
 export const LOGIN_URL = "https://influenze.ai/";
-export const CONTACT_URL = "#";
 
 /** Internal route for the features page — the "Learn More" destination. */
 export const FEATURES_URL = "/features";

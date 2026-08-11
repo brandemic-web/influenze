@@ -5,12 +5,12 @@ export interface CreatorAIFeature {
 	description: string;
 }
 
-export const CREATORS_AI_BUTTON = "View Features";
+export const CREATORS_AI_BUTTON = "Features";
 
 /**
  * The four feature rows on the left of the "world's creators" section.
  * Each maps to an asset group under home_page/sign_up/ (search_global is the
- * only state rendered in the static design — see PLAN.md).
+ * only state rendered in the static design).
  */
 export const CREATORS_AI_FEATURES: CreatorAIFeature[] = [
 	{

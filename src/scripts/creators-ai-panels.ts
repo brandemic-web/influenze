@@ -10,11 +10,16 @@ gsap.registerPlugin(SplitText);
  * for the harness they all plug into.
  */
 
-/** Tier row colour once the Mega Account option is selected. */
-const ROW_ACTIVE = "#282341";
-/** Checkbox fill / unselected border colour. */
-const CHECK_FILL = "#6838ff";
-const CHECK_BORDER = "rgba(104,56,255,0.6)";
+/**
+ * The app's tier-row colours — `lavender69`, `lavender15` and `lavender14` in
+ * influenze/lib/common/colors.dart, same as the `wf-` tokens the markup uses.
+ * They are literals here because GSAP tweens computed colours, not var() names.
+ */
+/** Tier row fill once the Mega Influencer option is selected. */
+const ROW_ACTIVE = "#322b45";
+/** Selection indicator fill / unselected border colour. */
+const CHECK_FILL = "#865fff";
+const CHECK_BORDER = "#615381";
 /** Seconds between characters while "typing". */
 const TYPE_SPEED = 0.055;
 /** Distance (px) cards travel up from on a reveal. */
@@ -27,13 +32,21 @@ const CURSOR_HOME = { x: 560, y: 620 };
  * Affinity list swap (s). Fade only, and on the list as a whole rather than the
  * rows — a per-row `y` tween puts a transform on text that is already sitting
  * inside the fractionally scaled stage, which reads as a jitter at the smaller
- * breakpoints. Mirrors the same pair in `audience-affinities.ts`.
+ * breakpoints.
  */
 const LIST_FADE_OUT = 0.22;
 const LIST_FADE_IN = 0.32;
 
 /** Fraction of the Compare card's scrollable height the demo travels. */
 const SCROLL_REVEAL = 0.85;
+/**
+ * How long that travel takes (s). Raised from 2.2 when the growth charts and the
+ * pricing card went into the column: the range grew from a few hundred pixels to
+ * ~1500, and since the fraction is measured on play, the same duration turned the
+ * reveal into a whip. The card's aperture is only 580 at `zoom: 0.65`, so content
+ * crossing it reads faster here than the same speed does in the hero.
+ */
+const SCROLL_DURATION = 4;
 
 /* ── Panel 1 · Search Globally ──────────────────────────────────────────────
  * A pointer walks the UI: the three cards land, the Mega Account tier is
@@ -60,11 +73,12 @@ registerPanelDemo(panelId(0), (ctx) => {
 	// whole panel script down with it.
 	const handleText = handleField?.querySelector<HTMLElement>("[data-search-text]");
 	const handleCaret = handleField?.querySelector<HTMLElement>("[data-search-caret]");
+	const handleHint = handleField?.querySelector<HTMLElement>("[data-search-hint]");
 	const regionText = regionField?.querySelector<HTMLElement>("[data-search-text]");
 	const regionCaret = regionField?.querySelector<HTMLElement>("[data-search-caret]");
 
 	if (!cursor || !ring || !row || !check || !dot || !expand || !slider || !knob
-		|| !handleField || !handleText || !handleCaret
+		|| !handleField || !handleText || !handleCaret || !handleHint
 		|| !regionField || !regionText || !regionCaret
 		|| !pill || cards.length < 3) return;
 
@@ -84,27 +98,29 @@ registerPanelDemo(panelId(0), (ctx) => {
 		.set(cards, { y: RISE, autoAlpha: 0 })
 		.set(cursor, { autoAlpha: 0, scale: 1, x: CURSOR_HOME.x, y: CURSOR_HOME.y })
 		.set(ring, { autoAlpha: 0, scale: 0.3 })
-		.set(row, { backgroundColor: "rgba(40,35,65,0)" })
-		.set(check, { backgroundColor: "rgba(104,56,255,0)", borderColor: CHECK_BORDER })
+		.set(row, { backgroundColor: "rgba(50,43,69,0)" })
+		.set(check, { backgroundColor: "rgba(134,95,255,0)", borderColor: CHECK_BORDER })
 		.set(dot, { autoAlpha: 0, scale: 0 })
 		.set(expand, { height: 0, autoAlpha: 0 })
 		.set(slider, { scaleX: 0, transformOrigin: "right center" })
 		.set(knob, { autoAlpha: 0, x: 200 })
 		.set([...handleChars, ...regionChars], { display: "none", opacity: 0 })
+		.set(handleHint, { display: "block" })
 		.set([handleCaret, regionCaret], { autoAlpha: 0 })
 		.set(pill, { display: "none" })
 
 		// ── 1 · the three cards land, staggered ──────────────────────────────
 		.to(cards, { y: 0, autoAlpha: 1, duration: 0.7, stagger: 0.2 }, 0.1)
 
-		// ── 2 · pointer travels to the Mega Account checkbox and clicks ──────
+		// ── 2 · pointer travels to the Mega Influencer checkbox and clicks ───
 		.to(cursor, { autoAlpha: 1, duration: 0.25 }, ">-0.15");
 
 	hopAndClick(tl, ctx, cursor, ring, check, "<");
 
 	tl
 		// selection takes hold: box fills, row lights up, slider block unfolds
-		.to(check, { backgroundColor: CHECK_FILL, borderColor: "rgba(104,56,255,0)", duration: 0.25 }, "<0.05")
+		// (the app fills and borders the indicator in the same lavender15)
+		.to(check, { backgroundColor: CHECK_FILL, borderColor: CHECK_FILL, duration: 0.25 }, "<0.05")
 		.to(dot, { autoAlpha: 1, scale: 1, duration: 0.28, ease: "back.out(3)" }, "<0.05")
 		.to(row, { backgroundColor: ROW_ACTIVE, duration: 0.35 }, "<")
 		.to(expand, { height: "auto", autoAlpha: 1, duration: 0.5 }, "<")
@@ -118,6 +134,7 @@ registerPanelDemo(panelId(0), (ctx) => {
 			duration: HOP,
 			ease: "power3.inOut",
 		}, ">0.2")
+		.set(handleHint, { display: "none" })
 		.set(handleCaret, { autoAlpha: 1 })
 		.to(handleChars, {
 			display: "inline-block",
@@ -156,8 +173,7 @@ registerPanelDemo(panelId(0), (ctx) => {
 
 /* ── Panel 2 · Know The Audience ─────────────────────────────────────────────
  * The three cards stagger up, then the pointer clicks the Interests toggle on
- * the Audience Affinities card and the top-five list swaps over. The toggle
- * stays live for the visitor afterwards — see `audience-affinities.ts`.
+ * the Audience Affinities card and the top-five list swaps over.
  */
 registerPanelDemo(panelId(1), (ctx) => {
 	const { panel } = ctx;
@@ -182,10 +198,10 @@ registerPanelDemo(panelId(1), (ctx) => {
 		.set(items, { y: RISE, autoAlpha: 0 })
 		.set(cursor, { autoAlpha: 0, scale: 1, x: CURSOR_HOME.x, y: CURSOR_HOME.y })
 		.set(ring, { autoAlpha: 0, scale: 0.3 })
-		.set(interestsList, { autoAlpha: 0, attr: { "data-affinity-selected": "false" } })
-		.set(brandsList, { autoAlpha: 1, attr: { "data-affinity-selected": "true" } })
-		.set(interestsTab, { attr: { "aria-pressed": "false" } })
-		.set(brandsTab, { attr: { "aria-pressed": "true" } })
+		.set(interestsList, { autoAlpha: 0 })
+		.set(brandsList, { autoAlpha: 1 })
+		.set(interestsTab, { attr: { "data-affinity-on": "false" } })
+		.set(brandsTab, { attr: { "data-affinity-on": "true" } })
 
 		// ── 1 · the three cards land, staggered ──────────────────────────────
 		.to(items, { y: 0, autoAlpha: 1, duration: 0.7, stagger: 0.18 }, 0.1)
@@ -197,10 +213,8 @@ registerPanelDemo(panelId(1), (ctx) => {
 
 	return tl
 		// ── 3 · the toggle flips and the top five swap over ──────────────────
-		.set(interestsTab, { attr: { "aria-pressed": "true" } }, ">-0.1")
-		.set(brandsTab, { attr: { "aria-pressed": "false" } }, "<")
-		.set(interestsList, { attr: { "data-affinity-selected": "true" } }, "<")
-		.set(brandsList, { attr: { "data-affinity-selected": "false" } }, "<")
+		.set(interestsTab, { attr: { "data-affinity-on": "true" } }, ">-0.1")
+		.set(brandsTab, { attr: { "data-affinity-on": "false" } }, "<")
 		.to(brandsList, { autoAlpha: 0, duration: LIST_FADE_OUT, ease: "power2.in" }, "<")
 		.fromTo(interestsList,
 			{ autoAlpha: 0 },
@@ -210,8 +224,7 @@ registerPanelDemo(panelId(1), (ctx) => {
 
 /* ── Panel 3 · Choose The Right Creators ────────────────────────────────────
  * The pieces stagger up in DOM order, then the Compare card scrolls its own
- * body down to show that there's more below the fold. It stays scrollable by
- * hand afterwards — the animation only nudges the visitor into trying it.
+ * body down to show that there's more below the fold. 
  */
 registerPanelDemo(panelId(2), ({ panel, reducedMotion }) => {
 	const items = gsap.utils.toArray<HTMLElement>("[data-panel-item]", panel);
@@ -229,7 +242,7 @@ registerPanelDemo(panelId(2), ({ panel, reducedMotion }) => {
 		// Measured on play, so a re-run picks up whatever the card's content is now.
 		.to(scroller, {
 			scrollTop: () => (scroller.scrollHeight - scroller.clientHeight) * SCROLL_REVEAL,
-			duration: 2.2,
+			duration: SCROLL_DURATION,
 			ease: "power1.inOut",
 		}, ">0.4");
 });

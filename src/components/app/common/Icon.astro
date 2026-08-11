@@ -1,0 +1,40 @@
+---
+/**
+ * Inline glyph used by the product-workflow mockup.
+ *
+ * The mockup ships as markup (not an exported image) so GSAP can animate its
+ * parts, which means the icons have to be inline SVG rather than <img> assets.
+ * Markup comes from the app's own SVG files — see src/data/workflowIcons.ts —
+ * and each keeps its source grid, so `size` scales the asset as the app draws
+ * it instead of forcing everything onto one 24px grid.
+ */
+import { WORKFLOW_ICONS, type WorkflowIconName } from "../../../data/workflowIcons";
+
+interface Props {
+	name: WorkflowIconName;
+	/** Rendered size, in rem. The asset's own viewBox is scaled to fit. */
+	size?: string;
+	class?: string;
+	/** Overrides the asset's own weight, in its viewBox units. */
+	strokeWidth?: number;
+	/** Inline style, used where a colour is per-instance rather than tokenised. */
+	style?: string;
+}
+
+const { name, size = "1rem", class: className = "", strokeWidth, style = "" } = Astro.props;
+
+const icon = WORKFLOW_ICONS[name];
+---
+
+<svg
+	viewBox={icon.viewBox}
+	fill="none"
+	stroke="currentColor"
+	stroke-width={strokeWidth ?? icon.strokeWidth}
+	stroke-linecap="round"
+	stroke-linejoin="round"
+	style={`width:${size};height:${size};${style}`}
+	class={`shrink-0 ${className}`}
+	aria-hidden="true"
+	set:html={icon.markup}
+/>

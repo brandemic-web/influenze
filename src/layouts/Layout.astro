@@ -1,15 +1,25 @@
 ---
 import "../styles/global.css";
+import { getImage } from "astro:assets";
 import { SITE } from "../data/site";
 import Header from "../components/common/Header.astro";
 import CtaBand from "../components/common/CtaBand.astro";
 import Footer from "../components/common/Footer.astro";
+import ogSource from "../assets/images/common/ui_images/campaign_creator_dashboard.png";
+import logoSource from "../assets/images/common/logos_and_icons/influenze_wordmark_mobile.png";
 
 interface Props {
 	title?: string;
 	description?: string;
 	ctaButtonLabel?: string;
 	hideCta?: boolean;
+	/** Keeps a page out of search results. Used by 404. */
+	noindex?: boolean;
+	/**
+	 * Extra JSON-LD nodes for this page, merged into the site-wide `@graph`.
+	 * The homepage passes its FAQ and the product itself; see pages/index.astro.
+	 */
+	schema?: Record<string, unknown>[];
 }
 
 const {
@@ -17,8 +27,60 @@ const {
 	description = SITE.description,
 	ctaButtonLabel,
 	hideCta = false,
+	noindex = false,
+	schema = [],
 } = Astro.props;
-const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin);
+
+const site = Astro.site ?? new URL(Astro.url.origin);
+const canonical = new URL(Astro.url.pathname, site);
+
+// Social cards want 1.91:1. The source screenshot is 1.85:1, so `cover` trims a
+// few pixels top and bottom rather than squashing it. Swap `ogSource` for a
+// purpose-built card when design has one — nothing else here has to change.
+const og = await getImage({
+	src: ogSource,
+	width: 1200,
+	height: 630,
+	fit: "cover",
+	format: "jpeg",
+});
+const ogImage = new URL(og.src, site);
+
+// Google wants a raster logo it can crop to a square, so this points at the
+// wordmark PNG rather than the nav SVG.
+const orgLogo = await getImage({ src: logoSource, width: 600, format: "png" });
+
+const organizationId = new URL("/#organization", site).href;
+const structuredData = {
+	"@context": "https://schema.org",
+	"@graph": [
+		{
+			"@type": "Organization",
+			"@id": organizationId,
+			name: SITE.name,
+			url: site.href,
+			description: SITE.description,
+			logo: new URL(orgLogo.src, site).href,
+		},
+		{
+			"@type": "WebSite",
+			"@id": new URL("/#website", site).href,
+			url: site.href,
+			name: SITE.name,
+			description: SITE.description,
+			publisher: { "@id": organizationId },
+			inLanguage: "en",
+		},
+		{
+			"@type": "WebPage",
+			url: canonical.href,
+			name: title,
+			description,
+			isPartOf: { "@id": new URL("/#website", site).href },
+		},
+		...schema,
+	],
+};
 ---
 
 <!doctype html>
@@ -26,20 +88,26 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin);
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.webp" />
+		<link rel="icon" href="/favicon.webp" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
 		<meta name="description" content={description} />
 		<link rel="canonical" href={canonical} />
+		{noindex && <meta name="robots" content="noindex, follow" />}
 		<meta property="og:type" content="website" />
 		<meta property="og:site_name" content={SITE.name} />
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
 		<meta property="og:url" content={canonical} />
+		<meta property="og:image" content={ogImage} />
+		<meta property="og:image:width" content="1200" />
+		<meta property="og:image:height" content="630" />
+		<meta property="og:image:alt" content={SITE.name} />
 		<meta name="twitter:card" content="summary_large_image" />
 		<meta name="twitter:title" content={title} />
 		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={ogImage} />
 		<link
 			rel="preload"
 			href="/fonts/open-sauce-two-latin-400-normal.woff2"
@@ -54,6 +122,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin);
 			type="font/woff2"
 			crossorigin
 		/>
+		<script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
 	</head>
 	<body class="min-h-screen overflow-x-clip antialiased">
 		<Header />
