@@ -4,7 +4,7 @@ import gsap from "gsap";
  * Makes the Audience Affinities toggle real: once the scripted demo has clicked
  * across to Interests, the visitor can keep switching the two lists themselves.
  *
- * The beat in `home-page/creators-ai/beats/knowAudience.ts` drives the same properties
+ * The demo timeline in `creators-ai-panels.ts` drives the same properties
  * (`aria-pressed` on the tabs, `autoAlpha` on the lists) so the two paths can
  * hand the card back and forth without fighting over state.
  */

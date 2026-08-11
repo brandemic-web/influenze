@@ -1,19 +1,10 @@
 ---
 /**
- * Scripted pointer used by the CreatorsAI beats. It renders hidden and is driven
- * entirely by GSAP (see `scripts/home-page/creators-ai/utils/pointer.ts`), which
- * positions it in the stage's unscaled coordinate space — so it must sit as a
- * direct child of a panel, not inside one of the scaled cards.
- *
- * The same hand the hero's workflow story uses, offset the same way: the
- * fingertip sits at 44%/26% across the 32x32 asset, so pulling the glyph back by
- * that much lands the fingertip on the wrapper's own origin. The pointer script
- * can then aim straight at a target's centre and mean it, `origin-top-left` makes
- * a press scale around the fingertip rather than drift off it, and the click ring
- * — centred on that same origin — pulses from the contact point.
+ * Scripted pointer used by the CreatorsAI panel demos. It renders hidden and is
+ * driven entirely by GSAP (see `scripts/creators-ai-demo.ts`), which positions
+ * it in the stage's unscaled coordinate space — so it must sit as a direct
+ * child of a panel, not inside one of the scaled cards.
  */
-import handPointing from "../../assets/images/common/utils/handpointing.svg";
-
 interface Props {
 	class?: string;
 }
@@ -24,7 +15,7 @@ const { class: className = "" } = Astro.props;
 <div
 	data-demo-cursor
 	class:list={[
-		"pointer-events-none absolute left-0 top-0 z-30 size-8 origin-top-left opacity-0",
+		"pointer-events-none absolute left-0 top-0 z-30 opacity-0",
 		className,
 	]}
 	aria-hidden="true"
@@ -33,11 +24,16 @@ const { class: className = "" } = Astro.props;
 		data-demo-cursor-ring
 		class="absolute -left-4 -top-4 block size-8 rounded-full border-2 border-brand-primary opacity-0"
 	></span>
-	<img
-		src={handPointing.src}
-		alt=""
-		width="32"
-		height="32"
-		class="block translate-x-[-44%] translate-y-[-26%]"
-	/>
+	<svg
+		class="block size-6 drop-shadow-[0_0.125rem_0.25rem_rgba(0,0,0,0.6)]"
+		viewBox="0 0 24 24"
+		fill="none"
+	>
+		<path
+			d="M5 2.5 18.5 12.2l-5.8.6-3 5.4z"
+			fill="#ffffff"
+			stroke="#0b0916"
+			stroke-width="1.2"
+			stroke-linejoin="round"></path>
+	</svg>
 </div>

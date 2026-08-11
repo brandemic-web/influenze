@@ -8,10 +8,7 @@ import { PANEL_DONE, PANEL_ENTER } from "./creators-ai";
  * The tabs also advance on their own. Rather than a fixed interval, each slide
  * is held until its demo timeline reports back (`PANEL_DONE`) plus a short beat,
  * so a long demo is never cut off and a short one doesn't linger. Clicking a tab
- * holds the rotation off long enough to read the slide you asked for, and the
- * rotation stops entirely while the visitor's cursor or focus is on the visuals —
- * the panels are real UI, so a slide that swapped out from under someone reading
- * a card would take the thing they were looking at with it.
+ * holds the rotation off long enough to read the slide you asked for.
  */
 
 /** Cross-fade duration (s) between two panels. */
@@ -55,15 +52,6 @@ function initCreatorsAITabs() {
 	/** True once the current panel's demo has finished, i.e. it may be left. */
 	let settled = false;
 	let inView = false;
-	/**
-	 * Whether the visitor is currently on the visuals, by cursor or by focus.
-	 *
-	 * Two flags rather than one because the two overlap: a keyboard user's focus
-	 * ring stays inside a card while the mouse wanders off it, and collapsing them
-	 * would let whichever ended last hand the rotation back early.
-	 */
-	let hovering = false;
-	let focused = false;
 
 	function cancelAuto() {
 		pending?.kill();
@@ -77,7 +65,7 @@ function initCreatorsAITabs() {
 	 */
 	function scheduleAuto() {
 		cancelAuto();
-		if (reducedMotion || !inView || !settled || hovering || focused) return;
+		if (reducedMotion || !inView || !settled) return;
 
 		const hold = (holdUntil - performance.now()) / 1000;
 		pending = gsap.delayedCall(Math.max(AUTO_DELAY, hold), () => {
@@ -163,43 +151,9 @@ function initCreatorsAITabs() {
 		});
 	});
 
-	// The collage the panels are laid out on — the visuals, not the feature list.
-	const stage = panels[0].parentElement ?? root;
-
-	// Hold the rotation while the visitor is on the visuals. The panels are real UI
-	// markup, so someone reading a card or reaching for a control in it is mid-task,
-	// and swapping the panel out from under them loses whatever they were looking at.
-	//
-	// Listening on the stage rather than each card is what makes moving between two
-	// cards one continuous hover — per-card listeners would fire leave/enter across
-	// the gap and restart the countdown from the top each time. `scheduleAuto`
-	// cancels before it re-arms and bails on the flags above, so both directions can
-	// call just it.
-	stage.addEventListener("pointerenter", (event) => {
-		// A tap fires enter with no matching leave until the next interaction, which
-		// would hold the rotation off for good on a touch device.
-		if (event.pointerType === "touch") return;
-		hovering = true;
-		scheduleAuto();
-	});
-	stage.addEventListener("pointerleave", () => {
-		hovering = false;
-		scheduleAuto();
-	});
-
-	// `focusin`/`focusout` rather than focus/blur: those don't bubble, and the focus
-	// lands on a control inside a card, not on the stage itself.
-	stage.addEventListener("focusin", () => {
-		focused = true;
-		scheduleAuto();
-	});
-	stage.addEventListener("focusout", () => {
-		focused = false;
-		scheduleAuto();
-	});
-
 	// Rotating while the visuals are off screen would strand the visitor on a
 	// mid-sequence slide, so the timer only runs while they're actually visible.
+	const stage = panels[0].parentElement ?? root;
 	new IntersectionObserver((entries) => {
 		inView = entries[0].isIntersecting;
 		if (inView) scheduleAuto();

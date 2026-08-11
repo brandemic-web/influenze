@@ -16,8 +16,7 @@ const { class: className = "" } = Astro.props;
 
 /**
  * Location pills. The last one is the pill the panel-0 demo drops in, so it
- * carries `data-search-pill` — see
- * scripts/home-page/creators-ai/beats/searchGlobally.ts.
+ * carries `data-search-pill` — see scripts/creators-ai-panels.
  */
 const regions = ["United States", "Germany", "India"];
 ---
@@ -39,7 +38,6 @@ const regions = ["United States", "Germany", "India"];
 		</button>
 		<button
 			type="button"
-			data-search-apply
 			class="ml-auto cursor-pointer rounded-sm bg-gradient-primary px-3.75 py-2 text-[0.875rem] font-semibold text-white hover:bg-ui-indigo-hover"
 		>
 			Apply &amp; Search

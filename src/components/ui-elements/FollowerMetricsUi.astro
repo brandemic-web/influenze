@@ -25,18 +25,9 @@ const tiers = [
 
 	<ul class="mt-2.5 flex list-none flex-col p-0">
 		{
-			tiers.map((tier, i) => (
+			tiers.map((tier) => (
 				<li class="flex items-center gap-2.5 border-b border-white/8 px-1 py-2.75">
-					{/*
-						The first idle box is the one the beat reads its unselected
-						border colour off, so the selected box below can rewind to it
-						without the script restating the value. See
-						`scripts/home-page/creators-ai/beats/searchGlobally.ts`.
-					*/}
-					<span
-						data-metrics-idle-check={i === 0 ? true : undefined}
-						class="size-3.5 flex-none rounded-[0.25rem] border border-gradient-primary/60"
-					/>
+					<span class="size-3.5 flex-none rounded-[0.25rem] border border-gradient-primary/60" />
 					<span class="text-[0.8125rem] leading-none">{tier.icon}</span>
 					<span class="flex-auto text-[0.8125rem]">{tier.name}</span>
 					<span class="text-[0.75rem] text-ui-lilac">{tier.range}</span>
@@ -53,10 +44,9 @@ const tiers = [
 		</li>
 
 		<!--
-			Selected tier, expanded. Markup is the *settled* state;
-			`scripts/home-page/creators-ai/beats/searchGlobally.ts` rewinds it to an
-			unselected row and plays the selection forward, so it degrades to the
-			design without JS.
+			Selected tier, expanded. Markup is the *settled* state; the section's
+			timeline (creators-ai-search-anim) rewinds it to an unselected row and
+			plays the selection forward, so it degrades to the design without JS.
 		-->
 		<li data-metrics-row class="mt-1.5 rounded-sm bg-[#282341] px-3 pt-2.75 pb-3">
 			<div class="flex items-center gap-2.5">
@@ -72,13 +62,7 @@ const tiers = [
 			</div>
 
 			<div data-metrics-expand class="overflow-hidden">
-				{/*
-					The track is the one piece of the range control the beat never
-					transforms, so it is also the only stable reference for where the
-					knob's travel starts and ends — the hand follows it by aiming at
-					this box. See `scripts/home-page/creators-ai/beats/searchGlobally.ts`.
-				*/}
-				<div data-metrics-track class="relative mt-3.5 h-1 rounded-full bg-white/12">
+				<div class="relative mt-3.5 h-1 rounded-full bg-white/12">
 					<span
 						data-metrics-slider
 						class="absolute inset-y-0 left-0 block w-full origin-left rounded-full bg-brand-primary"
@@ -106,5 +90,7 @@ const tiers = [
 				</p>
 			</div>
 		</li>
+
+		
 	</ul>
 </div>
