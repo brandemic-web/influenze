@@ -1,20 +1,12 @@
 ---
 /**
- * The engagement-benchmark slider inside a selected follower tier —
- * `EngagementStepSlider`
+ * The engagement-benchmark slider inside a selected follower tier — the app's
+ * hand-built `EngagementStepSlider`, not a Material one. Six snap stops: an "all
+ * ranges" stop, then five even ones. Dragging right raises the minimum benchmark.
  *
- * Hand-built in the app too (no Material `Slider`): a 4px edge-to-edge track in
- * a 16px-tall box, grey to the left of the thumb and green to the right, with a
- * plain white 16px thumb. Six snap stops: an "all ranges" stop, then five evenly
- * spaced across the remainder. Dragging right raises the minimum benchmark, so
- * stop 0 — thumb hard left, track all green — is "accept every range".
- *
- * The thumb and the grey fill are both placed from one `--wf-slider-at` custom
- * property, so the workflow timeline can drag the handle by animating a single
- * number while the geometry stays here. `data-wf-slider-stops` publishes the
- * snap offsets, `data-wf-slider-stop` the authored one and `data-wf-slider-from`
- * the one the story's drag starts at, so the timeline never has to restate any
- * of them.
+ * Thumb and fill are both placed from one `--wf-slider-at` property, so the timeline
+ * animates a single number and the geometry stays here. The `data-wf-slider-*`
+ * attributes publish the stops, so no script restates them.
  */
 interface Props {
 	/** Stop index 0–5, where 0 is the "all ranges" position. */
@@ -50,7 +42,7 @@ const litFrom = stop - 1;
 	style={`--wf-slider-at:${at / 100}`}
 >
 	<div class="relative h-4 w-full">
-		<!-- Track sits under the thumb's full travel, hence the 8px inset on the fill. -->
+		{/* Track sits under the thumb's full travel, hence the 8px inset on the fill. */}
 		<div class="absolute inset-x-0 top-1.5 flex h-1">
 			<span class="h-full bg-wf-track" style="width:calc(0.5rem + (100% - 1rem) * var(--wf-slider-at))"></span>
 			<span class="h-full flex-1 bg-wf-green-mid"></span>

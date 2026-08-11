@@ -1,27 +1,16 @@
 /**
- * The five explainer cards that punctuate the hero workflow story.
+ * The explainer cards that punctuate the hero workflow story. Each fades up as its
+ * beat ends and plays over the beat that follows — see `workflow/utils/spotlight.ts`.
  *
- * They do not interrupt the story — each one fades up as its beat ends and
- * plays over the beat that follows, which runs on underneath. See
- * `scripts/home-page/workflow/spotlight.ts`.
- *
- * Unlike the rest of the mockup these are **marketing artwork, not app UI**, so
- * Design is the source of truth for them — the opposite of the rule in
- * `components/app/APP-SPEC.md`.
+ * Unlike the rest of the mockup these are **marketing artwork, not app UI**, so Design
+ * is the source of truth — the opposite of APP-SPEC.md's rule.
  */
 
 /**
- * A moment in the story, given as a beat and a place inside it.
- *
- * `at` is preferably one of that beat's own GSAP labels — the sturdiest anchor
- * there is, because it tracks the beat's real timing instead of a counted offset,
- * so retiming a beat carries its cards with it. `"start"` and `"end"` address the
- * beat's boundaries; no beat uses those as label names. `offset` is there for the
- * rare nudge, in seconds.
- *
- * Beats are numbered as in the list in `scripts/home-page/workflow/index.ts`. An
- * unresolvable mark drops the card rather than the story, the same way missing
- * markup drops a beat.
+ * A moment in the story: a beat, and a place inside it. Prefer one of that beat's own
+ * GSAP labels — it tracks real timing, so retiming a beat carries its cards along.
+ * `"start"`/`"end"` address the boundaries and `offset` nudges in seconds. An
+ * unresolvable mark drops the card, not the story.
  */
 export interface StoryMark {
 	beat: number;

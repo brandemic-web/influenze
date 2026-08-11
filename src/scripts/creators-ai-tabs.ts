@@ -3,13 +3,9 @@ import { PANEL_DONE, PANEL_ENTER } from "./creators-ai";
 import { DESKTOP_MIN } from "./breakpoints";
 
 /**
- * Click-driven tabs for the "world's creators" section: clicking a feature
- * cross-fades its panel in. No scroll pinning — the section scrolls normally.
- *
- * The tabs also advance on their own. Rather than a fixed interval, each slide
- * is held until its demo timeline reports back (`PANEL_DONE`) plus a short beat,
- * so a long demo is never cut off and a short one doesn't linger. Clicking a tab
- * holds the rotation off long enough to read the slide you asked for.
+ * Tabs for the "world's creators" section: clicking a feature cross-fades its panel
+ * in. They also advance on their own, but paced off each demo's own `PANEL_DONE`
+ * rather than a fixed interval, so no demo is cut off or left lingering.
  */
 
 /** Cross-fade duration (s) between two panels. */
@@ -21,10 +17,8 @@ const INACTIVE_OPACITY = 0.5;
 /** Quiet beat (s) between a panel's demo finishing and the auto-advance. */
 const AUTO_DELAY = 2;
 /**
- * How long (s) a stacked slide waits on a demo that never reports back. A panel
- * whose builder bailed — missing markup, say — never fires PANEL_DONE, and while
- * stacked that would leave the other three features unreachable rather than
- * merely stopping the rotation.
+ * How long (s) a stacked slide waits on a demo that never fires PANEL_DONE. While
+ * stacked, waiting forever would leave the other three features unreachable.
  */
 const STALL_FALLBACK = 12;
 /** How long (s) a manual tab selection holds the auto-advance off. */
@@ -38,8 +32,8 @@ function initCreatorsAITabs() {
 
 	const tabs = gsap.utils.toArray<HTMLElement>("[data-creators-tab]", root);
 	const panels = gsap.utils.toArray<HTMLElement>("[data-creators-panel]", root);
-	// A mismatch means the markup and CREATORS_AI_FEATURES have drifted apart.
-	// Bailing silently leaves the whole section dead on the page, so say why.
+	// A mismatch means the markup and CREATORS_AI_FEATURES have drifted apart, which
+	// leaves the whole section dead — so say why rather than bailing silently.
 	if (tabs.length < 2 || tabs.length !== panels.length) {
 		console.warn(
 			`[creators-ai] disabled: found ${tabs.length} tab(s) and ${panels.length} panel(s) — expected an equal count of at least 2.`,
@@ -53,16 +47,13 @@ function initCreatorsAITabs() {
 	let index = 0;
 
 	/**
-	 * Below lg the features are stacked in one grid cell (see CreatorsAI.astro), so
-	 * an inactive tab has to fade out completely rather than dim to 0.5 — otherwise
-	 * all four read on top of each other. Fades use `autoAlpha`, so 0 also flips
-	 * `visibility` and takes the hidden features out of the tab order.
+	 * Below lg the features stack into one grid cell, so an inactive tab must fade out
+	 * entirely rather than dim to 0.5. `autoAlpha` also flips `visibility`, taking the
+	 * hidden ones out of the tab order.
 	 *
-	 * The query must stay identical to the one in CreatorsAI.astro, `no-preference`
-	 * included: the rotation is what reveals the other three features, and it does
-	 * not run under reduced motion, so those readers keep the full list.
-	 *
-	 * Read per tween rather than captured once: the reader may resize mid-rotation.
+	 * Keep this query identical to CreatorsAI.astro's, `no-preference` included — the
+	 * rotation is what reveals the other features and does not run under reduced
+	 * motion, so those readers keep the full list. Read per tween, not captured once.
 	 */
 	const stacked = window.matchMedia(
 		`(max-width: ${DESKTOP_MIN - 1}px) and (prefers-reduced-motion: no-preference)`,
@@ -84,15 +75,13 @@ function initCreatorsAITabs() {
 	}
 
 	/**
-	 * Arms the next advance. Fires once *both* the post-demo beat and any manual
-	 * hold have elapsed, so a click never gets cut short by a demo that happens
-	 * to finish right after it.
+	 * Arm the next advance. Fires once *both* the post-demo beat and any manual hold
+	 * have elapsed, so a click is never cut short by a demo finishing right after it.
 	 */
 	function scheduleAuto() {
 		cancelAuto();
 		if (reducedMotion || !inView) return;
-		// An unsettled slide normally just waits. Stacked, it cannot afford to wait
-		// forever — see STALL_FALLBACK.
+		// An unsettled slide waits — unless stacked, where it can't. See STALL_FALLBACK.
 		if (!settled && !stacked.matches) return;
 
 		const hold = (holdUntil - performance.now()) / 1000;
@@ -138,8 +127,7 @@ function initCreatorsAITabs() {
 			.to(panels[previous], { autoAlpha: 0, duration: TRANSITION * 0.6, ease: "power2.in" }, 0)
 			.to(panels[next], { autoAlpha: 1, duration: TRANSITION, ease: "power2.out" }, 0);
 
-		// Arms the stall fallback for the slide just entered. A no-op unless stacked,
-		// since an unsettled slide otherwise waits on its own PANEL_DONE.
+		// Arms the stall fallback. A no-op unless stacked.
 		scheduleAuto();
 
 		return true;
@@ -148,8 +136,7 @@ function initCreatorsAITabs() {
 	/** A tab the visitor picked: hold the rotation, then carry on as normal. */
 	function selectManually(next: number) {
 		holdUntil = performance.now() + MANUAL_HOLD * 1000;
-		// Re-clicking the active tab still earns the hold, but there is no new
-		// demo to wait on — re-arm off the panel that is already settled.
+		// Re-clicking the active tab earns the hold but starts no new demo, so re-arm.
 		if (!goTo(next)) scheduleAuto();
 	}
 
@@ -165,8 +152,8 @@ function initCreatorsAITabs() {
 	gsap.set(panels, { autoAlpha: 0 });
 	gsap.set(panels[index], { autoAlpha: 1 });
 
-	// Crossing the breakpoint changes what "inactive" looks like. Without this, a
-	// phone-width reader who rotates to landscape keeps three invisible features.
+	// Crossing the breakpoint changes what "inactive" looks like — without this a
+	// reader who rotates to landscape keeps three invisible features.
 	stacked.addEventListener("change", paintTabs);
 
 	panels.forEach((panel, i) => {
@@ -192,9 +179,8 @@ function initCreatorsAITabs() {
 		});
 	});
 
-	// Mobile arrows. Below lg the features are stacked and the tabs are inert, so
-	// these are the only manual control there. They wrap, matching the rotation, and
-	// go through selectManually so a tap earns the same hold a tab click does.
+	// Mobile arrows — the only manual control below lg, where the tabs are inert.
+	// They wrap, and go through selectManually so a tap earns the same hold.
 	root.querySelectorAll<HTMLElement>("[data-creators-prev],[data-creators-next]").forEach(
 		(arrow) => {
 			const step = arrow.hasAttribute("data-creators-next") ? 1 : -1;
@@ -204,8 +190,8 @@ function initCreatorsAITabs() {
 		},
 	);
 
-	// Rotating while the visuals are off screen would strand the visitor on a
-	// mid-sequence slide, so the timer only runs while they're actually visible.
+	// Rotating off screen would strand the visitor mid-sequence, so the timer only
+	// runs while the visuals are actually visible.
 	const stage = panels[0].parentElement ?? root;
 	/** Whether the first panel has been told to play. */
 	let started = false;
@@ -217,18 +203,10 @@ function initCreatorsAITabs() {
 			return;
 		}
 
-		/*
-		 * The starting panel's demo begins on the same signal that starts the
-		 * rotation, so the two cannot disagree about when the section is in view.
-		 *
-		 * It used to have a ScrollTrigger of its own at `top 75%`. Beside the feature
-		 * list at lg that lines up with this observer, but below lg the stage is
-		 * stacked *under* the feature block and sits far lower on the page — so the
-		 * rotation would start, wait out its stall fallback and advance while that
-		 * demo had never been asked to play, leaving the cursor moving over an empty
-		 * stage until the loop came back round to it. `registerPanelDemo` keeps the
-		 * ScrollTrigger as a fallback and ignores it once a demo has played.
-		 */
+		// The first panel's demo starts on the same signal as the rotation, so the two
+		// can't disagree about when the section is in view. Below lg the stage sits far
+		// below the feature block, so a separate ScrollTrigger would let the rotation
+		// advance past a demo that was never asked to play.
 		if (!started) {
 			started = true;
 			panels[index].dispatchEvent(new CustomEvent(PANEL_ENTER));

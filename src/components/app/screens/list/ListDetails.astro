@@ -35,7 +35,7 @@ const { compare = false, blurred = false } = Astro.props;
 			</ListDetailShell>
 		) : (
 			<ListDetailShell title={STORY_LIST} blurred={blurred}>
-				<!-- Toolbar: search is 22vw wide, inset 28, and carries no leading icon. -->
+				{/* Toolbar: search is 22vw wide, inset 28, and carries no leading icon. */}
 				<div class="mt-8 flex shrink-0 items-center">
 					<div class="w-[19.8rem] shrink-0 pl-7">
 						<div class="flex items-center rounded-md bg-wf-search px-4 py-2.5 text-[0.875rem] font-medium">
@@ -44,7 +44,7 @@ const { compare = false, blurred = false } = Astro.props;
 					</div>
 
 					<span class="ml-auto flex items-center">
-						<!-- Compare needs 2+ selected, and the rule after it belongs to the same group. -->
+						{/* Compare needs 2+ selected, and the rule after it belongs to the same group. */}
 						<span class="flex items-center" data-wf-selection="compare">
 							<span
 								class="flex h-9 min-w-16 items-center justify-center gap-2 px-2 text-[0.75rem] font-medium whitespace-nowrap"
@@ -59,7 +59,7 @@ const { compare = false, blurred = false } = Astro.props;
 						<ToolbarAction label="Import" icon="import" class="ml-3" />
 						<ToolbarAction label="Export" icon="export" class="ml-3" />
 
-						<!-- Removing needs a selection, and so does its leading rule. -->
+						{/* Removing needs a selection, and so does its leading rule. */}
 						<span class="flex items-center" data-wf-selection="remove">
 							<span class="ml-3 block h-4.5 w-px bg-wf-text-muted"></span>
 							<BulkActionButton label="Remove from List" icon="removeFromList" count={2} iconSize="0.625rem" class="ml-3" />
@@ -67,7 +67,7 @@ const { compare = false, blurred = false } = Astro.props;
 					</span>
 				</div>
 
-				<!-- Column header: padding l42 aligns it with card content past the drag gutter. -->
+				{/* Column header: padding l42 aligns it with card content past the drag gutter. */}
 				<div class="mt-6 shrink-0">
 					<ProfileCardColumns class="pr-3.5 pb-3.75 pl-10.5">
 						<span slot="leading" class="flex items-center gap-2">

@@ -1,19 +1,12 @@
 /*
- * The Influenze app's palette, for every part of this site that reproduces the
- * product: the hero workflow mockup (components/app) and the standalone
- * UI cards (components/app/elements).
+ * The Influenze app's palette, for every part of this site that reproduces the product
+ * (components/app). Taken from the app's own `colors.dart` and kept out of the
+ * marketing palette in global.css so the two can't collide.
  *
- * These are the *app's* colours, taken from influenze/lib/common/colors.dart and
- * kept out of the marketing brand palette in global.css so the two never collide.
- * The Dart name is noted where it isn't obvious.
- *
- * Two namespaces, mirroring the two the app itself keeps:
- *   `wf-*`    InfluenzeColors — the product chrome
- *   `mkit-*`  MKitColors — the media kit, which is its own palette in the app
- *
- * The `wf-` prefix predates the elements; read it as "the app", not as
- * "the workflow mockup". See components/app/APP-SPEC.md for the
- * geometry these go with.
+ * Two namespaces, mirroring the app's own: `wf-*` for the product chrome
+ * (InfluenzeColors) and `mkit-*` for the media kit (MKitColors). Read `wf-` as
+ * "the app", not "the workflow mockup" — it predates the elements tree.
+ * Geometry these go with: components/app/APP-SPEC.md.
  */
 
 @theme {
@@ -118,14 +111,9 @@
 }
 
 /*
- * Both layers are the same canvas.
- *
- * Both are taken out of flow, and that is load-bearing rather than tidiness:
- * `scale` is a transform, so a layer's *layout* box stays the full 56.25rem
- * however far down it is drawn. A box carrying an `aspect-ratio` takes its
- * automatic minimum size from its content, so an in-flow layer would hold
- * `.wf-mockup` open at 900px at every width and leave dead space under the
- * mockup on anything narrower than the canvas.
+ * Both layers are the same canvas, and both are out of flow — load-bearing, not
+ * tidiness. `scale` is a transform, so a layer's layout box stays the full 56.25rem;
+ * in flow it would hold `.wf-mockup` open at 900px and leave dead space beneath.
  */
 .wf-stage,
 .wf-card-layer {
@@ -157,21 +145,13 @@
 }
 
 /*
- * A strip of app UI on its own, away from the hero: the features page's creator
- * showcase renders the real results table (components/features/CreatorShowcase).
+ * The features page's creator showcase — app UI on its own, away from the hero. Scaled
+ * like the hero canvas, but off the results list's *own* row width (the 58.25rem panel
+ * less its two 1.5rem gutters), so rows keep the app's exact proportions.
  *
- * Scaled the same way as the hero canvas, with one difference — the width is the
- * Analyze results list's *own* row width rather than the whole app frame: the
- * 58.25rem panel less its two 1.5rem gutters. So the rows come out at exactly the
- * proportions the app draws them at, and the strip still spans whatever the page
- * gives it.
- *
- * The container carries the ratio for the same reason `.wf-mockup` does: `scale`
- * is a transform, so the canvas's layout box stays its full unscaled height and
- * would hold the strip open at that height on every viewport. 315 design px is
- * the canvas's measured content height — three 94px rows (1px border + 16px +
- * the 60px avatar + 16px + 1px) with two 16px gaps between them. Change what the
- * strip holds and this has to follow, or dead space opens under the last row.
+ * The container carries the ratio for `.wf-mockup`'s reason. 315 design px is the
+ * measured content height: three 94px rows with two 16px gaps. **Change what the strip
+ * holds and this must follow**, or dead space opens under the last row.
  */
 .wf-strip {
 	container-type: inline-size;
@@ -247,23 +227,14 @@
 }
 
 /*
- * The explainer cards that punctuate the story. Hidden until the timeline
- * brings one up, so a failed script leaves the hero clean.
+ * The explainer cards. Hidden until the timeline brings one up, so a failed script
+ * leaves the hero clean.
  *
- * All five share one resting place, measured off the design rather than
- * chosen: Figma sets every card 112px below its app frame's top edge and hangs
- * it 153px past the right edge, so the overhang is the design's, not a
- * workaround. Those are Figma pixels against its 1280-wide frame, so both are
- * x1.125 here for the 1440-wide canvas — the same factor `WorkflowCard.astro`
- * applies to the card's own geometry. Override one with `[data-wf-card="N"]`.
- *
- * The overhang is a fraction of the card's own width, so it runs through the
- * card's `--wf-card-scale` as well — otherwise shrinking the card would leave
- * half of it hanging off the canvas. The top offset is a position rather than a
- * size, so it stays where the design puts it.
- *
- * `visibility` as well as `opacity`: a card left at `opacity: 0` would still
- * take the hit-testing if anything in here ever became interactive.
+ * All share one resting place taken from the design — 112px below the frame's top,
+ * hanging 153px past its right edge — x1.125 for the 1440 canvas, the same factor
+ * `WorkflowCard.astro` uses. Override one with `[data-wf-card="N"]`. The overhang runs
+ * through `--wf-card-scale` (a fraction of the card's width); the top offset does not
+ * (a position). `visibility` as well as `opacity`, so a hidden card can't take hits.
  */
 /* `top` and `right` are set per card in WorkflowCard.astro, with the rest of its geometry. */
 .wf-card {
@@ -274,18 +245,11 @@
 }
 
 /*
- * The cards only show where there is width for them.
- *
- * Squeezed into a portrait box the mockup is a few hundred pixels wide and a card
- * is 44% of it, so it covers the animation it is meant to explain — and its
- * overhang past the canvas edge is clipped by `body`'s `overflow-x-clip` rather
- * than fitting in the margin. `display` is the lever, not opacity or visibility:
- * `spotlight()` writes both of those inline as it plays a card in, and an inline
- * style would win.
- *
- * The landscape viewer is the exception. It presents the canvas landscape even
- * while the device itself is still portrait, so the cards belong there — and that
- * is the one place the mockup is wide enough to read them.
+ * The cards only show where there is width for them: in a portrait box a card covers
+ * the animation it explains, and its overhang gets clipped by `body`'s
+ * `overflow-x-clip`. `display` is the lever, not opacity or visibility — `spotlight()`
+ * writes both of those inline and would win. The landscape viewer is the exception: it
+ * presents the canvas landscape, so the cards belong there.
  */
 @media (orientation: portrait) {
 	.wf-card {

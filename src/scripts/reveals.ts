@@ -3,16 +3,10 @@ import { revealStagger } from "./gsap/revealStagger";
 import { DESKTOP_MIN } from "./breakpoints";
 
 /**
- * Declarative reveal wiring. Add `data-reveal` to a container and
- * `data-reveal-item` to each element that should slide up + fade in.
- *
- * Optional tuning via data attributes on the container:
- *   data-reveal-y, data-reveal-stagger, data-reveal-duration, data-reveal-start
- *
- * Add `data-reveal-desktop-only` to skip the reveal below `lg` — the items just
- * sit in place. Registered through gsap.matchMedia (as marquee.ts does) so
- * crossing the breakpoint on resize adds or reverts the reveal rather than
- * leaving items stuck at whatever the other viewport left behind.
+ * Declarative reveal wiring: `data-reveal` on a container, `data-reveal-item` on each
+ * element that slides up and fades in. Tune with `data-reveal-y|stagger|duration|start`,
+ * and `data-reveal-desktop-only` to skip below `lg`. Registered through gsap.matchMedia,
+ * so crossing the breakpoint adds or reverts the reveal rather than stranding items.
  */
 const num = (v?: string) => (v == null || v === "" ? undefined : parseFloat(v));
 

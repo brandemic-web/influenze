@@ -2,22 +2,11 @@ import gsap from "gsap";
 import type { Pointer } from "../utils/pointer";
 
 /**
- * Beat 3 — the creator's profile opens.
+ * Beat 3 — the profile opens: results clear, the sidebar dims (the app's
+ * `FilterDisableOverlay`), the detail rises, and the cursor presses Media Kit.
  *
- * Answers beat 2's press on Justin Joy: the results table clears, the sidebar
- * dims and blurs behind the profile the way the app's `FilterDisableOverlay`
- * does, the detail rises into the panel, and the cursor reaches the Media Kit tab
- * and presses it. Beat 4 answers that press by switching the tab.
- *
- * Same hidden layer swap as beat 2 — the panel is empty on both sides by the time
- * it happens — with one addition. Screen 4 dims its whole sidebar, so screen 3's
- * search bar and rail have to be dimmed to match *before* the swap, or the
- * sidebar would snap. The target opacity and blur are read back off screen 4's
- * own dimmed wrapper rather than restated here, so `DimmedFilterSidebar` stays the one
- * place those values live.
- *
- * The rail itself never moves: beat 1 scrolled it to `RAIL_TIER_SCROLL` and
- * screens 3 and 4 are both authored there.
+ * Screen 3 has no dim wrapper, so its search bar and rail are dimmed individually
+ * before the swap. Values are read off screen 4's own wrapper, not restated here.
  */
 
 export interface CreatorProfileLayers {
@@ -48,12 +37,9 @@ export function creatorProfile(layers: CreatorProfileLayers, pointer: Pointer) {
 	const el = collect(layers);
 	if (!el) return null;
 
-	// Screen 4 dims one wrapper; screen 3 has no wrapper, so its two halves are
-	// dimmed individually. That looks the same because they do not overlap.
-	//
-	// Only the opacity is tweened. The blur is applied outright, because Tailwind
-	// builds `filter` out of a chain of custom properties that does not interpolate
-	// dependably from `none` — and at 0.1rem it is far too slight to see arrive.
+	// Only the opacity is tweened; the blur is set outright. Tailwind builds `filter`
+	// from a chain of custom properties that won't interpolate out of `none`, and at
+	// 0.1rem it is too slight to see arrive anyway.
 	const dim = getComputedStyle(el.dimmed);
 	const dimOpacity = Number(dim.opacity) || 1;
 	const dimFilter = dim.filter;
@@ -62,8 +48,7 @@ export function creatorProfile(layers: CreatorProfileLayers, pointer: Pointer) {
 	const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
 
 	// ── the results give way to the profile ──────────────────────────────────
-	// Put the layers back the way beat 2 leaves them first, so this beat is
-	// self-contained and the story can be replayed from wherever it stopped.
+	// Wind the layers back first, so the beat is replayable from anywhere.
 	tl.call(() => {
 		layers.to.removeAttribute("data-wf-active");
 		layers.from.setAttribute("data-wf-active", "");
@@ -90,9 +75,8 @@ export function creatorProfile(layers: CreatorProfileLayers, pointer: Pointer) {
 		.set(sidebar, { opacity: 1, filter: "none" }, "swap")
 		// ── the profile rises into the panel ─────────────────────────────────
 		.from(el.detail, { opacity: 0, y: 14, duration: 0.5, immediateRender: false }, "swap")
-		// The profile is fully up here. Card 2 hangs off this rather than off `swap`:
-		// arriving with the panel made it read as part of the product UI instead of
-		// as something laid over it.
+		// Card 2 hangs off this, not `swap` — arriving with the panel made it read as
+		// part of the product UI rather than as something laid over it.
 		.addLabel("settled");
 
 	// ── reach for the Media Kit tab ──────────────────────────────────────────

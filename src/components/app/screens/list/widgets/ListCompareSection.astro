@@ -21,14 +21,10 @@ import {
 const [profiled, against] = COMPARED_HANDLES.map(creatorByHandle);
 
 /**
- * The benchmark bar's scale, marker and median live per creator in
- * `MEDIA_KIT_STATS` — they are not shared, because APP-SPEC draws the axis around
- * each creator's own rate (`min = 0.5 x min(rate, median)`, `max = 1.5 x max(...)`).
- * The median *label* and the tier paragraph are shared, since both columns are
- * macro: `MACRO_BENCHMARK`.
- *
- * `meta` is the app's location · gender · language line, joined with a middot
- * here because the compare column has no room for the spaced-out version.
+ * Scale, marker and median are per creator in `MEDIA_KIT_STATS`, since the axis is
+ * drawn around each creator's own rate; the median *label* and tier paragraph are
+ * shared via `MACRO_BENCHMARK`, as both columns are macro. `meta` uses a plain middot
+ * join — the compare column has no room for the spaced-out version.
  */
 const subjects = [profiled, against].map((creator, i) => ({
 	creator,
@@ -41,7 +37,7 @@ const subjects = [profiled, against].map((creator, i) => ({
 	{
 		subjects.map(({ creator, stats, meta }) => (
 			<div class="flex min-w-0 flex-1 flex-col">
-				<!-- CompareProfileHeader: transparent, padding 12, no card. -->
+				{/* CompareProfileHeader: transparent, padding 12, no card. */}
 				<div class="flex shrink-0 items-start p-3">
 					<CreatorAvatar size="3.75rem" handle={creator.handle} />
 					<div class="ml-5 flex min-w-0 flex-1 flex-col">

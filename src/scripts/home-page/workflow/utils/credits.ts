@@ -1,9 +1,7 @@
 import gsap from "gsap";
 import { formatCredits } from "../../../../data/workflowMockup";
 
-/**
- * The nav credits chip, spending as the story goes.
- */
+/** The nav credits chip, spending as the story goes. */
 
 const value = (screen: HTMLElement) => screen.querySelector<HTMLElement>("[data-wf-credits]");
 
@@ -24,13 +22,10 @@ export function setCredits(screen: HTMLElement, balance: number) {
 }
 
 /**
- * A starter that counts a layer's chip down from one balance to the next.
- *
- * Built once with the beat and called from it — `tl.call(spend)` — so the beat
- * spends no time on it. The number is a text node, so the tween runs on a proxy
- * and writes the string on each update, snapped so no fraction of a credit is
- * ever on screen. The pill gives a short squeeze underneath it: at the scale the
- * hero draws the canvas, digits changing in the corner are easy to miss.
+ * Counts a chip down from one balance to the next. Built once with the beat and
+ * fired via `tl.call()`, so the beat spends no time on it. The number is a text
+ * node, so the tween runs on a proxy and writes the snapped string each update.
+ * The pill squeezes underneath — at hero scale, changing digits are easy to miss.
  */
 export function spendCredits(screen: HTMLElement, from: number, to: number, duration = 0.3) {
 	const el = value(screen);

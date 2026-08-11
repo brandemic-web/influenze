@@ -1,22 +1,13 @@
 ---
 /**
- * The Analyze screen's left filter rail — mirrors analyze_filter_sidebar.dart
- * and the widgets under analyze/widgets/filters/.
+ * The Analyze screen's left filter rail — mirrors the app's `analyze_filter_sidebar`
+ * and the widgets under `filters/`. Steps differ only in scroll position and which
+ * parameter is open, so both are props rather than near-duplicate copies.
  *
- * Fills the sidebar column under the search bar: a fixed header, a rule, then a
- * scrolling stack of sections. The workflow steps differ only in how far the
- * stack is scrolled and which parameter is open, so both are props rather than
- * three near-duplicate copies.
- *
- * Screens 1 and 2 are the same rail, so the parameter dropdown's three states
- * (nothing chosen / sheet open / Lookalike chosen) and the Lookalike values all
- * render at once. `parameter` and `lookalikeFilled` only choose which one paints
- * as the static first frame; the GSAP timeline moves between them in place. The
- * `data-wf-*` hooks below are its handles — see the animation-state block in
- * styles/app-tokens.css and scripts/home-page/workflow/analyzeLookalike.ts.
- *
- * Every value here is 1:1 app pixels — see APP-SPEC.md for the Dart source of
- * each one. Figma renders this rail at a non-uniform rescale; ignore it.
+ * **This renders every parameter state at once**; `parameter` / `lookalikeFilled` only
+ * choose which paints as the static frame, and the timeline moves between them in
+ * place. Adding a state means adding a branch to the animation-state block in
+ * app-tokens.css too. Every value is 1:1 app pixels — see APP-SPEC.md.
  */
 import FilterChip from "./filters/FilterChip.astro";
 import FilterSectionHeader from "../../../common/FilterSectionHeader.astro";
@@ -110,17 +101,17 @@ const resetClass = "mt-0.5 flex";
 							>
 							<Icon name="info" size="0.75rem" class="text-wf-text-soft" />
 						</span>
-						<!-- The chevron's rotation is animated, so it needs a box of its own. -->
+						{/* The chevron's rotation is animated, so it needs a box of its own. */}
 						<div class:list={["flex shrink-0", parameter === "open" && "rotate-180"]} data-wf-param-chevron>
 							<Icon name="arrowIcon" size="0.75rem" class="text-wf-text-soft" />
 						</div>
 					</div>
 
-					<!--
+					{/*
 						The option sheet and the Lookalike body share this slot and only one is
 						ever in flow. Each sits in a bare wrapper whose sole job is to be clipped
 						to a height, so the timeline never has to animate their padding as well.
-					-->
+					*/}
 					<div data-wf-param-sheet>
 						{/* The sheet is detached by 4px but keeps the connected radii. */}
 						<div class="mt-1 rounded-b-[0.25rem] border border-wf-select bg-wf-select p-2">
@@ -171,7 +162,7 @@ const resetClass = "mt-0.5 flex";
 				</FilterSection>
 
 				<FilterSection divided>
-					<!-- The reset ✕ goes through the slot so it can always render and just fade. -->
+					{/* The reset ✕ goes through the slot so it can always render and just fade. */}
 					<FilterSectionHeader label="Sort By" class="mb-3">
 						<div class={resetClass} data-wf-reset="sort">
 							<Icon name="cross" size="0.875rem" class="text-wf-text-muted" />
@@ -193,7 +184,7 @@ const resetClass = "mt-0.5 flex";
 							<Icon name="cross" size="0.875rem" class="text-wf-text-muted" />
 						</div>
 					</FilterSectionHeader>
-					<!-- The field keeps its placeholder; picks land as chips below it. -->
+					{/* The field keeps its placeholder; picks land as chips below it. */}
 					<div
 						class="flex items-center rounded-[0.25rem] border border-wf-chip-border bg-wf-chip pt-3.5 pr-2 pb-3.5 pl-2"
 						data-wf-location-field
@@ -217,11 +208,11 @@ const resetClass = "mt-0.5 flex";
 
 				<FilterSection divided>
 					<FilterSectionHeader label="Follower Metrics" resettable class="mb-3" />
-					<!--
+					{/*
 						Every tier uses one shape so the story's row can render either state:
 						`on` decides which paints, and the expansion sits in a clip wrapper the
 						timeline grows. Only the story's row carries hooks.
-					-->
+					*/}
 					<div class="flex flex-col gap-1" data-wf-tier-list>
 						{
 							FOLLOWER_TIERS.map((tier) => {
@@ -294,22 +285,22 @@ const resetClass = "mt-0.5 flex";
 
 					<FilterSectionHeader label="enter a custom follower range" class="pt-5" />
 					<div class="mt-3 flex items-center">
-						<label class={`${inputClass} flex-1`}>
+						<div class={`${inputClass} flex-1`}>
 							<span class="text-[0.625rem] text-wf-text-soft">min. followers</span>
 							<span class="text-[0.75rem] text-wf-text-muted">eg. 5,000</span>
-						</label>
+						</div>
 						<span class="px-3 text-[0.75rem] text-wf-text">to</span>
-						<label class={`${inputClass} flex-1`}>
+						<div class={`${inputClass} flex-1`}>
 							<span class="text-[0.625rem] text-wf-text-soft">max. followers</span>
 							<span class="text-[0.75rem] text-wf-text-muted">eg. 100,000</span>
-						</label>
+						</div>
 					</div>
 
 					<FilterSectionHeader label="enter a minimum engagement rate" class="pt-5" />
-					<label class={`${inputClass} mt-3 w-[calc((100%-2.1875rem)/2)]`}>
+					<div class={`${inputClass} mt-3 w-[calc((100%-2.1875rem)/2)]`}>
 						<span class="text-[0.625rem] text-wf-text-soft">min. rate</span>
 						<span class="text-[0.75rem] text-wf-text-muted">eg. 2.3%</span>
-					</label>
+					</div>
 				</FilterSection>
 
 				<FilterSection label="Reel Views" divided>
@@ -325,7 +316,7 @@ const resetClass = "mt-0.5 flex";
 					</div>
 				</FilterSection>
 
-				<!-- Creator Attributes is one ruled section holding four sub-blocks. -->
+				{/* Creator Attributes is one ruled section holding four sub-blocks. */}
 				<FilterSection divided>
 					<FilterSectionHeader label="Is Verified?" class="mb-3" />
 					<div class="flex flex-wrap gap-2">
@@ -372,7 +363,7 @@ const resetClass = "mt-0.5 flex";
 				</FilterSection>
 
 				<FilterSection divided>
-					<!-- Reach Out rolls its own header so it can host the toggle. -->
+					{/* Reach Out rolls its own header so it can host the toggle. */}
 					<div class="flex items-start pl-2">
 						<span class="text-[0.75rem] font-medium text-wf-text-soft">Reach Out</span>
 						<span class="ml-2 flex h-3.5 w-8.25 shrink-0 items-center rounded-full bg-[#009a4a]">

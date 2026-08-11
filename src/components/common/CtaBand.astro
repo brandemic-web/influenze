@@ -38,7 +38,7 @@ const { buttonLabel = "Free Trial" } = Astro.props;
 		class="pointer-events-none absolute inset-0 h-full w-full object-cover"
 		loading="lazy"
 	/>
-	<!-- glows -->
+	{/* glows */}
 	<img
 		src={glowCenter.src}
 		alt=""
@@ -58,19 +58,19 @@ const { buttonLabel = "Free Trial" } = Astro.props;
 		loading="lazy"
 	/>
 
-	<!-- fade to footer bg -->
+	{/* fade to footer bg */}
 	<div
 		class="pointer-events-none absolute inset-0 bg-linear-to-b from-transparent from-60% to-[#0A0718]"
 		aria-hidden="true"
 	>
 	</div>
 
-	<!-- floating creators + chips (mobile base, lg: desktop) -->
+	{/* floating creators + chips (mobile base, lg: desktop) */}
 	<div
 		class="pointer-events-none absolute inset-0 max-w-[102rem] mx-auto"
 		aria-hidden="true"
 	>
-		<!-- share icon -->
+		{/* share icon */}
 		<div
 			class="cta-float absolute top-[38%] left-[-3%] w-8.75 z-10 lg:top-[11%] lg:left-[10%] lg:w-16.25"
 			data-fx="18"
@@ -79,7 +79,7 @@ const { buttonLabel = "Free Trial" } = Astro.props;
 		>
 			<img src={shareIcon.src} alt="" loading="lazy" />
 		</div>
-		<!-- sunglasses creator -->
+		{/* sunglasses creator */}
 		<div
 			class="cta-float absolute top-[40%] left-[-2%] w-20 rotate-[-11deg] rounded-md overflow-hidden lg:top-[12%] lg:left-[13%] lg:w-40"
 			data-fx="28"
@@ -88,7 +88,7 @@ const { buttonLabel = "Free Trial" } = Astro.props;
 		>
 			<Image src={creatorOne} alt="" loading="lazy" />
 		</div>
-		<!-- plus icon -->
+		{/* plus icon */}
 		<div
 			class="cta-float absolute top-[25%] right-[22%] w-7.5 z-10 lg:top-[58%] lg:right-[18%] lg:w-9.25"
 			data-fx="-16"
@@ -97,7 +97,7 @@ const { buttonLabel = "Free Trial" } = Astro.props;
 		>
 			<img src={plusIcon.src} alt="" loading="lazy" />
 		</div>
-		<!-- woman creator -->
+		{/* woman creator */}
 		<div
 			class="cta-float absolute top-[14%] right-[3%] w-20 rotate-3 rounded-md overflow-hidden lg:top-[47%] lg:right-[12%] lg:w-25 lg:rounded-3 lg:rotate-[5deg] lg:z-10"
 			data-fx="-24"
@@ -106,7 +106,7 @@ const { buttonLabel = "Free Trial" } = Astro.props;
 		>
 			<Image src={creatorThree} alt="" loading="lazy" />
 		</div>
-		<!-- orange creator -->
+		{/* orange creator */}
 		<div
 			class="cta-float absolute bottom-[22%] right-[10%] w-16.25 h-16.25 rotate-3 rounded-md overflow-hidden lg:bottom-auto lg:top-[7%] lg:right-[23%] lg:w-33.75 lg:h-36.25 lg:rotate-[5deg] lg:rounded-3"
 			data-fx="-22"
@@ -115,7 +115,7 @@ const { buttonLabel = "Free Trial" } = Astro.props;
 		>
 			<Image src={creatorFour} alt="" loading="lazy" />
 		</div>
-		<!-- followers chip -->
+		{/* followers chip */}
 		<div
 			class="cta-float absolute bottom-[14%] right-[2%] w-22.5 -rotate-6 lg:bottom-auto lg:top-[17%] lg:right-[12%] lg:w-46.25 lg:rotate-[-10deg]"
 			data-fx="-28"
@@ -133,7 +133,7 @@ const { buttonLabel = "Free Trial" } = Astro.props;
 			<img src={brandemicLogo.src} alt="" loading="lazy" />
 		</div>
 
-		<!-- desktop-only decorations -->
+		{/* desktop-only decorations */}
 		<div
 			class="cta-float hidden lg:block absolute top-[53%] left-[19%] w-24 rotate-20 rounded-md overflow-hidden"
 			data-fx="24"
@@ -142,7 +142,7 @@ const { buttonLabel = "Free Trial" } = Astro.props;
 		>
 			<Image src={creatorTwo} alt="" loading="lazy" />
 		</div>
-		<!-- hyper logo -->
+		{/* hyper logo */}
 		<div
 			class="cta-float hidden absolute bottom-[16%] left-[8%] w-22.5 rotate-[-20deg] lg:bottom-[20%] lg:left-[6%] lg:w-30 lg:block"
 			data-fx="22"

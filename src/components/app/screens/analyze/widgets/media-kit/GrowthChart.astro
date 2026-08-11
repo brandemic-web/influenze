@@ -1,16 +1,11 @@
 ---
 /**
- * A media kit growth chart — `GrowthChartWidget` plus the `CustomLineChart`.
+ * A media kit growth chart — the app's `GrowthChartWidget` + `CustomLineChart`. The
+ * app configures these through a dozen flags; the two combinations it actually
+ * instantiates are the `variants` table below, under the app's own flag names.
  *
- * Account Stats draws two of them, and the app configures them through a dozen
- * flags. Rather than restate all twelve at each call site, the two combinations
- * the app actually instantiates are the `variants` table below, with the app's
- * own flag names against each column — the same shape as `MediaKitDetail`'s
- * engagement `levels`.
- *
- * All geometry is percentages, because the plot's width is a flex result: the
- * media kit tab and a compare column are different widths and the canvas then
- * rescales with the viewport. See `data/mediaKitCharts.ts` for the scale itself.
+ * Geometry is percentages throughout, because the plot's width is a flex result. The
+ * scale itself is derived in `data/mediaKitCharts.ts`.
  */
 import Icon from "../../../../common/Icon.astro";
 import { growthScale, type GrowthPoint } from "../../../../../../data/mediaKitCharts";
@@ -76,17 +71,17 @@ const DASHED_GRID =
 	"repeating-linear-gradient(to right,var(--color-mkit-grid-dash) 0 4px,transparent 4px 6px)";
 ---
 
-<!-- padding l12 r24 t12 b12 -->
+{/* padding l12 r24 t12 b12 */}
 <div class="rounded-[0.3125rem] pt-3 pr-6 pb-3 pl-3" style={`background:${surface}`}>
 	<span class="flex items-center gap-1.5">
 		{variant === "likes" && <Icon name="thumbsUp" size="0.75rem" class="text-mkit-lavender" />}
 		<span class="text-[0.625rem] font-medium whitespace-nowrap text-wf-text">{title}</span>
 	</span>
 
-	<!-- The 172-tall plot block: 140 of chart, 16 of gap, a 16-tall label row. -->
+	{/* The 172-tall plot block: 140 of chart, 16 of gap, a 16-tall label row. */}
 	<div class="mt-10 flex h-43 flex-col">
 		<div class="flex min-h-0 flex-1">
-			<!-- Left axis: a fixed 40 column, labels centred on their own gridline. -->
+			{/* Left axis: a fixed 40 column, labels centred on their own gridline. */}
 			<div class="relative w-10 shrink-0">
 				{
 					gridlines.map(({ at, label }) => (
@@ -121,12 +116,12 @@ const DASHED_GRID =
 					)
 				}
 
-				<!--
+				{/*
 					The line. `preserveAspectRatio="none"` stretches the 0-100 grid to
 					whatever box the flex hands over, and `non-scaling-stroke` is what
 					keeps that from stretching the stroke with it — the weight stays the
 					app's, and still scales with the canvas like every other border here.
-				-->
+				*/}
 				<svg
 					class="absolute inset-0 h-full w-full overflow-visible"
 					viewBox="0 0 100 100"
@@ -154,7 +149,7 @@ const DASHED_GRID =
 			</div>
 		</div>
 
-		<!-- Bottom axis: the same 40 inset, each label centred in a 58-wide box. -->
+		{/* Bottom axis: the same 40 inset, each label centred in a 58-wide box. */}
 		<div class="mt-4 h-4 pl-10">
 			<div class="relative h-full">
 				{

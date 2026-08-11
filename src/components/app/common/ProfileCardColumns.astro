@@ -1,13 +1,9 @@
 ---
 /**
- * The column skeleton shared by the results table header and every creator card
- * — `ProfileCard`'s layout constants in common/widgets/profile_card.dart:
- * leading 84 · gap 20 · identity flex 4 · gap 16 · metrics flex 6 · gap 12 ·
- * actions 130. The spacers mirror Flutter's `SizedBox`es so the flex maths (and
- * therefore the column alignment) comes out identical.
- *
- * Metric cells: with three of them the first two take a fixed third of the row
- * minus the 12px the actions slot gave back, so they stay put as the third grows.
+ * The column skeleton shared by the results header and every creator card, from the
+ * app's `ProfileCard` constants: leading 84 · gap 20 · identity flex 4 · gap 16 ·
+ * metrics flex 6 · gap 12 · actions 130. The spacers mirror Flutter's `SizedBox`es so
+ * the flex maths — and the column alignment — comes out identical.
  */
 interface Props {
 	/** Header rows sit tighter than cards. */

@@ -1,13 +1,8 @@
 ---
 /**
- * The Material sliders in the audience filters, with the app's
- * `FullWidthTrackShape` / `FullWidthRangeTrackShape` behaviour: the track spans
- * the full parent width with no thumb-radius inset, so the 16px thumbs overhang
- * each end by ~8px.
- *
- * Single (audience gender %): square-ended 4px track, green left of the thumb.
- * Range (age bracket): 4px inactive ends rounded on the outside only, and a 6px
- * active middle with a 2px radius that reaches 2px past each thumb centre.
+ * The audience-filter sliders, with the app's `FullWidthTrackShape` behaviour: the
+ * track spans the full parent width with no thumb inset, so the 16px thumbs overhang
+ * each end by ~8px. `single` is the gender %; `range` is the age bracket.
  */
 interface Props {
 	/** Thumb position(s) as a percentage. One value = single, two = range. */

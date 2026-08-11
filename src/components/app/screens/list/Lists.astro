@@ -1,13 +1,8 @@
 ---
 /**
- * My Lists.
- *
- * Frame: `padding 50` → panel `#232339` radius 12 → `padding 40`,
- * giving 1228 of content at 1440. Grid is `clamp(floor(w / 240), 1, 4)` columns,
- * so four across at this width, with `cardHeight = cardWidth + 94`.
- *
- * The centred "My Lists" heading and the rule under it are the app's; the
- * design's ShortLists/Lists tabs are a future feature and deliberately absent.
+ * My Lists. Frame is `padding 50` → panel → `padding 40`, giving 1228 of content at
+ * 1440, with a `clamp(floor(w / 240), 1, 4)` grid and `cardHeight = cardWidth + 94`.
+ * The design's ShortLists/Lists tabs are a future feature and deliberately absent.
  */
 import AppShell from "../../common/AppShell.astro";
 import CreatorAvatar from "../../common/CreatorAvatar.astro";
@@ -26,15 +21,15 @@ const tileStyle = "border-radius:32%";
 		<div class="flex h-full flex-col p-10">
 			<p class="text-center text-md font-light text-wf-text">My Lists</p>
 
-			<!--
+			{/*
 				The app's `Divider(lavender11, height: 1)` under the heading, with its 20
 				above and 24 below. The design's ShortLists/Lists tabs sat on this rule,
 				but they are a future feature, so only the rule is here.
-			-->
+			*/}
 			<span class="mt-5 block h-px w-full bg-wf-rule"></span>
 
 			<div class="mt-6 flex items-center">
-				<!-- Search is 30% of the window, and carries no leading icon. -->
+				{/* Search is 30% of the window, and carries no leading icon. */}
 				<div class="flex h-16.25 w-27 items-center rounded-md bg-wf-search px-6" style="width:27rem">
 					<span class="text-[0.875rem] font-medium whitespace-nowrap">
 						<span class="text-wf-text-muted">Search&nbsp;&nbsp;</span><span class="text-wf-green">Lists</span>
@@ -46,11 +41,11 @@ const tileStyle = "border-radius:32%";
 					<Icon name="arrowIcon" size="0.75rem" class="text-wf-text-soft" />
 				</div>
 
-				<!--
+				{/*
 					Import ends the row. Its separator, Cancel and Delete List are one
 					widget in the app — `ListsDeleteButton` — and it collapses to nothing
 					while no list is selected, which is how this frame sits.
-				-->
+				*/}
 				<ToolbarAction label="Import" icon="import" class="ml-auto" />
 			</div>
 

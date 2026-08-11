@@ -1,19 +1,12 @@
 import gsap from "gsap";
 
 /**
- * Beat 10 — share the list by email.
+ * Beat 10 — the share modal. Beat 5's swap-first shape: screen 10 embeds
+ * `<ListDetails blurred />` the way screen 6 embeds screen 5.
  *
- * Answers beat 9's press on the share control, and closes the story.
- *
- * Uses beat 5's swap-first shape, because screen 10 embeds `<ListDetails blurred />` the same way screen 6 embeds screen 5: neutralise the blur, hide the
- * card, and screen 10 renders what screen 8 renders — so the swap is invisible and
- * the modal can simply arrive.
- *
- * It must **not** animate like beat 5, though. That one is a dialog route with a
- * full-frame scrim; this is a `CenteredModalOverlay` **clipped to the host panel**,
- * with **blur only and no dim**, ramping `blur(0 → 12)` over **260ms linear** and
- * opacity-only on the card. There is no scrim element here at all — the blur lives
- * on the panel body, via `ListDetailShell`'s `blurred` prop.
+ * It must *not* animate like beat 5. That is a dialog route with a full-frame scrim;
+ * this is clipped to the host panel, blur only and no dim, and there is no scrim
+ * element at all — the blur lives on the panel body via `ListDetailShell`.
  */
 
 export interface ShareModalLayers {

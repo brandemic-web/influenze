@@ -9,25 +9,25 @@ import darkLayerCenter from "../../assets/images/home_page/hero/dark_layer_cente
 ---
 
 <section class="relative h-auto mb-2 lg:mb-auto lg:h-344 overflow-x-hidden lg:overflow-visible">
-	<!-- gradient backdrop-->
+	{/* gradient backdrop*/}
 	<div
 		class="pointer-events-none absolute h-full inset-x-0 top-0 lg:h-full bg-[linear-gradient(179.95deg,#11092B_0%,#6838FF_5.85%,#010101_99.94%)]"
 		aria-hidden="true"
 	>
 	</div>
 
-	<!-- decorative concentric arcs, centered on the 1728 design canvas -->
+	{/* decorative concentric arcs, centered on the 1728 design canvas */}
 	<div
 		class="pointer-events-none absolute top-18 left-1/2 w-full -translate-x-1/2 lg:block lg:top-36"
 		aria-hidden="true"
 	>
-		<!--
+		{/*
 			zoomed/cropped on mobile so the arcs read at small widths, natural width from lg up
 
 			Decorative, but it measures as the page's LCP element on mobile — it covers
 			more of the viewport than any single block of hero text. It's ~1KB, so the
 			priority hint costs nothing and stops it queueing behind the collage images.
-		-->
+		*/}
 		<img
 			src={backgroundArcs.src}
 			alt=""
@@ -76,7 +76,7 @@ import darkLayerCenter from "../../assets/images/home_page/hero/dark_layer_cente
 				>
 			</h1>
 
-			<!-- glass copy card -->
+			{/* glass copy card */}
 			<div
 				class="order-3 lg:order-2 mt-4 w-full max-w-77 lg:max-w-113.5 rounded-sm border border-white bg-[linear-gradient(180deg,rgba(255,255,255,0.2)_0%,rgba(100,77,173,0.2)_100%)] px-3 py-5 lg:mt-8.25 lg:w-113.25 lg:px-10 lg:py-8"
 				data-reveal-item
@@ -91,7 +91,7 @@ import darkLayerCenter from "../../assets/images/home_page/hero/dark_layer_cente
 			</div>
 		</div>
 
-		<!-- product mockup: real markup so GSAP can play the workflow through it -->
+		{/* product mockup: real markup so GSAP can play the workflow through it */}
 		<div class="order-2 lg:order-4 relative mt-6 w-full max-w-7xl px-0 lg:mt-14.75 lg:w-7xl lg:px-0">
 			<WorkflowMockup />
 		</div>

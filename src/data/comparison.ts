@@ -1,13 +1,8 @@
 /**
- * "How Influenze Compares" — the competitor comparison table on the home page.
- *
- * Column order matches the design: the Influenze column sits second, between the
- * row labels and the three competitors, and is drawn as a raised card.
- *
- * Rows where the Influenze cell is a plain claim carry `text` only. Rows that
- * compare a capability carry `check: true` on our side and render a dash for
- * every competitor — the competitors' `text` then explains what they do instead.
- * `accent` is the leading fragment tinted brand-green (e.g. "450M+" Profiles).
+ * The home page's competitor comparison table. Column order matches the design, with
+ * the Influenze column second and drawn as a raised card. A row is either a plain
+ * claim (`text` only) or a capability comparison (`check: true` on our side, a dash
+ * for each competitor). `accent` is the leading fragment tinted brand-green.
  */
 
 export interface ComparisonCell {

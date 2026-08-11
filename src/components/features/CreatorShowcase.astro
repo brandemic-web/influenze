@@ -1,14 +1,9 @@
 ---
 /**
- * The rows are the app's own `ProfileCard` — the same components the hero's
- * workflow mockup is built from, so there is one definition of a creator row on
- * the site and it tracks common/widgets/profile_card.dart.
- *
- * Rows only — no column header. This is a marketing strip rather than a working
- * table, and the metrics read fine unlabelled at three rows.
- *
- * `.wf-strip` scales the strip to the page the way the hero canvas does; see
- * styles/app-tokens.css for the geometry.
+ * The features page's creator strip, built from the app's own `ProfileCard` — the same
+ * component the hero mockup uses, so there is one definition of a creator row. Rows
+ * only, no column header: this is a marketing strip, not a working table. `.wf-strip`
+ * scales it the way the hero canvas does (see styles/app-tokens.css).
  */
 import ProfileCard from "../app/common/ProfileCard.astro";
 import { SHOWCASE_HANDLES, creatorByHandle } from "../../data/workflowMockup";

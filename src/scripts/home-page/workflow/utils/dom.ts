@@ -2,23 +2,14 @@ import gsap from "gsap";
 
 /** Small helpers shared by the workflow beats. */
 
-/**
- * Read one of the mockup's `wf-` colour tokens.
- *
- * Beats animate *to* values the components already own, so none of them restate a
- * hex. This is the lookup for the ones that live in `styles/app-tokens.css`.
- */
+/** Read a `wf-` colour token from app-tokens.css, so no beat restates a hex. */
 export function token(name: string) {
 	return getComputedStyle(document.documentElement).getPropertyValue(`--color-wf-${name}`).trim();
 }
 
 /**
- * Trade one inline hook for another.
- *
- * These pairs are mutually exclusive — one placeholder and one value, or one label
- * and its replacement — so the outgoing one has to leave the flow before the
- * incoming one enters it. A crossfade would make the row briefly hold both and
- * jump wider.
+ * Trade one inline hook for another. Sequential, not a crossfade: the pairs are
+ * mutually exclusive, and holding both would briefly widen the row.
  */
 export function swapInline(from: HTMLElement, to: HTMLElement) {
 	return gsap

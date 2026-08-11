@@ -1,40 +1,26 @@
 import gsap from "gsap";
 
 /**
- * An explainer card's turn on screen.
+ * An explainer card's turn on screen. Plays *over* the story — `index.ts` inserts it
+ * at its beat's end time — and touches nothing but the card. Left hidden at the end,
+ * which is also what winds it back for the loop.
  *
- * It plays *over* the story rather than interrupting it: `index.ts` inserts
- * this at the master time its beat ends, so the card fades up while the next
- * beat is already running underneath. Nothing in here touches the mockup — the
- * card is the only thing that moves.
- *
- * The card is left hidden at the end, which is also what winds it back for the
- * loop — the same rule every beat follows.
- *
- * The card arrives black and its violet fills in behind the text a beat later —
- * a layer's opacity rather than a background swap, because the fill is a radial
- * gradient and gradients do not tween. See `WorkflowCard.astro`.
- *
- * Opacity and a small rise only. `yPercent` is a fraction of the card's own
- * height rather than a length, so it needs no unit conversion and cannot go
- * stale when the stage rescales — the trap that keeps the rest of the story
- * off transforms. Nothing else translates the card, so there is no authored
- * percentage translate for GSAP to fold in (see the note in beat 5).
+ * The card arrives black and its violet fills in behind the text via a layer's
+ * opacity, because the fill is a radial gradient and gradients don't tween.
+ * `yPercent` is used for the rise so nothing goes stale when the stage rescales.
  */
 
-/** Matches the fade the modals use, so the card arrives like the rest of the UI. */
+/** Matches the modals' fade, so the card arrives like the rest of the UI. */
 const IN = 0.36;
 const OUT = 0.28;
 const RISE = 18;
-/** The black-to-violet settle: slower than the entrance, so it reads as a fill. */
+/** Slower than the entrance, so the black-to-violet reads as a fill. */
 const FILL = 0.55;
 const FILL_DELAY = 0.12;
 
 /**
- * The hold that makes a card start fading out `span` seconds after it starts
- * fading up — how a card timed to a pair of story marks works out its dwell.
- * Clamped at 0, so marks that land too close together still give a clean blip
- * rather than a card that fades out before it is up.
+ * Dwell for a card timed to a pair of story marks: start fading out `span` seconds
+ * after fading up. Clamped at 0 so marks too close together still give a clean blip.
  */
 export const holdForSpan = (span: number) => Math.max(0, span - IN);
 
@@ -54,8 +40,8 @@ export function spotlight(card: HTMLElement, dwell: number) {
 
 	if (fill) tl.to(fill, { opacity: 1, duration: FILL, ease: "power2.inOut" }, `>-${FILL_DELAY}`);
 
-	// The dwell is measured from the card being fully settled, so a longer fill
-	// does not eat into how long it is readable.
+	// Dwell runs from the card being fully settled, so a longer fill does not eat
+	// into how long it is readable.
 	return tl
 		.to(card, { opacity: 0, duration: OUT, ease: "power2.in" }, `+=${dwell}`)
 		.set(card, { visibility: "hidden" });

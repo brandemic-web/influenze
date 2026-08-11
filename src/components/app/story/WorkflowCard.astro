@@ -1,29 +1,13 @@
 ---
 /**
- * One explainer card laid over the workflow mockup.
+ * One explainer card laid over the workflow mockup. A sibling of the screen layers,
+ * since it has to outlive them as the story advances. Starts hidden — GSAP owns
+ * opacity and visibility, so a script that never runs leaves no stray card.
  *
- * A sibling of the screen layers, like `WorkflowPointer`, for the same reason:
- * the layers get hidden as the story advances and this has to outlive them. It
- * lives in stage coordinates so it scales with the canvas, and starts hidden —
- * GSAP owns opacity and visibility from there, so a script that never runs
- * leaves no stray card on the hero.
- *
- * **Every length here is a Figma pixel**, converted by `rem()`. The cards are
- * authored beside Figma's 1280-wide app frames, and the stage is the app's own
- * 1440-wide canvas (see `.wf-stage`), so x1.125 is what keeps a card the same
- * fraction of the mockup's width the design gives it, and /16 turns that into
- * rem.
- *
- * `SCALE` then shrinks the card off the design's size. Figma draws these at 44%
- * of the mockup's width, which covers too much of the animation playing behind
- * them, so every length runs through one factor rather than being re-measured —
- * the design's proportions and line breaks survive whatever size we settle on.
- * `OVERHANG` runs through it too, so sliding the card right does not change how
- * far past the canvas edge it reaches relative to its own size.
- *
- * The `<p>`s pick up the stage's cap-trim, which is what Figma's own
- * `text-box-trim: trim-both` on these layers asks for, so neither needs
- * `wf-untrimmed`.
+ * **Every length here is a Figma pixel**, converted by `rem()`: x1.125 maps the
+ * design's 1280-wide frame onto the stage's 1440 canvas, then /16 gives rem. `SCALE`
+ * shrinks the whole card off the design's size, so its proportions and line breaks
+ * survive whatever size we settle on.
  */
 import type { WorkflowCard } from "../../../data/workflowCards";
 
@@ -37,25 +21,17 @@ const { card } = Astro.props;
 const SCALE = 0.77;
 
 /**
- * How far the card hangs past the canvas's right edge, in the same Figma pixels
- * as everything else — so it scales with `SCALE` and the design's proportions
- * hold. Turn it up to slide the card right, off the animation behind it.
- *
- * There is a real ceiling on this. The mockup already fills its 80rem column, so
- * everything past the canvas edge eats into the page's own margin — and `body` is
- * `overflow-x-clip`, so going too far silently cuts the card's right edge off
- * rather than giving the page a scrollbar. The overhang has to stay inside half
- * the difference between the viewport and 1280px: at these values the card needs
- * roughly a 1565px viewport to sit fully on the page, and raising either constant
- * raises that floor.
+ * How far the card hangs past the canvas's right edge, in Figma pixels. Turn it up to
+ * slide the card off the animation behind it — but note the ceiling: the mockup
+ * already fills its 80rem column, and `body` is `overflow-x-clip`, so too far
+ * silently crops the card. At these values it needs a ~1565px viewport to sit fully
+ * on the page, and raising either constant raises that floor.
  */
 const OVERHANG = 184;
 
 /**
- * Where the card sits down the canvas, in canvas rem. Deliberately *not* run
- * through `rem()`: this is a position on the stage rather than a length inside
- * the card, so resizing the card should not slide it up and down as a side
- * effect. A bigger card simply grows downward from here.
+ * Where the card sits down the canvas, in canvas rem. Deliberately *not* through
+ * `rem()` — it is a stage position, so resizing the card must not slide it.
  */
 const TOP = 5.625;
 
@@ -69,11 +45,10 @@ const rem = (figmaPx: number) => `${((figmaPx * 1.125 * SCALE) / 16).toFixed(3)}
 	aria-hidden="true"
 >
 	{/*
-		The violet is the card's *settled* state, not a variant: every card arrives
-		black and fills in. It is a layer rather than a background swap because the
-		fill is a radial gradient, and a gradient is not a tweenable value — an
-		opacity on top of the black is. `spotlight()` owns it; with no script the
-		card simply stays black, which is a legitimate resting state.
+		The violet is the card's *settled* state, not a variant — every card arrives black
+		and fills in. A layer rather than a background swap, because the fill is a radial
+		gradient and gradients don't tween. `spotlight()` owns it; with no script the card
+		stays black, which is a legitimate resting state.
 	*/}
 	<span class="wf-card-violet absolute inset-0 opacity-0" data-wf-card-fill></span>
 

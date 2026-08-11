@@ -1,17 +1,9 @@
 ---
 /**
- * Creator detail — `creator_detail.dart`, which owns both tabs and both bodies,
- * so this does too rather than taking one through a slot.
- *
- * Renders *inside* the results panel with no surface of its own: a `padding
- * h24 v20` content box holding the header, a rule, then a row of the identity
- * column (0.28 x viewport = 403, vertically centred) · 40 · the tab card.
- *
- * Frame coordinates: content box at 466,150 sized 884 x 664.
- *
- * The creator is the story's profiled one and is read from the data rather than
- * passed in — the two frames this appears in are the same creator, and stating
- * them separately is how their figures used to drift apart.
+ * Creator detail — the app's `creator_detail.dart`, which owns both tabs and bodies,
+ * so this does too. Renders *inside* the results panel with no surface of its own:
+ * content box at 466,150 sized 884 x 664. The creator is read from the data rather
+ * than passed in, so the two frames that use it can't state different figures.
  */
 import CreatorAvatar from "../../../common/CreatorAvatar.astro";
 import Icon from "../../../common/Icon.astro";
@@ -64,7 +56,7 @@ const demographics = [
 	<span class="block h-px shrink-0 bg-wf-rule"></span>
 
 	<div class="flex min-h-0 flex-1 items-center pt-6">
-		<!-- Identity column: a scroll view in the app, so it centres on its content. -->
+		{/* Identity column: a scroll view in the app, so it centres on its content. */}
 		<div class="flex w-100.75 shrink-0 flex-col items-center px-10">
 			<CreatorAvatar size="10.625rem" handle={handle} />
 			<p class="mt-6 text-center text-[1.75rem] whitespace-nowrap text-wf-text">{name}</p>
@@ -72,7 +64,7 @@ const demographics = [
 				{tierLabel}
 			</span>
 
-			<!-- The app's `Divider(height: 36)` — a 1px rule centred in a 36px box. -->
+			{/* The app's `Divider(height: 36)` — a 1px rule centred in a 36px box. */}
 			<span class="my-[1.09375rem] block h-px w-full bg-wf-rule"></span>
 
 			<div class="flex items-center justify-center text-[0.625rem] whitespace-nowrap text-wf-meta">

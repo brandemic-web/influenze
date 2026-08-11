@@ -6,34 +6,20 @@ import { swapInline, token } from "../utils/dom";
 import type { Pointer } from "../utils/pointer";
 
 /**
- * Beat 1 — the Analyze rail, from an untouched filter panel to a Lookalike
- * search that is ready to run.
+ * Beat 1 — builds a Lookalike search in place inside screen 1: open Parameters,
+ * pick Lookalike, type a handle, add a location, scroll the rail, pick the Macro
+ * tier, press Apply & Search. Ends at `RAIL_TIER_SCROLL`, where screens 3-5 are
+ * authored, so beat 2 can swap layers without the rail moving.
  *
- * Screens 1 and 2 of the mockup are the *same* Analyze screen, so this plays out
- * in place inside screen 1's layer instead of cutting between the two. In order:
- * open the Parameters dropdown, pick Lookalike, type a handle, add India as a
- * location, scroll down the rail, pick the Macro follower tier, drag its
- * engagement handle, then press Apply & Search.
- *
- * It passes through exactly the state `<Analyze results />` renders (which is why
- * screen 2 is a reference frame rather than a step of its own) and finishes with
- * the rail scrolled to `RAIL_TIER_SCROLL` — where screens 3-5 are authored — so
- * beat 2 can swap layers without the rail moving.
- *
- * Everything is reached through the `data-wf-*` hooks in AnalyzeFilterSidebar.astro, and
- * the beat is self-contained: it winds the rail back to its untouched state
- * first, so it can be replayed or jumped straight to its end.
+ * Driven entirely through AnalyzeFilterSidebar's `data-wf-*` hooks. See APP-SPEC.md.
  */
 
-/** The site's root font-size is fluid, so rem has to be resolved at runtime. */
+/** The root font-size is fluid, so rem has to be resolved at runtime. */
 const rootFontSize = () => parseFloat(getComputedStyle(document.documentElement).fontSize);
 
 /**
- * Grow a clip wrapper from nothing to its natural height.
- *
- * The wrapper exists only to be measured — the styled body sits inside it — so
- * padding and margins never have to be animated alongside the height. Layout goes
- * back to CSS once it is open, so nothing is left pinned to a measured value.
+ * Grow a clip wrapper from nothing to its natural height. The wrapper is bare, so
+ * padding and margins never animate alongside; layout is handed back to CSS after.
  */
 function expand(wrapper: HTMLElement, duration = 0.34) {
 	return gsap
@@ -41,7 +27,6 @@ function expand(wrapper: HTMLElement, duration = 0.34) {
 		.set(wrapper, { display: "block", overflow: "hidden", height: 0 })
 		.to(wrapper, { height: "auto", duration, ease: "power2.out" })
 		.call(() => {
-			// Hand layout back to the stylesheet rather than pinning a measured height.
 			wrapper.style.removeProperty("height");
 			wrapper.style.removeProperty("overflow");
 		});
@@ -56,10 +41,7 @@ function collapse(wrapper: HTMLElement, duration = 0.28) {
 		.set(wrapper, { display: "none" });
 }
 
-/**
- * Every element the beat drives, or null if this is not the rail we expect.
- * The mapped return type is what lets the timeline treat them as non-nullable.
- */
+/** Every element the beat drives, or null if the rail isn't the one we expect. */
 function collect(screen: HTMLElement) {
 	const q = <T extends HTMLElement>(selector: string) => screen.querySelector<T>(selector);
 	// Both fields hold a caret, so those two are scoped to their own field.
@@ -114,10 +96,8 @@ export function analyzeLookalike(screen: HTMLElement, pointer: Pointer) {
 	const el = collect(screen);
 	if (!el) return null;
 
-	// Read the rail's authored strings and colours up front, straight out of the
-	// markup, so nothing here restates a value that AnalyzeFilterSidebar.astro already
-	// owns. Doing it before the timeline runs also means a replay cannot pick up
-	// the beat's own output as its input.
+	// Read the authored strings and colours off the markup up front: the component
+	// stays the single source, and a replay can't pick up this beat's own output.
 	const emptyLabel = el.label.textContent ?? "";
 	const pickedLabel = el.option.textContent?.trim() ?? "";
 	const handle = el.handleValue.textContent?.trim() ?? "";
@@ -125,19 +105,14 @@ export function analyzeLookalike(screen: HTMLElement, pointer: Pointer) {
 	const locationHint = el.locationInput.textContent ?? "";
 	const dimmedLabel = getComputedStyle(el.label).color;
 
-	// The slider publishes its own snap offsets and the stop it rests on, so the
-	// position is not restated here. The tier opens on its own average cut and the
-	// story leaves it there, so this is only ever used to repaint that one stop
-	// when the loop comes back round.
+	// The slider publishes its own snap offsets and resting stop. Nothing drags it,
+	// so this only repaints that one stop when the loop comes round.
 	const stops = (el.slider.dataset.wfSliderStops ?? "").split(",").map(Number);
 	const restAt = stops[Number(el.slider.dataset.wfSliderStop ?? 0)] ?? 0;
 	const captionOn = token("text-quiet");
 	const captionOff = token("text-muted");
 
-	/**
-	 * Place the handle and light the captions still inside the accepted range —
-	 * everything from the thumb rightward.
-	 */
+	/** Place the handle and light the captions from the thumb rightward. */
 	const paintSlider = (at: number) => {
 		el.slider.style.setProperty("--wf-slider-at", String(at / 100));
 		el.captions.forEach((caption, i) => {
@@ -146,12 +121,8 @@ export function analyzeLookalike(screen: HTMLElement, pointer: Pointer) {
 	};
 
 	/**
-	 * Put the rail back to an untouched filter panel.
-	 *
-	 * The static markup already renders this, so on the first pass it changes
-	 * nothing — but the story loops, and by the time it comes round the rail is
-	 * still carrying this beat's own output. Beat 11 calls this *before* it reveals
-	 * screen 1, so the panel is clean the moment it comes back into view.
+	 * Put the rail back to an untouched filter panel. A no-op on the first pass, but
+	 * beat 11 calls it *before* revealing screen 1 so the loop arrives home clean.
 	 */
 	const reset = () => {
 		gsap.set([el.sheet, el.panel, el.tierBody], { display: "none" });
@@ -172,8 +143,8 @@ export function analyzeLookalike(screen: HTMLElement, pointer: Pointer) {
 		gsap.set(el.tierDot, { borderColor: token("control-border"), backgroundColor: "transparent" });
 		gsap.set(el.tierPip, { display: "none", opacity: 0 });
 		gsap.set(el.tierRange, { color: token("text-value") });
-		// The tier reads out its own minimum. The "all ranges" line is the other half
-		// of that grid cell and is never shown now that nothing drags the handle.
+		// The tier reads out its own minimum; "all ranges" shares that grid cell and
+		// is never shown, since nothing drags the handle.
 		gsap.set(el.benchmark, { opacity: 1 });
 		gsap.set(el.allRanges, { opacity: 0 });
 		el.label.textContent = emptyLabel;
@@ -185,9 +156,8 @@ export function analyzeLookalike(screen: HTMLElement, pointer: Pointer) {
 	const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
 
 	// ── the rail as the visitor first finds it ───────────────────────────────
-	// The cursor starts parked on the Analyze nav item, which is exactly where beat
-	// 11 leaves it — so the loop seam has no jump and no blink. `fadeIn` only does
-	// anything on the first pass, when CSS still has the cursor hidden.
+	// The cursor starts parked where beat 11 leaves it, so the loop seam has no jump.
+	// `fadeIn` only does anything on the first pass, while CSS still hides the cursor.
 	tl.call(reset)
 		.set(pointer.el, pointer.aimVars(el.navAnalyze))
 		.add(pointer.fadeIn(), "+=0.25");
@@ -279,10 +249,8 @@ export function analyzeLookalike(screen: HTMLElement, pointer: Pointer) {
 		.to(el.locationReset, { opacity: 1, duration: 0.3 }, "<");
 
 	// ── scroll down to the follower metrics ──────────────────────────────────
-	// The cursor parks over the list and the rail scrolls under it, the way a wheel
-	// works — no cursor travel, because a wheel does not move the pointer. It stops
-	// at RAIL_TIER_SCROLL, where screens 3-5 are authored, so nothing has to move
-	// the rail again later.
+	// Wheel-style: the cursor parks and the rail moves under it. Lands on
+	// RAIL_TIER_SCROLL, where screens 3-5 are authored, so it never moves again.
 	tl.addLabel("scroll", "+=0.4")
 		.add(pointer.moveTo(el.rail, { at: { x: 0.55, y: 0.45 }, duration: 0.5 }), "scroll")
 		.to(
@@ -307,10 +275,8 @@ export function analyzeLookalike(screen: HTMLElement, pointer: Pointer) {
 		.to(el.tierPip, { opacity: 1, duration: 0.2 }, "tier+=0.66")
 		.add(expand(el.tierBody, 0.4), "tier+=0.62");
 
-	// The engagement handle is deliberately left where the tier opens it — on the
-	// tier's own average cut, which is the filter the results are shown for. It
-	// used to be dragged left to "all ranges"; that beat is gone, so the benchmark
-	// read-out is simply the one the markup ships with.
+	// The engagement handle stays where the tier opens it — the tier's own average
+	// cut, which is the filter the results are shown for.
 
 	// ── run the search ───────────────────────────────────────────────────────
 	tl.addLabel("apply", "+=0.45")
@@ -320,7 +286,6 @@ export function analyzeLookalike(screen: HTMLElement, pointer: Pointer) {
 		.to(el.apply, { scale: 1, duration: 0.2 })
 		.call(spendCredits(screen, CREDITS.start, CREDITS.afterSearch), undefined, "apply+=0.8");
 
-	// The odd one out: this beat hands its reset back as well as its timeline,
-	// because the beat that loops home needs it. See `reset` above.
+	// Hands back its reset as well as its timeline — beat 11 needs it at the loop.
 	return { timeline: tl, reset };
 }

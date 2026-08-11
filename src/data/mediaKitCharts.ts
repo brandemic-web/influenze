@@ -1,20 +1,11 @@
 /**
- * The media kit's chart scales, ported from the app.
+ * The media kit's chart scales, ported from the app's `LineChartPainter` and
+ * `PricingCard._niceMax`. Everything drawn is derived from the raw numbers, as the app
+ * does it, so an axis label can never disagree with the line beside it — only the
+ * series are authored, in `data/workflowMockup.ts`.
  *
- * Both charts derive everything they draw from their raw numbers — the app does
- * the same, and doing it here too means an axis label can never disagree with
- * the line or bar sitting next to it. Only the series themselves are authored,
- * in `data/workflowMockup.ts`.
- *
- * Sources: `GrowthChartWidget` + `CustomLineChart`'s `LineChartPainter`
- * (`common/widgets/custom_line_chart.dart`) for the growth charts, and
- * `PricingCard`'s `_PostTypeChart` + `_niceMax` (`media_kit/detail/pricing_card.dart`)
- * for the price chart.
- *
- * Geometry comes out as **percentages**, because the mockup's charts are flex
- * boxes whose width is only known at layout time: the media kit tab and a
- * compare column are different widths, and the whole canvas then rescales with
- * the viewport. Percentages are the one form that survives all of that.
+ * Geometry comes out as **percentages**: the charts are flex boxes whose width is only
+ * known at layout time, and the canvas then rescales with the viewport.
  */
 
 /**

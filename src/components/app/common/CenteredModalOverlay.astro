@@ -15,11 +15,11 @@ interface Props {
 const { width, background = "#181823", radius = "1.5rem", border = "#3b3b62" } = Astro.props;
 ---
 
-<!--
+{/*
 	The blur is a `filter` on the backdrop copy, not `backdrop-filter` on an
 	overlay: the latter samples the un-transformed backdrop inside the scaled
 	stage, so it lands offset.
--->
+*/}
 <div class="absolute inset-0 blur-[0.375rem]" data-wf-modal-backdrop>
 	<slot name="backdrop" />
 </div>

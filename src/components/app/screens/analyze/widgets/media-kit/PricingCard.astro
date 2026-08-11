@@ -1,15 +1,9 @@
 ---
 /**
- * Creator's Estimated Price.
- *
- * The card is transparent over the tab card like Account Stats is; only its four
- * inner tiles carry `cardColor`. Three of them are plain boxes; the fourth is a
- * floating-bar range chart, drawn from percentages for the same reason the growth
- * charts are (see `GrowthChart.astro`).
- *
- * The app's `[ Videos | Post ]` segmented toggle is not here: it only appears
- * when a platform has more than one post-type group, and Instagram — the only
- * platform the story shows — has one.
+ * Creator's Estimated Price. Transparent over the tab card like Account Stats; only
+ * its four inner tiles carry `cardColor`, the fourth being a floating-bar range chart
+ * drawn from percentages (see `GrowthChart.astro`). The app's `[ Videos | Post ]`
+ * toggle is absent — it only appears where a platform has more than one post group.
  */
 import Icon from "../../../../common/Icon.astro";
 import { priceScale, type PriceBar } from "../../../../../../data/mediaKitCharts";
@@ -42,7 +36,7 @@ const DASHED_GRID =
 	"repeating-linear-gradient(to right,var(--color-mkit-grid-price) 0 4px,transparent 4px 7px)";
 ---
 
-<!-- The card's own padding-bottom 12; no gap widget separates it from Account Stats. -->
+{/* The card's own padding-bottom 12; no gap widget separates it from Account Stats. */}
 <div class={outerPad}>
 	<div class={innerPad}>
 		<div class="flex items-center">
@@ -52,7 +46,7 @@ const DASHED_GRID =
 			<span class="ml-3 text-[0.875rem] font-semibold whitespace-nowrap text-wf-text"
 				>Creator's Estimated Price</span
 			>
-			<!-- pt0/pb3 in the app; here the trim is what leaves the pill its height. -->
+			{/* pt0/pb3 in the app; here the trim is what leaves the pill its height. */}
 			<span class="ml-2 rounded-[1rem] bg-mkit-tile px-2.5 py-1 text-[0.625rem] whitespace-nowrap text-mkit-lavender"
 				>Beta</span
 			>
@@ -66,15 +60,15 @@ const DASHED_GRID =
 			</p>
 		</section>
 
-		<!-- Chart tile: padding l12 r16 t16 b12. -->
+		{/* Chart tile: padding l12 r16 t16 b12. */}
 		<section class="mt-2 rounded-[0.3125rem] pt-4 pr-4 pb-3 pl-3" style={`background:${surface}`}>
 			<span class="text-[0.625rem] font-medium whitespace-nowrap text-wf-text">Price by post type</span>
 
-			<!--
+			{/*
 				200 tall, of which the axes reserve 40 at the left and 40 at the foot,
 				so the plot itself is 160. The y-axis column spans exactly the plot's
 				height, which is what lets its labels share the gridlines' percentages.
-			-->
+			*/}
 			<div class="relative mt-6 h-50">
 				<div class="absolute top-0 bottom-10 left-0 w-10">
 					{
@@ -96,7 +90,7 @@ const DASHED_GRID =
 						))
 					}
 
-					<!-- One 8-wide fully rounded rod per post type, floating between min and max. -->
+					{/* One 8-wide fully rounded rod per post type, floating between min and max. */}
 					{
 						bars.map(({ at, bottom, height }) => (
 							<span
@@ -107,7 +101,7 @@ const DASHED_GRID =
 					}
 				</div>
 
-				<!-- Bottom axis: 8 of space, then the label over its range. -->
+				{/* Bottom axis: 8 of space, then the label over its range. */}
 				<div class="absolute right-0 bottom-0 left-10 h-10 pt-2">
 					<div class="relative h-full">
 						{

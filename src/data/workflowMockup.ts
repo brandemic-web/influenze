@@ -7,16 +7,12 @@
  */
 
 /**
- * Whoever is signed in to the mockup. `handle` is only how the nav finds their
- * photo in profile_images — they are the operator, not a creator, so they are
- * deliberately not in `CREATORS`.
+ * Whoever is signed in. `handle` is only how the nav finds their photo in
+ * profile_images — they are the operator, so deliberately not in `CREATORS`.
  */
 export const APP_USER = { name: "Harsh", handle: "harsh" } as const;
 
-/**
- * How many profiles a search analyses — the "Analyzed 10" the results header
- * reads out, and the count the search is billed for.
- */
+/** Profiles a search analyses — the results header's "Analyzed 10", and the bill. */
 export const ANALYZED_COUNT = 10;
 
 /** The app charges per creator: 5 to analyse one, 50 to unlock one's profile. */
@@ -27,13 +23,9 @@ const CREDITS_START = 2540;
 const SEARCH_COST = ANALYZED_COUNT * PER_ANALYZED;
 
 /**
- * The nav credits chip, at each point the story spends.
- *
- * Apply & Search bills for the ten profiles it analyses; opening one of them
- * bills the unlock. Every screen is authored holding the balance it should show
- * when it comes into view, and beats 1 and 2 tick the chip from one of these to
- * the next on the layer the spend happens on — so the swap that follows lands on
- * a chip already reading the new number.
+ * The nav credits chip at each point the story spends. Every screen is authored
+ * holding the balance it should show, and beats 1-2 tick the chip on the layer the
+ * spend happens on — so the following swap lands on a chip already reading right.
  */
 export const CREDITS = {
 	start: CREDITS_START,
@@ -44,11 +36,7 @@ export const CREDITS = {
 /** The chip's thousands separator — shared so the tween writes what the nav rendered. */
 export const formatCredits = (value: number) => value.toLocaleString("en-US");
 
-/**
- * Parameter dropdown options, in the app's order — `DiscoveryFilter` in
- * analyze/widgets/filters/discovery_filters_section.dart. Every option except
- * "None" carries an info tooltip.
- */
+/** Parameter dropdown options, in the app's `DiscoveryFilter` order. */
 export const PARAMETER_OPTIONS = [
 	{ label: "None", muted: true },
 	{ label: "Lookalike", selected: true },
@@ -62,19 +50,14 @@ export const PARAMETER_OPTIONS = [
 ] as const;
 
 /**
- * Rail scroll, in rem, that brings the follower-tier list to the top of the rail.
- *
- * Screens 3-5 are authored here and beat 1 scrolls the cursor's way down to it,
- * so the animated path and the static frames land on the same pixels. Change it
- * in one place or they drift apart.
+ * Rail scroll (rem) that brings the follower-tier list to the top. Screens 3-5 are
+ * authored here and beat 1 scrolls to it, so both land on the same pixels.
  */
 export const RAIL_TIER_SCROLL = 36.4375;
 
 /**
- * `benchmark` is the tier's Instagram *average* engagement cut — the figure the
- * expanded tier's slider reads out as its minimum, and the same number screen 5
- * labels its Category Median with. Straight from `engagementRateBenchmarks` in
- * common/constants.dart.
+ * `benchmark` is the tier's Instagram average engagement cut, from the app's
+ * `engagementRateBenchmarks` — the slider's minimum and screen 5's Category Median.
  */
 export const FOLLOWER_TIERS = [
 	{ label: "🚀 Nano Influencer", range: "1k - 10k followers", benchmark: "2.42%" },
@@ -85,11 +68,8 @@ export const FOLLOWER_TIERS = [
 ] as const;
 
 /**
- * Engagement quality band, uppercased as the app prints it —
- * `EngagementRateWithQuality` in common/widgets/profile_card.dart. Which band a
- * rate falls into is fixed by platform and follower tier
- * (`engagementRateBenchmarks` in common/constants.dart); for Instagram macro
- * the cuts are 2.53 / 1.53 / 1.01 / 0.66.
+ * Engagement quality band, uppercased as the app prints it. Bands are fixed by
+ * platform and tier; for Instagram macro the cuts are 2.53 / 1.53 / 1.01 / 0.66.
  */
 export type EngagementLevel = "HIGH" | "ABOVE AVERAGE" | "AVERAGE" | "BELOW AVERAGE" | "LOW";
 
@@ -111,10 +91,8 @@ export interface Creator {
 }
 
 /**
- * The Analyze results list — what the search returns, in the order the app
- * ranked them. Seven rows so the list has somewhere to scroll.
- *
- * Figures are real, pulled from the app against the `hyperfitx` lookalike seed.
+ * The Analyze results, in the app's ranked order — seven rows so the list can
+ * scroll. Figures are real, pulled from the app against the `hyperfitx` seed.
  */
 export const RESULT_CREATORS: Creator[] = [
 	{
@@ -209,9 +187,8 @@ export const RESULT_CREATORS: Creator[] = [
 ];
 
 /**
- * The three rows the features page's creator showcase draws, top to bottom.
- * Deliberately its own cast rather than the story's: the strip is a marketing
- * flourish on another page and has no reason to move when the story's does.
+ * The features page's showcase rows. Its own cast on purpose — that strip has no
+ * reason to move when the story's cast does.
  */
 const SHOWCASE_CREATORS: Creator[] = [
 	{
@@ -255,10 +232,7 @@ const SHOWCASE_CREATORS: Creator[] = [
 
 export const SHOWCASE_HANDLES = SHOWCASE_CREATORS.map((creator) => creator.handle);
 
-/**
- * The creator the story opens from the results list. Screens 4 and 5 are this
- * profile, so their name and stats have to keep matching this row.
- */
+/** The creator the story opens. Screens 4 and 5 are this profile. */
 export const PROFILED_HANDLE = "sellydsouzaaa";
 
 /** Resolves a row so screens never restate a creator's name or figures. */
@@ -269,40 +243,28 @@ export function creatorByHandle(handle: string): Creator {
 }
 
 /**
- * The two rows the story compares, in the order screen 9 columns them: the
- * creator it just profiled, then the list's other member. These are exactly
- * `LIST_CREATORS`, which is what screen 8 paints as already ticked.
+ * The two rows the story compares, in screen 9's column order. Exactly the
+ * `LIST_CREATORS` screen 8 paints as already ticked.
  */
 export const COMPARED_HANDLES = [PROFILED_HANDLE, "pooo.raw"] as const;
 
 /**
- * The story list's members, and so the rows screen 8 draws.
- *
- * Poorav and Justin are the list's standing members — the two the add-to-list
- * dialog already shows on screen 6 — and Selwyn is the one the story adds there,
- * so by screen 7 the list holds three. He leads because screens 8 and 9 are about
- * the creator just profiled.
+ * The story list's members, and so screen 8's rows. Poorav and Justin are standing
+ * members (what the dialog shows on screen 6); Selwyn is the one the story adds, and
+ * leads because screens 8-9 are about the creator just profiled.
  */
 export const LIST_CREATORS: Creator[] = [PROFILED_HANDLE, "pooo.raw", "hyperfitx"].map((handle) => ({
 	...creatorByHandle(handle),
 	checked: (COMPARED_HANDLES as readonly string[]).includes(handle),
 }));
 
-/**
- * The list the story adds that creator to. Screen 6 marks this row so the cursor
- * can find it; it is also the only card on screen 7.
- */
+/** The list the story adds to — marked on screen 6, the only card on screen 7. */
 export const STORY_LIST = "Vox Pop";
 
 /**
- * The handle the story types into the Lookalike field on screens 1-2, which is
- * then echoed by the results header's Creator Lookalike chip. The typing
- * animation reads it out of the rendered field, so this is the only place it is
- * written — see AnalyzeFilterSidebar.astro's [data-wf-handle-value].
- *
- * Has to stay a different creator from `PROFILED_HANDLE`: the seed can't also be
- * the row the story opens, since that would select a creator as its own lookalike.
- * It does legitimately appear *among* the results, which is what the app does.
+ * The lookalike seed the story types on screens 1-2. Written only here — the typing
+ * animation reads it back out of the rendered field. Must stay different from
+ * `PROFILED_HANDLE`, or the story would open a creator as its own lookalike.
  */
 export const LOOKALIKE_HANDLE = "hyperfitx";
 
@@ -310,9 +272,8 @@ export const LOOKALIKE_HANDLE = "hyperfitx";
 const PICKED_TIER = FOLLOWER_TIERS.find((tier) => "selected" in tier && tier.selected)?.label ?? "";
 
 /**
- * Every filter the story applies, in the order `buildGroups` in
- * analyze_applied_filters_bar.dart appends them. The strip is wider than the
- * results panel at this many groups, which is why it fades at its right edge.
+ * Every filter the story applies, in the app's `buildGroups` order. At this many
+ * groups the strip outgrows the results panel, hence the fade at its right edge.
  */
 export const RESULT_FILTERS = [
 	{ label: "Platform", value: "Instagram" },
@@ -323,14 +284,9 @@ export const RESULT_FILTERS = [
 ] as const;
 
 /**
- * The only list in the story, and the one screen 6 adds a creator to.
- *
- * `count` and `preview` are what the *dialog* shows: the list before the story
- * touches it, so Poorav and Justin. Screen 7 renders it after the add, so it
- * counts `LIST_CREATORS` instead and the two never have to be kept in step.
- *
- * `preview` is whose portraits fill a card's tiles; a list this small simply
- * draws fewer of them.
+ * The only list in the story. `count`/`preview` are what the *dialog* shows — the
+ * list before the add. Screen 7 counts `LIST_CREATORS` instead, so the two never
+ * have to be kept in step. `preview` is whose portraits fill a card's tiles.
  */
 export const CREATOR_LISTS = [
 	{
@@ -342,23 +298,15 @@ export const CREATOR_LISTS = [
 ] as const;
 
 /**
- * Media-kit tiles, growth charts and pricing shown on the creator profile and
- * the compare screen.
+ * Media-kit tiles, growth charts and pricing for the profile and compare screens.
  *
- * `axis` is the bar's two end labels, and `marker`/`median` are positions along
- * it as a percentage of its width. The app derives all three from the rate and
- * the tier median — `EngagementGraph` takes `min = median x 0.5` and
- * `max = rate x 1.5` — so they are computed here the same way rather than eyeballed.
- *
- * The two growth series are **raw monthly values, not positions**: everything
- * drawn from them — the padded scale, the gridlines, their compact labels and
- * the line itself — is derived in `data/mediaKitCharts.ts`, exactly as the app
- * derives it. So they are the one place a figure can be edited, and the last
- * month of each has to stay in step with the tile above it: `followerGrowth`
- * ends on `followers` and `likesGrowth` on `likes`.
- *
- * `priceBars` are the four Instagram post types in `MediaKitPricingHelper.igGroups`
- * order. The headline range is the min and max across them, so it is derived too.
+ * `axis`/`marker`/`median` follow the app's `EngagementGraph`: min = median x 0.5,
+ * max = rate x 1.5. The growth series are **raw monthly values, not positions** —
+ * scale, gridlines, labels and the line are all derived in `data/mediaKitCharts.ts`,
+ * so this is the only place a figure is edited. Each series' last month must match
+ * the tile above it (`followerGrowth` → `followers`, `likesGrowth` → `likes`).
+ * `priceBars` are the four Instagram post types in `igGroups` order; the headline
+ * range is derived from them.
  */
 export const MEDIA_KIT_STATS = {
 	selwyn: {
@@ -442,16 +390,9 @@ export const MEDIA_KIT_STATS = {
 } as const;
 
 /**
- * The currency the pricing card quotes in, and the factors under it.
- *
- * Both are shared rather than per creator: the app reads the symbol from the
- * media kit's `currency` field, and the factors from `price_explanations`, whose
- * descriptions are a fixed set of sentences chosen by band. Every creator the
- * story shows lands in the same bands, so both columns really do read the same —
- * which is why they live here rather than being copied into each one.
- *
- * Order is `MediaKitPricingHelper.factorOrder`: follower level, engagement,
- * audience location, audience credibility.
+ * The pricing card's currency and driving factors. Shared, not per creator: the app
+ * picks factor sentences by band, and every creator the story shows lands in the
+ * same bands. Order is the app's `factorOrder`.
  */
 export const PRICING = {
 	currency: "$",
@@ -463,10 +404,7 @@ export const PRICING = {
 	],
 } as const;
 
-/**
- * The About tab's profile block for the creator the story opens. Kept beside the
- * row rather than in the screen so the two can't state different follower counts.
- */
+/** The About tab's profile block, kept beside the row so their figures can't drift. */
 export const PROFILED_ABOUT = {
 	followersInFull: "190,373",
 	topGender: { value: "Male", share: "50.4%" },
@@ -475,13 +413,9 @@ export const PROFILED_ABOUT = {
 } as const;
 
 /**
- * The tier copy under a media kit's benchmark bar. Every creator the story shows
- * is macro, so the median and the paragraph are the same figures for all of them
- * — the *bar* is not shared, which is why `axis`/`marker`/`median` sit per creator
- * in `MEDIA_KIT_STATS` above.
- *
- * Kept here rather than in either screen because the Media Kit tab and both
- * compare columns render it, and they used to hold their own copies.
+ * Tier copy under a media kit's benchmark bar. Shared because every creator the story
+ * shows is macro — the *bar* is not, which is why `axis`/`marker`/`median` stay per
+ * creator in `MEDIA_KIT_STATS`. Here, not in a screen: three call sites render it.
  */
 export const MACRO_BENCHMARK = {
 	medianLabel: "1.01%",

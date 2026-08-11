@@ -1,18 +1,11 @@
 /**
- * Always-visible sideways-scroll rail.
+ * Always-visible sideways-scroll rail, drawn as real DOM: iOS Safari and Chrome's
+ * device emulation both force a fading overlay bar and ignore `::-webkit-scrollbar`.
  *
- * The native scrollbar cannot be made permanent in the contexts that matter
- * here: iOS Safari and Chrome's device emulation both force an overlay bar that
- * fades out after a drag and ignore `::-webkit-scrollbar` styling entirely. So
- * the bar is drawn as real DOM instead — always painted, and draggable.
- *
- * Markup: `data-rail-scroller="<id>"` on the overflow container, plus a
- * `data-rail="<id>"` element containing `data-rail-thumb`. The native bar should
- * be hidden in CSS so the two do not both show.
- *
- * The rail hides itself whenever there is nothing to scroll, which is also how
- * it stays out of the way of the desktop layout (where the container is
- * `overflow-visible`, so scrollWidth equals clientWidth).
+ * Markup: `data-rail-scroller="<id>"` on the overflow container, plus `data-rail="<id>"`
+ * containing `data-rail-thumb`. Hide the native bar in CSS so both don't show. The rail
+ * hides itself when there is nothing to scroll, which is also how it keeps out of the
+ * desktop layout's way.
  */
 
 /** Keep the thumb grabbable however wide the content gets. */

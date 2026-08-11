@@ -2,19 +2,10 @@ import gsap from "gsap";
 import type { Pointer } from "../utils/pointer";
 
 /**
- * Beat 4 — the Media Kit tab.
- *
- * Answers beat 3's press on the tab: the underline moves across, the card body
- * changes, the cursor scrolls the media kit down a little, then presses
- * add-to-list beside Enquire. Beat 5 answers that press with the dialog.
- *
- * Screens 4 and 5 are the *same* `CreatorDetail` with a different `tab` prop and
- * different slot content, so this is the cheapest swap in the story: the sidebar,
- * header and identity column are already identical, and only the two tabs and the
- * card body have to be brought into line before the layers change.
- *
- * The tab's active and inactive styling is read back off screen 5's own tabs, so
- * `CreatorDetail` stays the only place those colours are written down.
+ * Beat 4 — the Media Kit tab: underline moves, body changes, the cursor scrolls
+ * the kit, then presses add-to-list. Screens 4 and 5 are the same `CreatorDetail`
+ * with a different `tab` prop, so only the tabs and body need bringing into line.
+ * Tab colours are read off screen 5's own tabs rather than restated.
  */
 
 export interface MediaKitTabLayers {
@@ -61,8 +52,7 @@ export function mediaKitTab(layers: MediaKitTabLayers, pointer: Pointer) {
 
 	const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
 
-	// Put the layers back the way beat 3 leaves them first, so this beat is
-	// self-contained and the story can be replayed from wherever it stopped.
+	// Wind the layers back first, so the beat is replayable from anywhere.
 	tl.call(() => {
 		layers.to.removeAttribute("data-wf-active");
 		layers.from.setAttribute("data-wf-active", "");
@@ -100,19 +90,16 @@ export function mediaKitTab(layers: MediaKitTabLayers, pointer: Pointer) {
 		.from(el.toBody, { opacity: 0, duration: 0.35, immediateRender: false }, "swap");
 
 	// ── scroll the media kit ─────────────────────────────────────────────────
-	// Cursor moves off the tab and into the card first, so the scroll happens under
-	// it like a wheel — the same reasoning as the rail scroll in beat 1.
-	// The scroll is deliberately unhurried: card 2 is up across it and bows out at
-	// `scrolled` below, so this duration is what decides how long that card is
-	// readable as well as how the kit reads.
+	// Wheel-style again: the cursor moves into the card first. The duration is
+	// unhurried on purpose — card 2 is up across it and bows out at `scrolled`.
 	tl.add(pointer.moveTo(el.toBody, { at: { x: 0.5, y: 0.35 }, duration: 0.55 }), "+=0.25").to(
 		el.mediaKit,
 		{ y: () => -scrollRange() * SCROLL_FRACTION, duration: 2.4, ease: "power1.inOut" },
 		"+=0.1"
 	);
 
-	// The card explaining this screen bows out here rather than at the beat's end,
-	// so it is gone before the cursor reaches for add-to-list. See workflowCards.ts.
+	// Card 2 bows out here, not at the beat's end, so it is gone before the cursor
+	// reaches for add-to-list. See workflowCards.ts.
 	tl.addLabel("scrolled");
 
 	// ── reach for add-to-list, beside Enquire ────────────────────────────────

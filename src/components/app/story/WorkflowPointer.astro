@@ -1,13 +1,9 @@
 ---
 /**
- * The hand cursor that drives the workflow story.
- *
- * Deliberately a sibling of the screen layers rather than a child of one: the
- * layers are hidden as the story advances, and this has to survive across them.
- * It lives in stage coordinates so it scales with the canvas, and starts
- * invisible — GSAP owns x/y/scale/opacity from there. See `.wf-pointer` in
- * styles/app-tokens.css for the fingertip offset, and
- * scripts/home-page/workflow/pointer.ts for the motion.
+ * The hand cursor that drives the workflow story. A sibling of the screen layers, not
+ * a child — the layers get hidden as the story advances and this has to outlive them.
+ * Starts invisible; GSAP owns x/y/scale/opacity. Fingertip offset is in `.wf-pointer`,
+ * motion in scripts/home-page/workflow/utils/pointer.ts.
  */
 import handPointing from "../../../assets/images/common/utils/handpointing.svg";
 ---

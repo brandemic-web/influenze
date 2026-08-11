@@ -1,16 +1,10 @@
 ---
 /**
- * "How Influenze Compares" — comparison grid against three competitors.
- *
- * Built as one CSS grid so every column stays aligned: five tracks sized off the
- * design (label 398, Influenze 262, competitors 250 each, within a 1455 frame).
- * The raised Influenze column is a grid item spanning every row in column 2,
- * with negative block margins so it overhangs the table card the way the design
- * draws it.
- *
- * Below `lg` the grid keeps its shape and scrolls sideways: every track is sized
- * to `(100vw - 3rem) / 2.5`, so two and a half columns sit in view at any phone
- * width and the half-column signals there is more to scroll to.
+ * "How Influenze Compares". One CSS grid so every column stays aligned: five tracks
+ * sized off the design (label 398, Influenze 262, competitors 250, in a 1455 frame).
+ * The raised Influenze column spans every row in column 2, with negative block margins
+ * for its overhang. Below `lg` the grid keeps its shape and scrolls sideways at
+ * `(100vw - 3rem) / 2.5` per track, so a half-column always signals more to come.
  */
 import logo from "../../assets/images/common/logos_and_icons/influenze_logo_nav.webp";
 import glowBand from "../../assets/images/home_page/compare_table/glow_band.svg";
@@ -27,11 +21,11 @@ const rowCount = COMPARISON_ROWS.length;
 	class="relative overflow-hidden py-5 lg:pt-0 lg:pb-40"
 	aria-labelledby="comparison-heading"
 >
-	<!--
+	{/*
 		Blurred purple band from the design, centred on the section's vertical axis
 		and clipped by its `overflow-hidden`. The SVG is 1728×744, i.e. the design
 		canvas width, so `w-full` keeps its proportions at every viewport.
-	-->
+	*/}
 	<img
 		src={glowBand.src}
 		alt=""
@@ -50,18 +44,12 @@ const rowCount = COMPARISON_ROWS.length;
 		</h2>
 	</div>
 
-	<!--
-		Sideways scroll below lg; centred and full-width from lg up.
-
-		`overflow-x: auto` also clips the block axis (CSS computes the other axis'
-		`visible` to `auto`), which would cut the raised Influenze column's
-		overhang. So the scroller carries `py-8` to hold the overhang and cancels
-		it again with `-mb-8` plus a reduced `mt`, leaving the outer spacing as it
-		was. From lg up the scroller is `overflow-visible`, so none of that applies.
-
-		The native scrollbar is hidden and replaced by the rail below — see
-		scripts/home-page/comparison-rail.ts for why it cannot just be styled.
-	-->
+	{/*
+		Sideways scroll below lg; full-width from lg up. `overflow-x: auto` also clips the
+		block axis, which would cut the raised column's overhang — hence `py-8` to hold it
+		and `-mb-8` plus a reduced `mt` to cancel the spacing again. The native scrollbar
+		is replaced by the rail below; see comparison-rail.ts for why it can't be styled.
+	*/}
 	<div
 		class="compare-scroller relative z-2 mt-6 overflow-x-auto overscroll-x-contain px-6 py-8 -mb-8 lg:mt-24 lg:mb-0 lg:overflow-visible lg:py-0"
 		data-rail-scroller="comparison"
@@ -71,10 +59,10 @@ const rowCount = COMPARISON_ROWS.length;
 			role="table"
 			aria-label="Influenze compared with Qoruz, Upfluence and Culture X"
 		>
-			<!--
+			{/*
 				Raised Influenze column. Spans header + every row, and sits behind the
 				cells so their text stays legible.
-			-->
+			*/}
 			<div
 				class="col-start-2 row-start-1 -my-6 rounded-[1.25rem] border border-[#ffffff52] bg-[linear-gradient(180deg,rgba(10,7,24,0.3)_0%,rgba(10,7,24,0.06)_100%)] backdrop-blur-md shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_24px_60px_-20px_rgba(0,0,0,0.6)] lg:-my-8"
 				style={`grid-row-end: ${rowCount + 2}`}
@@ -82,7 +70,7 @@ const rowCount = COMPARISON_ROWS.length;
 			>
 			</div>
 
-			<!--
+			{/*
 				── Header row ───────────────────────────────────────────
 
 				`role="table"` requires its cells to sit inside `role="row"`, but every
@@ -90,16 +78,16 @@ const rowCount = COMPARISON_ROWS.length;
 				a real wrapper element would break the layout. `display: contents` is the
 				way out: the row exists in the accessibility tree while its box is
 				removed from the layout tree, so the cells stay direct grid items.
-			-->
+			*/}
 			<div role="row" style="display: contents">
-				<!-- Empty corner cell: the row labels below it are the row headers. -->
+				{/* Empty corner cell: the row labels below it are the row headers. */}
 				<div class="col-start-1 row-start-1" role="columnheader"></div>
 
 				<div
 					class="relative z-2 col-start-2 row-start-1 flex items-center justify-center px-4 py-8 lg:py-10"
 					role="columnheader"
 				>
-					<!-- Plain <img> so this shares the header's logo URL — see Header.astro. -->
+					{/* Plain <img> so this shares the header's logo URL — see Header.astro. */}
 					<img
 						src={logo.src}
 						alt="influenze.ai"
@@ -123,7 +111,7 @@ const rowCount = COMPARISON_ROWS.length;
 				}
 			</div>
 
-			<!-- ── Rows ───────────────────────────────────────────────── -->
+			{/* ── Rows ───────────────────────────────────────────────── */}
 			{
 				COMPARISON_ROWS.map((row, r) => {
 					const line = "border-t border-[#ffffff52]";
@@ -218,12 +206,12 @@ const rowCount = COMPARISON_ROWS.length;
 		</div>
 	</div>
 
-	<!--
+	{/*
 		The permanent scroll rail. `mt-8` clears the raised Influenze column, whose
 		`-my-6` overhang reaches 24px below the grid once the scroller's `-mb-8`
 		has cancelled its padding. Hidden from lg up, and hidden again by the script
 		whenever there is nothing to scroll.
-	-->
+	*/}
 	<div
 		class="relative z-2 mx-6 mt-12 h-1.5 overflow-hidden rounded-full bg-white/12 lg:hidden"
 		data-rail="comparison"

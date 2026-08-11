@@ -102,7 +102,7 @@ const cardTitleClass = "block text-[0.625rem] font-medium text-white";
 	]}
 	style={`zoom:${scale}`}
 >
-	<!-- Header -->
+	{/* Header */}
 	<div
 		class="flex items-center justify-between border-b border-white/8 px-5 py-4"
 	>
@@ -110,13 +110,13 @@ const cardTitleClass = "block text-[0.625rem] font-medium text-white";
 		<span class="text-[0.875rem] font-medium text-brand-primary">Back</span>
 	</div>
 
-	<!--
+	{/*
 		The body is clipped so the card keeps a fixed footprint in the CreatorsAI
 		collage no matter how many stats a creator has. `overflow-hidden` rather
 		than `auto`: the card is display only, so the visitor can't scroll it —
 		but the panel-3 demo's `scrollTop` tween still moves it, since
 		programmatic scrolling works on a clipped box.
-	-->
+	*/}
 	<div
 		data-compare-scroll
 		class="grid max-h-145 grid-cols-2 gap-4 overflow-hidden px-5 pt-7 pb-4"

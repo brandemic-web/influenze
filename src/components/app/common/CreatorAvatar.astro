@@ -1,21 +1,12 @@
 ---
 /**
- * A creator/user photo.
+ * A creator/user photo. With a `handle` it renders that creator's portrait (see
+ * data/creatorPortraits.ts), otherwise the gradient placeholder. One 340px variant
+ * per creator, reused at every size — 2x the largest avatar the mockup draws.
  *
- * Given a `handle` it renders that creator's portrait (see
- * src/data/creatorPortraits.ts); without one — or before a creator has a photo —
- * it stays the gradient placeholder it always was. Every instance keeps its
- * `data-wf-avatar` tag either way.
- *
- * One 340px variant is emitted per creator and reused at every size on the page:
- * that is 2x the largest avatar the mockup draws (the 10.625rem detail portrait),
- * and the sources are square so the crop is a straight fill.
- *
- * Deferred by default. These used to load eagerly so a portrait could not pop in
- * part-way through a beat, but the mockup sits in the hero and every portrait is
- * on step 3 or later, so eager loading put ~90KB of off-screen images ahead of the
- * hero's own paint. Pass `loading="eager"` for anything visible on first paint —
- * the nav avatar does. If a beat is seen to pop, that is the knob to turn.
+ * Deferred by default: every portrait is on step 3 or later, so eager loading put
+ * ~90KB of off-screen images ahead of the hero's paint. Pass `loading="eager"` for
+ * anything on first paint (the nav avatar does).
  */
 import { Image } from "astro:assets";
 import { portraitFor } from "../../../data/creatorPortraits";

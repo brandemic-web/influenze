@@ -2,14 +2,9 @@
 import Icon from "../common/Icon.astro";
 
 /**
- * Analyze filter sidebar — the rail the Analyze screen opens with.
- *
- * Type is one step up from the app's 12px rail because this element renders
- * ~1.2x the rail's width; the ratios between sizes are the app's.
- *
- * The seed handle is this element's own rather than `LOOKALIKE_HANDLE` from
- * data/workflowMockup: that constant also feeds the hero mockup's rail and its
- * applied-filter chip, so the two demos deliberately seed differently now.
+ * Analyze filter sidebar, at marketing size. Type is one step up from the app's 12px
+ * rail because this renders ~1.2x its width; the ratios between sizes are the app's.
+ * The seed handle is local, not `LOOKALIKE_HANDLE` — the two demos seed differently.
  */
 interface Props {
 	class?: string;
@@ -39,7 +34,7 @@ const controlClass =
 		className,
 	]}
 >
-	<!-- Header — `buildFiltersHeader`, padding l24 t12 r16 b12 over a lavender8 rule -->
+	{/* Header — `buildFiltersHeader`, padding l24 t12 r16 b12 over a lavender8 rule */}
 	<div
 		class="flex items-center gap-2 border-b border-wf-rail-rule py-3 pr-4 pl-6"
 	>
@@ -57,7 +52,7 @@ const controlClass =
 	</div>
 
 	<div class="flex flex-col px-4 pt-4 pb-6">
-		<!-- Discovery selector — the trigger is the app's lavender3 dropdown -->
+		{/* Discovery selector — the trigger is the app's lavender3 dropdown */}
 		<div class="overflow-hidden">
 			<div
 				class="flex items-center justify-between rounded-t-[0.25rem] bg-wf-select px-4 py-3.25 text-white"
@@ -71,11 +66,11 @@ const controlClass =
 				<Icon name="arrowIcon" size="1rem" class="text-wf-text-soft" />
 			</div>
 
-			<!--
+			{/*
 				`gradientFilterContainer` — left-to-right, ending on the rail's own
 				fill. Detached from the trigger by 4px, squared off at the top so the
 				two still read as one control.
-			-->
+			*/}
 			<div
 				class="mt-1 rounded-t-none rounded-b-sm border border-wf-select bg-[linear-gradient(to_right,#201d36_0%,var(--color-wf-rail)_100%)] px-3.5 pt-3.75 pb-5.5"
 			>
@@ -124,7 +119,7 @@ const controlClass =
 		</div>
 	</div>
 
-	<!-- Sort By -->
+	{/* Sort By */}
 	<div class="flex flex-col border-t border-wf-section-rule px-4 pt-4 pb-6">
 		<header class="mb-3 flex items-start justify-between">
 			<h4 class={`pl-2 ${sectionHeaderClass}`}>Sort By</h4>
@@ -141,7 +136,7 @@ const controlClass =
 		</div>
 	</div>
 
-	<!-- Creator Location — last section; the card owns the closing padding -->
+	{/* Creator Location — last section; the card owns the closing padding */}
 	<div class="flex flex-col border-t border-wf-section-rule px-4 pt-4">
 		<header class="mb-3 flex items-start justify-between">
 			<h4 class={`pl-2 ${sectionHeaderClass}`}>Creator Location</h4>

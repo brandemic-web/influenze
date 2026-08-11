@@ -24,11 +24,11 @@ const { active = "analyze", showCredits = true, credits } = Astro.props;
 
 	<div class="absolute top-20 left-4 h-201 w-352 rounded-[2rem] bg-wf-card"></div>
 
-	<!--
+	{/*
 		Coincident with the frame, so the positioned screen content keeps its
 		coordinates. It exists so a section change can fade the card's contents
 		without touching the nav or the card itself.
-	-->
+	*/}
 	<div class="absolute inset-0" data-wf-card-body>
 		<slot />
 	</div>

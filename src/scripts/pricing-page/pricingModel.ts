@@ -1,13 +1,10 @@
 /**
- * Pure helpers shared by PricingPlans.astro (server render) and
- * pricingPlans.ts (client updates), so the first paint and every subsequent
- * drag run through exactly the same maths.
+ * Pure helpers shared by PricingPlans.astro (server render) and pricingPlans.ts
+ * (client updates), so first paint and every drag run the same maths.
  *
- * The slider is a SEGMENTED scale, not a linear one: the four tier dots are
- * spaced evenly along the track (matching Figma), and each adjacent pair of
- * tiers owns one equal-width segment. Spend interpolates linearly *within* a
- * segment between the two tiers' `minSpend` values. A linear spend scale would
- * bunch all three lower dots into the first ~40% of the track.
+ * The slider is a SEGMENTED scale: the four tier dots sit evenly along the track and
+ * each adjacent pair owns one equal-width segment, with spend interpolating linearly
+ * within it. A linear spend scale would bunch the three lower dots into the first 40%.
  */
 
 import {
@@ -26,10 +23,7 @@ export function clamp(value: number, min: number, max: number): number {
 	return Math.min(max, Math.max(min, value));
 }
 
-/**
- * Figma renders the amounts with western thousands grouping ("Rs 100,000+",
- * "24,200"), not the Indian lakh grouping en-IN would produce ("1,00,000").
- */
+/** Western thousands grouping per the design ("100,000"), not en-IN's "1,00,000". */
 const GROUPED = new Intl.NumberFormat("en-US");
 
 export function formatAmount(value: number): string {
@@ -41,20 +35,11 @@ export function formatPrice(value: number): string {
 }
 
 /**
- * Stop positions along the track, in percent, one per tier. The first dot sits
- * at the first tab's left edge; the rest sit at the midpoint of the gap between
- * each pair of adjacent tabs, so they read as sitting "between" the two tiers
- * rather than glued to the next tab's edge.
- *
- * The tab row is the rail's width, holding four equal columns with a 0.75rem
- * gap, so a column starts at i × (width + gap) / railWidth and a gap midpoint
- * sits half a gap-width earlier: 0 / 24.66 / 50.00 / 75.34 (measured, holds at
- * every viewport since the row width and the gap both scale with the root font
- * size). Keep in step with the tablist's `lg:grid-cols-4` and `gap-3`.
- *
- * The rail runs on past Enterprise's dot: everything beyond ₹1,00,000 is quoted
- * rather than priced, which is the stretch the "looking for more flexibility"
- * block speaks to.
+ * Track stop positions (percent), one per tier: the first tab's left edge, then the
+ * midpoint of each gap between adjacent tabs, so a dot reads as sitting *between*
+ * two tiers. Derived from four equal columns with a 0.75rem gap — keep in step with
+ * the tablist's `lg:grid-cols-4` and `gap-3`. The rail runs on past Enterprise's dot,
+ * since everything beyond ₹1,00,000 is quoted rather than priced.
  */
 export const STOP_POSITIONS = [0, 24.66, 50, 75.34];
 

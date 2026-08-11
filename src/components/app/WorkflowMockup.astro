@@ -1,24 +1,15 @@
 ---
 /**
- * Interactive product-workflow mockup for the hero.
+ * The hero's product-workflow mockup: the app's screens as real markup, not a flat
+ * image, so GSAP can drive them as a narrative. Authored on the app's 1440x900 canvas
+ * and scaled to the hero's width — see `.wf-stage` in styles/app-tokens.css.
  *
- * The app's screens rendered as real markup (not a flat image) so GSAP can drive
- * them as a narrative: search -> filter -> results -> profile -> list -> share.
- * The whole thing is authored on the app's native 1440x900 canvas and scaled to
- * whatever width the hero gives it — see `.wf-stage` in styles/app-tokens.css.
+ * The `StoryStep` list below is the only place step numbers are written down; beats
+ * address layers by `data-wf-screen` and workflowCards.ts times off the same index.
+ * Several steps are the same app screen in a different state, hence shared components.
+ * Step 2 is absent on purpose — beat 1 animates step 1 into that state in place.
  *
- * The `StoryStep` list below is the one place the story's step numbers are written
- * down. Several steps are the *same* app screen in a different state, so they
- * share a component and differ only by props — which is how the app has it, and
- * why the folders under screens/ are named after app screens, not after steps.
- *
- * The numbers themselves stay: the beats in scripts/home-page/workflow address
- * layers by `data-wf-screen`, and workflowCards.ts times cards off the same index.
- *
- * Step 2 is absent on purpose. It was the Analyze rail already filled in, and beat
- * 1 animates step 1 into exactly that state in place rather than cutting to it, so
- * no beat ever addressed the layer — it only ever shipped as a hidden duplicate of
- * step 1. `<Analyze results />` is that state, reached as step 3.
+ * Full walkthrough and per-beat reasoning: APP-SPEC.md.
  */
 import Analyze from "./screens/analyze/Analyze.astro";
 import AnalyzedCreator from "./screens/analyze/AnalyzedCreator.astro";
@@ -39,11 +30,7 @@ interface Props {
 const { class: className = "" } = Astro.props;
 ---
 
-{/*
-	`data-canvas-fit` / `data-canvas` are the handles scripts/canvasScale measures
-	to scale the canvas to this container — the stage stands in for both layers,
-	which are the same 90rem wide.
-*/}
+{/* `data-canvas-fit` / `data-canvas` are what scripts/canvasScale measures. */}
 <div
 	class:list={["wf-mockup w-full", className]}
 	data-workflow
@@ -51,21 +38,12 @@ const { class: className = "" } = Astro.props;
 	data-landscape-target="workflow"
 >
 	{/*
-		`.wf-stage` positions itself — see the note on the layers in workflow.css.
-
-		Hidden from assistive tech. The stage is a picture of the product drawn in
-		markup rather than exported as an image, but it is still a picture: a screen
-		reader walking it hears nine copies of a fake app shell — nav bars, sidebars,
-		invented creator handles and credit balances — none of which is information a
-		visitor can act on. The explainer cards in `.wf-card-layer` below carry the
-		text that actually narrates the workflow, and they stay exposed.
-
-		This is also what keeps the page's landmarks readable: the fake shells emit 83
-		`<header>` and 14 `<nav>` elements between them, against 2 and 5 that are real.
-
-		Nothing inside the stage is focusable, which is what makes hiding it legal —
-		the landscape-view controls are deliberately siblings of this element, not
-		descendants. Keep it that way.
+		Hidden from assistive tech: this is a picture of the product, just drawn in markup
+		rather than exported — a screen reader would hear nine fake app shells with
+		invented handles and balances, and 83 stray `<header>`s would bury the page's real
+		landmarks. The explainer cards in `.wf-card-layer` carry the narration and stay
+		exposed. Nothing inside is focusable, which is what makes hiding it legal — the
+		landscape controls are siblings of this element on purpose. Keep it that way.
 	*/}
 	<div
 		class="wf-stage overflow-hidden rounded-[1.75rem] bg-wf-page"
@@ -86,10 +64,8 @@ const { class: className = "" } = Astro.props;
 	</div>
 
 	{/*
-		The explainer cards sit outside the stage, not in it. Figma hangs them past
-		the app frame's right edge, and the stage clips — it has to, or the screens
-		would spill past its rounded corners. So they get their own unclipped layer
-		that carries the same canvas geometry. See `.wf-card-layer`.
+		The cards hang past the app frame's right edge and the stage has to clip, so they
+		get their own unclipped layer at the same canvas geometry. See `.wf-card-layer`.
 	*/}
 	<div class="wf-card-layer">
 		{WORKFLOW_CARDS.map((card) => <WorkflowCard card={card} />)}
@@ -97,10 +73,8 @@ const { class: className = "" } = Astro.props;
 </div>
 
 {/*
-	Below lg the 1440x900 canvas is scaled down far enough that the story is hard to
-	follow, so offer it a quarter-turned fullscreen view instead. Text button rather
-	than an icon: it has to say what it does, since "rotate my phone" is not a thing
-	the page can ask for.
+	Below lg the canvas scales down too far to follow, so offer a quarter-turned
+	fullscreen view. Text, not an icon — it has to say what it does.
 */}
 <button type="button" class="wf-landscape-cue" data-landscape-open="workflow">
 	<img src={mousePointerClick.src} alt="" width="14" height="14" />

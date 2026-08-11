@@ -4,20 +4,10 @@ import { swapInline } from "../utils/dom";
 import type { Pointer } from "../utils/pointer";
 
 /**
- * Beat 11 — send the share, then head home and let the story begin again.
- *
- * Types the address, presses **Send** (which settles to "Sent"), closes the modal,
- * and presses **Analyze** in the nav to land back on screen 1. That is where the
- * master timeline loops from, so this beat has to hand the mockup over in a state
- * beat 1 can start from — which is what `reset` is for, and why the cursor is left
- * sitting on the Analyze nav item rather than faded out.
- *
- * Closing the modal needs no layer change, the same as beat 6's dialog: screen 10
- * *is* screen 8 once the blur and card are unwound, so the nav the cursor then
- * clicks is the one inside screen 10's own backdrop copy.
- *
- * 10 → 1 is a section change, like beat 6's — the nav pill snaps from My Lists to
- * Analyze on the click that caused it, and the card body fades across.
+ * Beat 11 — type the address, Send (settles to "Sent"), close, then Analyze to land
+ * back on screen 1 where the timeline loops. It must hand the mockup over in a state
+ * beat 1 can start from — hence `reset`, and the cursor parked on the Analyze item.
+ * 10 → 1 is a section change like beat 6's, so the nav pill snaps on the click.
  */
 
 export interface RestartLayers {
@@ -26,9 +16,8 @@ export interface RestartLayers {
 	/** Screen 1, where the story starts over. */
 	to: HTMLElement;
 	/**
-	 * Beat 1's rail reset. Screen 1 is still carrying beat 1's output at this point,
-	 * so it has to be wound back *before* the card body fades in, not when the loop
-	 * restarts — otherwise the story comes home to a screen full of applied filters.
+	 * Beat 1's rail reset. It has to run *before* the card body fades in, not when the
+	 * loop restarts, or the story comes home to a screen full of applied filters.
 	 */
 	reset?: () => void;
 }
@@ -61,8 +50,7 @@ export function restart(layers: RestartLayers, pointer: Pointer) {
 	const el = collect(layers);
 	if (!el) return null;
 
-	// The address is authored in the markup, so it is read rather than restated —
-	// and read before the timeline runs, so a loop cannot retype its own output.
+	// Read from the markup before the timeline runs, so a loop can't retype its output.
 	const address = el.value.textContent?.trim() ?? "";
 
 	const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
@@ -114,8 +102,7 @@ export function restart(layers: RestartLayers, pointer: Pointer) {
 	tl.addLabel("swap", `go+=${LEAVE}`)
 		.call(
 			() => {
-				// Clean the rail while screen 1 is still hidden, so it comes back into
-				// view untouched rather than showing the filters the story just applied.
+				// Clean the rail while screen 1 is still hidden.
 				layers.reset?.();
 				layers.from.removeAttribute("data-wf-active");
 				layers.to.setAttribute("data-wf-active", "");
@@ -127,8 +114,7 @@ export function restart(layers: RestartLayers, pointer: Pointer) {
 		.set(el.fromBody, { opacity: 1 }, "swap")
 		.from(el.toBody, { opacity: 0, duration: 0.4, immediateRender: false }, "swap");
 
-	// The cursor stays put and visible: it ends on the Analyze nav item, which is
-	// exactly where beat 1 parks it, so the loop seam needs no fade at all.
-
+	// The cursor stays put and visible — it ends where beat 1 parks it, so the loop
+	// seam needs no fade.
 	return tl;
 }

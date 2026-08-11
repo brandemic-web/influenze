@@ -19,34 +19,11 @@ import { LANDSCAPE_CLOSE, LANDSCAPE_OPEN } from "../../landscape-viewer";
 gsap.registerPlugin(ScrollTrigger);
 
 /**
- * Drives the hero's product-workflow mockup as a narrative.
+ * Composes the hero mockup's eleven beats into one looping timeline. A beat
+ * returns null when its markup is missing and is skipped; nothing here is
+ * load-bearing for layout, so a failure leaves the hero static.
  *
- * The mockup is real markup rather than a screenshot, so the story is told by
- * animating it in place: a hand cursor opens menus, types and presses buttons.
- * One file per beat under beats/, played in the order they are listed in `beats`
- * below; the three things every beat needs are in utils/.
- *
- *   1. analyzeLookalike  step 1, in place: build a Lookalike search
- *   2. resultsList       step 3: run it, then open a creator
- *   3. creatorProfile    step 4: the profile, then reach for the Media Kit tab
- *   4. mediaKitTab       step 5: switch tab, scroll it, then reach for add-to-list
- *   5. addToListDialog   step 6: open the dialog over a blurred copy of step 5
- *   6. myLists           step 7: add to the list, close the dialog, cross to My Lists
- *   7. listDetail        step 8: open the list, tick two creators, press Compare
- *   8. compareMode       step 9: the compare mode swap
- *   9. leaveCompare      step 8: read it down, Back to the list, reach for share
- *  10. shareModal        step 10: the share modal, clipped to the panel
- *  11. restart           step 1: send it, close, and head home to loop again
- *
- * Steps are the layers WorkflowMockup renders, addressed by `data-wf-screen`.
- * They are not one-per-file on the markup side — several are the same app screen
- * in a different state — so a beat names the *layers* it moves between and never
- * assumes which component drew them.
- *
- * A beat returns null if the markup it expects is not there, and is skipped.
- *
- * Nothing in here is load-bearing for layout. Each step renders a correct,
- * readable frame on its own, so if this never runs the hero is simply static.
+ * Beat order, cast and per-beat reasoning: components/app/APP-SPEC.md.
  */
 
 function initWorkflow(mockup: HTMLElement) {
@@ -57,9 +34,8 @@ function initWorkflow(mockup: HTMLElement) {
 	const pointerEl = mockup.querySelector<HTMLElement>("[data-wf-pointer]");
 	if (!stage || !pointerEl) return;
 
-	// The layers the beats move between, by story step. Beat 1 builds the search
-	// inside step 1 rather than cutting to a filled-in copy of it, which is why the
-	// numbering skips 2.
+	// The layers beats move between, by story step. 2 is skipped: beat 1 builds the
+	// search inside step 1 rather than cutting to a filled-in copy of it.
 	const layer = (step: number) => mockup.querySelector<HTMLElement>(`[data-wf-screen="${step}"]`);
 	const found = {
 		analyze: layer(1),
@@ -75,9 +51,8 @@ function initWorkflow(mockup: HTMLElement) {
 	if (!Object.values(found).every(Boolean)) return;
 	const screen = found as { [K in keyof typeof found]: HTMLElement };
 
-	// Reduced motion gets a single static frame instead of the loop. Screen 3 is the
-	// pick: the story returns to screen 1, so there is no "last frame" to settle on,
-	// and an empty search says far less about the product than the results do.
+	// Reduced motion gets one static frame. Screen 3 (results) says more about the
+	// product than screen 1's empty search, and the loop has no natural last frame.
 	if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
 		screen.analyze.removeAttribute("data-wf-active");
 		screen.results.setAttribute("data-wf-active", "");
@@ -86,11 +61,11 @@ function initWorkflow(mockup: HTMLElement) {
 
 	const pointer = createPointer(stage, pointerEl);
 	// The story ends where it began, so it loops. Every beat winds its own screen
-	// back at the start, which is what makes a second pass identical to the first.
+	// back as it plays — that is what makes a second pass identical to the first.
 	const master = gsap.timeline({ paused: true, repeat: -1, repeatDelay: 1.5 });
 
-	// Beat 1 hands back its rail reset as well as its timeline, because beat 11
-	// reveals screen 1 at the loop point and has to wind it back first.
+	// Beat 1 hands back its rail reset too: beat 11 reveals screen 1 at the loop
+	// point and has to wind it back before it comes into view.
 	const analyze = analyzeLookalike(screen.analyze, pointer);
 
 	const beats = [
@@ -106,8 +81,8 @@ function initWorkflow(mockup: HTMLElement) {
 		shareModal({ from: screen.list, to: screen.share }),
 		restart({ from: screen.share, to: screen.analyze, reset: analyze?.reset }, pointer),
 	];
-	// Note where every beat lands before adding any card, because cards are timed
-	// off these marks and inserting one first would move them.
+	// Record where each beat lands before adding any card — cards are timed off
+	// these marks, so inserting one first would move them.
 	const beatStart: number[] = [];
 	const beatEnd: number[] = [];
 	for (const beat of beats) {
@@ -117,10 +92,8 @@ function initWorkflow(mockup: HTMLElement) {
 	}
 
 	/**
-	 * A card's `StoryMark` in master time, or null if it cannot be resolved — a
-	 * beat that was skipped for missing markup, or a label that has been renamed.
-	 * A beat's labels are relative to its own timeline, so they shift by the time
-	 * that beat was appended at.
+	 * A `StoryMark` in master time, or null if unresolvable (skipped beat, renamed
+	 * label). Beat labels are timeline-relative, so they shift by the append time.
 	 */
 	const markTime = ({ beat, at, offset = 0 }: StoryMark) => {
 		const i = beat - 1;
@@ -131,14 +104,10 @@ function initWorkflow(mockup: HTMLElement) {
 		return label === undefined ? null : beatStart[i] + label + offset;
 	};
 
-	// The cards play *over* the story rather than interrupting it: `master.add`
-	// with an explicit time inserts there instead of appending, so a card fades up
-	// at its mark while the story runs on underneath it. A card is skipped if its
-	// markup is missing or its marks do not resolve, the same way a beat is.
-	//
-	// They live in the mockup's own card layer rather than in the stage, so this
-	// queries from the mockup root — not from `document`, which would wire a second
-	// mockup on the same page to this one's timeline.
+	// Cards play *over* the story: `master.add` with an explicit time inserts rather
+	// than appends, so a card fades up at its mark while the story runs underneath.
+	// Queried from the mockup root, not `document` — a second mockup on the page
+	// must not get wired into this timeline.
 	for (const card of WORKFLOW_CARDS) {
 		const el = mockup.querySelector<HTMLElement>(`[data-wf-card="${card.step}"]`);
 		const show = markTime(card.show);
@@ -160,26 +129,14 @@ function initWorkflow(mockup: HTMLElement) {
 		onEnter: () => master.play(),
 	});
 
-	/*
-	 * Entering or leaving the landscape view is a mode change: play the walkthrough
-	 * from the top rather than resuming wherever the loop happened to be at a
-	 * completely different size.
-	 *
-	 * The active layer has to be claimed here by hand. Screen swaps are `tl.call()`
-	 * callbacks, which do not run when a timeline is seeked backwards, and the loop
-	 * gets away with that because every beat winds its own screen back as it plays.
-	 * Beat 1 is the exception: it works *in place* on screen 1 and never sets
-	 * `data-wf-active`, because beat 11 hands that layer over at the loop point — the
-	 * only route into beat 1 the story normally has. Restarting with no beat 11 in
-	 * front of it left whichever screen was showing frozen in place until the story
-	 * reached its first swap, while the cursor had already replayed from the top.
-	 *
-	 * Only the layer needs restoring, not the screens' inner state: each beat resets
-	 * what it is about to touch, so the rest is wound back as the story arrives.
-	 *
-	 * Under reduced motion neither listener is reached — that path returns above with
-	 * a single static frame and no timeline to restart.
-	 */
+	// Entering/leaving landscape is a mode change, so replay from the top rather
+	// than resume the loop at a completely different size.
+	//
+	// The active layer must be set by hand: screen swaps are `tl.call()` callbacks,
+	// which don't fire on a backwards seek. Beat 1 works in place and never claims
+	// screen 1 — beat 11 normally hands it over — so without this the old screen
+	// stays frozen until the story reaches its first swap. Inner state needs nothing;
+	// each beat resets what it touches as the story arrives.
 	const restartStory = () => {
 		for (const layer of Object.values(screen)) layer.removeAttribute("data-wf-active");
 		screen.analyze.setAttribute("data-wf-active", "");

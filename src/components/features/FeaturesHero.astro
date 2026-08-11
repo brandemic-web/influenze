@@ -89,9 +89,9 @@ const displacementDataUri = `data:image/svg+xml;base64,${Buffer.from(displacemen
 		</p>
 	</div>
 
-	<!-- full-bleed creator photo strip; the liquid-glass lens overlays it (prototype) -->
+	{/* full-bleed creator photo strip; the liquid-glass lens overlays it (prototype) */}
 	<div class="creator-stage relative mt-8 lg:mt-24">
-		<!-- GSAP marquee track: creators rendered twice for a seamless infinite loop -->
+		{/* GSAP marquee track: creators rendered twice for a seamless infinite loop */}
 		<div class="creator-track flex w-max gap-3 lg:gap-5">
 			{
 				[...creators, ...creators].map((creator, i) => (
@@ -108,11 +108,11 @@ const displacementDataUri = `data:image/svg+xml;base64,${Buffer.from(displacemen
 			}
 		</div>
 
-		<!-- Liquid-glass lens: refracts + frosts the creator strip behind it -->
+		{/* Liquid-glass lens: refracts + frosts the creator strip behind it */}
 		<div class="lg-lens hidden lg:block" aria-hidden="true"></div>
 	</div>
 
-	<!-- Glass refraction filter: spherical displacement + per-channel chromatic dispersion. -->
+	{/* Glass refraction filter: spherical displacement + per-channel chromatic dispersion. */}
 	<svg
 		class="pointer-events-none absolute h-0 w-0"
 		aria-hidden="true"
@@ -134,13 +134,13 @@ const displacementDataUri = `data:image/svg+xml;base64,${Buffer.from(displacemen
 				width="100%"
 				height="100%"
 				result="map"></feImage>
-			<!-- Blur the displacement field so the bend is smooth, not spiky. -->
+			{/* Blur the displacement field so the bend is smooth, not spiky. */}
 			<feGaussianBlur in="map" stdDeviation="1.4" result="mapBlur"
 			></feGaussianBlur>
 
-			<!-- Dispersion: displace R / G / B by slightly different amounts, then
+			{/* Dispersion: displace R / G / B by slightly different amounts, then
 			     recombine. The channel split shows most where the bend is strongest
-			     (the edges), giving true chromatic aberration. -->
+			     (the edges), giving true chromatic aberration. */}
 			<feDisplacementMap
 				in="SourceGraphic"
 				in2="mapBlur"

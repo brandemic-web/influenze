@@ -1,20 +1,11 @@
 /**
- * Client-side behavior for the pricing panel (PricingPlans.astro).
+ * Client-side behaviour for the pricing panel (PricingPlans.astro). One piece of state
+ * per panel — the selected monthly spend, plus an annual flag — changed by dragging the
+ * handle, clicking a tab or dot, or arrow keys. Everything visible is recomputed from it
+ * by `render()`, using pricingModel.ts so first paint and drag agree.
  *
- * There is a single piece of state per panel — the selected monthly spend (plus
- * an annual-billing flag) — and three ways to change it:
- *   1. dragging the bolt handle along the track (continuous),
- *   2. clicking a tier tab or a stop dot (jumps to that tier's minimum),
- *   3. arrow keys on the handle (one SPEND_STEP at a time).
- *
- * Everything visible — active tab, price, credits, bonus caption, and whether
- * the price body or the Enterprise "talk to us" body is shown — is recomputed
- * from that spend by `render()`. The maths lives in pricingModel.ts and is
- * shared with the server render, so first paint and drag updates agree.
- *
- * The panel is entirely data-attribute driven: the markup ships the tier data
- * (serialized into `data-tiers`) and the script reads the DOM hooks documented
- * in PricingPlans.astro. No IDs or framework runtime are involved.
+ * Entirely data-attribute driven: tier data arrives in `data-tiers` and the hooks are
+ * documented in PricingPlans.astro.
  */
 
 import type { PricingTier } from "../../data/pricing";

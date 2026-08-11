@@ -1,26 +1,11 @@
 /**
- * Pricing page content.
+ * Pricing page content. Everything the panel shows derives from the monthly spend the
+ * slider picks between SLIDER_MIN and SLIDER_MAX — see PricingPlans.astro.
  *
- * The page is driven by one interactive panel (PricingPlans.astro): four tier
- * tabs sit above a card holding a draggable spend slider. Dragging the slider
- * picks a monthly spend between SLIDER_MIN and SLIDER_MAX; the tier tab, the
- * price and the credits figure all derive from that spend ("Tier updates as you
- * drag", per the Figma subtitle).
- *
- * ┌─────────────────────────────────────────────────────────────────────────┐
- * │ PLACEHOLDER NUMBERS — READ BEFORE SHIPPING                              │
- * │                                                                         │
- * │ Design specifies EXACTLY ONE state: Growth at ₹22,000/mo → 24,200        │
- * │ credits (+10% bonus), annual = +5% credits, range Rs. 1,000–100,000+.   │
- * │ Those five numbers below are taken from the design and are correct.     │
- * │                                                                         │
- * │ Starter is confirmed too: ₹1,000–₹20,000 → +5% bonus.                   │
- * │                                                                         │
- * │ Everything else is a PLACEHOLDER chosen to make the slider behave        │
- * │ sensibly — specifically each tier's `minSpend` threshold and the         │
- * │ `bonusPct` for Scale / Enterprise. Confirm all of these with whoever     │
- * │ owns pricing, then edit only this file; the panel needs no other changes.│
- * └─────────────────────────────────────────────────────────────────────────┘
+ * ⚠️ NOT ALL NUMBERS ARE SIGNED OFF. Confirmed from the design: the ₹1,000–₹100,000
+ * range, Starter at +5%, Growth from ₹20,000 at +10%, and the +5% annual bonus.
+ * PLACEHOLDER: Scale's ₹50,000 threshold and +20% bonus, and Enterprise's threshold.
+ * Confirm with whoever owns pricing; only this file needs editing.
  */
 
 export interface PricingTier {

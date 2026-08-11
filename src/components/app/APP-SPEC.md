@@ -523,16 +523,15 @@ Add a creator whose cards differ in height and this is what will show.
 ### Beat 1 — Analyze / Lookalike (built)
 
 `scripts/home-page/workflow/` holds the timeline: `index.ts` (finds each mockup,
-gates on reduced motion and ScrollTrigger), `pointer.ts` (the hand cursor) and
-`analyzeLookalike.ts` (the beat). `scripts/gsap/typeText.ts` is the generic
-character-by-character reveal.
+gates on reduced motion and ScrollTrigger), `utils/pointer.ts` (the hand cursor)
+and `beats/analyzeLookalike.ts` (the beat). `scripts/gsap/typeText.ts` is the
+generic character-by-character reveal.
 
 The beat plays **inside screen 1's layer**. Sequence: open the Parameters
 dropdown → pick Lookalike (sheet folds away, trigger takes the label, Lookalike
 body opens, Sort By follows the parameter) → type the handle → type the location
 and drop the India chip → **scroll the rail down to `RAIL_TIER_SCROLL`** → **pick
-the Macro tier** (row turns on, expands in place) → **drag its engagement handle
-left to right** → press Apply & Search.
+the Macro tier** (row turns on, expands in place) → press Apply & Search.
 
 It *passes through* what screen 2 renders statically, so **screen 2 is a
 reference frame, not a step of its own**. Screen 1 starts `parameter="none"` and
@@ -549,21 +548,21 @@ Two things about the rail scroll:
   then swap layers without touching the rail, and beat 3 inherits it too. If that
   constant and the screens ever disagree, the rail will jump at a layer swap.
 
-The engagement slider: **stop 0 is "all ranges" — thumb hard left, whole track
-green — and dragging right raises the minimum benchmark.** So the story drags
-**left to right**, from the resting stop to the authored one (3). `FollowerMetricsSlider`
-publishes `data-wf-slider-stops` and `data-wf-slider-stop` and places both thumb
-and fill from a single `--wf-slider-at` custom property, so the timeline animates
-one number and the geometry stays in the component. Cursor and handle share a
-duration and ease, which keeps them locked together without per-frame measuring.
-The `minimum benchmark: >2.42%` read-out is only true at stop 3, so it fades in
-as the handle lands rather than showing a wrong value through the drag.
+The engagement slider is **no longer dragged**. The handle stays where selecting
+the tier opens it — on the tier's own average cut, which is the filter the
+results are shown for — so the benchmark read-out is simply the one the markup
+ships with, and the beat only repaints that stop when the loop comes round.
+`FollowerMetricsSlider` still publishes `data-wf-slider-stops` /
+`data-wf-slider-stop` and places both thumb and fill from a single
+`--wf-slider-at` property, so a drag can be reinstated by animating one number.
+Note **stop 0 is "all ranges"** — thumb hard left, whole track green — and moving
+right raises the minimum benchmark, so any future drag runs left to right.
 
 Three things make it work, and are easy to undo by accident:
 
 - **`AnalyzeFilterSidebar` renders every state at once.** `parameter` /
   `lookalikeFilled` only choose which one paints as the static frame; the
-  animation-state block in `workflow.css` hides the rest, and GSAP's inline
+  animation-state block in `app-tokens.css` hides the rest, and GSAP's inline
   styles outrank it. Adding a new state means adding a branch there too.
 - **Clip wrappers.** `[data-wf-param-sheet]` and `[data-wf-param-panel]` are
   bare wrappers around the styled body, so a height tween never has to animate
@@ -849,7 +848,7 @@ Three conventions run through them:
 | --- | --- | --- |
 | `data-workflow` | `.wf-mockup` | root handle for the timeline |
 | `data-wf-screen="1..10"` | each screen layer | the ten steps, all stacked and absolutely positioned |
-| `data-wf-active` | one screen layer | the visible step. `workflow.css` hides every layer **without** it via `opacity: 0; visibility: hidden` — GSAP must either take over both properties or the CSS will fight the tween |
+| `data-wf-active` | one screen layer | the visible step. `app-tokens.css` hides every layer **without** it via `opacity: 0; visibility: hidden` — GSAP must either take over both properties or the CSS will fight the tween |
 | `data-wf-rail` | filter rail wrapper | the rail as a whole |
 | `data-wf-rail-scroll` | rail's inner column | scrolled with `transform: translateY(-{scroll}rem)`; steps 1–2 sit at `0`, step 3 at `36.4375` |
 | `data-wf-rail-thumb` | rail scrollbar | offset is `scroll × 0.27` |

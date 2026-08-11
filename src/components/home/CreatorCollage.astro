@@ -53,14 +53,14 @@ const BUBBLE_SIZES = "(min-width: 1024px) 13vw, 30vw";
 			data-collage-reveal
 		/>
 
-		<!--
+		{/*
 			The bubbles live in their own layer so the intro can rotate all seven as
 			one ring (see scripts/home-page/creatorCollage.ts). `inset-0` makes this
 			box identical to its parent, so the bubbles' percentage offsets resolve
 			exactly as they did when they were direct children.
-		-->
+		*/}
 		<div class="absolute inset-0 xl:overflow-x-hidden" data-orbit>
-			<!-- Bubble + its stat tag travel together on the wrapper. -->
+			{/* Bubble + its stat tag travel together on the wrapper. */}
 			<div
 				class="absolute top-[-30%] right-[2%] w-[28%] lg:top-[34%] lg:left-[-1.5%] lg:right-auto lg:w-[12%]"
 				data-bubble
@@ -90,7 +90,7 @@ const BUBBLE_SIZES = "(min-width: 1024px) 13vw, 30vw";
 				sizes={BUBBLE_SIZES}
 			/>
 
-			<!-- Bubble + its list pill travel together on the wrapper. -->
+			{/* Bubble + its list pill travel together on the wrapper. */}
 			<div
 				class="absolute top-[25%] left-[-3%] w-[30%] lg:top-auto lg:bottom-[25%] lg:left-[22%] lg:w-[12.56%]"
 				data-bubble

@@ -3,11 +3,10 @@ import { DESKTOP_MIN } from "./breakpoints";
 /**
  * "Show this in landscape" — a fullscreen, quarter-turned view of a live element.
  *
- * The workflow mockup is authored on a 1440x900 canvas. On a phone held upright
- * there is nowhere near enough width for it to be readable, so this borrows what a
- * fullscreen video does: fill the screen and turn the content a quarter turn so it
- * reads landscape without the reader having to rotate anything. If they do rotate,
- * a media query drops the rotation — see the styles in WorkflowMockup.astro.
+ * The workflow mockup needs 1440px of width to be readable, which a phone held
+ * upright has nowhere near. Like a fullscreen video, this fills the screen and turns
+ * the content a quarter turn; a media query drops the rotation if the reader does
+ * rotate (see WorkflowMockup.astro).
  *
  * Markup contract, all matched on a shared id:
  *   [data-landscape-target="id"]  the element to show
@@ -16,16 +15,11 @@ import { DESKTOP_MIN } from "./breakpoints";
  *     [data-landscape-rotor]        the turned box the target is placed in
  *     [data-landscape-close]        button that closes it
  *
- * The target is *moved*, not cloned, so its animation keeps running with all of
- * its state and listeners intact — a clone would restart from static markup. Two
- * things make that safe here: the workflow's pointer resolves its coordinates
- * lazily against the live stage (see workflow/utils/pointer), and scripts/canvasScale
- * refits the canvas from a ResizeObserver. Between them the canvas re-scales to the
- * overlay on its own. A placeholder holds the target's space in the page meanwhile,
- * so nothing reflows behind the overlay and the scroll position survives the trip.
- *
- * Dispatched on the target so its own scripts can react: `landscape:open` and
- * `landscape:close`.
+ * The target is *moved*, not cloned, so its animation keeps its state and listeners
+ * — a clone would restart from static markup. That is safe because the pointer
+ * resolves coordinates lazily and canvasScale refits off a ResizeObserver, so the
+ * canvas re-scales to the overlay by itself. A placeholder holds its space in the
+ * page, so nothing reflows and the scroll position survives.
  */
 
 /** Fired on the target when it enters / leaves the landscape view. */
@@ -39,16 +33,10 @@ type LockableOrientation = ScreenOrientation & {
 };
 
 /*
- * Fullscreen, across the three shapes it ships in.
- *
- * Safari only dropped the `webkit` prefix in 16.4, and on iPad the prefixed form is
- * the only one there is — so asking for `requestFullscreen` alone silently skips
- * fullscreen on hardware that supports it. iPhone supports neither: element
- * fullscreen does not exist there at all, only `<video>.webkitEnterFullscreen`, and
- * no Safari implements `screen.orientation.lock`. That is why none of this is
- * load-bearing and the CSS quarter turn carries the feature on its own.
- *
- * The prefixed calls return undefined rather than a promise, hence the wrapping.
+ * Fullscreen, across the three shapes it ships in. iPad only has the `webkit` form,
+ * and iPhone has no element fullscreen at all — nor does any Safari implement
+ * `screen.orientation.lock`. So none of this is load-bearing; the CSS quarter turn
+ * carries the feature alone. The prefixed calls return undefined, hence the wrapping.
  */
 type FullscreenElement = HTMLElement & { webkitRequestFullscreen?: () => Promise<void> | void };
 type FullscreenDocument = Document & {

@@ -5,20 +5,15 @@ import { PANEL_DONE, PANEL_ENTER } from "./creators-ai";
 gsap.registerPlugin(ScrollTrigger);
 
 /**
- * Shared harness for the scripted demos that play inside the CreatorsAI tab
- * panels. Each panel owns a paused timeline; the harness handles measurement,
- * reduced motion, and replaying the timeline whenever its tab is selected.
+ * Shared harness for the scripted demos inside the CreatorsAI tab panels. Each panel
+ * owns a paused timeline; the harness handles measurement, reduced motion and replay.
  *
- * Every panel's markup renders in its *settled* state so the section still
- * looks right without JS. A timeline rewinds its pieces to the "before" state
- * in a block of sets at position 0 and plays forward from there, which is also
+ * Panels render in their *settled* state so the section looks right without JS. A
+ * timeline winds its pieces back at position 0 and plays forward — which is also
  * what makes the demos replayable.
  */
 
-/**
- * Offset (px) from the cursor element's origin to the arrow's visual tip, so
- * targets line up under the point rather than the icon's bounding box.
- */
+/** Offset (px) from the cursor element's origin to the arrow's visual tip. */
 const TIP = { x: -5, y: -3 };
 
 /** Seconds a pointer hop between two targets takes. */
@@ -28,10 +23,9 @@ export const HOP = 0.85;
 const RESIZE_DEBOUNCE = 0.2;
 
 /**
- * Every registered panel and its timeline, so resize is served by one debounced
- * listener rather than one per panel. Astro view transitions replace the DOM and
- * re-run `init()`, so entries are pruned by `isConnected` on both registration
- * and resize — otherwise each navigation would leak a timeline over dead nodes.
+ * Every registered panel and its timeline, so one debounced resize listener serves
+ * all of them. Pruned by `isConnected`, or an Astro view transition would leak a
+ * timeline over dead nodes on every navigation.
  */
 const registered = new Set<{ panel: HTMLElement; tl: gsap.core.Timeline }>();
 let resizeBound = false;
@@ -52,25 +46,11 @@ function bindResize() {
 	let pending: gsap.core.Tween | null = null;
 	window.addEventListener("resize", () => {
 		pending?.kill();
-		/*
-		 * This used to `invalidate()` every timeline here, to drop the cached from/to
-		 * values so the next play would re-read the pointer's targets at the new stage
-		 * scale. It did that, and one more thing: `invalidate()` re-renders every
-		 * `immediateRender` tween, and a `set()` at position 0 is one. So each demo's
-		 * opening "wind everything back" block was stamped onto the cards again — with
-		 * the playhead seconds past it, and nothing left ahead to fade them in. A
-		 * panel that had finished playing went blank on the next resize and stayed
-		 * blank until its tab came round again.
-		 *
-		 * That made it look intermittent: it needed a resize, which on a phone arrives
-		 * on rotation and every time the browser's address bar collapses on scroll.
-		 *
-		 * Re-measuring here was redundant anyway — `play()` invalidates before every
-		 * restart, so a demo always re-reads its targets at the geometry it is about to
-		 * play at. The only case this covered was a resize *during* a demo, and the
-		 * cursor's coordinates are in unscaled stage pixels, so a change of scale does
-		 * not move them.
-		 */
+		// Prune only — do NOT `invalidate()` the timelines here. `invalidate()`
+		// re-renders `immediateRender` tweens, which re-stamps each demo's opening
+		// wind-back block with the playhead already past it, blanking a finished panel
+		// until its tab comes round again. It is also redundant: `play()` invalidates
+		// before every restart, and the cursor works in unscaled stage pixels.
 		pending = gsap.delayedCall(RESIZE_DEBOUNCE, prune);
 	});
 }
@@ -81,11 +61,7 @@ export interface DemoContext {
 	stage: HTMLElement;
 	/** True when the visitor asked for reduced motion. */
 	reducedMotion: boolean;
-	/**
-	 * Point on `el` in the stage's *unscaled* coordinate space — the space the
-	 * cursor lives in. Dividing by the stage's rendered scale keeps the same
-	 * numbers working at every breakpoint.
-	 */
+	/** Point on `el` in the stage's *unscaled* space — where the cursor lives. */
 	point(el: Element, rx?: number, ry?: number): { x: number; y: number };
 }
 
@@ -146,17 +122,10 @@ export function registerPanelDemo(
 		};
 
 		if (autoPlay) {
-			/*
-			 * A fallback, not the primary gate. The tab controller plays the starting
-			 * panel when the section reaches *its* in-view threshold, which is the one
-			 * the rotation is timed off; this only matters if that controller bailed out
-			 * on its markup checks, where otherwise the panel would sit at its hidden
-			 * "before" state for good.
-			 *
-			 * Guarded on `hasPlayed` because the two thresholds are not the same line —
-			 * below lg they are hundreds of pixels apart — so without it whichever fired
-			 * second would restart a demo that was already running.
-			 */
+			// A fallback, not the primary gate: the tab controller normally plays the
+			// starting panel. This only matters if that controller bailed on its markup
+			// checks. Guarded on `hasPlayed` — the two thresholds are hundreds of pixels
+			// apart below lg, so otherwise the second to fire would restart a live demo.
 			ScrollTrigger.create({
 				trigger: stage,
 				start: "top 75%",

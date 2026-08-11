@@ -72,7 +72,7 @@ const {
 		className,
 	]}
 >
-	<!-- Identity column — `buildLeftPanel`, 403px wide with 40px side padding -->
+	{/* Identity column — `buildLeftPanel`, 403px wide with 40px side padding */}
 	<div
 		class="w-100.75 max-w-full rounded-[1.75rem] bg-wf-panel px-10 pt-9 pb-14"
 	>
@@ -116,11 +116,11 @@ const {
 		<span class="my-[1.09375rem] block h-px w-full bg-wf-rule"></span>
 	</div>
 
-	<!--
+	{/*
 		Enquire actions, centred on the column and sitting on its bottom edge.
 		`EnquireButton`: grey7 fill inside a green3 border, radius 20, a 14px
 		message glyph and a 10px label. `AddToListButton` beside it.
-	-->
+	*/}
 	<div class="absolute bottom-0 left-0 flex w-100.75 max-w-full justify-center">
 		<div class="flex items-center gap-2.5">
 			{/* The popover anchors to this button, as `_anchorKey` does in the app. */}
@@ -137,13 +137,13 @@ const {
 					<Icon name="arrowIcon" size="0.75rem" class="ml-1 text-wf-green-dim" />
 				</span>
 
-				<!--
+				{/*
 					Contact popover — `showContactMenu` in common/widgets/enquire_button.dart:
 					maxWidth 128 on `lavender27` inside a `lavender53` border, with the corners
 					rounded 2 on the left and 20 on the right. It opens *above* the anchor —
 					`topLeft.dy - menuHeight - gap` with `gap: 14` — and shifted `horizontalShift:
 					50` to the right of it, which is where it sits here.
-				-->
+				*/}
 				<ul
 					data-analyzed-popover
 					class="absolute bottom-[calc(100%+0.875rem)] left-20 flex w-32 list-none flex-col rounded-tl-xs rounded-tr-[1.25rem] rounded-br-[1.25rem] rounded-bl-xs border border-wf-menu-border bg-wf-menu py-0.5"

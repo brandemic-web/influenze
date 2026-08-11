@@ -3,23 +3,12 @@ import { token } from "../utils/dom";
 import type { Pointer } from "../utils/pointer";
 
 /**
- * Beat 6 — confirm the list, close the dialog, cross to My Lists.
+ * Beat 6 — three clicks: Add (settles to "Added"), the dialog's ✕, then My Lists.
  *
- * Three clicks: Add on the story's list row (which settles to "Added"), the
- * dialog's close ✕, then My Lists in the nav.
- *
- * Closing the dialog needs no layer change. Screen 6 renders byte-for-byte what
- * screen 5 renders once its blur, scrim and card are neutralised (see beat 5), so
- * unwinding those three leaves the story sitting on screen 6's layer looking
- * exactly like screen 5 — and the nav inside that backdrop is what the cursor then
- * clicks.
- *
- * The crossing to screen 7 is the story's first real *navigation*, so it is the
- * first swap that cannot be hidden: the two screens share a nav bar and an empty
- * card, but the nav pill is a different shape in each — the active item carries
- * `px16 py8` and the inactive ones carry nothing, so the whole row shifts. That
- * snap is left visible on purpose. It happens on the click that caused it, which
- * is what the app does when the section rebuilds.
+ * Closing needs no layer change: unwinding beat 5's blur, scrim and card leaves
+ * screen 6 looking exactly like screen 5. 6 → 7 is the first swap that *can't* be
+ * hidden — the active nav pill is a different shape, so the row shifts. That snap
+ * is deliberate; it lands on the click that caused it, like the app's own rebuild.
  */
 
 export interface MyListsLayers {
@@ -66,7 +55,7 @@ export function myLists(layers: MyListsLayers, pointer: Pointer) {
 
 	const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
 
-	// Put things back the way beat 5 leaves them, so the beat is self-contained.
+	// Wind the layers back first, so the beat is replayable from anywhere.
 	tl.call(() => {
 		layers.to.removeAttribute("data-wf-active");
 		layers.from.setAttribute("data-wf-active", "");
