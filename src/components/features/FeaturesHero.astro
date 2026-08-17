@@ -7,7 +7,14 @@ import creatorFour from "../../assets/images/featured_page/hero_section/creator_
 import creatorFive from "../../assets/images/featured_page/hero_section/creator_five.png";
 import creatorSix from "../../assets/images/featured_page/hero_section/creator_six.png";
 
-const creators = [creatorOne, creatorTwo, creatorThree, creatorFour, creatorFive, creatorSix];
+const creators = [
+	creatorOne,
+	creatorTwo,
+	creatorThree,
+	creatorFour,
+	creatorFive,
+	creatorSix,
+];
 
 // Glass lens tuned from the Figma "Glass" effect panel values.
 const glass = {
@@ -63,28 +70,36 @@ const displacementDataUri = `data:image/svg+xml;base64,${Buffer.from(displacemen
 ---
 
 <section
-	class="relative bg-[radial-gradient(160%_100%_at_50%_-10%,#7B4DFF_0%,#5A2FD8_35%,#2A1655_65%,#010101_100%)] pt-30 pb-16 lg:pt-60 lg:pb-24 overflow-hidden lg:overflow-visible"
+	class="relative bg-[radial-gradient(160%_100%_at_50%_-10%,#7B4DFF_0%,#5A2FD8_35%,#2A1655_65%,#010101_100%)] pt-26 pb-16 lg:pt-60 lg:pb-24 overflow-hidden lg:overflow-visible xl:overflow-x-clip"
 >
-	<div class="mx-auto flex max-w-256.75 flex-col items-center gap-6 lg:gap-11 px-6 text-center">
-		<h1 class="max-w-236.75 text-9xl capitalize leading-[1.1] text-white max-lg:text-6xl max-md:text-3xl">
+	<div
+		class="mx-auto flex max-w-256.75 flex-col items-center gap-2 lg:gap-11 px-6 text-center"
+	>
+		<h1
+			class="relative mx-auto px-6 text-center text-9xl capitalize leading-[1.1] max-lg:text-4xl max-md:text-[1.875rem] max-md:leading-[1.2] max-md:tracking-[-0.0375rem] lg:mx-auto"
+		>
 			A product that caters to you
 		</h1>
-		<p class="max-w-188.25 text-[1.125rem] leading-7 text-white">
-			Search <span class="text-[1.125rem] font-semibold text-brand-primary">450M+ creators</span> across Instagram, TikTok and YouTube using audience intelligence, fraud detection and performance signals.
+		<p class="relative mt-1.25 max-w-185 text-center text-[1rem] capitalize text-white lg:text-[1.125rem]">
+			Search <span
+				class="text-[1.125rem] font-semibold text-brand-primary"
+				>450M+ creators</span
+			> across Instagram, TikTok and YouTube using audience intelligence, fraud
+			detection and performance signals.
 		</p>
 	</div>
 
-	<!-- full-bleed creator photo strip; the liquid-glass lens overlays it (prototype) -->
+	{/* full-bleed creator photo strip; the liquid-glass lens overlays it (prototype) */}
 	<div class="creator-stage relative mt-8 lg:mt-24">
-		<!-- GSAP marquee track: creators rendered twice for a seamless infinite loop -->
-		<div class="creator-track flex w-max gap-5">
+		{/* GSAP marquee track: creators rendered twice for a seamless infinite loop */}
+		<div class="creator-track flex w-max gap-3 lg:gap-5">
 			{
 				[...creators, ...creators].map((creator, i) => (
 					<Image
 						src={creator}
 						alt=""
 						aria-hidden={i >= creators.length ? "true" : undefined}
-						class="w-60 shrink-0 rounded-[1rem] object-cover lg:w-78.75 lg:rounded-[1.25rem]"
+						class="w-40 shrink-0 rounded-sm object-cover lg:w-78.75 lg:rounded-[1.25rem]"
 						widths={[315, 630]}
 						sizes="315px"
 						loading="eager"
@@ -93,13 +108,24 @@ const displacementDataUri = `data:image/svg+xml;base64,${Buffer.from(displacemen
 			}
 		</div>
 
-		<!-- Liquid-glass lens: refracts + frosts the creator strip behind it -->
-		<div class="lg-lens hidden lg:block " aria-hidden="true"></div>
+		{/* Liquid-glass lens: refracts + frosts the creator strip behind it */}
+		<div class="lg-lens hidden lg:block" aria-hidden="true"></div>
 	</div>
 
-	<!-- Glass refraction filter: spherical displacement + per-channel chromatic dispersion. -->
-	<svg class="pointer-events-none absolute h-0 w-0" aria-hidden="true" focusable="false">
-		<filter id="lg-refract" x="0%" y="0%" width="100%" height="100%" color-interpolation-filters="sRGB">
+	{/* Glass refraction filter: spherical displacement + per-channel chromatic dispersion. */}
+	<svg
+		class="pointer-events-none absolute h-0 w-0"
+		aria-hidden="true"
+		focusable="false"
+	>
+		<filter
+			id="lg-refract"
+			x="0%"
+			y="0%"
+			width="100%"
+			height="100%"
+			color-interpolation-filters="sRGB"
+		>
 			<feImage
 				href={displacementDataUri}
 				preserveAspectRatio="none"
@@ -107,25 +133,56 @@ const displacementDataUri = `data:image/svg+xml;base64,${Buffer.from(displacemen
 				y="0"
 				width="100%"
 				height="100%"
-				result="map"
-			/>
-			<!-- Blur the displacement field so the bend is smooth, not spiky. -->
-			<feGaussianBlur in="map" stdDeviation="1.4" result="mapBlur" />
+				result="map"></feImage>
+			{/* Blur the displacement field so the bend is smooth, not spiky. */}
+			<feGaussianBlur in="map" stdDeviation="1.4" result="mapBlur"
+			></feGaussianBlur>
 
-			<!-- Dispersion: displace R / G / B by slightly different amounts, then
+			{/* Dispersion: displace R / G / B by slightly different amounts, then
 			     recombine. The channel split shows most where the bend is strongest
-			     (the edges), giving true chromatic aberration. -->
-			<feDisplacementMap in="SourceGraphic" in2="mapBlur" scale={scaleR} xChannelSelector="R" yChannelSelector="G" result="dispR" />
-			<feColorMatrix in="dispR" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="chanR" />
+			     (the edges), giving true chromatic aberration. */}
+			<feDisplacementMap
+				in="SourceGraphic"
+				in2="mapBlur"
+				scale={scaleR}
+				xChannelSelector="R"
+				yChannelSelector="G"
+				result="dispR"></feDisplacementMap>
+			<feColorMatrix
+				in="dispR"
+				type="matrix"
+				values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0"
+				result="chanR"></feColorMatrix>
 
-			<feDisplacementMap in="SourceGraphic" in2="mapBlur" scale={scaleG} xChannelSelector="R" yChannelSelector="G" result="dispG" />
-			<feColorMatrix in="dispG" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="chanG" />
+			<feDisplacementMap
+				in="SourceGraphic"
+				in2="mapBlur"
+				scale={scaleG}
+				xChannelSelector="R"
+				yChannelSelector="G"
+				result="dispG"></feDisplacementMap>
+			<feColorMatrix
+				in="dispG"
+				type="matrix"
+				values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0"
+				result="chanG"></feColorMatrix>
 
-			<feDisplacementMap in="SourceGraphic" in2="mapBlur" scale={scaleB} xChannelSelector="R" yChannelSelector="G" result="dispB" />
-			<feColorMatrix in="dispB" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="chanB" />
+			<feDisplacementMap
+				in="SourceGraphic"
+				in2="mapBlur"
+				scale={scaleB}
+				xChannelSelector="R"
+				yChannelSelector="G"
+				result="dispB"></feDisplacementMap>
+			<feColorMatrix
+				in="dispB"
+				type="matrix"
+				values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0"
+				result="chanB"></feColorMatrix>
 
-			<feBlend in="chanR" in2="chanG" mode="screen" result="chanRG" />
-			<feBlend in="chanRG" in2="chanB" mode="screen" />
+			<feBlend in="chanR" in2="chanG" mode="screen" result="chanRG"
+			></feBlend>
+			<feBlend in="chanRG" in2="chanB" mode="screen"></feBlend>
 		</filter>
 	</svg>
 </section>
@@ -146,8 +203,10 @@ const displacementDataUri = `data:image/svg+xml;base64,${Buffer.from(displacemen
 		pointer-events: none;
 
 		/* Frost=0 -> no blur; dispersion/refraction come from the SVG filter */
-		-webkit-backdrop-filter: blur(var(--frostBlurCss)) saturate(115%) brightness(1);
-		backdrop-filter: blur(var(--frostBlurCss)) saturate(115%) brightness(1) url(#lg-refract);
+		-webkit-backdrop-filter: blur(var(--frostBlurCss)) saturate(115%)
+			brightness(1);
+		backdrop-filter: blur(var(--frostBlurCss)) saturate(115%) brightness(1)
+			url(#lg-refract);
 
 		/* Soft translucent purple cast, like the Figma glass */
 		background: radial-gradient(
@@ -186,7 +245,9 @@ const displacementDataUri = `data:image/svg+xml;base64,${Buffer.from(displacemen
 	}
 
 	/* Graceful fallback: no backdrop-filter -> keep a legible frosted tint */
-	@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+	@supports not (
+		(backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))
+	) {
 		.lg-lens {
 			background: rgba(42, 22, 85, 0.35);
 		}

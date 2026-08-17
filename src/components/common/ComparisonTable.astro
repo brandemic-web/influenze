@@ -1,0 +1,239 @@
+---
+/**
+ * "How Influenze Compares". One CSS grid so every column stays aligned: five tracks
+ * sized off the design (label 398, Influenze 262, competitors 250, in a 1455 frame).
+ * The raised Influenze column spans every row in column 2, with negative block margins
+ * for its overhang. Below `lg` the grid keeps its shape and scrolls sideways at
+ * `(100vw - 3rem) / 2.5` per track, so a half-column always signals more to come.
+ */
+import logo from "../../assets/images/common/logos_and_icons/influenze_logo_nav.webp";
+import glowBand from "../../assets/images/home_page/compare_table/glow_band.svg";
+import {
+	COMPARISON_HEADING,
+	COMPARISON_COMPETITORS,
+	COMPARISON_ROWS,
+} from "../../data/comparison";
+
+const rowCount = COMPARISON_ROWS.length;
+---
+
+<section
+	class="relative overflow-hidden py-5 lg:pt-0 lg:pb-40"
+	aria-labelledby="comparison-heading"
+>
+	{/*
+		Blurred purple band from the design, centred on the section's vertical axis
+		and clipped by its `overflow-hidden`. The SVG is 1728×744, i.e. the design
+		canvas width, so `w-full` keeps its proportions at every viewport.
+	*/}
+	<img
+		src={glowBand.src}
+		alt=""
+		class="pointer-events-none absolute inset-x-0 top-1/2 hidden h-[58%] w-full -translate-y-1/2 object-cover opacity-80 lg:block"
+		loading="lazy"
+	/>
+
+	<div class="relative z-2 flex flex-col items-center px-6 text-center">
+		<h2
+			id="comparison-heading"
+			class="text-md capitalize leading-[1.15] text-white lg:text-[4rem]"
+		>
+			{COMPARISON_HEADING.lead}<span class="text-brand-primary"
+				>{COMPARISON_HEADING.accent}</span
+			>
+		</h2>
+	</div>
+
+	{/*
+		Sideways scroll below lg; full-width from lg up. `overflow-x: auto` also clips the
+		block axis, which would cut the raised column's overhang — hence `py-8` to hold it
+		and `-mb-8` plus a reduced `mt` to cancel the spacing again. The native scrollbar
+		is replaced by the rail below; see comparison-rail.ts for why it can't be styled.
+	*/}
+	<div
+		class="compare-scroller relative z-2 mt-6 overflow-x-auto overscroll-x-contain px-6 py-8 -mb-8 lg:mt-24 lg:mb-0 lg:overflow-visible lg:py-0"
+		data-rail-scroller="comparison"
+	>
+		<div
+			class="mx-auto grid w-max max-w-363.75 grid-cols-[repeat(5,calc((100vw-3rem)/2.5))] items-stretch rounded-[1.25rem] border border-[#ffffff52] bg-white/2 lg:w-auto lg:grid-cols-[1.59fr_1.05fr_1fr_1fr_1fr]"
+			role="table"
+			aria-label="Influenze compared with Qoruz, Upfluence and Culture X"
+		>
+			{/*
+				Raised Influenze column. Spans header + every row, and sits behind the
+				cells so their text stays legible.
+			*/}
+			<div
+				class="col-start-2 row-start-1 -my-6 rounded-[1.25rem] border border-[#ffffff52] bg-[linear-gradient(180deg,rgba(10,7,24,0.3)_0%,rgba(10,7,24,0.06)_100%)] backdrop-blur-md shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_24px_60px_-20px_rgba(0,0,0,0.6)] lg:-my-8"
+				style={`grid-row-end: ${rowCount + 2}`}
+				aria-hidden="true"
+			>
+			</div>
+
+			{/*
+				── Header row ───────────────────────────────────────────
+
+				`role="table"` requires its cells to sit inside `role="row"`, but every
+				cell here is placed directly on the grid by `grid-column`/`grid-row`, so
+				a real wrapper element would break the layout. `display: contents` is the
+				way out: the row exists in the accessibility tree while its box is
+				removed from the layout tree, so the cells stay direct grid items.
+			*/}
+			<div role="row" style="display: contents">
+				{/* Empty corner cell: the row labels below it are the row headers. */}
+				<div class="col-start-1 row-start-1" role="columnheader"></div>
+
+				<div
+					class="relative z-2 col-start-2 row-start-1 flex items-center justify-center px-4 py-8 lg:py-10"
+					role="columnheader"
+				>
+					{/* Plain <img> so this shares the header's logo URL — see Header.astro. */}
+					<img
+						src={logo.src}
+						alt="influenze.ai"
+						width={logo.width}
+						height={logo.height}
+						class="h-6 w-auto lg:h-12"
+						loading="lazy"
+					/>
+				</div>
+
+				{
+					COMPARISON_COMPETITORS.map((name, i) => (
+						<div
+							class="relative z-2 flex items-center justify-center px-4 py-8 lg:py-10"
+							style={`grid-column: ${i + 3}; grid-row: 1`}
+							role="columnheader"
+						>
+							<span class="text-[1.125rem] text-white lg:text-md">{name}</span>
+						</div>
+					))
+				}
+			</div>
+
+			{/* ── Rows ───────────────────────────────────────────────── */}
+			{
+				COMPARISON_ROWS.map((row, r) => {
+					const line = "border-t border-[#ffffff52]";
+					return (
+						// `display: contents` again — see the header row above.
+						<div role="row" style="display: contents">
+							<div
+								class:list={[
+									"relative z-2 flex items-center px-4 py-5 text-left lg:px-13.5 lg:py-6",
+									line,
+								]}
+								style={`grid-column: 1; grid-row: ${r + 2}`}
+								role="rowheader"
+							>
+								<span class="text-[0.75rem] capitalize leading-4.5 text-white lg:text-[1.125rem] lg:leading-6.5">
+									{row.label}
+								</span>
+							</div>
+
+							<div
+								class="relative z-2 flex flex-col items-center justify-center gap-2.5 px-3 py-5 text-center lg:px-5 lg:py-6"
+								style={`grid-column: 2; grid-row: ${r + 2}`}
+								role="cell"
+							>
+								{row.influenze.mark && (
+									<svg
+										class="size-6 shrink-0 text-brand-primary"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="2"
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										aria-label="Included"
+										role="img"
+									>
+										<circle cx="12" cy="12" r="10" />
+										<path d="m9 12 2 2 4-4" />
+									</svg>
+								)}
+								{(row.influenze.accent || row.influenze.text) && (
+									<span class="text-[0.75rem] capitalize leading-4.5 text-white lg:text-[1.125rem] lg:leading-6.5">
+										{row.influenze.accent && (
+											<span class="text-brand-primary">{row.influenze.accent} </span>
+										)}
+										{row.influenze.text}
+									</span>
+								)}
+							</div>
+
+							{row.others.map((cell, c) => (
+								<div
+									class:list={[
+										"relative z-2 flex flex-col items-center justify-center gap-2.5 px-3 py-5 text-center lg:px-5 lg:py-6",
+										line,
+									]}
+									style={`grid-column: ${c + 3}; grid-row: ${r + 2}`}
+									role="cell"
+								>
+									{cell.mark && (
+										<svg
+											class="size-6 shrink-0 text-white/35"
+											viewBox="0 0 24 24"
+											fill="none"
+											stroke="currentColor"
+											stroke-width="2"
+											stroke-linecap="round"
+											aria-label="Not included"
+											role="img"
+										>
+											<path d="M5 12h14" />
+										</svg>
+									)}
+									{cell.text && (
+										// A caption under a dash explains what they do instead, so it is
+										// dimmed; a plain value stands at full strength.
+										<span
+											class:list={[
+												"text-[0.75rem] capitalize leading-4 text-white lg:text-[1rem] lg:leading-6",
+												cell.mark && "opacity-60",
+											]}
+										>
+											{cell.text}
+										</span>
+									)}
+								</div>
+							))}
+						</div>
+					);
+				})
+			}
+		</div>
+	</div>
+
+	{/*
+		The permanent scroll rail. `mt-8` clears the raised Influenze column, whose
+		`-my-6` overhang reaches 24px below the grid once the scroller's `-mb-8`
+		has cancelled its padding. Hidden from lg up, and hidden again by the script
+		whenever there is nothing to scroll.
+	*/}
+	<div
+		class="relative z-2 mx-6 mt-12 h-1.5 overflow-hidden rounded-full bg-white/12 lg:hidden"
+		data-rail="comparison"
+		aria-hidden="true"
+	>
+		<span
+			class="absolute inset-y-0 left-0 block w-6 touch-none rounded-full bg-white/45 will-change-transform"
+			data-rail-thumb></span>
+	</div>
+</section>
+
+<style>
+	/* The rail replaces the native bar; hiding it keeps only one visible. */
+	.compare-scroller {
+		scrollbar-width: none; /* Firefox */
+	}
+
+	.compare-scroller::-webkit-scrollbar {
+		display: none;
+	}
+</style>
+
+<script>
+	import "../../scripts/comparison-rail";
+</script>

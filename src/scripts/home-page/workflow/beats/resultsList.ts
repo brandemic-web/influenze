@@ -1,23 +1,12 @@
 import gsap from "gsap";
-import { PROFILED_HANDLE } from "../../../../data/workflowMockup";
+import { CREDITS, PROFILED_HANDLE } from "../../../../data/workflowMockup";
+import { setCredits, spendCredits } from "../utils/credits";
 import type { Pointer } from "../utils/pointer";
 
 /**
- * Beat 2 — the search runs and the ranked results arrive.
- *
- * Picks up where beat 1 left off, with the cursor still on Apply & Search: the
- * empty state clears, the panel arrives as one piece, the list scrolls a little
- * to show there is more of it, and the cursor opens Justin Joy — the creator
- * screens 4 and 5 profile.
- *
- * Unlike beat 1 this one does change layer, because screen 3's results table is
- * markup screen 1 simply does not have. The swap is hidden rather than
- * cross-faded: by the time it happens the panel is empty and the shell, search
- * bar and filter rail are identical on both layers, so nothing visibly moves.
- *
- * The rail is not touched here at all: beat 1 already scrolled it to
- * `RAIL_TIER_SCROLL`, which is where screen 3 is authored, so it is in the same
- * place on both layers when they swap.
+ * Beat 2 — the search runs and the ranked results arrive, then the cursor opens
+ * the profiled creator. The 1 → 3 layer swap is hidden, not cross-faded: the panel
+ * is empty and the shell, search bar and rail match on both sides.
  */
 
 export interface ResultsListLayers {
@@ -57,11 +46,11 @@ export function resultsList(layers: ResultsListLayers, pointer: Pointer) {
 	const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
 
 	// ── hand the panel over to the results layer ─────────────────────────────
-	// Put the layers back the way beat 1 leaves them first, so this beat is
-	// self-contained and the story can be replayed from wherever it stopped.
+	// Wind the layers back first, so the beat is replayable from anywhere.
 	tl.call(() => {
 		layers.to.removeAttribute("data-wf-active");
 		layers.from.setAttribute("data-wf-active", "");
+		setCredits(layers.to, CREDITS.afterSearch);
 	})
 		.set(el.scroller, { y: 0 })
 		.to(el.empty, { opacity: 0, y: -10, duration: 0.28 })
@@ -73,24 +62,23 @@ export function resultsList(layers: ResultsListLayers, pointer: Pointer) {
 		.set(el.empty, { opacity: 1, y: 0 });
 
 	// ── the results arrive ───────────────────────────────────────────────────
-	// One reveal, no stagger: the counts, filter chips, column header and rows all
-	// come in together, so the panel reads as a single result rather than as parts
-	// assembling one after another.
+	// One reveal, no stagger — the panel should read as a single result, not as
+	// parts assembling one after another.
 	tl.from(el.parts, { opacity: 0, y: 8, duration: 0.45, immediateRender: false });
 
-	// ── a little scroll through the results ──────────────────────────────────
-	// Cursor moves over the list first, so the scroll happens under it like a wheel.
+	// ── a look down the results, and back ────────────────────────────────────
+	// Wheel-style scroll under a parked cursor. It returns to the top first: the
+	// press below aims at a row, which a scrolled list would slide out from under it.
 	tl.add(pointer.moveTo(el.scroller, { at: { x: 0.5, y: 0.35 }, duration: 0.55 }), "+=0.2")
-		.to(el.scroller, { y: () => -rowPitch() * 1.3, duration: 0.9, ease: "power2.inOut" }, "+=0.1");
+		.to(el.scroller, { y: () => -rowPitch() * 1.3, duration: 0.9, ease: "power2.inOut" }, "+=0.1")
+		.to(el.scroller, { y: 0, duration: 0.7, ease: "power2.inOut" }, "+=0.4");
 
-	// ── open Justin Joy ──────────────────────────────────────────────────────
-	// Aimed at the name rather than the row's centre, which is where the metrics
-	// are. Resolved after the scroll, so it follows the row to its new position.
-	//
-	// The press is the only feedback: the app's row hover and pressed states are
-	// not in `lib` anywhere I could check, and beat 3 opening the profile is the
-	// real answer to the click.
-	tl.add(pointer.moveTo(el.profiled, { at: { x: 0.3 }, duration: 0.6 }), "+=0.1").add(pointer.press(), ">-0.05");
+	// ── open the profiled creator ────────────────────────────────────────────
+	// Aimed at the name, not the row centre (metrics). The press is the only
+	// feedback — the app has no row hover state, and beat 3 answers the click.
+	tl.add(pointer.moveTo(el.profiled, { at: { x: 0.3 }, duration: 0.6 }), "+=0.1")
+		.add(pointer.press(), ">-0.05")
+		.call(spendCredits(layers.to, CREDITS.afterSearch, CREDITS.afterProfile));
 
 	return tl;
 }

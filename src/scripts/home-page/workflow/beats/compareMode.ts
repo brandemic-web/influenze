@@ -1,23 +1,10 @@
 import gsap from "gsap";
 
 /**
- * Beat 8 — compare the two creators.
- *
- * Answers beat 7's press on Compare. In the app this is not a route at all but a
- * mode swap inside the same list-detail panel — an `AnimatedSwitcher` running a
- * 450ms shared-axis transition — so the panel surface, card and nav all stay put
- * and only the column inside changes: the toolbar and column header collapse away,
- * the title becomes a centred "Compare", the share control hides, and the rows
- * become side-by-side stat columns.
- *
- * All of that lives inside `[data-wf-panel-body]`, so the swap is one fade through
- * an empty panel, split to the app's 450ms. It is opacity-only: that column is
- * centred with a percentage translate, and GSAP would fold it into pixels to add a
- * slide, which then goes stale on resize. So the duration is faithful even though
- * the shared axis is not.
- *
- * The cursor does not move — it pressed Compare in beat 7, and a mode swap does
- * not move the mouse.
+ * Beat 8 — compare mode. Not a route in the app but a mode swap inside the same
+ * panel, so only `[data-wf-panel-body]` changes: one fade through an empty panel,
+ * split to the app's 450ms. Opacity-only — the column is centred with a percentage
+ * translate that GSAP would fold into pixels to add a slide, going stale on resize.
  */
 
 export interface CompareModeLayers {
@@ -47,7 +34,7 @@ export function compareMode(layers: CompareModeLayers) {
 
 	const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
 
-	// Put the layers back the way beat 7 leaves them, so the beat is self-contained.
+	// Wind the layers back first, so the beat is replayable from anywhere.
 	tl.call(() => {
 		layers.to.removeAttribute("data-wf-active");
 		layers.from.setAttribute("data-wf-active", "");

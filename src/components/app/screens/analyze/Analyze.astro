@@ -1,0 +1,46 @@
+---
+/**
+ * The Analyze screen. Two story frames are this one screen, so it is one file the way
+ * the app has one file: `results` swaps the empty state for the ranked list and puts
+ * the rail in its filled, scrolled position. No third state — beat 1 animates between
+ * them in place, and the design's dropdown-open frame is a keyframe, not a rest state.
+ */
+import AppShell from "../../common/AppShell.astro";
+import AnalyzeEmptyState from "./widgets/AnalyzeEmptyState.astro";
+import AnalyzeFilterSidebar from "./widgets/AnalyzeFilterSidebar.astro";
+import AnalyzeResultsList from "./widgets/AnalyzeResultsList.astro";
+import AnalyzeResultsPanel from "./widgets/AnalyzeResultsPanel.astro";
+import AnalyzeSearchBar from "./widgets/AnalyzeSearchBar.astro";
+import { CREDITS, RAIL_TIER_SCROLL } from "../../../../data/workflowMockup";
+
+interface Props {
+	/** The search has run: ranked results, and the rail filled and scrolled to the tiers. */
+	results?: boolean;
+}
+
+const { results = false } = Astro.props;
+---
+
+<AppShell active="analyze" credits={results ? CREDITS.afterSearch : CREDITS.start}>
+	<AnalyzeSearchBar />
+
+	{
+		results ? (
+			<AnalyzeResultsPanel class="flex flex-col px-6 py-5">
+				<AnalyzeResultsList />
+			</AnalyzeResultsPanel>
+		) : (
+			<AnalyzeResultsPanel>
+				<AnalyzeEmptyState />
+			</AnalyzeResultsPanel>
+		)
+	}
+
+	{
+		results ? (
+			<AnalyzeFilterSidebar scroll={RAIL_TIER_SCROLL} parameter="lookalike" lookalikeFilled />
+		) : (
+			<AnalyzeFilterSidebar parameter="none" tierPicked={false} />
+		)
+	}
+</AppShell>

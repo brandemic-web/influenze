@@ -1,0 +1,50 @@
+---
+/**
+ * The audience-filter sliders, with the app's `FullWidthTrackShape` behaviour: the
+ * track spans the full parent width with no thumb inset, so the 16px thumbs overhang
+ * each end by ~8px. `single` is the gender %; `range` is the age bracket.
+ */
+interface Props {
+	/** Thumb position(s) as a percentage. One value = single, two = range. */
+	at: [number] | [number, number];
+	class?: string;
+}
+
+const { at, class: className = "" } = Astro.props;
+const isRange = at.length === 2;
+---
+
+<div class:list={["relative h-4 w-full", className]}>
+	{
+		isRange ? (
+			<>
+				<span
+					class="absolute top-1.5 left-0 h-1 rounded-l-xs bg-wf-track"
+					style={`width:${at[0]}%`}
+				/>
+				<span
+					class="absolute top-1.5 right-0 h-1 rounded-r-xs bg-wf-track"
+					style={`left:${at[1]!}%`}
+				/>
+				<span
+					class="absolute top-1.25 h-1.5 rounded-xs bg-wf-green-mid"
+					style={`left:calc(${at[0]}% - 0.125rem);width:calc(${at[1]! - at[0]}% + 0.25rem)`}
+				/>
+			</>
+		) : (
+			<>
+				<span class="absolute top-1.5 left-0 h-1 bg-wf-green-mid" style={`width:${at[0]}%`} />
+				<span class="absolute top-1.5 right-0 h-1 bg-wf-track" style={`left:${at[0]}%`} />
+			</>
+		)
+	}
+
+	{
+		at.map((position) => (
+			<span
+				class="absolute top-0 block size-4 -translate-x-1/2 rounded-full bg-white"
+				style={`left:${position}%`}
+			/>
+		))
+	}
+</div>

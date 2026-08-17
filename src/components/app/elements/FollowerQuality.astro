@@ -1,0 +1,69 @@
+---
+import userRoundCheck from "../../../assets/icons/mkit/user_round_check.svg";
+import userRoundX from "../../../assets/icons/mkit/user_round_x.svg";
+import userPlus from "../../../assets/icons/mkit/user_plus.svg";
+import incognito from "../../../assets/icons/mkit/incognito.svg";
+
+/**
+ * Follower quality — the media kit's audience breakdown.
+ */
+interface Props {
+	class?: string;
+}
+
+const { class: className = "" } = Astro.props;
+
+const rows = [
+	{ label: "Real Followers", value: 62.28, icon: userRoundCheck, accent: "#8bcc9d" }, // green2
+	{ label: "Mass Followers", value: 22.45, icon: userRoundX, accent: "#f2994a" }, // orange1
+	{ label: "Influencers", value: 2.42, icon: userPlus, accent: "#935ad6" }, // lavender2
+	{ label: "Suspicious", value: 12.85, icon: incognito, accent: "#ea5757" }, // red1
+];
+---
+
+<div
+	class:list={[
+		"w-103.75 max-w-full rounded-[0.3125rem] bg-mkit-card p-3 font-sans text-white",
+		className,
+	]}
+>
+	{/* `mediaKitCardTitle` — 10/500 */}
+	<span class="text-[0.625rem] font-medium">Follower Quality</span>
+
+	<ul class="mt-2.5 flex list-none flex-col p-0">
+		{
+			rows.map((row) => (
+				<li class="flex items-center py-2">
+					{/* 26px tile on grey7, radius 2, holding the 12px glyph */}
+					<span
+						class="grid size-6.5 flex-none place-items-center rounded-xs bg-mkit-icon-tile"
+						style={`color:${row.accent}`}
+					>
+						<span
+							class="block size-3 bg-current"
+							style={`mask:url(${row.icon.src}) center/contain no-repeat;-webkit-mask:url(${row.icon.src}) center/contain no-repeat`}
+							aria-hidden="true"
+						/>
+					</span>
+
+					<div class="ml-2 flex-auto">
+						{/* `mediaKitListTitle` — 12/500 */}
+						<span class="block text-[0.75rem] font-medium">{row.label}</span>
+						{/* 2px track on grey3, radius 4 */}
+						<span class="mt-1 block h-0.5 w-full rounded-[0.25rem] bg-mkit-tile">
+							<span
+								class="block h-full rounded-[0.25rem] bg-[linear-gradient(to_right,#9476f3_0%,#3b83ac_50%,#20c795_100%)]"
+								style={`width:${row.value}%`}
+							/>
+						</span>
+					</div>
+
+					{/* `tileTitle` — 14/600, in the app's fixed 60px right-aligned column */}
+					<span class="ml-2 w-15 shrink-0 text-right text-[0.875rem] font-semibold tabular-nums">
+						{row.value.toFixed(2)}%
+					</span>
+				</li>
+			))
+		}
+	</ul>
+</div>

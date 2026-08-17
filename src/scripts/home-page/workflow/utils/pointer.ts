@@ -4,18 +4,12 @@ import gsap from "gsap";
  * The hand cursor that travels across the workflow mockup.
  *
  * The mockup is authored on the app's 1440x900 canvas and CSS-scaled to fit the
- * hero, so the cursor's own coordinates are *unscaled stage pixels*. To aim at
- * something: measure it against the stage, then divide out the scale. That
- * division is possible because `offsetWidth` reports the pre-transform layout
- * width while `getBoundingClientRect()` reports the painted one.
+ * hero, so cursor coordinates are *unscaled stage pixels*. Positions resolve lazily
+ * through function-based tween values: the stage's scale follows the viewport, so a
+ * timeline built at load time would keep aiming at stale coordinates.
  *
- * Positions resolve lazily, through function-based tween values. GSAP evaluates
- * those when a tween first renders rather than when it is built, which matters
- * because the stage's scale follows the viewport — a timeline assembled at load
- * time would otherwise keep aiming at wherever things were back then.
- *
- * The fingertip offset lives in CSS (`.wf-pointer > img`), so everything here can
- * treat the element's origin as the point that touches things.
+ * The fingertip offset lives in CSS (`.wf-pointer > img`), so the element's origin
+ * can be treated as the point that touches things.
  */
 
 export interface AimOptions {
@@ -28,18 +22,66 @@ export interface MoveOptions extends AimOptions {
 	ease?: string;
 }
 
+/**
+ * One element's own transform, as a matrix. `transform` alone is not enough to read:
+ * `rotate` and `scale` are separate CSS properties, and an element carrying only
+ * those reports `transform: none` — silently losing the stage's canvas scale.
+ * Composed in CSS's order (rotate, scale, transform); `translate` is dropped anyway.
+ */
+function elementMatrix(node: HTMLElement) {
+	const style = getComputedStyle(node);
+	const parts: string[] = [];
+
+	if (style.rotate !== "none") parts.push(`rotate(${style.rotate})`);
+	// Computed `scale` is space-separated ("0.44" or "0.44 0.44"); the function form
+	// this is parsed as wants commas.
+	if (style.scale !== "none") parts.push(`scale(${style.scale.trim().split(/\s+/).join(",")})`);
+	if (style.transform !== "none") parts.push(style.transform);
+
+	return parts.length ? new DOMMatrix(parts.join(" ")) : new DOMMatrix();
+}
+
 export function createPointer(stage: HTMLElement, el: HTMLElement) {
-	/** Painted width over layout width — the fit-to-container scale on `.wf-stage`. */
-	const scale = () => stage.getBoundingClientRect().width / stage.offsetWidth;
+	/**
+	 * Screen space back into stage space: every transform from the stage up to the
+	 * root, multiplied and inverted, translation dropped.
+	 *
+	 * A full matrix, not painted-width-over-layout-width — that ratio is identical
+	 * until something above the stage is rotated, and the landscape viewer rotates
+	 * the mockup a quarter turn on iOS Safari, where a real orientation lock is
+	 * refused. A rect is axis-aligned, so the ratio came back as height/width and the
+	 * cursor moved down where it should have moved right.
+	 */
+	function toStageSpace() {
+		let m = new DOMMatrix();
+		for (let node: HTMLElement | null = stage; node; node = node.parentElement) {
+			m = elementMatrix(node).multiply(m);
+		}
+		m.e = 0;
+		m.f = 0;
+		return m.inverse();
+	}
 
 	/** A target's aim point, in unscaled stage pixels. */
 	function aim(target: Element, { x: fx = 0.5, y: fy = 0.5 }: NonNullable<AimOptions["at"]> = {}) {
 		const stageBox = stage.getBoundingClientRect();
 		const box = target.getBoundingClientRect();
-		const s = scale();
+		const inv = toStageSpace();
+		const local = (dx: number, dy: number) => inv.transformPoint(new DOMPoint(dx, dy));
+
+		// Centres, not edges: an affine map takes a box's centre to the centre of its
+		// image's bounding box, so a centre survives rotation where `left`/`top` do not.
+		const offset = local(
+			box.left + box.width / 2 - (stageBox.left + stageBox.width / 2),
+			box.top + box.height / 2 - (stageBox.top + stageBox.height / 2),
+		);
+		// Extents come back through the same map, or a fraction across the target
+		// means nothing in stage space.
+		const size = local(box.width, box.height);
+
 		return {
-			x: (box.left + box.width * fx - stageBox.left) / s,
-			y: (box.top + box.height * fy - stageBox.top) / s,
+			x: stage.offsetWidth / 2 + offset.x + (fx - 0.5) * Math.abs(size.x),
+			y: stage.offsetHeight / 2 + offset.y + (fy - 0.5) * Math.abs(size.y),
 		};
 	}
 
@@ -47,12 +89,9 @@ export function createPointer(stage: HTMLElement, el: HTMLElement) {
 		el,
 
 		/**
-		 * Tween vars that put the fingertip on a target without travelling there —
-		 * for parking the cursor where a timeline begins.
-		 *
-		 * Vars rather than a finished tween because the caller feeds them to its own
-		 * `timeline.set()`. `gsap.set()` would apply the moment it was written,
-		 * which for a timeline built up front means before the story has started.
+		 * Park the fingertip on a target without travelling there. Vars, not a tween:
+		 * the caller feeds them to `timeline.set()`, since `gsap.set()` would apply
+		 * when written — before the story has started.
 		 */
 		aimVars(target: Element, at?: AimOptions["at"]) {
 			return {
@@ -94,12 +133,8 @@ export function createPointer(stage: HTMLElement, el: HTMLElement) {
 		},
 
 		/**
-		 * Slide the cursor sideways while it holds something.
-		 *
-		 * The thing being dragged is animated separately; give both the same
-		 * duration and ease and they stay locked together, because each is a linear
-		 * function of the same eased progress. Distance is resolved lazily so it can
-		 * be measured off the element at the moment the drag starts.
+		 * Slide the cursor sideways while it holds something. The dragged thing is
+		 * animated separately — same duration and ease keeps the two locked together.
 		 */
 		dragBy(dx: () => number, { duration = 0.9, ease = "power2.inOut" }: Omit<MoveOptions, "at"> = {}) {
 			return gsap.to(el, { x: () => `+=${dx()}`, duration, ease });

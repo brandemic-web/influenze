@@ -3,15 +3,10 @@ import gsap from "gsap";
 /**
  * The FAQ list as an accordion: opening one closes whichever was open.
  *
- * `<details>` cannot be transitioned on its own — a closed one is `display: none`,
- * so there is no height to animate from — and the CSS that can (`::details-content`
- * with `interpolate-size`) is not broadly supported yet. So the panel keeps a
- * wrapper this can measure, and the toggle is driven here instead: opening sets
- * `open` first and grows the wrapper, closing shrinks it and only then drops
- * `open`, which is what keeps the collapse visible.
- *
- * With the script absent the markup is still a working set of native disclosures —
- * they just open independently and without the slide.
+ * `<details>` can't be transitioned on its own (a closed one is `display: none`) and
+ * `::details-content` isn't broadly supported yet, so the panel keeps a measurable
+ * wrapper: opening sets `open` then grows it, closing shrinks it and only then drops
+ * `open`. Without the script the markup is still a set of native disclosures.
  */
 const DURATION = 0.32;
 const EASE = "power2.inOut";

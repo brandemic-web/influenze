@@ -1,0 +1,45 @@
+---
+/**
+ * "Engagement Rate · 2.5%" pill beside a creator bubble in the collage. Live text, not
+ * an image export, so values stay crisp and editable in CreatorCollage.astro. Fill,
+ * radius and type sizes were matched by eye — worth a check against the design file.
+ * Position with `class`; `data-bubble-tag` opts it into the collage intro.
+ */
+interface Props {
+	/** Stat name, e.g. "Followers", "Engagement Rate", "Avg Likes". */
+	label: string;
+	/** Stat value as shown, e.g. "31.6K" or "2.5%". */
+	value: string;
+	class?: string;
+}
+
+const { label, value, class: className = "" } = Astro.props;
+---
+
+<div
+	class:list={[
+		"absolute z-2 flex items-center gap-3 rounded-xs bg-purple-soft px-1.5 py-2 shadow-[0_8px_24px_-8px_rgba(0,0,0,0.45)] lg:gap-6 lg:rounded-sm lg:px-3 lg:py-3.5",
+		className,
+	]}
+	data-bubble-tag
+>
+	{/*
+		The divider is positioned against the label rather than the pill, so it
+		always sits just past the label regardless of how wide the value is.
+		Its `ml` is half the flex `gap`, which centres it between the two.
+		The label itself is width-capped and centred so a two-word label like
+		"Engagement Rate" wraps onto two lines instead of stretching the pill.
+	*/}
+	<span
+		class="relative w-10 text-center text-[0.375rem] leading-tight font-medium text-purple-ink lg:w-16 lg:text-[0.65rem]"
+	>
+		{label}
+		<span
+			class="absolute top-1/2 left-full ml-1.5 h-4.5 w-px -translate-y-1/2 bg-[#5140A5] lg:ml-3 lg:h-9.5"
+		></span>
+	</span>
+	<span
+		class="text-[0.875rem] leading-none font-semibold whitespace-nowrap text-[#3B2E7E] lg:text-[1.8125rem]"
+		>{value}</span
+	>
+</div>

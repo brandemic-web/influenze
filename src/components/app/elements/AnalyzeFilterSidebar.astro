@@ -1,0 +1,175 @@
+---
+import Icon from "../common/Icon.astro";
+
+/**
+ * Analyze filter sidebar, at marketing size. Type is one step up from the app's 12px
+ * rail because this renders ~1.2x its width; the ratios between sizes are the app's.
+ * The seed handle is local, not `LOOKALIKE_HANDLE` — the two demos seed differently.
+ */
+interface Props {
+	class?: string;
+}
+
+const { class: className = "" } = Astro.props;
+
+/** The handle the panel-0 demo types into the Lookalike field. */
+const lookalikeHandle = "hyperfitx";
+
+/**
+ * Location pills. The last one is the pill the panel-0 demo drops in, so it
+ * carries `data-search-pill` — see scripts/creators-ai-panels.
+ */
+const regions = ["United States", "Germany", "India"];
+
+/** `FilterSectionHeader` — 12px/500 in lavender7, reset ✕ in lavender46. */
+const sectionHeaderClass = "text-[0.9375rem] font-medium text-wf-text-soft";
+/** The app's filter control: chipDefaultBg on chipDefaultBorder, radius 4. */
+const controlClass =
+	"flex items-center rounded-[0.25rem] border border-wf-chip-border bg-wf-chip";
+---
+
+<div
+	class:list={[
+		"flex w-108.5 max-w-full flex-col overflow-hidden rounded-[1.25rem] border border-wf-rail-border bg-wf-rail pb-4 font-sans text-white",
+		className,
+	]}
+>
+	{/* Header — `buildFiltersHeader`, padding l24 t12 r16 b12 over a lavender8 rule */}
+	<div
+		class="flex items-center gap-2 border-b border-wf-rail-rule py-3 pr-4 pl-6"
+	>
+		<span class="text-[1.0625rem] text-white">Filters</span>
+		<span
+			class="px-2 py-1 text-[0.9375rem] font-medium text-wf-violet-bright"
+		>
+			Clear All
+		</span>
+		<span
+			class="ml-auto rounded-[0.375rem] bg-wf-action px-3 py-2 text-[0.8125rem] font-medium text-white"
+		>
+			Apply &amp; Search
+		</span>
+	</div>
+
+	<div class="flex flex-col px-4 pt-4 pb-6">
+		{/* Discovery selector — the trigger is the app's lavender3 dropdown */}
+		<div class="overflow-hidden">
+			<div
+				class="flex items-center justify-between rounded-t-[0.25rem] bg-wf-select px-4 py-3.25 text-white"
+			>
+				<span
+					class="inline-flex items-center gap-1.75 text-[0.9375rem] font-medium"
+				>
+					Lookalike
+					<Icon name="info" size="1rem" class="text-wf-text-soft" />
+				</span>
+				<Icon name="arrowIcon" size="1rem" class="text-wf-text-soft" />
+			</div>
+
+			{/*
+				`gradientFilterContainer` — left-to-right, ending on the rail's own
+				fill. Detached from the trigger by 4px, squared off at the top so the
+				two still read as one control.
+			*/}
+			<div
+				class="mt-1 rounded-t-none rounded-b-sm border border-wf-select bg-[linear-gradient(to_right,#201d36_0%,var(--color-wf-rail)_100%)] px-3.5 pt-3.75 pb-5.5"
+			>
+				<div class="flex gap-3">
+					<span
+						class="inline-flex items-center gap-1.75 rounded-[0.25rem] border border-wf-chip-on-border bg-wf-chip-on px-4 py-2.5 text-[0.9375rem] text-white"
+					>
+						<Icon name="usersRound" size="0.875rem" class="text-ui-violet" />
+						Audience
+					</span>
+					<span
+						class="inline-flex items-center gap-1.75 rounded-[0.25rem] border border-wf-chip-border bg-wf-chip px-4 py-2.5 text-[0.9375rem] text-white"
+					>
+						{/* The app does not recolour this icon on selection. */}
+						<Icon name="userRoundCheck" size="0.875rem" class="text-ui-violet" />
+						Creator
+					</span>
+				</div>
+
+				<div
+					data-search-field="handle"
+					class="mt-3.75 flex items-center gap-0.5 border-b border-wf-chip-border px-1 py-1 pb-1"
+				>
+					<Icon name="search" size="1rem" class="text-wf-text-value" />
+					{/*
+						`FilterSearchField`'s own placeholder — the app greens the format
+						tokens and leaves the rest in `filterText` white, the same way the
+						analyze search bar does. Hidden in the settled markup because the
+						field's resting state is the typed handle: the panel-0 demo shows
+						this at t=0 and drops it the moment typing starts, so a page with no
+						script (or reduced motion) still reads as a filled-in filter.
+					*/}
+					<p class="hidden whitespace-nowrap text-white" data-search-hint>
+						Enter <span class="text-brand-primary">@handle</span> /{" "}
+						<span class="text-brand-primary">URL</span>
+					</p>
+					<p class="text-white" data-search-text>
+						<span class="text-brand-primary">@</span>{lookalikeHandle}
+					</p>
+					<span
+						data-search-caret
+						class="ml-px inline-block h-4 w-px flex-none bg-white opacity-0"
+						aria-hidden="true"></span>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	{/* Sort By */}
+	<div class="flex flex-col border-t border-wf-section-rule px-4 pt-4 pb-6">
+		<header class="mb-3 flex items-start justify-between">
+			<h4 class={`pl-2 ${sectionHeaderClass}`}>Sort By</h4>
+			<span class="mt-0.5 flex text-wf-text-muted" aria-hidden="true">
+				<Icon name="cross" size="1rem" />
+			</span>
+		</header>
+		<div class={`${controlClass} justify-between px-3.5 py-2.75`}>
+			<span class="flex items-center gap-1.5">
+				<span class="text-[0.9375rem] text-white">Audience Lookalikes</span>
+				<Icon name="arrowDown" size="1rem" class="shrink-0 text-wf-green-bright" />
+			</span>
+			<Icon name="arrowIcon" size="1rem" class="shrink-0 text-wf-text-soft" />
+		</div>
+	</div>
+
+	{/* Creator Location — last section; the card owns the closing padding */}
+	<div class="flex flex-col border-t border-wf-section-rule px-4 pt-4">
+		<header class="mb-3 flex items-start justify-between">
+			<h4 class={`pl-2 ${sectionHeaderClass}`}>Creator Location</h4>
+			<span class="mt-0.5 flex text-wf-text-muted" aria-hidden="true">
+				<Icon name="cross" size="1rem" />
+			</span>
+		</header>
+		<div
+			data-search-field="region"
+			class={`${controlClass} gap-1.5 px-3.5 py-2.75`}
+		>
+			<Icon name="search" size="1rem" class="text-wf-text-value" />
+			<p class="text-white" data-search-text>India</p>
+			<span
+				data-search-caret
+				class="ml-px inline-block h-4 w-px flex-none bg-white opacity-0"
+				aria-hidden="true"></span>
+		</div>
+		{/* `RemovableLocationChip` — interestChip fill/border/text, radius 16. */}
+		<ul class="mt-3 flex list-none flex-wrap gap-2 p-0">
+			{
+				regions.map((region, i) => (
+					<li
+						data-search-pill={i === regions.length - 1 ? true : undefined}
+						class="inline-flex items-center gap-1.5 rounded-[1rem] border border-wf-pill-green-border bg-wf-pill-green px-2.5 py-1.5 text-[0.875rem] text-brand-primary"
+					>
+						{region}
+						<span class="inline-flex text-current" aria-hidden="true">
+							<Icon name="cross" size="0.75rem" />
+						</span>
+					</li>
+				))
+			}
+		</ul>
+	</div>
+</div>

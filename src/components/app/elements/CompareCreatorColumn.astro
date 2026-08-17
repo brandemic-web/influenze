@@ -1,0 +1,340 @@
+---
+import CreatorAvatar from "../common/CreatorAvatar.astro";
+import VerifiedBadge from "../common/VerifiedBadge.astro";
+import chartColumnIncreasing from "../../../assets/icons/mkit/chart_column_increasing.svg";
+import person from "../../../assets/icons/mkit/person.svg";
+import galleryVertical from "../../../assets/icons/mkit/gallery_vertical.svg";
+import eyeSmall from "../../../assets/icons/mkit/eye_small.svg";
+import thumbsUp from "../../../assets/icons/mkit/thumbs_up.svg";
+import messageCircle from "../../../assets/icons/mkit/message_circle.svg";
+import arrowDownFill from "../../../assets/icons/mkit/arrow_down_fill.svg";
+import GrowthChart from "../screens/analyze/widgets/media-kit/GrowthChart.astro";
+import PricingCard from "../screens/analyze/widgets/media-kit/PricingCard.astro";
+import {
+	COMPARED_HANDLES,
+	MACRO_BENCHMARK,
+	MEDIA_KIT_STATS,
+	PRICING,
+	creatorByHandle,
+} from "../../../data/workflowMockup";
+
+/**
+ * Compare creator column — one column of the creator comparison.
+ */
+interface Props {
+	/**
+	 * How far to shrink the whole panel. The app gives compare a full screen —
+	 * `columnWidth: 420`, `gap: 10` in list_compare_section.dart — so the column
+	 * is authored at that size and the panel is scaled down to fit whatever slot
+	 * it lands in, rather than squeezing app proportions into a narrow box.
+	 * `zoom` rather than a transform, so the parent still reserves the right box.
+	 */
+	scale?: number;
+	class?: string;
+}
+
+const { scale = 0.65, class: className = "" } = Astro.props;
+
+/**
+ * `MediaKitTierHelper._colorsForLevel` — one entry per engagement band. Every
+ * accent in a column comes from its band, so the data below names a band rather
+ * than repeating hexes.
+ */
+const LEVELS = {
+	average: {
+		label: "AVERAGE",
+		/** `yellow1` — the rate, and both graph markers for this creator. */
+		primary: "#e3c73a",
+		/** `yellow2` fill / `yellow3` label on the status chip. */
+		chip: "bg-mkit-avg-bg text-mkit-avg-text",
+		/** `yellow3` — the bold spans in the tier description. */
+		lead: "text-mkit-avg-text",
+	},
+	high: {
+		label: "HIGH",
+		/** `green3`. */
+		primary: "#3fbd71",
+		/** `green6` fill / `green7` label. */
+		chip: "bg-mkit-high-bg text-mkit-high-text",
+		/** `green5`. */
+		lead: "text-mkit-high-body",
+	},
+} as const;
+
+/** `gridStatCard` icon tints — green3, orange1, red1, pink1, lavender2. */
+const STAT_ICONS = {
+	followers: { src: person.src, tint: "#32e889" },
+	posts: { src: galleryVertical.src, tint: "#f2994a" },
+	views: { src: eyeSmall.src, tint: "#ea5757" },
+	likes: { src: thumbsUp.src, tint: "#c23584" },
+	comments: { src: messageCircle.src, tint: "#935ad6" },
+} as const;
+
+/** Widened from the data module's `as const`, so the optional accent reads. */
+const benchmarkBody: readonly { readonly text: string; readonly accent?: boolean }[] =
+	MACRO_BENCHMARK.body;
+const creators = COMPARED_HANDLES.map(creatorByHandle).map((creator, i) => {
+	const stats = i === 0 ? MEDIA_KIT_STATS.selwyn : MEDIA_KIT_STATS.poorav;
+	return {
+		creator,
+		stats,
+		meta: [creator.location, creator.gender, creator.language].filter(Boolean).join(" · "),
+		/** The two 2-up rows under the full-width follower tile. */
+		tiles: [
+			{ label: "Total Posts", value: stats.posts, icon: "posts" },
+			{ label: "Average Reel Views", value: stats.reelViews, icon: "views" },
+			{ label: "Average Likes", value: stats.likes, icon: "likes" },
+			{ label: "Average Comments", value: stats.comments, icon: "comments" },
+		] satisfies { label: string; value: string; icon: keyof typeof STAT_ICONS }[],
+	};
+});
+
+/** Every card in a compare column: `cardColor`, radius 5, padding 12. */
+const cardClass = "rounded-[0.3125rem] bg-mkit-compare-card p-3";
+/** `mediaKitCardTitle` — 10/500. */
+const cardTitleClass = "block text-[0.625rem] font-medium text-white";
+---
+
+<div
+	class:list={[
+		"w-223 max-w-full overflow-hidden rounded-[1rem] border border-white/8 bg-wf-panel font-sans text-white",
+		className,
+	]}
+	style={`zoom:${scale}`}
+>
+	{/* Header */}
+	<div
+		class="flex items-center justify-between border-b border-white/8 px-5 py-4"
+	>
+		<span class="text-[1.25rem] font-medium">Compare</span>
+		<span class="text-[0.875rem] font-medium text-brand-primary">Back</span>
+	</div>
+
+	{/*
+		The body is clipped so the card keeps a fixed footprint in the CreatorsAI
+		collage no matter how many stats a creator has. `overflow-hidden` rather
+		than `auto`: the card is display only, so the visitor can't scroll it —
+		but the panel-3 demo's `scrollTop` tween still moves it, since
+		programmatic scrolling works on a clipped box.
+	*/}
+	<div
+		data-compare-scroll
+		class="grid max-h-145 grid-cols-2 gap-4 overflow-hidden px-5 pt-7 pb-4"
+	>
+		{
+			creators.map(({ creator, stats, meta, tiles }) => {
+				const level = LEVELS[stats.level];
+				return (
+					<div class="flex flex-col">
+						{/* `CompareProfileHeader` */}
+						<div class="flex items-start gap-5">
+							<CreatorAvatar size="3rem" handle={creator.handle} />
+							<span class="min-w-0 flex-auto">
+								<span class="flex items-center gap-1">
+									<span class="truncate text-[1rem] text-white">
+										{creator.name}
+									</span>
+									{creator.verified && <VerifiedBadge size="0.75rem" />}
+								</span>
+								{/* `lavender23` pill, radius 10 */}
+								<span class="mt-1 inline-block rounded-[0.625rem] bg-wf-tier-pill px-1.5 py-1 text-[0.625rem] text-white">
+									{stats.tier}
+								</span>
+								{/* `Divider(color: lavender61, height: 24)` */}
+								<span class="my-[0.71875rem] block h-px w-full bg-wf-notify-border" />
+								{/* `creatorInfo` — 10/400 on lavender28 */}
+								<span class="block truncate text-[0.625rem] text-wf-meta">
+									{meta}
+								</span>
+							</span>
+						</div>
+						<span class="mt-5 block h-px w-full bg-wf-notify-border" /> 
+
+						{/* `StatsCard` header — the chart glyph keeps its own colours */}
+						<div class="mt-3 flex items-center pb-3.5">
+							<span class={`grid shrink-0 place-items-center rounded-[0.3125rem] bg-mkit-compare-card p-2`}>
+								<img
+									src={chartColumnIncreasing.src}
+									alt=""
+									width="20"
+									height="20"
+									class="size-5"
+									loading="lazy"
+								/>
+							</span>
+							{/* `tileTitle` — 14/600 */}
+							<span class="ml-3 truncate text-[0.875rem] font-semibold">
+								Account Stats
+							</span>
+						</div>
+
+						{/* `EngagementRate` */}
+						<div class={cardClass}>
+							<span class={cardTitleClass}>Engagement Rate</span>
+
+							<div class="mt-6 flex items-center gap-2.5">
+								{/* `mKitEngagementRate` — 40/400 in the band's primary colour */}
+								<span
+									class="text-[2.5rem] leading-none"
+									style={`color:${level.primary}`}
+								>
+									{stats.engagement}
+								</span>
+								{/* `grey3` pill, radius 16, `sectionLabelWhite` 10/400 */}
+								<span class="rounded-[1rem] bg-mkit-tile px-2.5 pt-1 pb-1.5 text-[0.625rem] whitespace-nowrap text-white">
+									{stats.tier}
+								</span>
+							</div>
+
+							{/* `EngagementGraph` */}
+							<div class="mt-7">
+								{/* `AxisLabels` — `engagementRateAxisLabel` 8/400 on grey17 */}
+								<div class="flex items-center justify-between text-[0.5rem] text-mkit-axis">
+									<span>{stats.axis[0]}</span>
+									<span>{stats.axis[1]}</span>
+								</div>
+								{/*
+									5px track on grey19, radius 10, under a grey19 -> green3 -> grey19
+									gradient whose green sits on the median, as `EngagementGraph`
+									paints it. Both markers are 33px tall and start 10px above the
+									track, as `Positioned(top: -10)` puts them.
+								*/}
+								<div
+									class="relative mt-1 h-1.25 rounded-[0.625rem]"
+									style={`background:linear-gradient(to right,#2f3539 0%,#32e889 ${stats.median}%,#2f3539 100%)`}
+								>
+									{/* `AverageMarker` — dashed rule in whiteA20, 3px dash / 1px gap */}
+									<span
+										class="absolute -top-2.5 h-8.25 w-px bg-[repeating-linear-gradient(to_bottom,rgba(255,255,255,0.2)_0_3px,transparent_3px_4px)]"
+										style={`left:${stats.median}%`}
+									/>
+									{/* Its value sits above the rule — `dialogDesc` 12/400 over a 44x1 rule */}
+									<span
+										class="absolute bottom-[calc(100%+0.375rem)] flex flex-col items-start"
+										style={`left:calc(${stats.median}% + 1px)`}
+									>
+										<span class="text-[0.75rem] whitespace-nowrap text-white">
+											{MACRO_BENCHMARK.medianLabel}
+										</span>
+										<span class="mt-px block h-px w-11 bg-white/20" />
+									</span>
+									<span
+										class="absolute top-[calc(100%+0.375rem)] text-[0.5rem] whitespace-nowrap text-mkit-axis"
+										style={`left:calc(${stats.median}% + 0.25rem)`}
+									>
+										Category Median
+									</span>
+									{/*
+										`UserMarker` — a solid 1px rule in the band's colour, capped by
+										`arrow_down_fill.svg` (8x4) tinted to match and nudged 3.25px left
+										so the point lands on the rule.
+									*/}
+									<span
+										class="absolute -top-2.5 h-8.25 w-px"
+										style={`left:${stats.marker}%;background:${level.primary}`}
+									/>
+									<span
+										class="absolute -top-2.5 block h-1 w-2 bg-current"
+										style={`left:calc(${stats.marker}% - 0.203125rem);color:${level.primary};mask:url(${arrowDownFill.src}) center/contain no-repeat;-webkit-mask:url(${arrowDownFill.src}) center/contain no-repeat`}
+										aria-hidden="true"
+									/>
+								</div>
+							</div>
+
+							{/* Status chip — band fill, radius 2, `navbarLabelSelected` 10/600 */}
+							<span
+								class:list={[
+									"mt-10 inline-block rounded-xs p-2 text-[0.625rem] font-semibold",
+									level.chip,
+								]}
+							>
+								{level.label} ENGAGEMENT
+							</span>
+
+							{/* `sectionTitleWhite` at 15/600 */}
+							<p class="mt-3 text-[0.9375rem] font-semibold">
+								{stats.headline}
+							</p>
+							{/* `engagementRateContent` — 12/400 on grey18, line-height 1.75 */}
+							<p class="mt-3.5 text-[0.75rem] leading-[1.75] text-mkit-body">
+								{benchmarkBody.map((part) =>
+									part.accent ? (
+										<span class={`font-bold ${level.lead}`}>{part.text}</span>
+									) : (
+										<span>{part.text}</span>
+									)
+								)}
+							</p>
+						</div>
+
+						{/* Lead stat spans the column, then the app's two 2-up rows */}
+						<div class={`mt-2 ${cardClass}`}>
+							<span class={cardTitleClass}>Total Followers</span>
+							<div class="mt-6 flex items-center justify-between gap-2">
+								{/* `mediaKitMainStats` — 20/600 */}
+								<span class="text-[1.25rem] leading-none font-semibold">
+									{stats.followers}
+								</span>
+								<span
+									class="block size-3.5 shrink-0 bg-current"
+									style={`color:${STAT_ICONS.followers.tint};mask:url(${STAT_ICONS.followers.src}) center/contain no-repeat;-webkit-mask:url(${STAT_ICONS.followers.src}) center/contain no-repeat`}
+									aria-hidden="true"
+								/>
+							</div>
+						</div>
+
+						<div class="mt-2 grid grid-cols-2 gap-2">
+							{tiles.map((stat) => {
+								const icon = STAT_ICONS[stat.icon];
+								return (
+									<div class={cardClass}>
+										<span class={cardTitleClass}>{stat.label}</span>
+										<div class="mt-6 flex items-center justify-between gap-2">
+											<span class="text-[1.25rem] leading-none font-semibold">
+												{stat.value}
+											</span>
+											<span
+												class="block size-3.5 shrink-0 bg-current"
+												style={`color:${icon.tint};mask:url(${icon.src}) center/contain no-repeat;-webkit-mask:url(${icon.src}) center/contain no-repeat`}
+												aria-hidden="true"
+											/>
+										</div>
+									</div>
+								);
+							})}
+						</div>
+
+						{/* The two growth charts close out Account Stats, 12 above each. */}
+						<div class="mt-3">
+							<GrowthChart
+								variant="followers"
+								title="Follower Growth"
+								history={stats.followerGrowth}
+								surface="#18171f"
+							/>
+						</div>
+						<div class="mt-3">
+							<GrowthChart
+								variant="likes"
+								title="Average Likes Growth"
+								history={stats.likesGrowth}
+								surface="#18171f"
+							/>
+						</div>
+
+						{/* `PricingCard` — `bare`, so its tiles keep the column's gutters. */}
+						<div class="mt-3">
+							<PricingCard
+								bare
+								bars={stats.priceBars}
+								currency={PRICING.currency}
+								factors={PRICING.factors}
+								surface="#18171f"
+							/>
+						</div>
+					</div>
+				);
+			})
+		}
+	</div>
+</div>

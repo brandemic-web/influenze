@@ -1,22 +1,13 @@
 /**
  * Intro animation for the creator collage (CreatorCollage.astro).
  *
- * Desktop: the seven bubbles start invisible and slightly undersized in a ring
- * around the centre of the collage, fade up while the whole ring makes one
- * revolution — each bubble spinning against that turn, so the photos rotate
- * opposite the orbit — then glide out, upright and growing to full size, to the
- * resting positions their CSS already describes. The headline and bolt fade in
- * as that outward move begins, and the list pills fade in last, once their
- * bubble has landed.
+ * Desktop: the seven bubbles start undersized in a ring, fade up while the ring makes
+ * one revolution (each bubble counter-spinning), then glide out to the resting
+ * positions CSS already describes. Headline and bolt follow, pills last.
+ * Mobile: a plain fade in place — no ring, no measuring.
  *
- * Mobile (below DESKTOP_MIN, the shared `lg:` breakpoint from scripts/
- * breakpoints.ts): no ring or spin — the bubbles simply fade in at the resting
- * positions CSS already holds, then the headline/bolt and pills follow. Nothing
- * is moved or measured.
- *
- * Nothing here hardcodes a layout: the ring offsets are measured at run time
- * from each bubble's real box, so the same timeline works at every breakpoint
- * without knowing the percentage offsets in the markup.
+ * Ring offsets are measured at run time from each bubble's real box, so no layout is
+ * hardcoded and the same timeline works at every breakpoint.
  *
  * DOM hooks (see CreatorCollage.astro):
  *   data-collage         section root the script scans for
@@ -45,9 +36,8 @@ interface Offset {
 }
 
 /**
- * For each bubble, the (dx, dy) that would carry it from where CSS puts it to
- * its seat on the ring. Measured with transforms cleared, so the numbers
- * describe real layout rather than a half-finished animation.
+ * For each bubble, the (dx, dy) from where CSS puts it to its seat on the ring.
+ * Measured with transforms cleared, so it describes layout, not a half-run animation.
  */
 function ringOffsets(frame: HTMLElement, bubbles: HTMLElement[]): Offset[] {
   const frameRect = frame.getBoundingClientRect();
@@ -87,24 +77,19 @@ function initCollage(root: HTMLElement): void {
   const tags = gsap.utils.toArray<HTMLElement>(
     orbit.querySelectorAll("[data-bubble-tag]"),
   );
-  // Headline and bolt live outside the orbit layer, so they are found on the
-  // section root rather than within the rotating group.
+  // Outside the orbit layer, so found on the root rather than the rotating group.
   const reveals = gsap.utils.toArray<HTMLElement>(
     root.querySelectorAll("[data-collage-reveal]"),
   );
 
-  // Reduced motion: the CSS that hides them is behind a no-preference query,
-  // so there is nothing to undo — just make sure no transform lingers.
+  // Reduced motion: the hiding CSS is behind a no-preference query, so there is
+  // nothing to undo — just clear any lingering transform.
   if (prefersReducedMotion()) {
     gsap.set([...bubbles, ...tags, ...reveals], { clearProps: "all" });
     return;
   }
 
-  /**
-   * The plain mobile intro: fade the bubbles in where CSS already seats them,
-   * then the headline/bolt and pills. No ring, no measuring, no transforms to
-   * unwind on resize.
-   */
+  /** The mobile intro: fade in where CSS already seats things. No transforms. */
   function playFade(): void {
     gsap.set(bubbles, { clearProps: "transform" });
     gsap.set([...bubbles, ...tags, ...reveals], { opacity: 0 });
@@ -134,10 +119,9 @@ function initCollage(root: HTMLElement): void {
   }
 
   /**
-   * Build and play the full orbit timeline. Deferred until the collage scrolls
-   * into view so the ring is measured against the final layout — the bubbles
-   * load lazily, and a measurement taken at page load can predate their boxes
-   * settling.
+   * The full orbit timeline. Deferred until the collage is in view so the ring is
+   * measured against the final layout — the bubbles load lazily, and a measurement
+   * at page load can predate their boxes settling.
    */
   function playOrbit(): void {
     gsap.set(bubbles, { clearProps: "transform" });

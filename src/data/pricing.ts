@@ -1,24 +1,11 @@
 /**
- * Pricing page content.
+ * Pricing page content. Everything the panel shows derives from the monthly spend the
+ * slider picks between SLIDER_MIN and SLIDER_MAX — see PricingPlans.astro.
  *
- * The page is driven by one interactive panel (PricingPlans.astro): four tier
- * tabs sit above a card holding a draggable spend slider. Dragging the slider
- * picks a monthly spend between SLIDER_MIN and SLIDER_MAX; the tier tab, the
- * price and the credits figure all derive from that spend ("Tier updates as you
- * drag", per the Figma subtitle).
- *
- * ┌─────────────────────────────────────────────────────────────────────────┐
- * │ PLACEHOLDER NUMBERS — READ BEFORE SHIPPING                              │
- * │                                                                         │
- * │ Design specifies EXACTLY ONE state: Growth at ₹22,000/mo → 24,200        │
- * │ credits (+10% bonus), annual = +5% credits, range Rs. 1,000–100,000+.   │
- * │ Those five numbers below are taken from the design and are correct.     │
- * │                                                                         │
- * │ Everything else is a PLACEHOLDER chosen to make the slider behave        │
- * │ sensibly — specifically each tier's `minSpend` threshold and the         │
- * │ `bonusPct` for Starter / Scale. Confirm all of these with whoever owns   │
- * │ pricing, then edit only this file; the panel needs no other changes.     │
- * └─────────────────────────────────────────────────────────────────────────┘
+ * ⚠️ NOT ALL NUMBERS ARE SIGNED OFF. Confirmed from the design: the ₹1,000–₹100,000
+ * range, Starter at +5%, Growth from ₹20,000 at +10%, and the +5% annual bonus.
+ * PLACEHOLDER: Scale's ₹50,000 threshold and +20% bonus, and Enterprise's threshold.
+ * Confirm with whoever owns pricing; only this file needs editing.
  */
 
 export interface PricingTier {
@@ -52,18 +39,17 @@ export const SLIDER_MIN = 1_000;
 export const SLIDER_MAX = 100_000;
 
 /**
- * Monthly spend selected on first paint: the bottom of the Growth tier, so the
- * panel opens on Growth at its entry price. Figma pinned this at ₹22,000, also
- * Growth — the tier is the part that matters, and opening at the tier's floor
- * reads better than mid-tier.
+ * Monthly spend selected on first paint: the bottom of the Starter tier, so
+ * the panel opens on Starter at its entry price of ₹1,000.
  */
-export const DEFAULT_SPEND = 20_000;
+export const DEFAULT_SPEND = SLIDER_MIN;
 
 /** Extra credits granted for paying annually, as a percentage. */
 export const ANNUAL_BONUS_PCT = 5;
 
 export const PRICING_TIERS: PricingTier[] = [
-	{ id: "starter", name: "Starter", minSpend: SLIDER_MIN, bonusPct: 0 },
+	// Starter covers ₹1,000–₹20,000 (up to Growth's floor) at +5%.
+	{ id: "starter", name: "Starter", minSpend: SLIDER_MIN, bonusPct: 5 },
 	// Growth is the one tier Figma pins down: ₹22,000 → 24,200 = +10%.
 	{ id: "growth", name: "Growth", minSpend: 20_000, bonusPct: 10 },
 	{ id: "scale", name: "Scale", minSpend: 50_000, bonusPct: 20 },
@@ -71,20 +57,26 @@ export const PRICING_TIERS: PricingTier[] = [
 		id: "enterprise",
 		name: "Enterprise",
 		minSpend: SLIDER_MAX,
-		// The slider's own 1,00,000 dot still shows a price (custom only kicks in
-		// past that dot), so it keeps the +10-per-tier bonus pattern going.
+		// The slider's own 1,00,000 dot still shows a price (quote mode only
+		// starts past that dot), so it keeps the +10-per-tier bonus pattern going.
 		bonusPct: 30,
 		custom: true,
 	},
 ];
 
-/** Copy for the Enterprise tier, which quotes instead of pricing. */
+/**
+ * Copy for the Enterprise tier, which quotes instead of pricing.
+ */
 export const CUSTOM_PLAN = {
-	eyebrow: "Custom",
-	title: "Looking for More Flexibility?",
-	body: "Get a tailored plan with White-labeling, a custom creator link-in-bio, and features built for your team. Available for teams of 3 or more users.",
+	priceLabel: "Custom",
+	priceSuffix: "/mo",
+	note: "Quoted to your usage + Taxes",
+	creditsCaption: "Credits/mo and up",
+	/** Qualifier pill — the one thing that gates this tier. */
+	badge: "For larger teams",
 	ctaLabel: "Get in Touch",
 	contactEmail: "harsh@dotme.in",
+	contactSubject: "Enterprise plan enquiry",
 };
 
 export const PRICE_NOTE = "Billed monthly + Taxes";

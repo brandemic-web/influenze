@@ -12,11 +12,18 @@ import bubbleF from "../../assets/images/home_page/choose_creators/bubble_image_
 import bubbleG from "../../assets/images/home_page/choose_creators/bubble_image_seven.png";
 import addedToZaamna from "../../assets/images/home_page/choose_creators/added_to_zaamna.png";
 import addedToNykaa from "../../assets/images/home_page/choose_creators/added_to_nykaa.png";
-import FollowerTag from "./FollowerTag.astro";
+import StatTag from "./StatTag.astro";
+
+// Every bubble paints at 18–30% of the viewport on mobile and 9.5–12.8% from lg
+// up, so the ~850px sources were roughly eight times the pixels any of them draws.
+// These widths cover both breakpoints to 3x DPR; `sizes` is what lets the browser
+// pick one, and it has to be given alongside `widths` for Astro to emit a srcset.
+const BUBBLE_WIDTHS = [140, 260, 460];
+const BUBBLE_SIZES = "(min-width: 1024px) 13vw, 30vw";
 ---
 
 <section
-	class="relative mt-55 h-100 lg:-mt-3.5 lg:h-280"
+	class="relative mt-64 h-100 lg:-mt-3.5 lg:h-280"
 	aria-label="Discover and analyze winning creators"
 	data-collage
 >
@@ -24,7 +31,7 @@ import FollowerTag from "./FollowerTag.astro";
 		<img
 			src={glowBand.src}
 			alt=""
-			class="absolute -top-30 w-full object-cover lg:top-auto lg:-bottom-110"
+			class="absolute bottom-12 w-full object-cover lg:top-auto lg:-bottom-110"
 			loading="lazy"
 		/>
 
@@ -46,20 +53,31 @@ import FollowerTag from "./FollowerTag.astro";
 			data-collage-reveal
 		/>
 
-		<!--
+		{/*
 			The bubbles live in their own layer so the intro can rotate all seven as
 			one ring (see scripts/home-page/creatorCollage.ts). `inset-0` makes this
 			box identical to its parent, so the bubbles' percentage offsets resolve
 			exactly as they did when they were direct children.
-		-->
-		<div class="absolute inset-0" data-orbit>
-			<!-- Bubble + its follower tag travel together on the wrapper. -->
+		*/}
+		<div class="absolute inset-0 xl:overflow-x-hidden" data-orbit>
+			{/* Bubble + its stat tag travel together on the wrapper. */}
 			<div
 				class="absolute top-[-30%] right-[2%] w-[28%] lg:top-[34%] lg:left-[-1.5%] lg:right-auto lg:w-[12%]"
 				data-bubble
 			>
-				<Image src={bubbleA} alt="" class="w-full" loading="lazy" />
-				<FollowerTag count="31.6K" class="top-[75%] right-[61%] lg:top-[-1%] lg:right-auto lg:left-[65%]" />
+				<Image
+					src={bubbleA}
+					alt=""
+					class="w-full"
+					loading="lazy"
+					widths={BUBBLE_WIDTHS}
+					sizes={BUBBLE_SIZES}
+				/>
+				<StatTag
+					label="Engagement Rate"
+					value="2.5%"
+					class="top-[75%] right-[61%] lg:top-[-1%] lg:right-auto lg:left-[65%]"
+				/>
 			</div>
 
 			<Image
@@ -68,14 +86,23 @@ import FollowerTag from "./FollowerTag.astro";
 				class="absolute top-[-26%] left-[-5%] w-[25%] lg:top-[43%] lg:left-[12%] lg:w-[10.5%]"
 				loading="lazy"
 				data-bubble
+				widths={BUBBLE_WIDTHS}
+				sizes={BUBBLE_SIZES}
 			/>
 
-			<!-- Bubble + its list pill travel together on the wrapper. -->
+			{/* Bubble + its list pill travel together on the wrapper. */}
 			<div
 				class="absolute top-[25%] left-[-3%] w-[30%] lg:top-auto lg:bottom-[25%] lg:left-[22%] lg:w-[12.56%]"
 				data-bubble
 			>
-				<Image src={bubbleC} alt="" class="w-full" loading="lazy" />
+				<Image
+					src={bubbleC}
+					alt=""
+					class="w-full"
+					loading="lazy"
+					widths={BUBBLE_WIDTHS}
+					sizes={BUBBLE_SIZES}
+				/>
 				<Image
 					src={addedToZaamna}
 					alt="Added to Zaamna list"
@@ -90,7 +117,11 @@ import FollowerTag from "./FollowerTag.astro";
 					loading="lazy"
 					data-bubble-tag
 				/>
-				<FollowerTag count="156K" class="top-[83%] left-[34%] lg:top-[24%] lg:right-[85%] lg:left-auto" />
+				<StatTag
+					label="Followers"
+					value="156K"
+					class="top-[83%] left-[34%] lg:top-[24%] lg:right-[85%] lg:left-auto"
+				/>
 			</div>
 
 			<Image
@@ -99,13 +130,22 @@ import FollowerTag from "./FollowerTag.astro";
 				class="absolute top-[33%] right-[3%] w-[23%] lg:top-auto lg:right-[29.05%] lg:bottom-[24%] lg:w-[11.23%]"
 				loading="lazy"
 				data-bubble
+				widths={BUBBLE_WIDTHS}
+				sizes={BUBBLE_SIZES}
 			/>
 
 			<div
 				class="absolute top-[-45%] left-[28%] w-[18%] lg:top-[33%] lg:right-[13.95%] lg:left-auto lg:w-[9.9%]"
 				data-bubble
 			>
-				<Image src={bubbleF} alt="" class="w-full" loading="lazy" />
+				<Image
+					src={bubbleF}
+					alt=""
+					class="w-full"
+					loading="lazy"
+					widths={BUBBLE_WIDTHS}
+					sizes={BUBBLE_SIZES}
+				/>
 				<Image
 					src={addedToNykaa}
 					alt="Added to Nykaa list"
@@ -120,7 +160,11 @@ import FollowerTag from "./FollowerTag.astro";
 					loading="lazy"
 					data-bubble-tag
 				/>
-				<FollowerTag count="566K" class="top-[-16%] left-[-88%] lg:top-0 lg:right-[70%] lg:left-auto" />
+				<StatTag
+					label="Avg Likes"
+					value="21.4K"
+					class="top-[-16%] left-[-88%] lg:top-0 lg:right-[70%] lg:left-auto"
+				/>
 			</div>
 
 			<Image
@@ -129,6 +173,8 @@ import FollowerTag from "./FollowerTag.astro";
 				class="absolute top-[38%] right-[35%] w-[25%] lg:top-auto lg:right-[44%] lg:bottom-[18.74%] lg:w-[12.79%]"
 				loading="lazy"
 				data-bubble
+				widths={BUBBLE_WIDTHS}
+				sizes={BUBBLE_SIZES}
 			/>
 
 			<Image
@@ -137,6 +183,8 @@ import FollowerTag from "./FollowerTag.astro";
 				class="absolute top-[-45%] right-[17%] w-[20%] lg:top-[52%] lg:right-0 lg:w-[9.49%]"
 				loading="lazy"
 				data-bubble
+				widths={BUBBLE_WIDTHS}
+				sizes={BUBBLE_SIZES}
 			/>
 		</div>
 	</div>

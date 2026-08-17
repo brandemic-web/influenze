@@ -1,20 +1,11 @@
 /**
- * Client-side behavior for the pricing panel (PricingPlans.astro).
+ * Client-side behaviour for the pricing panel (PricingPlans.astro). One piece of state
+ * per panel — the selected monthly spend, plus an annual flag — changed by dragging the
+ * handle, clicking a tab or dot, or arrow keys. Everything visible is recomputed from it
+ * by `render()`, using pricingModel.ts so first paint and drag agree.
  *
- * There is a single piece of state per panel — the selected monthly spend (plus
- * an annual-billing flag) — and three ways to change it:
- *   1. dragging the bolt handle along the track (continuous),
- *   2. clicking a tier tab or a stop dot (jumps to that tier's minimum),
- *   3. arrow keys on the handle (one SPEND_STEP at a time).
- *
- * Everything visible — active tab, price, credits, bonus caption, and whether
- * the price body or the Enterprise "talk to us" body is shown — is recomputed
- * from that spend by `render()`. The maths lives in pricingModel.ts and is
- * shared with the server render, so first paint and drag updates agree.
- *
- * The panel is entirely data-attribute driven: the markup ships the tier data
- * (serialized into `data-tiers`) and the script reads the DOM hooks documented
- * in PricingPlans.astro. No IDs or framework runtime are involved.
+ * Entirely data-attribute driven: tier data arrives in `data-tiers` and the hooks are
+ * documented in PricingPlans.astro.
  */
 
 import type { PricingTier } from "../../data/pricing";
@@ -23,7 +14,7 @@ import {
 	clamp,
 	spendFromPos,
 	posFromSpend,
-	isCustomPos,
+	isPastLastDot,
 	tierIndexFromSpend,
 	creditsFor,
 	bonusLabel,
@@ -77,9 +68,10 @@ function initPanel(panel: HTMLElement): void {
 	function render(movePosition = true): void {
 		const index = tierIndexFromSpend(spend, tiers);
 		const tier = tiers[index];
-		// Past the last dot the spend is off the top of the priced range, so the
-		// panel quotes: the "talk to us" body takes the price body's place.
-		const quoting = isCustomPos(pos);
+		// The last dot itself (₹1,00,000, reached via the Enterprise tab or dot)
+		// still shows a price — only the flat stretch past it quotes instead, so
+		// this is keyed off handle position, not the tier's `custom` flag.
+		const quoting = isPastLastDot(pos);
 
 		if (movePosition) moveTo(pos);
 
@@ -101,7 +93,7 @@ function initPanel(panel: HTMLElement): void {
 			handle.setAttribute(
 				"aria-valuetext",
 				quoting
-					? `Above ${formatPrice(max)} per month — custom plan`
+					? `${formatPrice(max)} or more per month — ${tier.name}, custom plan`
 					: `${formatPrice(spend)} per month — ${tier.name}`,
 			);
 		}
@@ -120,7 +112,7 @@ function initPanel(panel: HTMLElement): void {
 	function setPos(next: number, movePosition = true): void {
 		pos = clamp(next, 0, 100);
 		spend = spendFromPos(pos, tiers);
-		if (!isCustomPos(pos)) pos = posFromSpend(spend, tiers);
+		if (!isPastLastDot(pos)) pos = posFromSpend(spend, tiers);
 		render(movePosition);
 	}
 
@@ -230,8 +222,9 @@ function initPanel(panel: HTMLElement): void {
 						: 0;
 			if (!step) return;
 			e.preventDefault();
-			// Stepping out of the quote zone lands back on the top price.
-			if (isCustomPos(pos) && step < 0) setSpend(max);
+			// Stepping back off the flat stretch lands on the last dot; stepping
+			// again from there drops below it into the priced range.
+			if (isPastLastDot(pos) && step < 0) setSpend(max);
 			else setSpend(spend + step);
 		});
 	}

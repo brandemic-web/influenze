@@ -1,0 +1,383 @@
+---
+/**
+ * The Analyze screen's left filter rail — mirrors the app's `analyze_filter_sidebar`
+ * and the widgets under `filters/`. Steps differ only in scroll position and which
+ * parameter is open, so both are props rather than near-duplicate copies.
+ *
+ * **This renders every parameter state at once**; `parameter` / `lookalikeFilled` only
+ * choose which paints as the static frame, and the timeline moves between them in
+ * place. Adding a state means adding a branch to the animation-state block in
+ * app-tokens.css too. Every value is 1:1 app pixels — see APP-SPEC.md.
+ */
+import FilterChip from "./filters/FilterChip.astro";
+import FilterSectionHeader from "../../../common/FilterSectionHeader.astro";
+import FilterSection from "./filters/FilterSection.astro";
+import Icon from "../../../common/Icon.astro";
+import PlatformFilter from "./filters/PlatformFilter.astro";
+import VerifiedBadge from "../../../common/VerifiedBadge.astro";
+import FollowerMetricsSlider from "./filters/FollowerMetricsSlider.astro";
+import TrackSlider from "./filters/TrackSlider.astro";
+import { FOLLOWER_TIERS, LOOKALIKE_HANDLE, PARAMETER_OPTIONS } from "../../../../../data/workflowMockup";
+
+interface Props {
+	/** How far the stack is scrolled, in rem. */
+	scroll?: number;
+	/** Which parameter-dropdown state paints first. */
+	parameter?: "none" | "open" | "lookalike";
+	/** Lookalike handle and location filled in (step 2 onwards). */
+	lookalikeFilled?: boolean;
+	/**
+	 * Whether the story's follower tier is already chosen and expanded. Only
+	 * visible once the rail is scrolled, so screens 1 and 2 look the same either
+	 * way — screen 1 sets it false so beat 1 has an unpicked row to click.
+	 */
+	tierPicked?: boolean;
+}
+
+const { scroll = 0, parameter = "lookalike", lookalikeFilled = false, tierPicked = true } = Astro.props;
+
+/** The option the story picks, and so the label the trigger ends up showing. */
+const pickedParameter = PARAMETER_OPTIONS.find((option) => "selected" in option && option.selected)?.label ?? "";
+
+/** The story tier's own engagement cut, read out under its slider. */
+const tierBenchmark = FOLLOWER_TIERS.find((tier) => "selected" in tier && tier.selected)?.benchmark ?? "";
+
+/** `padding 0 10`, h38, radius 4 — the app's dropdown trigger field. */
+const triggerClass =
+	"flex h-[2.375rem] w-full items-center justify-between border border-wf-chip-border bg-wf-chip px-2.5 text-[0.75rem] text-wf-text";
+/** `padding h10 v8`, radius 4 — the app's labelled numeric input. */
+const inputClass = "flex flex-col gap-1.5 rounded-[0.25rem] border border-wf-chip-border bg-wf-chip px-2.5 py-2";
+/**
+ * A section's reset ✕, wrapped so the timeline can fade it in with the value.
+ * The wrapper is a flex box, not a plain one: an svg in a block box sits on a
+ * text baseline and would gain descender space under it, shifting the glyph.
+ */
+const resetClass = "mt-0.5 flex";
+---
+
+<aside
+	class="absolute top-54.5 left-16.5 w-90"
+	data-wf-rail
+	data-wf-param={parameter}
+	data-wf-filled={lookalikeFilled ? "" : undefined}
+>
+	<div class="flex h-154 flex-col overflow-hidden rounded-md border border-wf-rail-border bg-wf-rail">
+		<header class="flex h-15 shrink-0 items-center border-b border-wf-rail-rule pt-3 pr-4 pb-3 pl-6">
+			<span class="text-[0.875rem] text-wf-text">Filters</span>
+			<span class="ml-2 px-2 py-1 text-[0.75rem] font-medium text-wf-text-idle">Clear All</span>
+			<span
+				class="ml-auto grid h-9 min-w-16 place-items-center rounded-[0.375rem] bg-wf-action px-3 text-[0.625rem] font-medium text-wf-text"
+				data-wf-apply>Apply &amp; Search</span
+			>
+		</header>
+
+		<div class="relative flex-1 overflow-hidden">
+			<div
+				class="absolute inset-x-0 top-0 flex flex-col"
+				style={`transform:translateY(-${scroll}rem)`}
+				data-wf-rail-scroll
+			>
+				<FilterSection label="Platform">
+					<div class="flex flex-wrap gap-2">
+						<PlatformFilter label="Instagram" platform="instagram" selected />
+						<PlatformFilter label="Youtube" platform="youtube" />
+						<PlatformFilter label="TikTok" platform="tiktok" />
+					</div>
+				</FilterSection>
+
+				<FilterSection label="Parameters" resettable divided>
+					<div
+						class:list={[
+							triggerClass,
+							"h-9! rounded-t-[0.25rem] border-wf-select",
+							parameter === "open" ? "bg-wf-select-open" : "bg-wf-select",
+						]}
+						data-wf-param-trigger
+					>
+						<span class="flex items-center gap-1.5">
+							<span
+								class:list={["wf-untrimmed", parameter === "none" && "text-white/50"]}
+								data-wf-param-label>{parameter === "none" ? "Select Parameter" : pickedParameter}</span
+							>
+							<Icon name="info" size="0.75rem" class="text-wf-text-soft" />
+						</span>
+						{/* The chevron's rotation is animated, so it needs a box of its own. */}
+						<div class:list={["flex shrink-0", parameter === "open" && "rotate-180"]} data-wf-param-chevron>
+							<Icon name="arrowIcon" size="0.75rem" class="text-wf-text-soft" />
+						</div>
+					</div>
+
+					{/*
+						The option sheet and the Lookalike body share this slot and only one is
+						ever in flow. Each sits in a bare wrapper whose sole job is to be clipped
+						to a height, so the timeline never has to animate their padding as well.
+					*/}
+					<div data-wf-param-sheet>
+						{/* The sheet is detached by 4px but keeps the connected radii. */}
+						<div class="mt-1 rounded-b-[0.25rem] border border-wf-select bg-wf-select p-2">
+							{
+								PARAMETER_OPTIONS.map((option) => {
+									const muted = "muted" in option && option.muted;
+									const picked = "selected" in option && option.selected;
+									return (
+										<div
+											class:list={[
+												"flex h-9 items-center gap-1.5 rounded-xs px-2.5 text-[0.75rem]",
+												parameter === "open" && picked && "bg-wf-select-active",
+												muted ? "text-white/50" : "text-wf-text",
+											]}
+											data-wf-param-target={picked ? "" : undefined}
+										>
+											{option.label}
+											{!muted && <Icon name="info" size="0.75rem" class="text-wf-text-soft" />}
+										</div>
+									);
+								})
+							}
+						</div>
+					</div>
+
+					<div data-wf-param-panel>
+						{/* gradientFilterContainer: left-to-right gradient, radius 0 0 8 8 */}
+						<div class="mt-1 rounded-b-sm border border-wf-select bg-[linear-gradient(to_right,#201d36_0%,var(--color-wf-rail)_100%)] p-4">
+							<div class="flex gap-2">
+								<FilterChip label="Audience" icon="usersRound" selected />
+								<FilterChip label="Creator" icon="userRoundCheck" />
+							</div>
+							<div
+								class="mt-2 flex items-center border-b border-wf-chip-border pt-3.5 pr-2 pb-3.5 pl-2"
+								data-wf-handle-field
+							>
+								<Icon name="search" size="0.875rem" class="text-wf-text-value" />
+								<span class="ml-1.5 text-[0.75rem] text-wf-text">
+									<span class="wf-untrimmed" data-wf-handle-hint
+										>Enter <span class="text-wf-green">@handle</span> / <span class="text-wf-green">URL</span></span
+									>
+									<span class="wf-untrimmed" data-wf-handle-value>@{LOOKALIKE_HANDLE}</span>
+								</span>
+								<span class="ml-px hidden h-3.5 w-px bg-wf-text" data-wf-caret></span>
+							</div>
+						</div>
+					</div>
+				</FilterSection>
+
+				<FilterSection divided>
+					{/* The reset ✕ goes through the slot so it can always render and just fade. */}
+					<FilterSectionHeader label="Sort By" class="mb-3">
+						<div class={resetClass} data-wf-reset="sort">
+							<Icon name="cross" size="0.875rem" class="text-wf-text-muted" />
+						</div>
+					</FilterSectionHeader>
+					<div class={`${triggerClass} rounded-[0.25rem]`}>
+						<span class="flex items-center gap-1.5">
+							<span class="wf-untrimmed" data-wf-sort="followers">Followers</span>
+							<span class="wf-untrimmed" data-wf-sort="lookalike">Audience Lookalikes</span>
+							<Icon name="arrowDown" size="0.875rem" class="text-wf-green-bright" />
+						</span>
+						<Icon name="arrowIcon" size="0.75rem" class="text-wf-text-soft" />
+					</div>
+				</FilterSection>
+
+				<FilterSection divided>
+					<FilterSectionHeader label="Creator Location" class="mb-3">
+						<div class={resetClass} data-wf-reset="location">
+							<Icon name="cross" size="0.875rem" class="text-wf-text-muted" />
+						</div>
+					</FilterSectionHeader>
+					{/* The field keeps its placeholder; picks land as chips below it. */}
+					<div
+						class="flex items-center rounded-[0.25rem] border border-wf-chip-border bg-wf-chip pt-3.5 pr-2 pb-3.5 pl-2"
+						data-wf-location-field
+					>
+						<Icon name="search" size="0.875rem" class="text-wf-text-value" />
+						<span class="ml-1.5 text-[0.75rem] text-wf-text" data-wf-location-input>Search</span>
+						<span class="ml-px hidden h-3.5 w-px bg-wf-text" data-wf-caret></span>
+					</div>
+					<div data-wf-location-chips>
+						<div class="mt-3 flex flex-wrap gap-2">
+							<span
+								class="flex items-center gap-1.5 rounded-[1rem] border border-wf-pill-green-border bg-wf-pill-green px-2.5 py-1.5 text-[0.625rem] text-wf-green-bright"
+								data-wf-location-chip
+							>
+								India
+								<Icon name="cross" size="0.75rem" />
+							</span>
+						</div>
+					</div>
+				</FilterSection>
+
+				<FilterSection divided>
+					<FilterSectionHeader label="Follower Metrics" resettable class="mb-3" />
+					{/*
+						Every tier uses one shape so the story's row can render either state:
+						`on` decides which paints, and the expansion sits in a clip wrapper the
+						timeline grows. Only the story's row carries hooks.
+					*/}
+					<div class="flex flex-col gap-1" data-wf-tier-list>
+						{
+							FOLLOWER_TIERS.map((tier) => {
+								const story = "selected" in tier && tier.selected;
+								const on = story && tierPicked;
+								return (
+									<div
+										class:list={["rounded-[0.25rem] p-2.5", on && "bg-wf-chip-row-on"]}
+										data-wf-tier={story ? "" : undefined}
+									>
+										<div class="flex items-center">
+											<span
+												class:list={[
+													"grid size-3 shrink-0 place-items-center rounded-[0.25rem] border",
+													on ? "border-wf-violet-bright bg-wf-violet-bright" : "border-wf-control-border",
+												]}
+												data-wf-tier-dot={story ? "" : undefined}
+											>
+												<span
+													class:list={["size-1 rounded-full bg-white", on ? "block" : "hidden"]}
+													data-wf-tier-pip={story ? "" : undefined}
+												/>
+											</span>
+											<span class="ml-2 text-[0.75rem] text-wf-text">{tier.label}</span>
+											<span
+												class:list={["ml-auto text-[0.75rem]", on ? "text-wf-text" : "text-wf-text-value"]}
+												data-wf-tier-range={story ? "" : undefined}
+											>
+												{tier.range}
+											</span>
+										</div>
+
+										{story && (
+											<div class:list={[!on && "hidden"]} data-wf-tier-body>
+												<div class="py-2">
+													<span class="block h-px w-full bg-wf-chip-row-rule" />
+												</div>
+												<div class="pt-2">
+													<FollowerMetricsSlider stop={3} />
+												</div>
+												{/*
+													The app's two read-outs, stacked in one grid cell so swapping them
+													never nudges the rail. Which one is true depends only on where the
+													handle is: the tier's minimum while it sits on a real stop, and the
+													"all ranges" line once it is pulled hard left. The story ends hard
+													left, so that is the one the static frames show.
+												*/}
+												<div class="grid pt-5 text-[0.75rem] text-wf-text">
+													<p class="col-start-1 row-start-1" data-wf-benchmark>
+														minimum benchmark: <b class="font-bold text-wf-green-mid">&gt;{tierBenchmark}</b>
+													</p>
+													<p class="col-start-1 row-start-1 opacity-0" data-wf-all-ranges>
+														displaying all ranges <b class="font-bold text-wf-green-mid">min</b> to{" "}
+														<b class="font-bold text-wf-green-mid">max</b>
+													</p>
+												</div>
+											</div>
+										)}
+									</div>
+								);
+							})
+						}
+					</div>
+
+					<div class="flex items-center pt-5">
+						<span class="h-px flex-1 bg-wf-control-border/50"></span>
+						<span class="px-3 text-[0.75rem] font-bold text-wf-text-soft">OR</span>
+						<span class="h-px flex-1 bg-wf-control-border/50"></span>
+					</div>
+
+					<FilterSectionHeader label="enter a custom follower range" class="pt-5" />
+					<div class="mt-3 flex items-center">
+						<div class={`${inputClass} flex-1`}>
+							<span class="text-[0.625rem] text-wf-text-soft">min. followers</span>
+							<span class="text-[0.75rem] text-wf-text-muted">eg. 5,000</span>
+						</div>
+						<span class="px-3 text-[0.75rem] text-wf-text">to</span>
+						<div class={`${inputClass} flex-1`}>
+							<span class="text-[0.625rem] text-wf-text-soft">max. followers</span>
+							<span class="text-[0.75rem] text-wf-text-muted">eg. 100,000</span>
+						</div>
+					</div>
+
+					<FilterSectionHeader label="enter a minimum engagement rate" class="pt-5" />
+					<div class={`${inputClass} mt-3 w-[calc((100%-2.1875rem)/2)]`}>
+						<span class="text-[0.625rem] text-wf-text-soft">min. rate</span>
+						<span class="text-[0.75rem] text-wf-text-muted">eg. 2.3%</span>
+					</div>
+				</FilterSection>
+
+				<FilterSection label="Reel Views" divided>
+					<div class="flex items-start gap-2">
+						<div class={`${triggerClass} flex-1 rounded-[0.25rem]`}>
+							<span class="text-white/50">From</span>
+							<Icon name="arrowIcon" size="0.75rem" class="text-wf-text-soft" />
+						</div>
+						<div class={`${triggerClass} flex-1 rounded-[0.25rem]`}>
+							<span class="text-white/50">To</span>
+							<Icon name="arrowIcon" size="0.75rem" class="text-wf-text-soft" />
+						</div>
+					</div>
+				</FilterSection>
+
+				{/* Creator Attributes is one ruled section holding four sub-blocks. */}
+				<FilterSection divided>
+					<FilterSectionHeader label="Is Verified?" class="mb-3" />
+					<div class="flex flex-wrap gap-2">
+						<span class="flex items-center gap-2 rounded-[0.25rem] border border-wf-chip-border bg-wf-chip p-2 text-[0.75rem] text-wf-text">
+							<VerifiedBadge size="1rem" />
+							Yes
+						</span>
+						<span class="flex items-center gap-2 rounded-[0.25rem] border border-wf-chip-border bg-wf-chip p-2 text-[0.75rem] text-wf-text">
+							<Icon name="badge" size="1rem" class="text-[#b8a2ff]" />
+							No
+						</span>
+					</div>
+
+					<FilterSectionHeader label="Creator Gender" class="mt-7 mb-3" />
+					<div class="flex flex-wrap gap-2">
+						<FilterChip label="Male" icon="male" />
+						<FilterChip label="Female" icon="female" />
+						<FilterChip label="Other" icon="asterisk" />
+					</div>
+
+					<FilterSectionHeader label="Audience Gender" resettable class="mt-8 mb-3" />
+					<div class="flex flex-wrap gap-2">
+						<FilterChip label="Male" icon="male" />
+						<FilterChip label="Female" icon="female" selected />
+						<FilterChip label="Other" icon="asterisk" />
+					</div>
+					<div class="mt-5.5 pl-2">
+						<p class="text-[0.75rem] text-wf-text">
+							More than <span class="text-wf-green">20%</span> audience&rsquo;s gender is
+							<span class="text-wf-green">Female</span>
+						</p>
+						<TrackSlider at={[20]} class="mt-3" />
+					</div>
+
+					<FilterSectionHeader label="Audience Age Bracket" resettable class="mt-7 mb-3">
+						<span class="ml-4 mr-auto text-[0.75rem] font-bold text-wf-green-mid">25-54y</span>
+					</FilterSectionHeader>
+					<div class="pl-2">
+						<TrackSlider at={[9.7, 50]} />
+						<div class="flex items-center justify-between pt-2 text-[0.625rem] text-wf-text">
+							<span>18</span><span>36</span><span>54</span><span>72</span><span>90</span>
+						</div>
+					</div>
+				</FilterSection>
+
+				<FilterSection divided>
+					{/* Reach Out rolls its own header so it can host the toggle. */}
+					<div class="flex items-start pl-2">
+						<span class="text-[0.75rem] font-medium text-wf-text-soft">Reach Out</span>
+						<span class="ml-2 flex h-3.5 w-8.25 shrink-0 items-center rounded-full bg-[#009a4a]">
+							<span class="ml-5.5 block size-5 -translate-x-1/2 rounded-full bg-white shadow-md"></span>
+						</span>
+						<Icon name="cross" size="0.875rem" class="mt-0.5 ml-auto text-wf-text-muted" />
+					</div>
+					<div class="mt-3 flex flex-wrap gap-2">
+						<FilterChip label="Phone" icon="phone" selected />
+						<FilterChip label="Email" icon="mail" selected />
+						<FilterChip label="WhatsApp" icon="messageCircle" selected />
+					</div>
+				</FilterSection>
+			</div>
+		</div>
+	</div>
+</aside>

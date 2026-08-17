@@ -1,0 +1,237 @@
+---
+/**
+ * The hero's product-workflow mockup: the app's screens as real markup, not a flat
+ * image, so GSAP can drive them as a narrative. Authored on the app's 1440x900 canvas
+ * and scaled to the hero's width — see `.wf-stage` in styles/app-tokens.css.
+ *
+ * The `StoryStep` list below is the only place step numbers are written down; beats
+ * address layers by `data-wf-screen` and workflowCards.ts times off the same index.
+ * Several steps are the same app screen in a different state, hence shared components.
+ * Step 2 is absent on purpose — beat 1 animates step 1 into that state in place.
+ *
+ * Full walkthrough and per-beat reasoning: APP-SPEC.md.
+ */
+import Analyze from "./screens/analyze/Analyze.astro";
+import AnalyzedCreator from "./screens/analyze/AnalyzedCreator.astro";
+import AddToListDialog from "./screens/analyze/AddToListDialog.astro";
+import Lists from "./screens/list/Lists.astro";
+import ListDetails from "./screens/list/ListDetails.astro";
+import ShareModal from "./screens/share-management/ShareModal.astro";
+import StoryStep from "./story/StoryStep.astro";
+import WorkflowPointer from "./story/WorkflowPointer.astro";
+import WorkflowCard from "./story/WorkflowCard.astro";
+import { WORKFLOW_CARDS } from "../../data/workflowCards";
+import mousePointerClick from "../../assets/icons/workflow/mouse_pointer_click.svg";
+
+interface Props {
+	class?: string;
+}
+
+const { class: className = "" } = Astro.props;
+---
+
+{/* `data-canvas-fit` / `data-canvas` are what scripts/canvasScale measures. */}
+<div
+	class:list={["wf-mockup w-full", className]}
+	data-workflow
+	data-canvas-fit
+	data-landscape-target="workflow"
+>
+	{/*
+		Hidden from assistive tech: this is a picture of the product, just drawn in markup
+		rather than exported — a screen reader would hear nine fake app shells with
+		invented handles and balances, and 83 stray `<header>`s would bury the page's real
+		landmarks. The explainer cards in `.wf-card-layer` carry the narration and stay
+		exposed. Nothing inside is focusable, which is what makes hiding it legal — the
+		landscape controls are siblings of this element on purpose. Keep it that way.
+	*/}
+	<div
+		class="wf-stage overflow-hidden rounded-[1.75rem] bg-wf-page"
+		data-canvas
+		aria-hidden="true"
+	>
+		<StoryStep step={1} active><Analyze /></StoryStep>
+		<StoryStep step={3}><Analyze results /></StoryStep>
+		<StoryStep step={4}><AnalyzedCreator tab="about" /></StoryStep>
+		<StoryStep step={5}><AnalyzedCreator tab="mediaKit" /></StoryStep>
+		<StoryStep step={6}><AddToListDialog /></StoryStep>
+		<StoryStep step={7}><Lists /></StoryStep>
+		<StoryStep step={8}><ListDetails /></StoryStep>
+		<StoryStep step={9}><ListDetails compare /></StoryStep>
+		<StoryStep step={10}><ShareModal /></StoryStep>
+
+		<WorkflowPointer />
+	</div>
+
+	{/*
+		The cards hang past the app frame's right edge and the stage has to clip, so they
+		get their own unclipped layer at the same canvas geometry. See `.wf-card-layer`.
+	*/}
+	<div class="wf-card-layer">
+		{WORKFLOW_CARDS.map((card) => <WorkflowCard card={card} />)}
+	</div>
+</div>
+
+{/*
+	Below lg the canvas scales down too far to follow, so offer a quarter-turned
+	fullscreen view. Text, not an icon — it has to say what it does.
+*/}
+<button type="button" class="wf-landscape-cue" data-landscape-open="workflow">
+	<img src={mousePointerClick.src} alt="" width="14" height="14" />
+	<span>Show in landscape mode</span>
+</button>
+
+{/*
+	The landscape view. Reparented to <body> on init — see scripts/landscape-viewer
+	for why — and the mockup above is moved into the rotor while it is open.
+*/}
+<div class="wf-landscape" data-landscape-host="workflow" role="dialog" aria-modal="true" aria-label="Workflow walkthrough, landscape view" hidden>
+	<div class="wf-landscape-rotor" data-landscape-rotor>
+		<button type="button" class="wf-landscape-close" data-landscape-close aria-label="Close landscape view">
+			<svg
+				class="size-5"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				aria-hidden="true"
+			>
+				<path d="M18 6 6 18" />
+				<path d="m6 6 12 12" />
+			</svg>
+		</button>
+	</div>
+</div>
+
+<style>
+	/* ── Landscape cue ──────────────────────────────────────────────────────── */
+	.wf-landscape-cue {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		width: 100%;
+		margin-top: 1rem;
+		margin-bottom: 0.5rem;
+		cursor: pointer;
+		color: var(--color-brand-primary);
+		font-size: 0.875rem;
+		line-height: 1.2;
+	}
+
+	.wf-landscape-cue img {
+		flex-shrink: 0;
+		/* Authored at 14px, the same as the label — sized in em so the two stay paired. */
+		width: 1em;
+		height: 1em;
+	}
+
+	.wf-landscape-cue span {
+		text-decoration: underline;
+		text-underline-offset: 0.25rem;
+	}
+
+	/*
+	 * Desktop shows the canvas at a readable size already. Hidden here rather than
+	 * with `lg:hidden`, because the `display: flex` above is a class+attribute
+	 * selector and would outrank the utility.
+	 */
+	@media (min-width: 64rem) {
+		.wf-landscape-cue {
+			display: none;
+		}
+	}
+
+	/* ── Landscape view ─────────────────────────────────────────────────────── */
+	.wf-landscape[hidden] {
+		display: none;
+	}
+
+	/*
+	 * `container-type: size` publishes both axes as cq units, which is what lets the
+	 * rotor swap them below and the canvas fit itself without measuring anything in
+	 * JS. No `display` is set here on purpose — it would beat the `hidden` attribute.
+	 */
+	.wf-landscape {
+		position: fixed;
+		inset: 0;
+		z-index: 100;
+		container-type: size;
+		background: #0a0718;
+	}
+
+	/*
+	 * Portrait: the box takes the screen's height as its width and vice versa, then
+	 * turns a quarter turn — so it covers the screen exactly while its contents are
+	 * laid out landscape. Everything inside, the close button included, turns with
+	 * it, which is what makes the whole thing read as a rotated screen rather than a
+	 * rotated picture on an upright one.
+	 */
+	.wf-landscape-rotor {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		display: grid;
+		place-items: center;
+		width: 100cqh;
+		height: 100cqw;
+		transform: translate(-50%, -50%) rotate(90deg);
+	}
+
+	/*
+	 * Contain-fit, in one expression. Percentages cannot do this — a percentage width
+	 * and a percentage height resolve against different axes — but cq units all
+	 * resolve against the same container, so the smaller of "all the width there is"
+	 * and "as wide as the height allows" is exactly the fit. `height: auto` lets
+	 * `.wf-mockup`'s own aspect-ratio supply the rest. In portrait the axes are
+	 * swapped to match the rotor.
+	 */
+	.wf-landscape-rotor .wf-mockup {
+		width: min(100cqh, calc(100cqw * 1440 / 900));
+		height: auto;
+	}
+
+	@media (orientation: landscape) {
+		/* Already landscape — cover the screen as-is and drop the quarter turn. */
+		.wf-landscape-rotor {
+			width: 100cqw;
+			height: 100cqh;
+			transform: translate(-50%, -50%);
+		}
+
+		.wf-landscape-rotor .wf-mockup {
+			width: min(100cqw, calc(100cqh * 1440 / 900));
+		}
+	}
+
+	.wf-landscape-close {
+		position: absolute;
+		top: 0.75rem;
+		right: 0.75rem;
+		z-index: 1;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 2.5rem;
+		height: 2.5rem;
+		border: 1px solid rgba(255, 255, 255, 0.25);
+		border-radius: 9999px;
+		background: rgba(255, 255, 255, 0.1);
+		color: #fff;
+		cursor: pointer;
+		backdrop-filter: blur(4px);
+	}
+
+	.wf-landscape-close:hover {
+		border-color: var(--color-brand-primary);
+		color: var(--color-brand-primary);
+	}
+</style>
+
+<script>
+	import "../../scripts/canvasScale";
+	import "../../scripts/home-page/workflow";
+	import "../../scripts/landscape-viewer";
+</script>

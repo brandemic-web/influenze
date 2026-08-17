@@ -1,0 +1,13 @@
+---
+/**
+ * The hand cursor that drives the workflow story. A sibling of the screen layers, not
+ * a child — the layers get hidden as the story advances and this has to outlive them.
+ * Starts invisible; GSAP owns x/y/scale/opacity. Fingertip offset is in `.wf-pointer`,
+ * motion in scripts/home-page/workflow/utils/pointer.ts.
+ */
+import handPointing from "../../../assets/images/common/utils/handpointing.svg";
+---
+
+<div class="wf-pointer" data-wf-pointer aria-hidden="true">
+	<img src={handPointing.src} alt="" width="32" height="32" />
+</div>

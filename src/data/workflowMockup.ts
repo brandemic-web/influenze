@@ -7,17 +7,36 @@
  */
 
 /**
- * Whoever is signed in to the mockup. `handle` is only how the nav finds their
- * photo in profile_images — they are the operator, not a creator, so they are
- * deliberately not in `CREATORS`.
+ * Whoever is signed in. `handle` is only how the nav finds their photo in
+ * profile_images — they are the operator, so deliberately not in `CREATORS`.
  */
 export const APP_USER = { name: "Harsh", handle: "harsh" } as const;
 
+/** Profiles a search analyses — the results header's "Analyzed 10", and the bill. */
+export const ANALYZED_COUNT = 10;
+
+/** The app charges per creator: 5 to analyse one, 50 to unlock one's profile. */
+const PER_ANALYZED = 5;
+const PER_UNLOCK = 50;
+
+const CREDITS_START = 2540;
+const SEARCH_COST = ANALYZED_COUNT * PER_ANALYZED;
+
 /**
- * Parameter dropdown options, in the app's order — `DiscoveryFilter` in
- * analyze/widgets/filters/discovery_filters_section.dart. Every option except
- * "None" carries an info tooltip.
+ * The nav credits chip at each point the story spends. Every screen is authored
+ * holding the balance it should show, and beats 1-2 tick the chip on the layer the
+ * spend happens on — so the following swap lands on a chip already reading right.
  */
+export const CREDITS = {
+	start: CREDITS_START,
+	afterSearch: CREDITS_START - SEARCH_COST,
+	afterProfile: CREDITS_START - SEARCH_COST - PER_UNLOCK,
+} as const;
+
+/** The chip's thousands separator — shared so the tween writes what the nav rendered. */
+export const formatCredits = (value: number) => value.toLocaleString("en-US");
+
+/** Parameter dropdown options, in the app's `DiscoveryFilter` order. */
 export const PARAMETER_OPTIONS = [
 	{ label: "None", muted: true },
 	{ label: "Lookalike", selected: true },
@@ -31,19 +50,14 @@ export const PARAMETER_OPTIONS = [
 ] as const;
 
 /**
- * Rail scroll, in rem, that brings the follower-tier list to the top of the rail.
- *
- * Screens 3-5 are authored here and beat 1 scrolls the cursor's way down to it,
- * so the animated path and the static frames land on the same pixels. Change it
- * in one place or they drift apart.
+ * Rail scroll (rem) that brings the follower-tier list to the top. Screens 3-5 are
+ * authored here and beat 1 scrolls to it, so both land on the same pixels.
  */
 export const RAIL_TIER_SCROLL = 36.4375;
 
 /**
- * `benchmark` is the tier's Instagram *average* engagement cut — the figure the
- * expanded tier's slider reads out as its minimum, and the same number screen 5
- * labels its Category Median with. Straight from `engagementRateBenchmarks` in
- * common/constants.dart.
+ * `benchmark` is the tier's Instagram average engagement cut, from the app's
+ * `engagementRateBenchmarks` — the slider's minimum and screen 5's Category Median.
  */
 export const FOLLOWER_TIERS = [
 	{ label: "🚀 Nano Influencer", range: "1k - 10k followers", benchmark: "2.42%" },
@@ -54,11 +68,8 @@ export const FOLLOWER_TIERS = [
 ] as const;
 
 /**
- * Engagement quality band, uppercased as the app prints it —
- * `EngagementRateWithQuality` in common/widgets/profile_card.dart. Which band a
- * rate falls into is fixed by platform and follower tier
- * (`engagementRateBenchmarks` in common/constants.dart); for Instagram macro
- * the cuts are 2.53 / 1.53 / 1.01 / 0.66.
+ * Engagement quality band, uppercased as the app prints it. Bands are fixed by
+ * platform and tier; for Instagram macro the cuts are 2.53 / 1.53 / 1.01 / 0.66.
  */
 export type EngagementLevel = "HIGH" | "ABOVE AVERAGE" | "AVERAGE" | "BELOW AVERAGE" | "LOW";
 
@@ -74,97 +85,112 @@ export interface Creator {
 	/** Omitted where we do not have it — the row simply leaves the slot out. */
 	gender?: string;
 	language: string;
+	/** Draws the platform's blue rosette beside the name. */
+	verified?: boolean;
 	checked?: boolean;
 }
 
 /**
- * The four rows the story's list holds — screen 8 renders exactly these, and
- * they open the results list on screen 3.
- *
- * Real creator figures pulled from the app. Slots are deliberately in the order
- * the animation was authored against: `checked` sits on rows 1 and 3, which are
- * the two the cursor ticks for Compare, and the profiled creator stays third so
- * beat 2's press lands where it always did.
+ * The Analyze results, in the app's ranked order — seven rows so the list can
+ * scroll. Figures are real, pulled from the app against the `hyperfitx` seed.
  */
-export const CREATORS: Creator[] = [
+export const RESULT_CREATORS: Creator[] = [
 	{
-		name: "KAWAL",
-		handle: "kawalofficial",
+		name: "Selwyn D'souza",
+		handle: "sellydsouzaaa",
 		tierLabel: "💎 Macro",
-		followers: "202.4K",
-		avgLikes: "3.1K",
-		engagement: "1.52%",
-		engagementLevel: "AVERAGE",
-		location: "India",
-		language: "EN",
-		checked: true,
-	},
-	{
-		name: "SALONI S",
-		handle: "salonipatelofficiall",
-		tierLabel: "💎 Macro",
-		followers: "566.6K",
-		avgLikes: "18.3K",
-		engagement: "3.24%",
+		followers: "190.4K",
+		avgLikes: "9.0K",
+		engagement: "4.73%",
 		engagementLevel: "HIGH",
-		location: "India",
-		gender: "Female",
+		location: "Bangalore, India",
+		gender: "Male",
 		language: "EN",
+		verified: true,
 	},
 	{
-		name: "Justin Joy",
-		handle: "hyperfitx",
+		name: "Neeraj Choudhary",
+		handle: "neeraj__",
 		tierLabel: "💎 Macro",
-		followers: "156.7k",
-		avgLikes: "738",
-		engagement: "0.47%",
-		engagementLevel: "LOW",
+		followers: "193.6K",
+		avgLikes: "9.5K",
+		engagement: "4.89%",
+		engagementLevel: "HIGH",
 		location: "India",
 		gender: "Male",
 		language: "EN",
-		checked: true,
+		verified: true,
 	},
 	{
-		name: "Gaelyn Mendonca",
-		handle: "vjgaelyn",
+		name: "Poorav",
+		handle: "pooo.raw",
 		tierLabel: "💎 Macro",
-		followers: "916.3K",
-		avgLikes: "2.2K",
-		engagement: "0.24%",
-		engagementLevel: "LOW",
+		followers: "282.4K",
+		avgLikes: "7.4K",
+		engagement: "2.62%",
+		engagementLevel: "HIGH",
+		location: "Bangalore, India",
+		gender: "Male",
+		language: "EN",
+		verified: true,
+	},
+	{
+		name: "AevyTV",
+		handle: "aevytvdaily",
+		tierLabel: "💎 Macro",
+		followers: "396.4K",
+		avgLikes: "4.7K",
+		engagement: "1.19%",
+		engagementLevel: "AVERAGE",
 		location: "India",
 		language: "EN",
+		verified: true,
+	},
+	{
+		name: "everythingbengaluru",
+		handle: "boredinbengaluru",
+		tierLabel: "💎 Macro",
+		followers: "191.6K",
+		avgLikes: "3.6K",
+		engagement: "1.88%",
+		engagementLevel: "ABOVE AVERAGE",
+		location: "Bangalore, India",
+		language: "EN",
+		verified: true,
+	},
+	{
+		name: "Yogish G",
+		handle: "street.comic",
+		tierLabel: "💎 Macro",
+		followers: "245.6K",
+		avgLikes: "2.5K",
+		engagement: "1.01%",
+		engagementLevel: "BELOW AVERAGE",
+		location: "India",
+		gender: "Male",
+		language: "EN",
+		verified: true,
+	},
+	{
+		name: "Daniel J Samuel",
+		handle: "danieljsamuel_",
+		tierLabel: "💎 Macro",
+		followers: "214.5K",
+		avgLikes: "8.8K",
+		engagement: "4.12%",
+		engagementLevel: "HIGH",
+		location: "India",
+		gender: "Male",
+		language: "EN",
+		verified: true,
 	},
 ];
 
 /**
- * Padding for the Analyze results list so it has somewhere to scroll. Only the
- * single-line analyze row is ever drawn for these, so their location and
- * language never reach the screen.
+ * The features page's showcase rows. Its own cast on purpose — that strip has no
+ * reason to move when the story's cast does.
  */
-const RESULT_PADDING: Creator[] = [
-	{
-		name: "Hamid Barkzi",
-		handle: "hamidbarkzi07",
-		tierLabel: "💎 Macro",
-		followers: "391.5K",
-		avgLikes: "5.7K",
-		engagement: "1.46%",
-		engagementLevel: "AVERAGE",
-		location: "India",
-		language: "EN",
-	},
-	{
-		name: "Kavian Almasifar",
-		handle: "kevinalmasifar",
-		tierLabel: "💎 Macro",
-		followers: "335.3K",
-		avgLikes: "7.9K",
-		engagement: "2.35%",
-		engagementLevel: "ABOVE AVERAGE",
-		location: "India",
-		language: "EN",
-	},
+const SHOWCASE_CREATORS: Creator[] = [
 	{
 		name: "Nikhil Chinapa",
 		handle: "nikhilchinapa",
@@ -178,164 +204,218 @@ const RESULT_PADDING: Creator[] = [
 		language: "EN",
 	},
 	{
-		name: "Raghu Dixit",
-		handle: "theraghudixitproject",
+		name: "Justin Joy",
+		handle: "hyperfitx",
 		tierLabel: "💎 Macro",
-		followers: "451.1K",
-		avgLikes: "2.5K",
-		engagement: "0.56%",
+		followers: "156.8K",
+		avgLikes: "556",
+		engagement: "0.35%",
 		engagementLevel: "LOW",
 		location: "India",
+		gender: "Male",
+		language: "EN",
+		verified: true,
+	},
+	{
+		name: "SALONI S",
+		handle: "salonipatelofficiall",
+		tierLabel: "💎 Macro",
+		followers: "566.6K",
+		avgLikes: "18.3K",
+		engagement: "3.24%",
+		engagementLevel: "HIGH",
+		location: "India",
+		gender: "Female",
 		language: "EN",
 	},
 ];
 
-/**
- * The Analyze results list — the four signed-off rows first, then padding, so
- * screen 3's opening frame is unchanged and the extra rows only show once the
- * list scrolls. `CREATORS` stays at four because screen 8 renders it at the
- * taller list density and would clip.
- */
-export const RESULT_CREATORS: Creator[] = [...CREATORS, ...RESULT_PADDING];
+export const SHOWCASE_HANDLES = SHOWCASE_CREATORS.map((creator) => creator.handle);
 
-/**
- * The three rows the features page's creator showcase draws, top to bottom.
- * The strip fades out towards its foot, so the order is a display choice rather
- * than a ranking — whoever leads is the one read in full.
- */
-export const SHOWCASE_HANDLES = [
-	"nikhilchinapa",
-	"hyperfitx",
-	"salonipatelofficiall",
-] as const;
-
-/**
- * The creator the story opens from the results list. Screens 4 and 5 are this
- * profile, so their name and stats have to keep matching this row.
- */
-export const PROFILED_HANDLE = "hyperfitx";
+/** The creator the story opens. Screens 4 and 5 are this profile. */
+export const PROFILED_HANDLE = "sellydsouzaaa";
 
 /** Resolves a row so screens never restate a creator's name or figures. */
 export function creatorByHandle(handle: string): Creator {
-	const creator = RESULT_CREATORS.find((row) => row.handle === handle);
+	const creator = [...RESULT_CREATORS, ...SHOWCASE_CREATORS].find((row) => row.handle === handle);
 	if (!creator) throw new Error(`workflowMockup: no creator with handle "${handle}"`);
 	return creator;
 }
 
 /**
- * The two rows the story ticks for Compare, in the order screen 9 columns them:
- * the creator we just profiled, then the one nearest his follower range. Must
- * stay in step with the `checked` flags above, which paint the same two rows in
- * screen 8's authored frame.
+ * The two rows the story compares, in screen 9's column order. Exactly the
+ * `LIST_CREATORS` screen 8 paints as already ticked.
  */
-export const COMPARED_HANDLES = [PROFILED_HANDLE, "kawalofficial"] as const;
+export const COMPARED_HANDLES = [PROFILED_HANDLE, "pooo.raw"] as const;
 
 /**
- * The list the story adds that creator to. Screen 6 marks this row so the cursor
- * can find it; it is also the first card on screen 7.
+ * The story list's members, and so screen 8's rows. Poorav and Justin are standing
+ * members (what the dialog shows on screen 6); Selwyn is the one the story adds, and
+ * leads because screens 8-9 are about the creator just profiled.
  */
-export const STORY_LIST = "Zamna Campaign 2026";
+export const LIST_CREATORS: Creator[] = [PROFILED_HANDLE, "pooo.raw", "hyperfitx"].map((handle) => ({
+	...creatorByHandle(handle),
+	checked: (COMPARED_HANDLES as readonly string[]).includes(handle),
+}));
+
+/** The list the story adds to — marked on screen 6, the only card on screen 7. */
+export const STORY_LIST = "Vox Pop";
 
 /**
- * The handle the story types into the Lookalike field on screens 1-2, which is
- * then echoed by the results header's Creator Lookalike chip. The typing
- * animation reads it out of the rendered field, so this is the only place it is
- * written — see AnalyzeFilterSidebar.astro's [data-wf-handle-value].
- *
- * Has to stay a different creator from `PROFILED_HANDLE`: the seed can't also be
- * the row the story opens, since that would select a creator as its own lookalike.
- * It does legitimately appear *among* the results, which is what the app does.
+ * The lookalike seed the story types on screens 1-2. Written only here — the typing
+ * animation reads it back out of the rendered field. Must stay different from
+ * `PROFILED_HANDLE`, or the story would open a creator as its own lookalike.
  */
-export const LOOKALIKE_HANDLE = "salonipatelofficiall";
+export const LOOKALIKE_HANDLE = "hyperfitx";
 
+/** The tier the story picks in the rail, read out of `FOLLOWER_TIERS`. */
+const PICKED_TIER = FOLLOWER_TIERS.find((tier) => "selected" in tier && tier.selected)?.label ?? "";
+
+/**
+ * Every filter the story applies, in the app's `buildGroups` order. At this many
+ * groups the strip outgrows the results panel, hence the fade at its right edge.
+ */
 export const RESULT_FILTERS = [
 	{ label: "Platform", value: "Instagram" },
 	{ label: "Sort", value: "Audience Lookalikes" },
-	{ label: "Creator Location", value: "India" },
 	{ label: "Audience Lookalike", value: `@${LOOKALIKE_HANDLE}` },
+	{ label: "Creator Location", value: "India" },
+	{ label: "Follower Count", value: PICKED_TIER },
 ] as const;
 
 /**
- * The card's fourth avatar tile shows `count - 3`, so overflow is derived.
- *
- * `preview` is whose portraits fill a card's tiles — four, since screen 6's rows
- * show that many and screen 7's cards show three plus the overflow count. The
- * story list previews its own members; the other two are only ever seen as
- * thumbnails, so they just draw from the same seven creators.
+ * The only list in the story. `count`/`preview` are what the *dialog* shows — the
+ * list before the add. Screen 7 counts `LIST_CREATORS` instead, so the two never
+ * have to be kept in step. `preview` is whose portraits fill a card's tiles.
  */
 export const CREATOR_LISTS = [
 	{
-		name: "Zamna Campaign 2026",
-		count: 12,
+		name: STORY_LIST,
+		count: 2,
 		updated: "last updated 2m ago",
-		preview: ["kawalofficial", "salonipatelofficiall", "hyperfitx", "vjgaelyn"],
-	},
-	{
-		name: "Steelcase XV",
-		count: 19,
-		updated: "last updated 5d ago",
-		preview: ["vjgaelyn", "theraghudixitproject", "hamidbarkzi07", "kevinalmasifar"],
-	},
-	{
-		name: "Mokobora XV",
-		count: 17,
-		updated: "last updated 5d ago",
-		preview: ["kevinalmasifar", "hamidbarkzi07", "salonipatelofficiall", "theraghudixitproject"],
+		preview: ["pooo.raw", "hyperfitx"],
 	},
 ] as const;
 
 /**
- * Media-kit tiles shown on the creator profile and the compare screen.
+ * Media-kit tiles, growth charts and pricing for the profile and compare screens.
  *
- * `followers` here is the media kit's aggregated total across platforms, so it
- * legitimately differs from the per-platform figure in `CREATORS` (157K vs
- * 156.7k) — the app shows the same split.
+ * `axis`/`marker`/`median` follow the app's `EngagementGraph`: min = median x 0.5,
+ * max = rate x 1.5. The growth series are **raw monthly values, not positions** —
+ * scale, gridlines, labels and the line are all derived in `data/mediaKitCharts.ts`,
+ * so this is the only place a figure is edited. Each series' last month must match
+ * the tile above it (`followerGrowth` → `followers`, `likesGrowth` → `likes`).
+ * `priceBars` are the four Instagram post types in `igGroups` order; the headline
+ * range is derived from them.
  */
 export const MEDIA_KIT_STATS = {
-	justin: {
-		engagement: "0.47%",
+	selwyn: {
+		engagement: "4.73%",
 		tier: "💎 Macro Influencer",
 		headline: "Macro Influencer (100k - 1M followers)",
-		followers: "157K",
-		posts: "1.14K",
-		reelViews: "31.4K",
-		likes: "738",
-		comments: "21",
-		level: "low",
-		// 0.47 against a 1.01 median: 0.5x0.47 to 1.5x1.01.
-		axis: ["0.2", "1.5"],
-		marker: 21,
-		median: 50,
+		followers: "190K",
+		posts: "2.1K",
+		reelViews: "137K",
+		likes: "9.01K",
+		comments: "66",
+		level: "high",
+		// 4.73 against a 1.01 median: 0.5x1.01 to 1.5x4.73.
+		axis: ["0.5", "7.1"],
+		marker: 64,
+		median: 8,
+		followerGrowth: [
+			{ month: "feb", value: 178_500 },
+			{ month: "mar", value: 180_700 },
+			{ month: "apr", value: 186_000 },
+			{ month: "may", value: 189_200 },
+			{ month: "jun", value: 192_700 },
+			{ month: "jul", value: 192_100 },
+			{ month: "aug", value: 190_373 },
+		],
+		likesGrowth: [
+			{ month: "feb", value: 3_460 },
+			{ month: "mar", value: 5_300 },
+			{ month: "apr", value: 10_500 },
+			{ month: "may", value: 17_500 },
+			{ month: "jun", value: 22_950 },
+			{ month: "jul", value: 13_500 },
+			{ month: "aug", value: 9_010 },
+		],
+		priceBars: [
+			{ label: "per reel", min: 965, max: 1_400 },
+			{ label: "per story", min: 563, max: 844 },
+			{ label: "per post", min: 804, max: 1_200 },
+			{ label: "per carousel", min: 884, max: 1_300 },
+		],
 	},
-	kawal: {
-		engagement: "1.52%",
+	poorav: {
+		engagement: "2.62%",
 		tier: "💎 Macro Influencer",
 		headline: "Macro Influencer (100k - 1M followers)",
-		followers: "202.4K",
-		// `posts` and `reelViews` are the only figures here not taken from the app —
-		// they are not on the results row, so they need KAWAL's own media kit.
-		posts: "1.08K",
-		reelViews: "62.3K",
-		likes: "3.1K",
-		// Sized so likes + comments ≈ the 1.52% rate on 202.4K followers.
-		comments: "26",
-		level: "average",
-		// 1.52 against the same median: 0.5x1.01 to 1.5x1.52, so his rate sits
-		// above the median rather than off the end of Justin's narrower axis.
-		axis: ["0.5", "2.3"],
-		marker: 57,
-		median: 28,
+		followers: "282K",
+		posts: "395",
+		reelViews: "123K",
+		likes: "7.4K",
+		comments: "18",
+		level: "high",
+		// 2.62 against the same median, so the axis stops short of Selwyn's.
+		axis: ["0.5", "3.9"],
+		marker: 62,
+		median: 15,
+		followerGrowth: [
+			{ month: "feb", value: 277_800 },
+			{ month: "mar", value: 279_900 },
+			{ month: "apr", value: 285_000 },
+			{ month: "may", value: 287_000 },
+			{ month: "jun", value: 285_300 },
+			{ month: "jul", value: 283_600 },
+			{ month: "aug", value: 282_150 },
+		],
+		likesGrowth: [
+			{ month: "feb", value: 9_300 },
+			{ month: "mar", value: 9_350 },
+			{ month: "apr", value: 9_400 },
+			{ month: "may", value: 9_920 },
+			{ month: "jun", value: 7_900 },
+			{ month: "jul", value: 6_820 },
+			{ month: "aug", value: 7_400 },
+		],
+		priceBars: [
+			{ label: "per reel", min: 1_300, max: 1_900 },
+			{ label: "per story", min: 740, max: 1_100 },
+			{ label: "per post", min: 1_100, max: 1_600 },
+			{ label: "per carousel", min: 1_200, max: 1_700 },
+		],
 	},
 } as const;
 
 /**
- * The tier copy under a media kit's benchmark bar. Every creator the story shows
- * is macro, so the median and the paragraph are the same figures for all of them
- * — the *bar* is not shared, which is why `axis`/`marker`/`median` sit per creator
- * in `MEDIA_KIT_STATS` above.
- *
- * Kept here rather than in either screen because the Media Kit tab and both
- * compare columns render it, and they used to hold their own copies.
+ * The pricing card's currency and driving factors. Shared, not per creator: the app
+ * picks factor sentences by band, and every creator the story shows lands in the
+ * same bands. Order is the app's `factorOrder`.
+ */
+export const PRICING = {
+	currency: "$",
+	factors: [
+		"Follower count is within the mid-range, representing moderate reach and visibility.",
+		"Engagement rate is within the average range, reflecting standard audience interaction levels.",
+		"Audience is primarily in Tier 3 countries, where purchasing power and prices are lower.",
+		"Audience credibility score is average, indicating a mix of authentic and general followers.",
+	],
+} as const;
+
+/** The About tab's profile block, kept beside the row so their figures can't drift. */
+export const PROFILED_ABOUT = {
+	followersInFull: "190,373",
+	topGender: { value: "Male", share: "50.4%" },
+	topCountry: { value: "India", share: "90.3%" },
+	bio: "humour based on your pain\nrepped by @circuitmgmt\n\u{1F4E7} - selly@circuitmgmt.com",
+} as const;
+
+/**
+ * Tier copy under a media kit's benchmark bar. Shared because every creator the story
+ * shows is macro — the *bar* is not, which is why `axis`/`marker`/`median` stay per
+ * creator in `MEDIA_KIT_STATS`. Here, not in a screen: three call sites render it.
  */
 export const MACRO_BENCHMARK = {
 	medianLabel: "1.01%",

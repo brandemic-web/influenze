@@ -2,14 +2,9 @@ import gsap from "gsap";
 import { HERO_WORDS } from "../data/heroWords";
 
 /**
- * Cycles the noun in the hero headline: "Find The Right **CREATORS**".
- *
- * Each word leaves upward and the next arrives from below, which is the same
- * slide-and-fade vocabulary the reveals use elsewhere on the page.
- *
- * The markup already holds `HERO_WORDS[0]`, so this only ever replaces text that
- * is already there — with the script absent, blocked, or at reduced motion the
- * headline simply stays on that first word.
+ * Cycles the noun in the hero headline. Each word leaves upward and the next arrives
+ * from below — the same slide-and-fade vocabulary as the reveals. The markup already
+ * holds `HERO_WORDS[0]`, so without this the headline just stays on that word.
  */
 const HOLD = 1.9;
 const OUT = 0.3;

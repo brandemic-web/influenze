@@ -22,14 +22,14 @@ const stepIcons: Record<string, ImageMetadata> = {
 		<p class="text-[1rem] lg:text-[1.125rem] uppercase leading-[normal] text-brand-primary">{WHY_INFLUENZE_EYEBROW}</p>
 		<h2
 			id="why-influenze-heading"
-			class="mt-5 lg:mt-8 max-w-130 text-[1.875rem] capitalize leading-[normal] text-white lg:text-[2.25rem] [text-box:trim-both_cap_alphabetic]"
+			class="mt-5 lg:mt-8 max-w-130 text-md capitalize leading-[normal] text-white lg:text-[2.25rem] [text-box:trim-both_cap_alphabetic]"
 		>
 			We are the first step for <span class="text-brand-primary">every influencer Campaign</span>
 		</h2>
 
-		<!-- Mobile: full-bleed GSAP ticker (cards rendered twice for a gapless loop). Desktop: static centered row. -->
+		{/* Mobile: full-bleed GSAP ticker (cards rendered twice for a gapless loop). Desktop: static centered row. */}
 		<div
-			class="mt-8 -mx-6 w-[calc(100%+3rem)] overflow-x-auto overscroll-x-contain lg:mx-0 lg:w-full lg:overflow-visible"
+			class="mt-7 -mx-6 w-[calc(100%+3rem)] overflow-x-auto overscroll-x-contain lg:mx-0 lg:w-full lg:overflow-visible"
 			data-marquee
 		>
 			<div
@@ -37,6 +37,7 @@ const stepIcons: Record<string, ImageMetadata> = {
 				data-marquee-track
 				data-reveal
 				data-reveal-stagger="0.15"
+				data-reveal-desktop-only
 			>
 				{
 					[...WHY_INFLUENZE_STEPS, ...WHY_INFLUENZE_STEPS].map((step, i) => (
@@ -52,7 +53,7 @@ const stepIcons: Record<string, ImageMetadata> = {
 							<div class="flex min-h-47 h-full items-center rounded-sm bg-background-primary px-6 py-7 lg:px-15 lg:py-10">
 								<div class="flex w-75 max-w-85 lg:w-92 lg:max-w-full flex-col gap-5 text-left">
 									<div class="flex items-center gap-4">
-										<img src={stepIcons[step.icon].src} alt="" class="h-12 w-12 rounded-sm" loading="lazy" />
+										<img src={stepIcons[step.icon].src} alt="" class="h-10 w-10 rounded-sm lg:h-12 lg:w-12" loading="lazy" />
 										<h3 class="text-[1.25rem] lg:text-md capitalize leading-[normal] text-white [text-box:trim-both_cap_alphabetic]">{step.title}</h3>
 									</div>
 									<p class="text-[0.875rem] lg:text-[1.125rem] leading-6.5 text-[#CECECE]/70 [text-box:trim-both_cap_alphabetic]">{step.description}</p>
@@ -64,7 +65,7 @@ const stepIcons: Record<string, ImageMetadata> = {
 			</div>
 		</div>
 
-		<Button href={FEATURES_URL} class="mt-8 lg:mt-12">
+		<Button href={FEATURES_URL} class="mt-6 lg:mt-12">
 			{WHY_INFLUENZE_BUTTON}
 		</Button>
 	</div>

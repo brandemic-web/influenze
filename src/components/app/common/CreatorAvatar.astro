@@ -1,0 +1,43 @@
+---
+/**
+ * A creator/user photo. With a `handle` it renders that creator's portrait (see
+ * data/creatorPortraits.ts), otherwise the gradient placeholder. One 340px variant
+ * per creator, reused at every size — 2x the largest avatar the mockup draws.
+ *
+ * Deferred by default: every portrait is on step 3 or later, so eager loading put
+ * ~90KB of off-screen images ahead of the hero's paint. Pass `loading="eager"` for
+ * anything on first paint (the nav avatar does).
+ */
+import { Image } from "astro:assets";
+import { portraitFor } from "../../../data/creatorPortraits";
+
+interface Props {
+	size?: string;
+	/** `full` for people, a rem value for the rounded tiles in list cards. */
+	radius?: string;
+	class?: string;
+	/** Creator handle, matched to a file in profile_images. */
+	handle?: string;
+	/** `eager` for portraits painted on the first story step. */
+	loading?: "eager" | "lazy";
+}
+
+const {
+	size = "2rem",
+	radius = "9999px",
+	class: className = "",
+	handle,
+	loading = "lazy",
+} = Astro.props;
+
+const portrait = handle ? portraitFor(handle) : undefined;
+---
+
+<div
+	data-wf-avatar
+	class={`shrink-0 overflow-hidden bg-[linear-gradient(140deg,#3b3560_0%,#221d38_60%,#2c2745_100%)] ${className}`}
+	style={`width:${size};height:${size};border-radius:${radius}`}
+	aria-hidden="true"
+>
+	{portrait && <Image src={portrait} alt="" width={340} class="size-full object-cover" loading={loading} />}
+</div>

@@ -6,20 +6,44 @@ import WhyInfluenze from "../components/home/WhyInfluenze.astro";
 import TrustedBy from "../components/home/TrustedBy.astro";
 import CreatorsAI from "../components/home/CreatorsAI.astro";
 import UseCaseCards from "../components/common/UseCaseCards.astro";
-import Testimonials from "../components/home/Testimonials.astro";
-import ComparisonTable from "../components/home/ComparisonTable.astro";
+// Testimonials is built but disabled — all cards are the same placeholder person.
+// Re-enable this import and the tag below once real quotes land in data/testimonials.ts.
+// import Testimonials from "../components/home/Testimonials.astro";
+import ComparisonTable from "../components/common/ComparisonTable.astro";
 import Faq from "../components/home/Faq.astro";
+import { FAQS } from "../data/faqs";
+import { SITE } from "../data/site";
+
+// Built from the same FAQS the page renders, so the JSON-LD can never drift from
+// the visible answers — Google's condition for FAQ rich results.
+const schema = [
+	{
+		"@type": "SoftwareApplication",
+		name: SITE.name,
+		applicationCategory: "BusinessApplication",
+		operatingSystem: "Web",
+		description: SITE.description,
+	},
+	{
+		"@type": "FAQPage",
+		mainEntity: FAQS.map((faq) => ({
+			"@type": "Question",
+			name: faq.question,
+			acceptedAnswer: { "@type": "Answer", text: faq.answer },
+		})),
+	},
+];
 ---
 
-<Layout>
-	<main>
+<Layout schema={schema}>
+	<main class="xl:overflow-x-clip">
 		<HomeHero />
 		<CreatorCollage />
 		<WhyInfluenze />
 		<TrustedBy />
 		<CreatorsAI />
 		<UseCaseCards />
-		<!-- <Testimonials /> -->
+		{/* <Testimonials /> */}
 		<ComparisonTable />
 		<Faq />
 	</main>

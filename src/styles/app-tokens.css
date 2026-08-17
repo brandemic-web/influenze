@@ -1,0 +1,364 @@
+/*
+ * The Influenze app's palette, for every part of this site that reproduces the product
+ * (components/app). Taken from the app's own `colors.dart` and kept out of the
+ * marketing palette in global.css so the two can't collide.
+ *
+ * Two namespaces, mirroring the app's own: `wf-*` for the product chrome
+ * (InfluenzeColors) and `mkit-*` for the media kit (MKitColors). Read `wf-` as
+ * "the app", not "the workflow mockup" — it predates the elements tree.
+ * Geometry these go with: components/app/APP-SPEC.md.
+ */
+
+@theme {
+	/* shell */
+	--color-wf-page: #080814; /* bodyBg */
+	--color-wf-card: #171721; /* containerBg */
+	--color-wf-panel: #232339; /* sectionBg */
+	--color-wf-rail: #121214; /* grey5 */
+	--color-wf-rail-border: #222232; /* lavender41 */
+	--color-wf-rail-rule: #564d71; /* lavender8 */
+	--color-wf-section-rule: #252525; /* grey6 */
+	--color-wf-rule: #383869; /* lavender11 — panel + card rules */
+	--color-wf-surface: #181823; /* blue / listCardBg */
+
+	/* nav */
+	--color-wf-user-pill: #1b3e2c; /* green2 */
+	--color-wf-credit-from: #15613a; /* green14 */
+	--color-wf-credit-to: #1b3e2c; /* green2 */
+	--color-wf-credit-border: #256745; /* green1 */
+	--color-wf-notify-from: #282434; /* lavender29 */
+	--color-wf-notify-to: #463c60; /* lavender38 */
+	--color-wf-notify-border: #322b46; /* lavender61 */
+
+	/* inputs */
+	--color-wf-input: #242433; /* lavender26 */
+	--color-wf-input-border: #413a56; /* lavender6 */
+	--color-wf-search: #2c2c49; /* searchBarBg */
+	--color-wf-input-filled: #0cbf61; /* green13 */
+	--color-wf-action: #6443cc; /* lavender31 */
+	--color-wf-action-off: #464668; /* lavender65 */
+	--color-wf-action-muted: #6d638f; /* add-to-list, once the creator is in the list */
+
+	/* chips & controls */
+	--color-wf-chip: #282434; /* chipDefaultBg */
+	--color-wf-chip-border: #302846; /* chipDefaultBorder */
+	--color-wf-chip-on: #50349e; /* chipSelectedBg */
+	--color-wf-chip-on-border: #7e57ea; /* chipSelectedBorder */
+	--color-wf-chip-row-on: #322b45; /* lavender69 */
+	--color-wf-chip-row-rule: #433a5d; /* lavender70 — rule inside a picked row */
+	--color-wf-control-border: #615381; /* lavender14 */
+	--color-wf-track: #423c57; /* sliderInactive */
+	/* the green "removable" pill — location and interest chips */
+	--color-wf-pill-green: #1c3125; /* interestChipBg */
+	--color-wf-pill-green-border: #2f744a; /* interestChipBorder */
+
+	/* parameter dropdown */
+	--color-wf-select: #574789; /* lavender3 */
+	--color-wf-select-open: #6a55ac; /* lavender63 */
+	--color-wf-select-active: #6e6199; /* lavender62 */
+
+	/* accents */
+	--color-wf-violet: #653ee1; /* lavender25 */
+	--color-wf-violet-bright: #865fff; /* lavender15 */
+	--color-wf-green: #33e889; /* brandGreen */
+	--color-wf-green-mid: #32e889; /* green3 — note: one digit from brandGreen */
+	--color-wf-green-deep: #1aae55; /* green11 */
+	--color-wf-green-bright: #3aff98; /* green8 */
+
+	/* type */
+	--color-wf-text: #ffffff;
+	--color-wf-text-soft: #d0c2ff; /* lavender7 */
+	--color-wf-text-muted: #847aa4; /* lavender46 */
+	--color-wf-text-dim: #9fa1ff; /* lavender19 */
+	--color-wf-text-value: #c0acff; /* lavender44 */
+	--color-wf-text-quiet: #beb8d0; /* lavender71 */
+	--color-wf-table-label: #7474c7; /* lavender1 — column headers */
+	--color-wf-meta: #a89ccb; /* lavender28 — location/gender/language */
+	--color-wf-text-idle: #463c60; /* lavender38 */
+
+	/* dialogs, menus & list rows */
+	--color-wf-dialog-border: #3b3b62; /* lavender24 — dialog shell + list row */
+	--color-wf-list-row: #2e2e4e; /* lavender89 */
+	--color-wf-tile: #25253f; /* lavender72 — demographic + platform tiles */
+	--color-wf-tier-pill: #33294c; /* lavender23 */
+	--color-wf-tier-text: #dbcaff; /* lavender52 */
+	--color-wf-count-muted: #4d4565; /* lavender30 — the dialog title's {N} */
+	--color-wf-menu: #2f254a; /* lavender27 — the contact popover */
+	--color-wf-menu-border: #463575; /* lavender53 */
+	--color-wf-menu-icon: #8878b8; /* lavender54 */
+	--color-wf-violet-soft: #8e6aff; /* lavender2 */
+	--color-wf-green-dim: #3e9761; /* green12 */
+
+	/* status */
+	--color-wf-danger: #ff4b52; /* red1 */
+	--color-wf-danger-bg: #3d2222; /* red — destructive button fill */
+	--color-wf-danger-text: #8f4242; /* red2 */
+}
+
+/*
+ * The mockup is authored on the app's native 1440x900 canvas (90rem x 56.25rem)
+ * and scaled down to whatever width the hero gives it, so every value inside can
+ * stay a plain, readable rem at 1:1 app pixels.
+ *
+ * Nothing queries this container any more — the scale is measured in JS — but the
+ * containment stays: it makes the mockup a stacking context, which is what keeps
+ * the pointer and the card layer painting inside the hero rather than over it.
+ */
+.wf-mockup {
+	container-type: inline-size;
+	aspect-ratio: 1440 / 900;
+	position: relative;
+}
+
+/*
+ * Both layers are the same canvas, and both are out of flow — load-bearing, not
+ * tidiness. `scale` is a transform, so a layer's layout box stays the full 56.25rem;
+ * in flow it would hold `.wf-mockup` open at 900px and leave dead space beneath.
+ */
+.wf-stage,
+.wf-card-layer {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 90rem;
+	height: 56.25rem;
+	transform-origin: top left;
+	/*
+	 * "Scale the canvas to fit its container" is a division of two lengths, which
+	 * CSS can only express as tan(atan2(a, b)) — and Safari 26 computes that
+	 * wrongly whenever a container-query or viewport unit is involved, badly
+	 * enough to render the canvas oversized or upside down. scripts/canvasScale
+	 * measures the two widths and publishes the ratio on the container instead.
+	 * The fallback is exact at the >=lg hero width and only shows before that
+	 * script has run.
+	 */
+	scale: var(--wf-scale, 0.888889);
+}
+
+/*
+ * The cards' layer, laid over the stage and deliberately not clipped, so a card
+ * can hang past the canvas edge the way Figma draws it. Nothing in it is
+ * interactive, and it must never swallow a click meant for the page beneath.
+ */
+.wf-card-layer {
+	pointer-events: none;
+}
+
+/*
+ * The features page's creator showcase — app UI on its own, away from the hero. Scaled
+ * like the hero canvas, but off the results list's *own* row width (the 58.25rem panel
+ * less its two 1.5rem gutters), so rows keep the app's exact proportions.
+ *
+ * The container carries the ratio for `.wf-mockup`'s reason. 315 design px is the
+ * measured content height: three 94px rows with two 16px gaps. **Change what the strip
+ * holds and this must follow**, or dead space opens under the last row.
+ */
+.wf-strip {
+	container-type: inline-size;
+	position: relative;
+	aspect-ratio: 884 / 315;
+}
+
+.wf-strip-canvas {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 55.25rem;
+	transform-origin: top left;
+	/* Scaled by scripts/canvasScale — see the note on `.wf-stage`. The fallback
+	   is exact at the >=lg strip width. */
+	scale: var(--wf-scale, 0.753);
+}
+
+/*
+ * Flutter sizes a Text to its glyph box, so a label contributes far less height
+ * than a CSS line box would. Trimming to cap height is what keeps the app's
+ * stacked paddings landing on the same pixels here.
+ *
+ * The card layer is in for a different reason: it is not app UI, but Figma sets
+ * `text-box-trim: trim-both` on the cards' own text layers, so their 30px
+ * paddings only land right if the text is trimmed the same way.
+ */
+:is(.wf-stage, .wf-card-layer, .wf-strip-canvas) :is(p, span, b, h1, h2, h3, h4, h5, h6, label) {
+	text-box: trim-both cap alphabetic;
+}
+
+/* Only the active step paints; GSAP swaps the attribute as the story advances. */
+[data-wf-screen]:not([data-wf-active]) {
+	opacity: 0;
+	visibility: hidden;
+}
+
+/*
+ * Animation state.
+ *
+ * Screens 1 and 2 are the *same* Analyze screen, so the filter rail renders every
+ * state it passes through at once and these rules pick which one paints as the
+ * static first frame. The timeline then writes inline styles, which outrank
+ * everything here, so it can move between them freely.
+ * See scripts/home-page/workflow/analyzeLookalike.ts.
+ */
+
+/* Which of the two stacked parameter bodies is in flow. */
+[data-wf-param="none"] :is([data-wf-param-sheet], [data-wf-param-panel]),
+[data-wf-param="open"] [data-wf-param-panel],
+[data-wf-param="lookalike"] [data-wf-param-sheet] {
+	display: none;
+}
+
+/* Everything that only exists once the Lookalike filter carries a value. */
+[data-wf-rail]:not([data-wf-filled]) :is([data-wf-handle-value], [data-wf-location-chips], [data-wf-sort="lookalike"]),
+[data-wf-rail][data-wf-filled] :is([data-wf-handle-hint], [data-wf-sort="followers"]) {
+	display: none;
+}
+
+/* The reset x fades instead of reflowing, so it keeps its box in the header row. */
+[data-wf-rail]:not([data-wf-filled]) [data-wf-reset] {
+	opacity: 0;
+}
+
+/*
+ * Spans added purely as animation hooks around text that used to sit in an
+ * anonymous box opt out of the cap-trim above. Trimming them would shorten the
+ * box and shift the glyphs ~1px inside the fixed-height rows they live in.
+ */
+.wf-stage .wf-untrimmed {
+	text-box: normal;
+}
+
+/*
+ * The explainer cards. Hidden until the timeline brings one up, so a failed script
+ * leaves the hero clean.
+ *
+ * All share one resting place taken from the design — 112px below the frame's top,
+ * hanging 153px past its right edge — x1.125 for the 1440 canvas, the same factor
+ * `WorkflowCard.astro` uses. Override one with `[data-wf-card="N"]`. The overhang runs
+ * through `--wf-card-scale` (a fraction of the card's width); the top offset does not
+ * (a position). `visibility` as well as `opacity`, so a hidden card can't take hits.
+ */
+/* `top` and `right` are set per card in WorkflowCard.astro, with the rest of its geometry. */
+.wf-card {
+	position: absolute;
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
+}
+
+/*
+ * The cards only show where there is width for them: in a portrait box a card covers
+ * the animation it explains, and its overhang gets clipped by `body`'s
+ * `overflow-x-clip`. `display` is the lever, not opacity or visibility — `spotlight()`
+ * writes both of those inline and would win. The landscape viewer is the exception: it
+ * presents the canvas landscape, so the cards belong there.
+ */
+@media (orientation: portrait) {
+	.wf-card {
+		display: none;
+	}
+
+	.wf-landscape .wf-card {
+		display: flex;
+	}
+}
+
+/*
+ * The cards' violet fill — their settled state, faded in over the black by
+ * `spotlight()`. Figma paints a flat #8058ff rectangle and masks a
+ * radial ellipse over its right-hand side; the ellipse's outer stop is that
+ * same #8058ff, so one gradient does the work of both and no mask is needed.
+ *
+ * The radii and centre are percentages of the card rather than the design's
+ * pixels, so the highlight stays put when the stage rescales.
+ */
+.wf-card-violet {
+	background: radial-gradient(ellipse 33.57% 122.83% at 89.97% 43.06%, #ae98f4 0%, #8058ff 100%);
+}
+
+/*
+ * The hand cursor that drives the story. It sits in the stage rather than in a
+ * screen layer (those get hidden), so it can travel across steps and scales with
+ * the canvas. GSAP owns x/y/scale/opacity; it stays invisible until the timeline
+ * runs, so a failed script leaves no stray cursor behind.
+ */
+.wf-pointer {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 50;
+	width: 2rem;
+	height: 2rem;
+	opacity: 0;
+	transform-origin: top left;
+	pointer-events: none;
+}
+
+/*
+ * Offset the glyph so the fingertip — measured at 44%/26% across the 32x32
+ * asset — lands on the wrapper's origin. The timeline can then aim the wrapper
+ * straight at a target's centre, and a press scales around the fingertip.
+ */
+.wf-pointer > img {
+	translate: -44% -26%;
+}
+
+/*
+ * MKitColors — the media kit's own palette. Separate in the app, separate here;
+ * note several names collide with the `wf-` set at different values (mkit green3
+ * is #3fbd71, the product's is #32e889), which is exactly why they don't share a
+ * namespace.
+ */
+@theme {
+	/* surfaces */
+	--color-mkit-card: #25292c; /* grey5 — the default card fill */
+	--color-mkit-compare-card: #18171f; /* lavender5 — cards inside a compare column */
+	--color-mkit-tile: #202427; /* grey3 — stat tiles, chip track */
+	--color-mkit-icon-tile: #23272a; /* grey7 — the tile a stat glyph sits on */
+	--color-mkit-track: #2f3539; /* grey19 — the engagement scale */
+	--color-mkit-chip-on-text: #0e0f10; /* grey4 — label on a selected chip */
+
+	/* type */
+	--color-mkit-subtitle: #9b9b9b; /* grey1 */
+	--color-mkit-rule: #4a575f; /* grey13 — section rules, list rank numbers */
+	--color-mkit-axis: #6e777c; /* grey17 — scale end labels */
+	--color-mkit-body: #c0c9cf; /* grey18 — tier description copy */
+
+	/* charts — the growth lines and the price chart */
+	--color-mkit-chart-line: #20c795; /* green1 — the growth line and its dots */
+	--color-mkit-chart-fill: #479165; /* green4 — the area under it */
+	--color-mkit-green: #3fbd71; /* green3 (mkit) — price bars and factor bullets */
+	--color-mkit-grid: #6c727d; /* grey10 — the follower chart's solid gridlines */
+	--color-mkit-grid-dash: #272b2f; /* grey16 — the likes chart's dashed ones */
+	--color-mkit-grid-price: #3a4044; /* grey9 — the price chart's dashed ones */
+	--color-mkit-chart-y: #6c727d; /* grey10 — leftChartTitle */
+	--color-mkit-chart-x: #a1a8b2; /* grey11 — bottomChartTitle */
+	/* lavender1 — the pricing card's Beta pill, and thumbs_up.svg's own colour
+	   where the app draws it untinted (the likes chart's title glyph) */
+	--color-mkit-lavender: #9476f3;
+
+	/* stat glyph tints — `gridStatCard`'s iconColor */
+	--color-mkit-followers: #32e889; /* green3 */
+	--color-mkit-posts: #f2994a; /* orange1 */
+	--color-mkit-views: #ea5757; /* red1 */
+	--color-mkit-likes: #c23584; /* pink1 */
+	--color-mkit-comments: #935ad6; /* lavender2 */
+
+	/* follower-quality rows */
+	--color-mkit-real: #8bcc9d; /* green2 */
+	--color-mkit-mass: #f2994a; /* orange1 */
+	--color-mkit-influencers: #935ad6; /* lavender2 */
+	--color-mkit-suspicious: #ea5757; /* red1 */
+
+	/* the share-bar gradient */
+	--color-mkit-bar-from: #9476f3; /* lavender1 */
+	--color-mkit-bar-mid: #3b83ac; /* blue1 */
+	--color-mkit-bar-to: #20c795; /* green1 */
+
+	/* engagement bands — `MediaKitTierHelper._colorsForLevel` */
+	--color-mkit-high: #3fbd71; /* green3 (mkit) — primary */
+	--color-mkit-high-bg: #284a35; /* green6 */
+	--color-mkit-high-text: #42f388; /* green7 */
+	--color-mkit-high-body: #32e889; /* green5 */
+	--color-mkit-avg: #e3c73a; /* yellow1 */
+	--color-mkit-avg-bg: #413c26; /* yellow2 */
+	--color-mkit-avg-text: #ffda23; /* yellow3 */
+}

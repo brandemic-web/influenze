@@ -4,7 +4,7 @@ export interface Testimonial {
 	quote: string;
 }
 
-/** All five are the same placeholder testimonial, as designed (NOTES.md #2). */
+/** All five are the same placeholder testimonial, as designed. Swap for real quotes. */
 export const TESTIMONIALS: Testimonial[] = Array.from({ length: 5 }, () => ({
 	name: "James Smith",
 	company: "IPLIX",

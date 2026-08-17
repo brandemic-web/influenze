@@ -1,32 +1,28 @@
 ---
 /**
- * The rows are the app's own `ProfileCard` — the same components the hero's
- * workflow mockup is built from, so there is one definition of a creator row on
- * the site and it tracks common/widgets/profile_card.dart.
- *
- * Rows only — no column header. This is a marketing strip rather than a working
- * table, and the metrics read fine unlabelled at three rows.
- *
- * `.wf-strip` scales the strip to the page the way the hero canvas does; see
- * styles/workflow.css for the geometry.
+ * The features page's creator strip, built from the app's own `ProfileCard` — the same
+ * component the hero mockup uses, so there is one definition of a creator row. Rows
+ * only, no column header: this is a marketing strip, not a working table. `.wf-strip`
+ * scales it the way the hero canvas does (see styles/app-tokens.css).
  */
-import ProfileCard from "../home/workflow/common/ProfileCard.astro";
+import ProfileCard from "../app/common/ProfileCard.astro";
 import { SHOWCASE_HANDLES, creatorByHandle } from "../../data/workflowMockup";
 
 const rows = SHOWCASE_HANDLES.map(creatorByHandle);
 ---
 
-<section class=" lg:pt-32 lg:pb-0" aria-labelledby="showcase-heading">
-	<h2 id="showcase-heading" class="mx-auto max-w-376 px-6 text-7xl capitalize leading-[1.1] max-lg:text-6xl max-md:text-[1.875rem] lg:px-25 max-lg:text-center lg:text-left">
+<section class="lg:pt-32 lg:pb-0" aria-labelledby="showcase-heading">
+	<h2 id="showcase-heading" class="mx-auto max-w-376 px-6 text-7xl capitalize leading-[1.1] max-lg:text-6xl max-md:text-md lg:px-25 max-lg:text-center lg:text-left">
 		<span class="text-quaternary">The</span>
 		<span class="text-brand-secondary"> fastest way</span>
 		<span class="text-quaternary"> To discover</span>
-		<span class="lg:block lg:text-right"><span class="text-quaternary">and evaluate the</span> <span class="text-white">right creators</span></span>
+		<span class="lg:block lg:text-right"><span class="text-quaternary"> And evaluate the</span> <span class="text-white">right creators</span></span>
 	</h2>
 
-	<div class="mx-auto mt-7 max-w-200 px-6 lg:mt-4" data-reveal>
-		<div class="wf-strip">
-			<div class="wf-strip-canvas flex flex-col gap-4">
+	<div class="mx-auto mt-2 max-w-200 px-6 lg:mt-4" data-reveal>
+		{/* See WorkflowMockup for what scripts/canvasScale does with these. */}
+		<div class="wf-strip" data-canvas-fit>
+			<div class="wf-strip-canvas flex flex-col gap-4" data-canvas>
 				{rows.map((creator) => (
 					<div data-reveal-item>
 						<ProfileCard creator={creator} />
@@ -41,5 +37,6 @@ const rows = SHOWCASE_HANDLES.map(creatorByHandle);
 </section>
 
 <script>
+	import "../../scripts/canvasScale";
 	import "../../scripts/reveals";
 </script>

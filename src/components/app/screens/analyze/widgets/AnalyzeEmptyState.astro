@@ -1,0 +1,47 @@
+---
+/**
+ * Results surface before a search has run.
+ */
+import Icon from "../../../common/Icon.astro";
+
+/**
+ * Both tiles, in the app's order.
+ */
+const options = [
+	{
+		icon: "profileSearch",
+		title: "Search By Profile",
+		subtitle: "Find profiles by their username / handle\nacross selected social platforms",
+	},
+	{
+		icon: "parameterMagic",
+		title: "Parameter Magic",
+		subtitle: "Discover profiles by going broader with\nour intelligent parameters & filters",
+	},
+] as const;
+---
+
+<div class="absolute inset-0 flex flex-col items-center justify-center" data-wf-empty>
+	{/* `emptyStateTitle` at the call site's own 24 — the app's copyWith */}
+	<p class="text-md text-wf-text">Start your search</p>
+	{/* `emptyStateSubtitleSecondary` — 12/400 on lavender17 */}
+	<p class="mt-3 text-center text-[0.75rem] leading-normal text-[#bfabff]">
+		A few common ways to begin, Use the sidebar to refine the results more
+	</p>
+
+	<div class="mt-12 flex items-start justify-center gap-4">
+		{
+			options.map((option) => (
+				<div class="flex w-fit flex-col rounded-[1.5rem] bg-[#2c2c44] p-6">
+					<Icon name={option.icon} size="2rem" class="text-wf-green-bright" />
+					{/* `searchOptionTileTitle` — 16/400 */}
+					<p class="mt-4 text-[1rem] whitespace-nowrap text-wf-text">{option.title}</p>
+					{/* `searchOptionTileSubtitle` — 10/400 on lavender95 */}
+					<p class="mt-3 text-[0.625rem] leading-normal whitespace-pre-line text-[#7878a0]">
+						{option.subtitle}
+					</p>
+				</div>
+			))
+		}
+	</div>
+</div>

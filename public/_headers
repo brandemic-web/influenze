@@ -1,0 +1,14 @@
+# Cache policy for Cloudflare Workers Assets.
+#
+# Everything Astro emits under /_astro/ carries a content hash in its filename, so
+# a changed file is a changed URL and these can be cached permanently. Same for the
+# self-hosted fonts, which are versioned by the filename's weight.
+#
+# HTML is deliberately left alone: it has no hash, so it keeps the shorter
+# cache-control the platform applies by default.
+
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable

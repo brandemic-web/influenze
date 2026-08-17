@@ -1,47 +1,54 @@
 @import "tailwindcss";
-@import "./workflow.css";
+@import "./app-tokens.css";
 
 @font-face {
     font-family: "Open Sauce One";
     src: url("/fonts/open-sauce-one-latin-700-normal.woff2") format("woff2");
     font-weight: 700;
     font-style: normal;
+    font-display: swap;
 }
 @font-face {
     font-family: "Open Sauce Two";
     src: url("/fonts/open-sauce-two-latin-300-normal.woff2") format("woff2");
     font-weight: 300;
     font-style: normal;
+    font-display: swap;
 }
 @font-face {
     font-family: "Open Sauce Two";
     src: url("/fonts/open-sauce-two-latin-400-normal.woff2") format("woff2");
     font-weight: 400;
     font-style: normal;
+    font-display: swap;
 }
 @font-face {
     font-family: "Open Sauce Two";
     src: url("/fonts/open-sauce-two-latin-500-normal.woff2") format("woff2");
     font-weight: 500;
     font-style: normal;
+    font-display: swap;
 }
 @font-face {
     font-family: "Open Sauce Two";
     src: url("/fonts/open-sauce-two-latin-600-normal.woff2") format("woff2");
     font-weight: 600;
     font-style: normal;
+    font-display: swap;
 }
 @font-face {
     font-family: "Open Sauce Two";
     src: url("/fonts/open-sauce-two-latin-700-normal.woff2") format("woff2");
     font-weight: 700;
     font-style: normal;
+    font-display: swap;
 }
 @font-face {
     font-family: "Open Sauce Two";
     src: url("/fonts/open-sauce-two-latin-800-normal.woff2") format("woff2");
     font-weight: 800;
     font-style: normal;
+    font-display: swap;
 }
 
 @theme {
@@ -78,12 +85,6 @@
     --text-8xl: 3.75rem;
     --text-9xl: 4rem;
 
-    /* text colors */
-    --text-color-primary: #FFFFFF;
-    --text-color-secondary: #3AFF98;
-    --text-color-tertiary: #696385;
-    --text-color-quaternary: #6838FF;
-
     /* Radius */
     --radius-sm: 0.5rem;
     --radius-md: 0.75rem;
@@ -111,11 +112,8 @@
     /* mint variants */
     --color-mint-dark: #33E889;
 
-    /*
-     * Palette for the product UI mocks in src/components/ui-elements. These are
-     * screenshot colours, not site chrome — kept in their own `ui-*` namespace so
-     * they can't be mistaken for brand tokens.
-     */
+    /* Product-UI mock colours (components/app/elements), namespaced so they
+       can't be mistaken for brand tokens. */
     --color-ui-muted: #8F88AB;
     --color-ui-subtle: #B9B3CF;
     --color-ui-lilac: #C0ACFF;
@@ -128,9 +126,21 @@
 }
 
 @layer base {
+    /* Desktop is drawn on the 1728px grid, so 1rem = 1/108th of the viewport and
+       every rem-sized thing scales with the window. Capped at 16px below 1728. */
     @media (min-width: 1024px) {
         html {
             font-size: clamp(12px, calc(100vw / 108), 16px);
+        }
+    }
+
+    /* Above the design width, keep scaling rather than stranding the layout in the
+       middle of a large monitor. No upper cap on purpose (widest container is
+       108rem, so this can never overflow); `100vh / 45` is a backstop for short or
+       ultra-wide viewports. Both rules meet at exactly 16px, so no jump. */
+    @media (min-width: 1728px) {
+        html {
+            font-size: max(16px, min(calc(100vw / 108), calc(100vh / 45)));
         }
     }
 
