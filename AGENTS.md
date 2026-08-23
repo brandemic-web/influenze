@@ -1,7 +1,7 @@
 # Influenze.ai marketing site
 
 Astro 7 static site, Tailwind v4, GSAP. Deployed to Cloudflare Workers Assets.
-Three routes — `/`, `/features`, `/pricing` — plus a 404.
+Five routes — `/`, `/features`, `/pricing`, `/terms`, `/privacy` — plus a 404.
 
 ## Commands
 
@@ -70,6 +70,20 @@ Every `data-wf-*` attribute in the mockup is load-bearing — grep for one befor
 removing it. Beats read the values they animate *to* off the markup (computed
 styles, `data-*`, `textContent`), so components stay the single source.
 
+## The legal routes — `/terms` and `/privacy`
+
+`data/terms.ts` and `data/privacy.ts` hold the clause text transcribed from the
+counsel-issued drafts dated 18 August 2026. **Treat the wording as the lawyers',
+not ours** — the only edits made on the way in were filling the blanks (see
+`data/legal.ts`) and four plain typographical fixes: `via. the Platform`,
+`a request .to you`, `on the .Platform For example`, and `the Company’ equity`.
+
+Numbering is derived at render time in `components/legal/LegalBody.astro`, not
+stored — sections count 1…n skipping any marked `unnumbered` (the ToS definitions
+block), clauses count `section.clause`, sub-points letter (a), (b), (c). Inserting
+a clause renumbers everything below it and the contents rail follows, because
+`LegalDocument.astro` computes the numbers once and hands the same array to both.
+
 ## Before going live
 
 Open items, all content rather than code:
@@ -77,8 +91,16 @@ Open items, all content rather than code:
 - **`data/site.ts`** — `SIGNUP_URL` points at `https://influenze.ai/login`, which
   is not a route on this site, and `LOGIN_URL` points at this site's own homepage.
   Both need the real app URLs.
-- **`data/footer.ts`** — 8 links are `href: "#"` (Resources and Legal columns).
-  These are the only source of the dev toolbar's `a11y-invalid-href` findings.
+- **`data/footer.ts`** — 6 links are still `href: "#"` (all of Resources, plus
+  Report Violation and CSAE Policy). These are the only source of the dev
+  toolbar's `a11y-invalid-href` findings.
+- **`data/legal.ts`** — the counsel drafts left five fields blank and the
+  stand-ins are flagged in that file. `LEGAL_CONTACT_EMAIL` resolves every inline
+  `[---]` to `info@dotme.in`; grievances and data-subject requests want their own
+  routed aliases. The grievance officer is named by role, and the phone number is
+  a literal `+91 XXXXX XXXXX` — the IT Rules need a reachable officer, so that one
+  blocks launch. Four wording typos in the drafts are corrected on the way in;
+  see the legal-routes section above.
 - **`data/pricing.ts`** — Scale's ₹50,000 threshold and +20% bonus, and
   Enterprise's threshold, are placeholders. Confirm before pricing goes public.
 - **`data/testimonials.ts`** — all placeholders, so the section is commented out

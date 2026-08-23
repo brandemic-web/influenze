@@ -1,0 +1,71 @@
+---
+/**
+ * Compact hero for the two legal routes. Same purple-to-black wash and arc
+ * overlay as the homepage hero, cut to roughly a third of its height because
+ * nothing sits under it but body copy.
+ */
+import backgroundArcs from "../../assets/images/home_page/hero/bg_svg_lines_hero.svg";
+
+interface Props {
+	eyebrow: string;
+	title: string;
+	updated: string;
+	/** The ToS "electronic record" line. Rendered as a rule-topped note. */
+	notice?: string;
+}
+
+const { eyebrow, title, updated, notice } = Astro.props;
+---
+
+<section class="relative overflow-hidden" aria-labelledby="legal-title">
+	<div
+		class="pointer-events-none absolute inset-0 bg-[linear-gradient(179.95deg,#11092B_0%,#6838FF_5.85%,#010101_99.94%)]"
+		aria-hidden="true"
+	>
+	</div>
+
+	{/* Arcs are cropped to the top of the wash, where the purple is strongest. */}
+	<img
+		src={backgroundArcs.src}
+		alt=""
+		class="pointer-events-none absolute -top-20 left-1/2 w-[160%] max-w-none -translate-x-1/2 opacity-60 lg:top-0 lg:w-full"
+		width={backgroundArcs.width}
+		height={backgroundArcs.height}
+		loading="eager"
+	/>
+
+	<div
+		class="relative mx-auto flex max-w-410.75 flex-col px-6 pt-32 pb-14 lg:px-25 lg:pt-56 lg:pb-24"
+		data-reveal
+		data-reveal-stagger="0.1"
+	>
+		<span
+			class="w-fit rounded-full border border-brand-primary/40 bg-surface-header px-4 py-2 text-[0.75rem] leading-none tracking-[0.14em] uppercase text-brand-primary backdrop-blur-md lg:text-[0.875rem]"
+		>
+			{eyebrow}
+		</span>
+
+		<h1
+			id="legal-title"
+			class="mt-6 max-w-200 text-3xl leading-[1.1] text-white lg:mt-8 lg:text-9xl"
+		>
+			{title}
+		</h1>
+
+		<p class="mt-4 text-[0.875rem] leading-[1.4] text-white/60 lg:mt-5 lg:text-[1.125rem]">
+			Last updated: <span class="text-white/90">{updated}</span>
+		</p>
+
+		{
+			notice && (
+				<p class="mt-8 max-w-180 border-t border-white/15 pt-6 text-[0.75rem] leading-6 tracking-[0.04em] uppercase text-white/45 lg:mt-10 lg:pt-7 lg:text-[0.8125rem]">
+					{notice}
+				</p>
+			)
+		}
+	</div>
+</section>
+
+<script>
+	import "../../scripts/reveals";
+</script>

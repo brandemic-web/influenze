@@ -4,7 +4,7 @@ export interface FooterColumn {
 }
 
 /**
- * `href: "#"` marks a page that does not exist yet — the source of the 8
+ * `href: "#"` marks a page that does not exist yet — the source of the remaining
  * `a11y-invalid-href` dev-toolbar findings per route. Swap in real URLs to clear.
  */
 export const FOOTER_COLUMNS: FooterColumn[] = [
@@ -24,8 +24,8 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
 	{
 		title: "Legal",
 		links: [
-			{ label: "Terms Of Use", href: "#" },
-			{ label: "Privacy Policy", href: "#" },
+			{ label: "Terms Of Use", href: "/terms" },
+			{ label: "Privacy Policy", href: "/privacy" },
 			{ label: "Report Violation", href: "#" },
 			{ label: "CSAE Policy", href: "#" },
 		],

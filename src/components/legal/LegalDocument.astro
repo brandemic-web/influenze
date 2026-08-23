@@ -1,0 +1,65 @@
+---
+/**
+ * Whole-page shell for a legal route: hero, contents rail, body, and a link
+ * across to the other document. Numbering is worked out here so the rail and
+ * the body can never disagree about which section is which.
+ */
+import type { LegalDoc } from "../../data/legal";
+import LegalHero from "./LegalHero.astro";
+import LegalContents from "./LegalContents.astro";
+import LegalBody from "./LegalBody.astro";
+
+interface Props {
+	doc: LegalDoc;
+	/** The other legal page, linked at the foot of this one. */
+	sibling: { label: string; href: string };
+}
+
+const { doc, sibling } = Astro.props;
+
+// `unnumbered` sections (the ToS definitions block) sit outside the count.
+let n = 0;
+const sections = doc.sections.map((section) => ({
+	...section,
+	number: section.unnumbered ? null : ++n,
+}));
+---
+
+<main class="bg-background-primary">
+	<LegalHero
+		eyebrow={doc.eyebrow}
+		title={doc.title}
+		updated={doc.updated}
+		notice={doc.notice}
+	/>
+
+	<div
+		class="mx-auto flex max-w-410.75 flex-col px-6 pt-10 pb-20 lg:flex-row lg:gap-20 lg:px-25 lg:pt-16 lg:pb-32"
+	>
+		<LegalContents sections={sections} label={`${doc.title} contents`} />
+		<div class="min-w-0 flex-1">
+			<LegalBody preamble={doc.preamble} sections={sections} />
+
+			<p class="mt-14 border-t border-white/10 pt-8 text-[0.875rem] leading-[1.8] text-white/50 lg:mt-20 lg:text-[1rem]">
+				See also our <a
+					href={sibling.href}
+					class="text-brand-primary underline-offset-4 hover:underline">{sibling.label}</a
+				>.
+			</p>
+		</div>
+	</div>
+</main>
+
+<style>
+	/* Anchor jumps from the contents rail; `scroll-mt-32` on each heading keeps
+	   the target clear of the fixed header. */
+	:global(html) {
+		scroll-behavior: smooth;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		:global(html) {
+			scroll-behavior: auto;
+		}
+	}
+</style>
