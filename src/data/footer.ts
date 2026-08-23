@@ -1,33 +1,45 @@
 export interface FooterColumn {
 	title: string;
-	links: { label: string; href: string }[];
+	links: {
+		label: string;
+		href: string;
+		/** Open in a new tab — for links that leave the site. */
+		newTab?: boolean;
+	}[];
 }
 
 /**
- * `href: "#"` marks a page that does not exist yet — the source of the remaining
- * `a11y-invalid-href` dev-toolbar findings per route. Swap in real URLs to clear.
+ * Two columns, four links then two. Every href resolves — a real route, the
+ * DotMe site or a mailto — so nothing here is a placeholder.
  */
 export const FOOTER_COLUMNS: FooterColumn[] = [
 	{
-		title: "Learn",
-		links: [{ label: "Pricing", href: "/pricing" }, { label: "Features", href: "/features" }],
-	},
-	{
-		title: "Resources",
+		title: "Quick Links",
 		links: [
-			{ label: "Product Demo", href: "#" },
-			{ label: "Blogs", href: "#" },
-			{ label: "FAQs", href: "#" },
-			{ label: "Contact Us", href: "#" },
+			{ label: "Pricing", href: "/pricing" },
+			{ label: "Features", href: "/features" },
+			// Same destination as the header's "Link-in Bio" entry in data/nav.ts.
+			{ label: "DotMe", href: "https://www.dotme.in/", newTab: true },
+			{ label: "Contact Us", href: "mailto:info@dotme.in" },
 		],
 	},
+	// "Resources" is hidden for now — its links have no destinations yet, matching
+	// the dropdown commented out in nav.ts. Restore once those pages exist, along
+	// with its MOBILE_PLACEMENT row in Footer.astro.
+	// {
+	// 	title: "Resources",
+	// 	links: [
+	// 		{ label: "Product Demo", href: "#" },
+	// 		{ label: "Blogs", href: "#" },
+	// 		{ label: "FAQs", href: "#" },
+	// 		{ label: "Contact Us", href: "#" },
+	// 	],
+	// },
 	{
 		title: "Legal",
 		links: [
 			{ label: "Terms Of Use", href: "/terms" },
 			{ label: "Privacy Policy", href: "/privacy" },
-			{ label: "Report Violation", href: "#" },
-			{ label: "CSAE Policy", href: "#" },
 		],
 	},
 ];

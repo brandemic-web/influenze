@@ -6,13 +6,9 @@ import gradientBg from "../../assets/images/common/decor/footer_gradient_mask.sv
 import influenze_mobile from "../../assets/images/common/logos_and_icons/influenze_wordmark_mobile.png";
 import { FOOTER_COLUMNS } from "../../data/footer";
 
-// Mobile-only grid placement (2 columns). Desktop uses the flex row below,
-// which ignores these grid-placement utilities.
-const MOBILE_PLACEMENT: Record<string, string> = {
-	Learn: "col-start-1 row-start-2",
-	Resources: "col-start-2 row-start-1",
-	Legal: "col-start-2 row-start-2",
-};
+// Mobile stacks the columns in a single file to the right of the bolt; the `pl`
+// on the wrapper is what clears it, and the small `pt` keeps the stack level with
+// the bolt rather than sinking below it. Desktop is the flex row of columns.
 ---
 
 <footer class="relative lg:overflow-hidden bg-surface-dark">
@@ -39,14 +35,11 @@ const MOBILE_PLACEMENT: Record<string, string> = {
 		/>
 
 		<div
-			class="grid grid-cols-2 gap-x-4 gap-y-16 pt-29 pb-16 pl-14 pr-6 sm:pr-12 lg:flex lg:flex-wrap lg:justify-end lg:gap-x-47.5 lg:gap-y-10 lg:pt-48 lg:pr-25 lg:pb-7.5 lg:pl-150"
+			class="flex flex-col gap-10 pt-6 pb-10 pl-52 pr-6 sm:pr-12 lg:flex-row lg:flex-wrap lg:justify-end lg:gap-x-47.5 lg:gap-y-10 lg:pt-48 lg:pr-25 lg:pb-7.5 lg:pl-150"
 		>
 			{
 				FOOTER_COLUMNS.map((column) => (
-					<nav
-						aria-label={column.title}
-						class={MOBILE_PLACEMENT[column.title]}
-					>
+					<nav aria-label={column.title}>
 						<h2 class="text-[1.125rem] lg:text-[1.375rem] font-bold text-white">
 							{column.title}
 						</h2>
@@ -55,6 +48,8 @@ const MOBILE_PLACEMENT: Record<string, string> = {
 								<li>
 									<a
 										href={link.href}
+										target={link.newTab ? "_blank" : undefined}
+										rel={link.newTab ? "noopener noreferrer" : undefined}
 										class="text-[0.875rem] lg:text-[1.125rem] text-white/50 transition-colors hover:text-white"
 									>
 										{link.label}

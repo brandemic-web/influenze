@@ -7,10 +7,9 @@ export const SITE = {
 	domain: "influenze.ai",
 } as const;
 
-// App entry points. TODO: point these at the real product app before launch —
-// /login is not a route on this marketing site.
-export const SIGNUP_URL = "https://app.influenze.ai/login";
-export const LOGIN_URL = "https://app.influenze.ai/";
+// Every "Free Trial" / "Login" CTA lands on the product app, which lives on the
+// app. subdomain rather than this marketing site.
+export const APP_URL = "https://app.influenze.ai/";
 
 /** Internal route for the features page — the "Learn More" destination. */
 export const FEATURES_URL = "/features";

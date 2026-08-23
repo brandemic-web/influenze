@@ -2,9 +2,10 @@
  * Shared shapes and company details for the two legal routes, `/terms` and
  * `/privacy`. The clause text itself lives in `terms.ts` and `privacy.ts`.
  *
- * PLACEHOLDER — the counsel-issued drafts leave five fields blank. Everything in
- * the "blanks" block below is a stand-in chosen so the pages read correctly; all
- * of it needs confirming before these go live. See the note on each constant.
+ * PLACEHOLDER — the counsel-issued drafts leave five fields blank. The grievance
+ * officer's phone number has since been supplied; the rest of the "blanks" block
+ * below is still a stand-in chosen so the pages read correctly, and needs
+ * confirming before these go live. See the note on each constant.
  */
 
 export interface LegalContactRow {
@@ -70,9 +71,9 @@ export const COMPANY_ADDRESS =
 
 /**
  * The grievance-officer block, identical in both documents. The drafts leave all
- * four rows blank; the name is given by role rather than invented, and the phone
- * number is the one field with no defensible stand-in — it must be supplied
- * before publishing, since the IT Rules require a reachable officer.
+ * four rows blank; the name is still given by role rather than invented, but the
+ * phone number the IT Rules require is now the real one, so the officer here is
+ * reachable.
  */
 export const GRIEVANCE_ROWS: LegalContactRow[] = [
 	{ label: "Name", value: "Grievance Officer, Dotme Technologies Private Limited" },
@@ -82,7 +83,7 @@ export const GRIEVANCE_ROWS: LegalContactRow[] = [
 		value: LEGAL_CONTACT_EMAIL,
 		href: `mailto:${LEGAL_CONTACT_EMAIL}`,
 	},
-	{ label: "Mobile No.", value: "+91 XXXXX XXXXX" },
+	{ label: "Mobile No.", value: "+91 72044 64330", href: "tel:+917204464330" },
 ];
 
 /**

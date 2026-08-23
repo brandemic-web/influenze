@@ -8,7 +8,7 @@ import logo from "../../assets/images/common/logos_and_icons/influenze_logo_nav.
 import { NAV_ITEMS } from "../../data/nav";
 import Button from "./Button.astro";
 import MobileMenu from "./MobileMenu.astro";
-import { LOGIN_URL } from "../../data/site";
+import { APP_URL } from "../../data/site";
 
 // Current page gets the hover green. Trailing slash stripped so "/pricing/" matches "/pricing".
 const currentPath = Astro.url.pathname.replace(/\/+$/, "") || "/";
@@ -93,13 +93,13 @@ const isActive = (item: { href: string; newTab?: boolean }) =>
 		</nav>
 
 		<div class="hidden lg:block">
-			<Button href={LOGIN_URL} newTab>Login / Sign Up</Button>
+			<Button href={APP_URL} newTab>Login / Sign Up</Button>
 		</div>
 
 		<div class="flex items-center ml-2 gap-4 md:hidden">
 			<span class="h-4.25 w-px bg-white/40" aria-hidden="true"></span>
 			<a
-				href={LOGIN_URL}
+				href={APP_URL}
 				target="_blank"
 				rel="noopener noreferrer"
 				class="text-[0.75rem] font-normal uppercase text-brand-primary"
