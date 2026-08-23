@@ -1,0 +1,28 @@
+---
+/**
+ * One run of clause copy. Only job beyond rendering the string is turning any
+ * email address inside it into a `mailto:` link — the drafts name the contact
+ * address inline in seven places across the two documents.
+ */
+import { splitEmails } from "../../data/legal";
+
+interface Props {
+	text: string;
+	class?: string;
+}
+
+const { text, class: className = "" } = Astro.props;
+const parts = splitEmails(text);
+---
+
+<span class={className}>{
+	parts.map((part) =>
+		part.email ? (
+			<a href={`mailto:${part.value}`} class="text-brand-primary underline-offset-4 hover:underline">
+				{part.value}
+			</a>
+		) : (
+			part.value
+		),
+	)
+}</span>

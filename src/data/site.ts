@@ -9,8 +9,8 @@ export const SITE = {
 
 // App entry points. TODO: point these at the real product app before launch —
 // /login is not a route on this marketing site.
-export const SIGNUP_URL = "https://influenze.ai/login";
-export const LOGIN_URL = "https://influenze.ai/";
+export const SIGNUP_URL = "https://app.influenze.ai/login";
+export const LOGIN_URL = "https://app.influenze.ai/";
 
 /** Internal route for the features page — the "Learn More" destination. */
 export const FEATURES_URL = "/features";

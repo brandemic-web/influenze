@@ -1,0 +1,27 @@
+---
+import Layout from "../layouts/Layout.astro";
+import LegalDocument from "../components/legal/LegalDocument.astro";
+import { TERMS } from "../data/terms";
+import { LEGAL_UPDATED } from "../data/legal";
+import { SITE } from "../data/site";
+
+// `dateModified` is what Google shows against a policy page; it comes from the
+// same constant the page prints, so the two can't drift.
+const schema = [
+	{
+		"@type": "WebPage",
+		name: `${TERMS.title} — ${SITE.name}`,
+		description: TERMS.description,
+		dateModified: LEGAL_UPDATED,
+	},
+];
+---
+
+<Layout
+	title={`${TERMS.title} — Influenze.ai`}
+	description={TERMS.description}
+	hideCta
+	schema={schema}
+>
+	<LegalDocument doc={TERMS} sibling={{ label: "Privacy Policy", href: "/privacy" }} />
+</Layout>
