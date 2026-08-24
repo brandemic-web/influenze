@@ -8,7 +8,7 @@ Five routes — `/`, `/features`, `/pricing`, `/terms`, `/privacy` — plus a 40
 ```
 astro dev --background     # start dev server (also: astro dev stop|status|logs)
 npm run build              # astro build → dist/
-npm run deploy             # build + wrangler deploy
+npm run deploy:emergency   # build + deploy straight to prod; CI owns deploys
 npx astro check            # typecheck; must stay at 0 errors
 ```
 
@@ -74,8 +74,10 @@ styles, `data-*`, `textContent`), so components stay the single source.
 
 `data/terms.ts` and `data/privacy.ts` hold the clause text transcribed from the
 counsel-issued drafts dated 18 August 2026. **Treat the wording as the lawyers',
-not ours** — the only edits made on the way in were filling the blanks (see
-`data/legal.ts`) and four plain typographical fixes: `via. the Platform`,
+not ours** — the edits made on the way in were filling the blanks (see
+`data/legal.ts`), striking `or by filing the form here` from the Privacy
+Policy's access clause because no such form exists to link, and four plain
+typographical fixes: `via. the Platform`,
 `a request .to you`, `on the .Platform For example`, and `the Company’ equity`.
 
 Numbering is derived at render time in `components/legal/LegalBody.astro`, not
@@ -92,15 +94,14 @@ Open items, all content rather than code:
   destinations, mirroring `data/nav.ts`, and Report Violation / CSAE Policy are
   gone. Nothing is left as `href: "#"`. Restoring Resources means giving the
   columns explicit mobile placement again — see the note in `Footer.astro`.
-- **`data/legal.ts`** — the counsel drafts left five fields blank and the
-  stand-ins are flagged in that file. `LEGAL_CONTACT_EMAIL` resolves every inline
-  `[---]` to `info@dotme.in`; grievances and data-subject requests want their own
-  routed aliases. The grievance officer's phone number is now the real one, so
-  the IT Rules' reachable-officer requirement is met; the officer is still named
-  by role rather than by person. Four wording typos are corrected on the way in;
-  see the legal-routes section above.
-- **`data/pricing.ts`** — Scale's ₹50,000 threshold and +20% bonus, and
-  Enterprise's threshold, are placeholders. Confirm before pricing goes public.
+- **`data/legal.ts`** — all five blanks counsel left are now filled, so nothing
+  here blocks launch. One item remains: `LEGAL_UPDATED` is `"18 August 2026"`,
+  inferred from the draft filenames rather than stated in them, and it reaches
+  JSON-LD `dateModified` in `terms.astro` and `privacy.astro` in a format
+  Schema.org will not parse — it wants `2026-08-18`. Storing the ISO date and
+  formatting the readable string from it keeps page and schema in step.
+  `LEGAL_CONTACT_EMAIL` resolving every `[---]` to one inbox is deliberate; see
+  the note on that constant.
 - **`data/testimonials.ts`** — all placeholders, so the section is commented out
   in `pages/index.astro`. Re-enable both lines once real quotes land.
 - **`data/nav.ts`** — the Resources dropdown is commented out pending destinations.

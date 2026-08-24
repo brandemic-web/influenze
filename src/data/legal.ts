@@ -2,10 +2,9 @@
  * Shared shapes and company details for the two legal routes, `/terms` and
  * `/privacy`. The clause text itself lives in `terms.ts` and `privacy.ts`.
  *
- * PLACEHOLDER — the counsel-issued drafts leave five fields blank. The grievance
- * officer's phone number has since been supplied; the rest of the "blanks" block
- * below is still a stand-in chosen so the pages read correctly, and needs
- * confirming before these go live. See the note on each constant.
+ * The counsel-issued drafts left five fields blank; all five are now filled —
+ * the contact email, the registered office, and the grievance officer's name,
+ * email and phone. See the note on each constant.
  */
 
 export interface LegalContactRow {
@@ -71,12 +70,12 @@ export const COMPANY_ADDRESS =
 
 /**
  * The grievance-officer block, identical in both documents. The drafts leave all
- * four rows blank; the name is still given by role rather than invented, but the
- * phone number the IT Rules require is now the real one, so the officer here is
- * reachable.
+ * four rows blank; all four now carry real details, so the IT Rules' named-and-
+ * reachable-officer requirement is met. Both documents' section heading and intro
+ * establish the role, so the name row is the person alone.
  */
 export const GRIEVANCE_ROWS: LegalContactRow[] = [
-	{ label: "Name", value: "Grievance Officer, Dotme Technologies Private Limited" },
+	{ label: "Name", value: "Akshay Naazare" },
 	{ label: "Address", value: COMPANY_ADDRESS },
 	{
 		label: "Email",

@@ -20,7 +20,7 @@ npm run dev        # http://localhost:4321
 | `npm run build` | Production build to `./dist/` |
 | `npm run preview` | Serve the build locally |
 | `npx astro check` | Typecheck the project |
-| `npm run deploy` | Build and deploy to Cloudflare |
+| `npm run deploy:emergency` | Build and deploy straight to production — only when CI is down |
 
 ## Where things are
 

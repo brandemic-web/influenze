@@ -1,11 +1,6 @@
 /**
  * Pricing page content. Everything the panel shows derives from the monthly spend the
  * slider picks between SLIDER_MIN and SLIDER_MAX — see PricingPlans.astro.
- *
- * ⚠️ NOT ALL NUMBERS ARE SIGNED OFF. Confirmed from the design: the ₹1,000–₹100,000
- * range, Starter at +5%, Growth from ₹20,000 at +10%, and the +5% annual bonus.
- * PLACEHOLDER: Scale's ₹50,000 threshold and +20% bonus, and Enterprise's threshold.
- * Confirm with whoever owns pricing; only this file needs editing.
  */
 
 export interface PricingTier {
