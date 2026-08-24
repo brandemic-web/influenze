@@ -2,6 +2,16 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "influenze",
   "compatibility_date": "2026-07-07",
+  // The apex is the only hostname this Worker serves: www is a Cloudflare
+  // Redirect Rule, which fires before Workers and so never arrives here, and
+  // app.influenze.ai is Firebase.
+  "routes": [
+    { "pattern": "influenze.ai", "custom_domain": true }
+  ],
+  // Retires influenze.web-455.workers.dev, which served a public third copy of
+  // the site. preview_urls must stay explicit — it defaults to workers_dev, so
+  // deleting it here would silently take PR previews down too.
+  "workers_dev": false,
   "preview_urls": true,
   "assets": {
     "directory": "./dist",
