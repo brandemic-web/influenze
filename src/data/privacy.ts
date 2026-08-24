@@ -87,7 +87,7 @@ export const PRIVACY: LegalDoc = {
 			id: "control-over-your-personal-information",
 			title: "Control Over Your Personal Information",
 			clauses: [
-				{ text: `You may at any time submit a request to access information regarding the processing of your Personal Information by submitting a written request to the Company at ${LEGAL_CONTACT_EMAIL} or by filing the form here. Upon receipt of such request, the Company shall provide a summary of the relevant processing activities including identities of the third-parties with whom such Personal Information is shared.` },
+				{ text: `You may at any time submit a request to access information regarding the processing of your Personal Information by submitting a written request to the Company at ${LEGAL_CONTACT_EMAIL}. Upon receipt of such request, the Company shall provide a summary of the relevant processing activities including identities of the third-parties with whom such Personal Information is shared.` },
 				{ text: `You have the right to withdraw your consent at any point. You can withdraw your consent in writing through an email at ${LEGAL_CONTACT_EMAIL} requesting the same. If you at any time wish to rectify, access, update or erase your Personal Information, you may write to the Company as per paragraph 9 of this Policy.` },
 				{ text: "Once you withdraw your consent to share the Personal Information collected by the Company for the purpose specified herein, the Company shall immediately cease to fulfil the purposes for which the said Personal Information was sought and the Company may restrict you from using the Services on the Platform and/or the Platform itself." },
 			],
