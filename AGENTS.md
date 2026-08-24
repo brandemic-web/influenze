@@ -88,18 +88,16 @@ a clause renumbers everything below it and the contents rail follows, because
 
 Open items, all content rather than code:
 
-- **`data/site.ts`** — `SIGNUP_URL` points at `https://influenze.ai/login`, which
-  is not a route on this site, and `LOGIN_URL` points at this site's own homepage.
-  Both need the real app URLs.
-- **`data/footer.ts`** — 6 links are still `href: "#"` (all of Resources, plus
-  Report Violation and CSAE Policy). These are the only source of the dev
-  toolbar's `a11y-invalid-href` findings.
+- **`data/footer.ts`** — the Resources column is commented out pending
+  destinations, mirroring `data/nav.ts`, and Report Violation / CSAE Policy are
+  gone. Nothing is left as `href: "#"`. Restoring Resources means giving the
+  columns explicit mobile placement again — see the note in `Footer.astro`.
 - **`data/legal.ts`** — the counsel drafts left five fields blank and the
   stand-ins are flagged in that file. `LEGAL_CONTACT_EMAIL` resolves every inline
   `[---]` to `info@dotme.in`; grievances and data-subject requests want their own
-  routed aliases. The grievance officer is named by role, and the phone number is
-  a literal `+91 XXXXX XXXXX` — the IT Rules need a reachable officer, so that one
-  blocks launch. Four wording typos in the drafts are corrected on the way in;
+  routed aliases. The grievance officer's phone number is now the real one, so
+  the IT Rules' reachable-officer requirement is met; the officer is still named
+  by role rather than by person. Four wording typos are corrected on the way in;
   see the legal-routes section above.
 - **`data/pricing.ts`** — Scale's ₹50,000 threshold and +20% bonus, and
   Enterprise's threshold, are placeholders. Confirm before pricing goes public.

@@ -59,7 +59,7 @@ const linkClass =
 {/* Desktop: sticky rail. Top offset clears the fixed header. */}
 <nav
 	aria-label={label}
-	class="sticky top-32 hidden max-h-[calc(100vh-10rem)] shrink-0 overflow-y-auto pr-4 lg:block lg:w-72"
+	class="toc-rail sticky top-32 hidden max-h-[calc(100vh-10rem)] shrink-0 overflow-y-auto pr-4 lg:block lg:w-72"
 	data-legal-toc
 >
 	<h2 class="mb-5 text-[0.75rem] tracking-[0.14em] uppercase text-white/40">Contents</h2>
@@ -78,6 +78,40 @@ const linkClass =
 		}
 	</ol>
 </nav>
+
+<style>
+	/*
+	 * The rail scrolls independently of the page, so it needs a visible bar — but
+	 * the platform default is a light-mode widget on a near-black column. Thin,
+	 * trackless and faint until pointed at. px rather than rem: the bar should not
+	 * grow with the 1728 grid.
+	 */
+	.toc-rail {
+		scrollbar-width: thin; /* Firefox */
+		scrollbar-color: rgb(255 255 255 / 0.14) transparent;
+	}
+
+	.toc-rail::-webkit-scrollbar {
+		width: 4px;
+	}
+
+	.toc-rail::-webkit-scrollbar-track {
+		background: transparent;
+	}
+
+	.toc-rail::-webkit-scrollbar-thumb {
+		background: rgb(255 255 255 / 0.14);
+		border-radius: 9999px;
+	}
+
+	.toc-rail:hover {
+		scrollbar-color: rgb(255 255 255 / 0.3) transparent;
+	}
+
+	.toc-rail:hover::-webkit-scrollbar-thumb {
+		background: rgb(255 255 255 / 0.3);
+	}
+</style>
 
 <script>
 	import "../../scripts/legal-toc";

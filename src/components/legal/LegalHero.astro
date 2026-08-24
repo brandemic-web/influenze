@@ -1,11 +1,10 @@
 ---
 /**
- * Compact hero for the two legal routes. Same purple-to-black wash and arc
- * overlay as the homepage hero, cut to roughly a third of its height because
- * nothing sits under it but body copy.
+ * Compact hero for the two legal routes. Same purple-to-black wash as the
+ * homepage hero — without its arc overlay, which read as clutter behind plain
+ * legal copy — cut to roughly a third of the height because nothing sits under
+ * it but body text.
  */
-import backgroundArcs from "../../assets/images/home_page/hero/bg_svg_lines_hero.svg";
-
 interface Props {
 	eyebrow: string;
 	title: string;
@@ -17,22 +16,12 @@ interface Props {
 const { eyebrow, title, updated, notice } = Astro.props;
 ---
 
-<section class="relative overflow-hidden" aria-labelledby="legal-title">
+<section class="relative" aria-labelledby="legal-title">
 	<div
 		class="pointer-events-none absolute inset-0 bg-[linear-gradient(179.95deg,#11092B_0%,#6838FF_5.85%,#010101_99.94%)]"
 		aria-hidden="true"
 	>
 	</div>
-
-	{/* Arcs are cropped to the top of the wash, where the purple is strongest. */}
-	<img
-		src={backgroundArcs.src}
-		alt=""
-		class="pointer-events-none absolute -top-20 left-1/2 w-[160%] max-w-none -translate-x-1/2 opacity-60 lg:top-0 lg:w-full"
-		width={backgroundArcs.width}
-		height={backgroundArcs.height}
-		loading="eager"
-	/>
 
 	<div
 		class="relative mx-auto flex max-w-410.75 flex-col px-6 pt-32 pb-14 lg:px-25 lg:pt-56 lg:pb-24"
