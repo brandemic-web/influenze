@@ -23,7 +23,7 @@
 import { Image } from "astro:assets";
 import bolt from "../../assets/images/common/logos_and_icons/footer_logo.webp";
 import wave from "../../assets/images/common/decor/wave_bg.svg";
-import { SIGNUP_URL } from "../../data/site";
+import { APP_URL } from "../../data/site";
 import {
   PRICING_HEADING,
   PRICING_TIERS,
@@ -351,7 +351,7 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
 
         {/* Subscribe */}
         <a
-          href={SIGNUP_URL}
+          href={APP_URL}
           target="_blank"
           rel="noopener noreferrer"
           class="mt-5 flex w-full items-center justify-center gap-2.5 rounded-full bg-button-primary px-6 py-3.75 text-[0.75rem] leading-none text-button-text transition-colors duration-300 hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary lg:mt-5.5 lg:gap-1 lg:py-2.5 lg:text-[1rem]"

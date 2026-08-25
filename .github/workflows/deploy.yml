@@ -1,0 +1,59 @@
+# The only path to production. Merging a PR into main is the deploy.
+#
+# Identical to preview.yml up to the last step, which runs `wrangler deploy`
+# instead of `versions upload` — that is the single difference between "a build
+# sitting on the edge" and "what influenze.ai serves".
+#
+# Every deploy is a retained version, so a bad launch is `wrangler rollback`
+# rather than a rebuild. `npx wrangler versions list` shows the last ten.
+
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # manual re-deploy from the Actions tab, so a redeploy
+    # never needs someone's laptop
+
+# Never interrupt a production deploy; queue instead.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    # Uncomment to require a named reviewer's approval before anything reaches
+    # production — configure the gate under Settings → Environments → production.
+    # environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22 # package.json engines wants >=22.12.0
+          cache: npm
+
+      - run: npm ci
+
+      # Belt and braces: preview.yml already gated the PR, but main can also be
+      # pushed to directly, and a deploy is the wrong place to discover an error.
+      - name: Typecheck
+        run: npx astro check
+
+      - name: Build
+        run: npm run build
+
+      - name: Deploy to production
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # Commit subject via env, not string interpolation — see preview.yml.
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+          SHA: ${{ github.sha }}
+        run: |
+          npx wrangler deploy \
+            --message "${SHA:0:7} ${COMMIT_MESSAGE%%$'\n'*}"

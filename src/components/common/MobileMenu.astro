@@ -1,6 +1,6 @@
 ---
 import { NAV_ITEMS } from "../../data/nav";
-import { LOGIN_URL } from "../../data/site";
+import { APP_URL } from "../../data/site";
 import Button from "./Button.astro";
 
 // Matches Header.astro — current page gets the brand green.
@@ -98,7 +98,7 @@ const isActive = (item: { href: string; newTab?: boolean }) =>
 				</ul>
 			</nav>
 			<Button
-				href={LOGIN_URL}
+				href={APP_URL}
 				class="mt-6"
 				newTab
 			>

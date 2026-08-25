@@ -1,14 +1,14 @@
 # Influenze.ai marketing site
 
 Astro 7 static site, Tailwind v4, GSAP. Deployed to Cloudflare Workers Assets.
-Three routes — `/`, `/features`, `/pricing` — plus a 404.
+Five routes — `/`, `/features`, `/pricing`, `/terms`, `/privacy` — plus a 404.
 
 ## Commands
 
 ```
 astro dev --background     # start dev server (also: astro dev stop|status|logs)
 npm run build              # astro build → dist/
-npm run deploy             # build + wrangler deploy
+npm run deploy:emergency   # build + deploy straight to prod; CI owns deploys
 npx astro check            # typecheck; must stay at 0 errors
 ```
 
@@ -70,17 +70,38 @@ Every `data-wf-*` attribute in the mockup is load-bearing — grep for one befor
 removing it. Beats read the values they animate *to* off the markup (computed
 styles, `data-*`, `textContent`), so components stay the single source.
 
+## The legal routes — `/terms` and `/privacy`
+
+`data/terms.ts` and `data/privacy.ts` hold the clause text transcribed from the
+counsel-issued drafts dated 18 August 2026. **Treat the wording as the lawyers',
+not ours** — the edits made on the way in were filling the blanks (see
+`data/legal.ts`), striking `or by filing the form here` from the Privacy
+Policy's access clause because no such form exists to link, and four plain
+typographical fixes: `via. the Platform`,
+`a request .to you`, `on the .Platform For example`, and `the Company’ equity`.
+
+Numbering is derived at render time in `components/legal/LegalBody.astro`, not
+stored — sections count 1…n skipping any marked `unnumbered` (the ToS definitions
+block), clauses count `section.clause`, sub-points letter (a), (b), (c). Inserting
+a clause renumbers everything below it and the contents rail follows, because
+`LegalDocument.astro` computes the numbers once and hands the same array to both.
+
 ## Before going live
 
 Open items, all content rather than code:
 
-- **`data/site.ts`** — `SIGNUP_URL` points at `https://influenze.ai/login`, which
-  is not a route on this site, and `LOGIN_URL` points at this site's own homepage.
-  Both need the real app URLs.
-- **`data/footer.ts`** — 8 links are `href: "#"` (Resources and Legal columns).
-  These are the only source of the dev toolbar's `a11y-invalid-href` findings.
-- **`data/pricing.ts`** — Scale's ₹50,000 threshold and +20% bonus, and
-  Enterprise's threshold, are placeholders. Confirm before pricing goes public.
+- **`data/footer.ts`** — the Resources column is commented out pending
+  destinations, mirroring `data/nav.ts`, and Report Violation / CSAE Policy are
+  gone. Nothing is left as `href: "#"`. Restoring Resources means giving the
+  columns explicit mobile placement again — see the note in `Footer.astro`.
+- **`data/legal.ts`** — all five blanks counsel left are now filled, so nothing
+  here blocks launch. One item remains: `LEGAL_UPDATED` is `"18 August 2026"`,
+  inferred from the draft filenames rather than stated in them, and it reaches
+  JSON-LD `dateModified` in `terms.astro` and `privacy.astro` in a format
+  Schema.org will not parse — it wants `2026-08-18`. Storing the ISO date and
+  formatting the readable string from it keeps page and schema in step.
+  `LEGAL_CONTACT_EMAIL` resolving every `[---]` to one inbox is deliberate; see
+  the note on that constant.
 - **`data/testimonials.ts`** — all placeholders, so the section is commented out
   in `pages/index.astro`. Re-enable both lines once real quotes land.
 - **`data/nav.ts`** — the Resources dropdown is commented out pending destinations.

@@ -1,0 +1,26 @@
+---
+import Layout from "../layouts/Layout.astro";
+import LegalDocument from "../components/legal/LegalDocument.astro";
+import { PRIVACY } from "../data/privacy";
+import { LEGAL_UPDATED } from "../data/legal";
+import { SITE } from "../data/site";
+
+// See terms.astro — same reasoning for pinning dateModified to LEGAL_UPDATED.
+const schema = [
+	{
+		"@type": "WebPage",
+		name: `${PRIVACY.title} — ${SITE.name}`,
+		description: PRIVACY.description,
+		dateModified: LEGAL_UPDATED,
+	},
+];
+---
+
+<Layout
+	title={`${PRIVACY.title} — Influenze.ai`}
+	description={PRIVACY.description}
+	hideCta
+	schema={schema}
+>
+	<LegalDocument doc={PRIVACY} sibling={{ label: "Terms of Service", href: "/terms" }} />
+</Layout>

@@ -1,0 +1,118 @@
+---
+/**
+ * Section index for a legal document. Sticky rail from `lg` up, a collapsed
+ * `<details>` above the copy below it — the same list either way, so there is
+ * only one set of links to keep in step with the body.
+ *
+ * `data-legal-toc` / `data-toc-link` are read by scripts/legal-toc.ts, which
+ * marks the section currently on screen. Without JS the list still navigates.
+ */
+import type { LegalSection } from "../../data/legal";
+
+interface Props {
+	sections: (LegalSection & { number: number | null })[];
+	/** Accessible name for both copies of the nav. */
+	label: string;
+}
+
+const { sections, label } = Astro.props;
+
+// Flex rather than a plain block so a title that wraps hangs under itself
+// rather than under its number.
+const linkClass =
+	"flex gap-1.5 border-l border-white/10 py-1.5 pl-4 text-[0.8125rem] leading-5 text-white/45 transition-colors hover:border-brand-primary hover:text-white data-active:border-brand-primary data-active:text-brand-primary lg:text-[0.875rem]";
+---
+
+{/* Mobile / tablet: collapsed by default so the copy starts near the top. */}
+<details class="group mb-10 rounded-md border border-white/10 bg-surface-dark lg:hidden">
+	<summary
+		class="flex cursor-pointer list-none items-center justify-between gap-4 p-5 [&::-webkit-details-marker]:hidden"
+	>
+		<span class="text-[0.875rem] font-semibold text-white">Contents</span>
+		<svg
+			class="h-1.5 w-3 shrink-0 text-white transition-transform group-open:rotate-180"
+			viewBox="0 0 12 6"
+			fill="none"
+			aria-hidden="true"
+		>
+			<path d="M1 1l5 4 5-4" stroke="currentColor" stroke-width="1.5"></path>
+		</svg>
+	</summary>
+	<nav aria-label={label} class="px-5 pb-5">
+		<ol class="flex flex-col">
+			{
+				sections.map((section) => (
+					<li>
+						<a href={`#${section.id}`} class={linkClass}>
+							{section.number !== null && (
+								<span class="w-5 shrink-0 tabular-nums text-white/30">{section.number}.</span>
+							)}
+							<span>{section.title}</span>
+						</a>
+					</li>
+				))
+			}
+		</ol>
+	</nav>
+</details>
+
+{/* Desktop: sticky rail. Top offset clears the fixed header. */}
+<nav
+	aria-label={label}
+	class="toc-rail sticky top-32 hidden max-h-[calc(100vh-10rem)] shrink-0 overflow-y-auto pr-4 lg:block lg:w-72"
+	data-legal-toc
+>
+	<h2 class="mb-5 text-[0.75rem] tracking-[0.14em] uppercase text-white/40">Contents</h2>
+	<ol class="flex flex-col">
+		{
+			sections.map((section) => (
+				<li>
+					<a href={`#${section.id}`} class={linkClass} data-toc-link={section.id}>
+						{section.number !== null && (
+							<span class="w-5 shrink-0 tabular-nums text-white/30">{section.number}.</span>
+						)}
+						<span>{section.title}</span>
+					</a>
+				</li>
+			))
+		}
+	</ol>
+</nav>
+
+<style>
+	/*
+	 * The rail scrolls independently of the page, so it needs a visible bar — but
+	 * the platform default is a light-mode widget on a near-black column. Thin,
+	 * trackless and faint until pointed at. px rather than rem: the bar should not
+	 * grow with the 1728 grid.
+	 */
+	.toc-rail {
+		scrollbar-width: thin; /* Firefox */
+		scrollbar-color: rgb(255 255 255 / 0.14) transparent;
+	}
+
+	.toc-rail::-webkit-scrollbar {
+		width: 4px;
+	}
+
+	.toc-rail::-webkit-scrollbar-track {
+		background: transparent;
+	}
+
+	.toc-rail::-webkit-scrollbar-thumb {
+		background: rgb(255 255 255 / 0.14);
+		border-radius: 9999px;
+	}
+
+	.toc-rail:hover {
+		scrollbar-color: rgb(255 255 255 / 0.3) transparent;
+	}
+
+	.toc-rail:hover::-webkit-scrollbar-thumb {
+		background: rgb(255 255 255 / 0.3);
+	}
+</style>
+
+<script>
+	import "../../scripts/legal-toc";
+</script>

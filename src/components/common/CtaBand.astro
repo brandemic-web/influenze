@@ -1,6 +1,6 @@
 ---
 import { Image } from "astro:assets";
-import { SIGNUP_URL } from "../../data/site";
+import { APP_URL } from "../../data/site";
 import Button from "./Button.astro";
 
 // Bg images
@@ -172,7 +172,7 @@ const { buttonLabel = "Free Trial" } = Astro.props;
 			Ready to get influenzed?
 		</h2>
 		<div data-cta-button>
-			<Button href={SIGNUP_URL} newTab>{buttonLabel}</Button>
+			<Button href={APP_URL} newTab>{buttonLabel}</Button>
 		</div>
 	</div>
 </section>
