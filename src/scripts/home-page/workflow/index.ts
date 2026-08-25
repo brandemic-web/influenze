@@ -62,7 +62,21 @@ function initWorkflow(mockup: HTMLElement) {
 	const pointer = createPointer(stage, pointerEl);
 	// The story ends where it began, so it loops. Every beat winds its own screen
 	// back as it plays — that is what makes a second pass identical to the first.
-	const master = gsap.timeline({ paused: true, repeat: -1, repeatDelay: 1.5 });
+	// Plays once. The story ends where it began, so the last frame is the first —
+	// the "Play Now" button is what offers a second pass, rather than an endless loop.
+	const master = gsap.timeline({
+		paused: true,
+		onComplete: () => {
+			ended = true;
+			toggle?.setAttribute("data-ended", "");
+			toggle?.setAttribute("aria-label", "Play the walkthrough again");
+		},
+	});
+	// Declared before the timeline so its onComplete can close over them; both are
+	// only ever read after the story has been playing, so the temporal gap is safe.
+	let ended = false;
+	let userPaused = false;
+	const toggle = mockup.querySelector<HTMLButtonElement>("[data-wf-play-toggle]");
 
 	// Beat 1 hands back its rail reset too: beat 11 reveals screen 1 at the loop
 	// point and has to wind it back before it comes into view.
@@ -121,13 +135,41 @@ function initWorkflow(mockup: HTMLElement) {
 		if (hide !== null) master.add(spotlight(el, holdForSpan(hide - show)), show);
 	}
 
-	// Hold until the mockup is actually on screen, then play once.
+	// Hold until the mockup is actually on screen, then play once — unless the
+	// visitor has already paused it, in which case autoplay must not override them.
 	ScrollTrigger.create({
 		trigger: mockup,
 		start: "top 50%",
 		once: true,
-		onEnter: () => master.play(),
+		onEnter: () => {
+			if (!userPaused) master.play();
+		},
 	});
+
+	// Pause/resume, revealed on hover. Wired here rather than in its own script
+	// because `master` is local to this closure. The listener sits on the mockup so
+	// a click anywhere on the canvas toggles; the button's own clicks bubble into
+	// the same handler, so it stays a real control for keyboard users without
+	// needing a second listener that would fire twice.
+	if (toggle) {
+		mockup.dataset.wfControls = "true";
+		mockup.addEventListener("click", () => {
+			// Once the story has finished, a click replays it rather than toggling a
+			// timeline that has nowhere left to run.
+			if (ended) {
+				userPaused = false;
+				toggle.removeAttribute("data-paused");
+				toggle.setAttribute("aria-label", "Pause walkthrough");
+				restartStory();
+				return;
+			}
+			userPaused = !userPaused;
+			toggle.toggleAttribute("data-paused", userPaused);
+			toggle.setAttribute("aria-label", userPaused ? "Resume walkthrough" : "Pause walkthrough");
+			if (userPaused) master.pause();
+			else master.play();
+		});
+	}
 
 	// Entering/leaving landscape is a mode change, so replay from the top rather
 	// than resume the loop at a completely different size.
@@ -137,11 +179,15 @@ function initWorkflow(mockup: HTMLElement) {
 	// screen 1 — beat 11 normally hands it over — so without this the old screen
 	// stays frozen until the story reaches its first swap. Inner state needs nothing;
 	// each beat resets what it touches as the story arrives.
-	const restartStory = () => {
+	function restartStory() {
+		ended = false;
+		toggle?.removeAttribute("data-ended");
 		for (const layer of Object.values(screen)) layer.removeAttribute("data-wf-active");
 		screen.analyze.setAttribute("data-wf-active", "");
 		master.restart();
-	};
+		// restart() unpauses; a visitor who paused before rotating stays paused.
+		if (userPaused) master.pause();
+	}
 
 	mockup.addEventListener(LANDSCAPE_OPEN, restartStory);
 	mockup.addEventListener(LANDSCAPE_CLOSE, restartStory);

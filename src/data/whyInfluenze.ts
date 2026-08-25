@@ -6,6 +6,13 @@ export interface WhyInfluenzeStep {
 }
 
 export const WHY_INFLUENZE_EYEBROW = "WHY INFLUENZE?";
+
+/** Two halves of one line — the accent half renders in brand green. */
+export const WHY_INFLUENZE_HEADING = {
+	lead: "We are the first step for",
+	accent: "every influencer Campaign",
+};
+
 export const WHY_INFLUENZE_BUTTON = "Learn More";
 
 export const WHY_INFLUENZE_STEPS: WhyInfluenzeStep[] = [

@@ -13,8 +13,28 @@ import {
 	COMPARISON_COMPETITORS,
 	COMPARISON_ROWS,
 } from "../../data/comparison";
+import { getHomePage } from "../../sanity/lib/queries";
+import { getPerspectiveCookie } from "../../lib/draft-mode";
 
-const rowCount = COMPARISON_ROWS.length;
+const { data: home } = await getHomePage(getPerspectiveCookie(Astro.cookies));
+// Every row's `others` array is rendered positionally against the
+// competitor-name columns (grid-column: c + 3), so a mismatched length would
+// misalign or blank out cells — only use Sanity's table if every row's width
+// matches its competitor list.
+const sanityComparison =
+	home?.comparison?.competitors?.length &&
+	home.comparison.rows?.length &&
+	home.comparison.rows.every((r) => r.others?.length === home.comparison!.competitors!.length)
+		? home.comparison
+		: null;
+
+const heading = {
+	lead: sanityComparison?.heading?.lead || COMPARISON_HEADING.lead,
+	accent: sanityComparison?.heading?.accent || COMPARISON_HEADING.accent,
+};
+const competitors = sanityComparison?.competitors ?? COMPARISON_COMPETITORS;
+const rows = sanityComparison?.rows ?? COMPARISON_ROWS;
+const rowCount = rows.length;
 ---
 
 <section
@@ -38,8 +58,8 @@ const rowCount = COMPARISON_ROWS.length;
 			id="comparison-heading"
 			class="text-md capitalize leading-[1.15] text-white lg:text-[4rem]"
 		>
-			{COMPARISON_HEADING.lead}<span class="text-brand-primary"
-				>{COMPARISON_HEADING.accent}</span
+			{heading.lead}<span class="text-brand-primary"
+				>{heading.accent}</span
 			>
 		</h2>
 	</div>
@@ -99,7 +119,7 @@ const rowCount = COMPARISON_ROWS.length;
 				</div>
 
 				{
-					COMPARISON_COMPETITORS.map((name, i) => (
+					competitors.map((name, i) => (
 						<div
 							class="relative z-2 flex items-center justify-center px-4 py-8 lg:py-10"
 							style={`grid-column: ${i + 3}; grid-row: 1`}
@@ -113,7 +133,7 @@ const rowCount = COMPARISON_ROWS.length;
 
 			{/* ── Rows ───────────────────────────────────────────────── */}
 			{
-				COMPARISON_ROWS.map((row, r) => {
+				rows.map((row, r) => {
 					const line = "border-t border-[#ffffff52]";
 					return (
 						// `display: contents` again — see the header row above.
@@ -136,7 +156,7 @@ const rowCount = COMPARISON_ROWS.length;
 								style={`grid-column: 2; grid-row: ${r + 2}`}
 								role="cell"
 							>
-								{row.influenze.mark && (
+								{row.influenze?.mark && (
 									<svg
 										class="size-6 shrink-0 text-brand-primary"
 										viewBox="0 0 24 24"
@@ -152,17 +172,17 @@ const rowCount = COMPARISON_ROWS.length;
 										<path d="m9 12 2 2 4-4" />
 									</svg>
 								)}
-								{(row.influenze.accent || row.influenze.text) && (
+								{(row.influenze?.accent || row.influenze?.text) && (
 									<span class="text-[0.75rem] capitalize leading-4.5 text-white lg:text-[1.125rem] lg:leading-6.5">
-										{row.influenze.accent && (
-											<span class="text-brand-primary">{row.influenze.accent} </span>
+										{row.influenze?.accent && (
+											<span class="text-brand-primary">{row.influenze?.accent} </span>
 										)}
-										{row.influenze.text}
+										{row.influenze?.text}
 									</span>
 								)}
 							</div>
 
-							{row.others.map((cell, c) => (
+							{(row.others ?? []).map((cell, c) => (
 								<div
 									class:list={[
 										"relative z-2 flex flex-col items-center justify-center gap-2.5 px-3 py-5 text-center lg:px-5 lg:py-6",

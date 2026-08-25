@@ -10,18 +10,34 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "deploy:emergency": "astro build && wrangler deploy"
+    "deploy": "astro build && wrangler deploy --config dist/server/wrangler.json",
+    "deploy:emergency": "astro build && wrangler deploy",
+    "generate-types": "wrangler types"
   },
   "dependencies": {
+    "@astrojs/cloudflare": "^14.2.1",
+    "@astrojs/react": "^6.0.2",
+    "@sanity/astro": "^3.5.0",
+    "@sanity/image-url": "^2.1.1",
+    "@sanity/preview-url-secret": "^4.1.4",
+    "@sanity/vision": "^6.9.2",
     "@tailwindcss/vite": "^4.3.2",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
     "astro": "^7.0.5",
     "gsap": "^3.15.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "sanity": "^6.9.2",
     "tailwindcss": "^4.3.2"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
     "@astrojs/sitemap": "^3.7.3",
     "typescript": "^6.0.3",
-    "wrangler": "^4.107.0"
+    "wrangler": "^4.123.0"
+  },
+  "overrides": {
+    "@sanity/visual-editing": "^6.0.4"
   }
 }

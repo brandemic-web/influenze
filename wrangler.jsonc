@@ -13,8 +13,14 @@
   // deleting it here would silently take PR previews down too.
   "workers_dev": false,
   "preview_urls": true,
+  // Server-rendered now (see astro.config.mjs). `main` is deliberately not
+  // set here: @astrojs/cloudflare's build validates it eagerly against
+  // dist/server/entry.mjs before that file exists, which breaks a clean
+  // `astro build`. The adapter generates a complete config with `main`
+  // already resolved at dist/server/wrangler.json — deploy with that one
+  // (see the `deploy` script in package.json), not this file directly.
   "assets": {
-    "directory": "./dist",
-    "not_found_handling": "404-page"
+    "directory": "./dist/client",
+    "binding": "ASSETS"
   }
 }

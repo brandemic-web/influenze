@@ -1,5 +1,11 @@
 ---
-import { USE_CASES } from "../../data/useCases";
+import { USE_CASES, USE_CASES_HEADING } from "../../data/useCases";
+import { getHomePage } from "../../sanity/lib/queries";
+import { getPerspectiveCookie } from "../../lib/draft-mode";
+
+const { data: home } = await getHomePage(getPerspectiveCookie(Astro.cookies));
+const heading = home?.useCases?.heading || USE_CASES_HEADING;
+const useCases = home?.useCases?.cards?.length ? home.useCases.cards : USE_CASES;
 ---
 
 <section class="bg-background-primary py-10 lg:pt-25 lg:pb-30" aria-labelledby="use-cases-heading">
@@ -12,16 +18,16 @@ import { USE_CASES } from "../../data/useCases";
 		id="use-cases-heading"
 		class="relative z-2 text-center text-md lg:text-2xl capitalize text-brand-primary"
 	>
-		Who is it for?
+		{heading}
 	</h2>
 
 	{/* GSAP marquee: cards rendered twice for a seamless loop; pauses on hover. */}
 	<div class="use-case-marquee mt-8.5 overflow-hidden pb-1 relative z-2">
 		<ul class="use-case-track flex w-max gap-5">
 			{
-				[...USE_CASES, ...USE_CASES].map((useCase, i) => (
+				[...useCases, ...useCases].map((useCase, i) => (
 					<li
-						aria-hidden={i >= USE_CASES.length ? "true" : undefined}
+						aria-hidden={i >= useCases.length ? "true" : undefined}
 						class="w-121.25 max-w-[85vw] shrink-0 rounded-sm bg-linear-to-r from-[#19123A] via-[#19123A] to-[#575757] p-px"
 					>
 						<div class="h-full rounded-sm bg-background-primary px-6 lg:px-14.5 py-6 lg:py-10">

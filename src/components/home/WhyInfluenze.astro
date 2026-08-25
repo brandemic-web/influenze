@@ -2,29 +2,53 @@
 import { FEATURES_URL } from "../../data/site";
 import {
 	WHY_INFLUENZE_EYEBROW,
+	WHY_INFLUENZE_HEADING,
 	WHY_INFLUENZE_BUTTON,
 	WHY_INFLUENZE_STEPS,
 } from "../../data/whyInfluenze";
+import { getHomePage } from "../../sanity/lib/queries";
+import { getPerspectiveCookie } from "../../lib/draft-mode";
 import iconSearch from "../../assets/images/common/icons/search.svg";
 import iconEye from "../../assets/images/common/icons/eye.svg";
 import iconRocket from "../../assets/images/common/icons/rocket.svg";
 import Button from "../common/Button.astro";
+import { resolveIcon } from "../../sanity/lib/icon";
 
 const stepIcons: Record<string, ImageMetadata> = {
 	search: iconSearch,
 	eye: iconEye,
 	rocket: iconRocket,
 };
+
+const { data: home } = await getHomePage(getPerspectiveCookie(Astro.cookies));
+const why = home?.whyInfluenze;
+const eyebrow = why?.eyebrow || WHY_INFLUENZE_EYEBROW;
+const heading = {
+	lead: why?.heading?.lead || WHY_INFLUENZE_HEADING.lead,
+	accent: why?.heading?.accent || WHY_INFLUENZE_HEADING.accent,
+};
+const buttonLabel = why?.button?.label || WHY_INFLUENZE_BUTTON;
+const buttonHref = why?.button?.href || FEATURES_URL;
+const buttonNewTab = why?.button?.newTab ?? false;
+
+// The icon draws at 48px from lg up, so 96 covers it at 2x DPR.
+const iconSrc = (step: Parameters<typeof resolveIcon>[0]) => resolveIcon(step, stepIcons, 96);
+// Every step needs a resolvable icon, so a step from Sanity with a bad/missing
+// one falls the whole list back rather than rendering a broken image.
+const sanitySteps = why?.steps ?? [];
+const steps = sanitySteps.length && sanitySteps.every((step) => iconSrc(step))
+	? sanitySteps
+	: WHY_INFLUENZE_STEPS;
 ---
 
 <section aria-labelledby="why-influenze-heading" class="-mt-20 overflow-hidden relative z-5">
 	<div class="relative mx-auto flex flex-col items-center px-6 text-center">
-		<p class="text-[1rem] lg:text-[1.125rem] uppercase leading-[normal] text-brand-primary">{WHY_INFLUENZE_EYEBROW}</p>
+		<p class="text-[1rem] lg:text-[1.125rem] uppercase leading-[normal] text-brand-primary">{eyebrow}</p>
 		<h2
 			id="why-influenze-heading"
 			class="mt-5 lg:mt-8 max-w-130 text-md capitalize leading-[normal] text-white lg:text-[2.25rem] [text-box:trim-both_cap_alphabetic]"
 		>
-			We are the first step for <span class="text-brand-primary">every influencer Campaign</span>
+			{heading.lead} <span class="text-brand-primary">{heading.accent}</span>
 		</h2>
 
 		{/* Mobile: full-bleed GSAP ticker (cards rendered twice for a gapless loop). Desktop: static centered row. */}
@@ -40,20 +64,20 @@ const stepIcons: Record<string, ImageMetadata> = {
 				data-reveal-desktop-only
 			>
 				{
-					[...WHY_INFLUENZE_STEPS, ...WHY_INFLUENZE_STEPS].map((step, i) => (
+					[...steps, ...steps].map((step, i) => (
 						<article
 							class:list={[
 								"rounded-sm bg-linear-to-r from-[#19123A] via-[#19123A] to-[#575757] p-px",
-								i >= WHY_INFLUENZE_STEPS.length && "hidden",
+								i >= steps.length && "hidden",
 							]}
-							data-marquee-clone={i >= WHY_INFLUENZE_STEPS.length ? "" : undefined}
-							aria-hidden={i >= WHY_INFLUENZE_STEPS.length ? "true" : undefined}
+							data-marquee-clone={i >= steps.length ? "" : undefined}
+							aria-hidden={i >= steps.length ? "true" : undefined}
 							data-reveal-item
 						>
 							<div class="flex min-h-47 h-full items-center rounded-sm bg-background-primary px-6 py-7 lg:px-15 lg:py-10">
 								<div class="flex w-75 max-w-85 lg:w-92 lg:max-w-full flex-col gap-5 text-left">
 									<div class="flex items-center gap-4">
-										<img src={stepIcons[step.icon].src} alt="" class="h-10 w-10 rounded-sm lg:h-12 lg:w-12" loading="lazy" />
+										<img src={iconSrc(step)} alt="" class="h-10 w-10 rounded-sm object-contain lg:h-12 lg:w-12" loading="lazy" />
 										<h3 class="text-[1.25rem] lg:text-md capitalize leading-[normal] text-white [text-box:trim-both_cap_alphabetic]">{step.title}</h3>
 									</div>
 									<p class="text-[0.875rem] lg:text-[1.125rem] leading-6.5 text-[#CECECE]/70 [text-box:trim-both_cap_alphabetic]">{step.description}</p>
@@ -65,8 +89,8 @@ const stepIcons: Record<string, ImageMetadata> = {
 			</div>
 		</div>
 
-		<Button href={FEATURES_URL} class="mt-6 lg:mt-12">
-			{WHY_INFLUENZE_BUTTON}
+		<Button href={buttonHref} newTab={buttonNewTab} class="mt-6 lg:mt-12">
+			{buttonLabel}
 		</Button>
 	</div>
 </section>

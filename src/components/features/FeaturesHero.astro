@@ -66,7 +66,10 @@ const displacementMap = `<svg xmlns='http://www.w3.org/2000/svg' width='100' hei
 	<rect width='100' height='100' fill='url(#h)'/>
 	<rect width='100' height='100' fill='url(#v)' style='mix-blend-mode:screen'/>
 </svg>`;
-const displacementDataUri = `data:image/svg+xml;base64,${Buffer.from(displacementMap).toString("base64")}`;
+// btoa, not Buffer — this now renders inside Cloudflare's workerd runtime
+// (see astro.config.mjs), which has no Node globals. displacementMap is
+// plain ASCII, so btoa's Latin1-only encoding is safe here.
+const displacementDataUri = `data:image/svg+xml;base64,${btoa(displacementMap)}`;
 ---
 
 <section

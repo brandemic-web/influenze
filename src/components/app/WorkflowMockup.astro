@@ -70,6 +70,24 @@ const { class: className = "" } = Astro.props;
 	<div class="wf-card-layer">
 		{WORKFLOW_CARDS.map((card) => <WorkflowCard card={card} />)}
 	</div>
+
+	{/*
+		Pause/resume for the story. A sibling of the aria-hidden stage, like the landscape
+		controls, so the one focusable thing in the mockup stays reachable. Revealed only
+		once the timeline script has claimed it (`data-wf-controls`) — with no JS, or under
+		reduced motion where there is no timeline, there is nothing for it to control.
+	*/}
+	<button type="button" class="wf-play-toggle" data-wf-play-toggle aria-label="Pause walkthrough">
+		<svg class="wf-play-toggle-pause" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+			<rect x="6" y="5" width="4" height="14" rx="1" />
+			<rect x="14" y="5" width="4" height="14" rx="1" />
+		</svg>
+		<svg class="wf-play-toggle-play" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+			<path d="M8 5.5a1 1 0 0 1 1.53-.85l9 6.5a1 1 0 0 1 0 1.7l-9 6.5A1 1 0 0 1 8 18.5Z" />
+		</svg>
+		{/* Only shown once the story has run to its end, where the button becomes a replay. */}
+		<span class="wf-play-toggle-label">Play Again</span>
+	</button>
 </div>
 
 {/*
@@ -106,6 +124,120 @@ const { class: className = "" } = Astro.props;
 </div>
 
 <style>
+	/* ── Play/pause toggle ──────────────────────────────────────────────────── */
+	/*
+	 * Hidden until scripts/home-page/workflow claims it, and then only visible while
+	 * the mockup is hovered or the button itself is focused — except when the story
+	 * is paused, where it stays up as the only cue that it can be resumed.
+	 */
+	.wf-play-toggle {
+		display: none;
+	}
+
+	/* The whole canvas is the hit area — the button is the affordance, not the target. */
+	.wf-mockup[data-wf-controls] {
+		cursor: pointer;
+	}
+
+	.wf-mockup[data-wf-controls] .wf-play-toggle {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		z-index: 2;
+		display: grid;
+		place-items: center;
+		width: 6rem;
+		height: 6rem;
+		transform: translate(-50%, -50%);
+		border-radius: 9999px;
+		border: 1px solid rgba(255, 255, 255, 0.35);
+		background: transparent;
+		backdrop-filter: blur(6px);
+		color: #fff;
+		cursor: pointer;
+		opacity: 0;
+		transition:
+			opacity 0.2s ease,
+			background-color 0.2s ease;
+	}
+
+	.wf-mockup[data-wf-controls]:hover .wf-play-toggle,
+	.wf-mockup[data-wf-controls] .wf-play-toggle:focus-visible,
+	.wf-mockup[data-wf-controls] .wf-play-toggle[data-paused] {
+		opacity: 1;
+	}
+
+	.wf-play-toggle svg {
+		width: 1.75rem;
+		height: 1.75rem;
+	}
+
+	/* One icon at a time: pause while playing, play while paused. */
+	.wf-play-toggle .wf-play-toggle-play,
+	.wf-play-toggle[data-paused] .wf-play-toggle-pause {
+		display: none;
+	}
+
+	.wf-play-toggle[data-paused] .wf-play-toggle-play {
+		display: block;
+	}
+
+	/*
+	 * Ended: the circle becomes a labelled pill, and stays up unhovered — it is the
+	 * only thing telling a visitor the walkthrough can be run again.
+	 */
+	.wf-play-toggle-label {
+		display: none;
+		font-size: 1rem;
+		line-height: 1;
+		white-space: nowrap;
+	}
+
+	.wf-mockup[data-wf-controls] .wf-play-toggle[data-ended] {
+		grid-auto-flow: column;
+		gap: 0.625rem;
+		width: auto;
+		height: auto;
+		padding: 1.2rem 1.85rem;
+		border: none;
+		border-radius: 9999px;
+		background: #653ee1;
+		color: #fff;
+		font-weight: 500;
+		opacity: 1;
+	}
+
+	.wf-play-toggle[data-ended] .wf-play-toggle-pause {
+		display: none;
+	}
+
+	.wf-play-toggle[data-ended] .wf-play-toggle-play {
+		display: block;
+		width: 1.25rem;
+		height: 1.25rem;
+	}
+
+	.wf-play-toggle[data-ended] .wf-play-toggle-label {
+		display: block;
+	}
+
+	/*
+	 * Touch: no hover, so a control that appears on hover would sit over a running
+	 * story with nothing having asked for it. Nothing shows while it plays; a tap
+	 * pauses and reveals the play circle, and the pill is kept for the end.
+	 */
+	@media (hover: none) {
+		.wf-mockup[data-wf-controls] .wf-play-toggle:not([data-ended], [data-paused]) {
+			display: none;
+		}
+
+		/* The canvas is scaled right down here, so the circle comes down with it. */
+		.wf-mockup[data-wf-controls] .wf-play-toggle:not([data-ended]) {
+			width: 4rem;
+			height: 4rem;
+		}
+	}
+
 	/* ── Landscape cue ──────────────────────────────────────────────────────── */
 	.wf-landscape-cue {
 		display: flex;

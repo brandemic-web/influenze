@@ -1,7 +1,10 @@
 ---
 import Button from "../common/Button.astro";
 import { FEATURES_URL } from "../../data/site";
-import { CREATORS_AI_FEATURES, CREATORS_AI_BUTTON } from "../../data/creatorsAI";
+import { CREATORS_AI_FEATURES, CREATORS_AI_BUTTON, CREATORS_AI_HEADING } from "../../data/creatorsAI";
+import { getHomePage } from "../../sanity/lib/queries";
+import { getPerspectiveCookie } from "../../lib/draft-mode";
+import { resolveIcon } from "../../sanity/lib/icon";
 import { panelId, tabId } from "../../scripts/creators-ai";
 import AnalyzeFilterSidebar from "../app/elements/AnalyzeFilterSidebar.astro";
 import PlatformFilter from "../app/elements/PlatformFilter.astro";
@@ -26,6 +29,28 @@ const featureIcons: Record<string, ImageMetadata> = {
 	scaling: iconScaling,
 };
 
+const { data: home } = await getHomePage(getPerspectiveCookie(Astro.cookies));
+const creatorsAI = home?.creatorsAI;
+const heading = {
+	lead: creatorsAI?.heading?.lead || CREATORS_AI_HEADING.lead,
+	accent: creatorsAI?.heading?.accent || CREATORS_AI_HEADING.accent,
+};
+const buttonLabel = creatorsAI?.button?.label || CREATORS_AI_BUTTON;
+const buttonHref = creatorsAI?.button?.href || FEATURES_URL;
+const buttonNewTab = creatorsAI?.button?.newTab ?? false;
+
+// The icon draws at 48px from lg up, so 96 covers it at 2x DPR.
+const featureIcon = (feature: Parameters<typeof resolveIcon>[0]) => resolveIcon(feature, featureIcons, 96);
+// Each of the 4 tabs drives one hardcoded, hand-positioned visual panel below
+// (Search Globally / Know The Audience / Choose The Right Creators / Scale
+// Campaigns) by index — so the count can't vary and the order can't change,
+// only the title/description/icon per slot. Anything else falls back.
+const sanityFeatures = creatorsAI?.features ?? [];
+const features =
+	sanityFeatures.length === CREATORS_AI_FEATURES.length && sanityFeatures.every((f) => featureIcon(f))
+		? sanityFeatures
+		: CREATORS_AI_FEATURES;
+
 /**
  * The visuals are real UI element components at design size on a fixed 668 x 680 stage,
  * so every panel shares one coordinate space. Below `lg` the stage scales as a unit,
@@ -49,9 +74,7 @@ const featureIcons: Record<string, ImageMetadata> = {
 			id="creators-ai-heading"
 			class="mb-2 w-full max-w-222.25 text-center text-md lg:mb-6 lg:text-3xl capitalize leading-[1.2] text-white lg:text-[3.4375rem] lg:leading-[normal] lg:[text-box:trim-both_cap_alphabetic]"
 		>
-			The world's creators,<br /><span class="text-brand-primary"
-				>found with AI</span
-			>
+			{heading.lead}<br /><span class="text-brand-primary">{heading.accent}</span>
 		</h2>
 
 		{/* outer glass panel */}
@@ -59,7 +82,7 @@ const featureIcons: Record<string, ImageMetadata> = {
 			class="relative mt-8 flex w-full flex-col items-center gap-4 rounded-[1.75rem] border border-white/15 bg-white/10 shadow-[0_0.5rem_2rem_rgba(0,0,0,0.18),inset_0_0.0625rem_0_rgba(255,255,255,0.18)] backdrop-blur-md backdrop-saturate-150 px-6 pb-8 pt-12 lg:h-199.25 lg:gap-8 lg:flex-row lg:items-center lg:justify-between lg:py-5.75 lg:pl-[min(9.25rem,8%)] lg:pr-4.75"
 		>
 			<div class="absolute -top-6 left-0 right-0 mx-auto w-max">
-				<Button href={FEATURES_URL}>{CREATORS_AI_BUTTON}</Button>
+				<Button href={buttonHref} newTab={buttonNewTab}>{buttonLabel}</Button>
 			</div>
 
 			{/*
@@ -75,7 +98,7 @@ const featureIcons: Record<string, ImageMetadata> = {
 				aria-orientation="vertical"
 			>
 				{
-					CREATORS_AI_FEATURES.map((feature, i) => (
+					features.map((feature, i) => (
 						<>
 							{i !== 0 && <div class="creators-divider h-px w-full bg-white/40 lg:max-w-124" />}
 
@@ -91,9 +114,9 @@ const featureIcons: Record<string, ImageMetadata> = {
 							>
 								<span class="flex items-center gap-4">
 									<img
-										src={featureIcons[feature.icon].src}
+										src={featureIcon(feature)}
 										alt=""
-										class="h-7.5 w-7.5 rounded-sm lg:h-12 lg:w-12"
+										class="h-7.5 w-7.5 rounded-sm object-contain lg:h-12 lg:w-12"
 										loading="lazy"
 									/>
 									<span class="text-[1.125rem] lg:text-md capitalize leading-[normal] text-white lg:[text-box:trim-both_cap_alphabetic]">
