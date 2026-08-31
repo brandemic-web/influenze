@@ -106,6 +106,8 @@ Open items, all content rather than code:
   in `pages/index.astro`. Re-enable both lines once real quotes land.
 - **`data/nav.ts`** — the Resources dropdown is commented out pending destinations.
 
+New change
+
 Known and accepted:
 
 - `perf-use-image-component` × 7 in the dev toolbar — all SVGs, which Astro's
