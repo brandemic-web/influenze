@@ -42,6 +42,18 @@ jobs:
         run: npx astro check
 
       - name: Build
+        env:
+          # astro.config.mjs reads these at build time to configure the
+          # Sanity integration. Without them the client gets an undefined
+          # projectId and throws `Configuration must contain projectId` on
+          # the first request in every real (workerd) environment — passes
+          # silently in local dev/preview, but 500s every route once deployed.
+          # PUBLIC_SITE_ORIGIN is deliberately not set here: it only feeds
+          # stega's studio edit-links, and the preview's actual URL isn't
+          # known until after this build finishes.
+          PUBLIC_SANITY_PROJECT_ID: ${{ secrets.PUBLIC_SANITY_PROJECT_ID }}
+          PUBLIC_SANITY_DATASET: ${{ secrets.PUBLIC_SANITY_DATASET }}
+          SANITY_API_READ_TOKEN: ${{ secrets.SANITY_API_READ_TOKEN }}
         run: npm run build
 
       - name: Upload version

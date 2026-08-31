@@ -45,6 +45,19 @@ jobs:
         run: npx astro check
 
       - name: Build
+        env:
+          # astro.config.mjs reads these at build time to configure the
+          # Sanity integration. Without them the client gets an undefined
+          # projectId and throws `Configuration must contain projectId` on
+          # the first request in every real (workerd) environment — passes
+          # silently in local dev/preview, but 500s every route once deployed.
+          PUBLIC_SANITY_PROJECT_ID: ${{ secrets.PUBLIC_SANITY_PROJECT_ID }}
+          PUBLIC_SANITY_DATASET: ${{ secrets.PUBLIC_SANITY_DATASET }}
+          SANITY_API_READ_TOKEN: ${{ secrets.SANITY_API_READ_TOKEN }}
+          # Feeds stega's studio edit-links only — not sensitive, so it's a
+          # plain literal here rather than a secret. Production has one
+          # fixed origin, unlike preview.yml's per-PR builds.
+          PUBLIC_SITE_ORIGIN: https://influenze.ai
         run: npm run build
 
       - name: Deploy to production
