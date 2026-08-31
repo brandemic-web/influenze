@@ -25,5 +25,16 @@
   },
   "kv_namespaces": [
     { "binding": "SESSION", "id": "2d824550d547478dadc7d3f942d884db" }
-  ]
+  ],
+  // preview_urls (PR preview builds, uploaded via `wrangler versions upload`)
+  // read bindings from this block instead of the top-level ones above.
+  // @astrojs/cloudflare auto-injects a SESSION binding here too when one
+  // isn't already present — but, same as the top-level one, without an id —
+  // so every preview request threw `Invalid binding \`SESSION\`` the moment
+  // Astro's session middleware touched it, a 500 with an empty body.
+  "previews": {
+    "kv_namespaces": [
+      { "binding": "SESSION", "id": "2d824550d547478dadc7d3f942d884db" }
+    ]
+  }
 }
