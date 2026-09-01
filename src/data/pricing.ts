@@ -52,8 +52,6 @@ export const PRICING_TIERS: PricingTier[] = [
 		id: "enterprise",
 		name: "Enterprise",
 		minSpend: SLIDER_MAX,
-		// Never shown — Enterprise always quotes (see `custom`), but kept to
-		// continue the +10-per-tier bonus pattern for the data.
 		bonusPct: 30,
 		custom: true,
 	},
