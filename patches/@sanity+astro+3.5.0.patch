@@ -1,3 +1,8 @@
+On Windows, require.resolve() returns paths with backslashes, so the
+package's `.replace(/\/package\.json$/, "")` (forward-slash only) fails
+to strip the suffix and dedupe resolution breaks. This patch widens the
+regex to `/[\\/]package\.json$/` to match either separator.
+
 diff --git a/node_modules/@sanity/astro/dist/sanity-astro.js b/node_modules/@sanity/astro/dist/sanity-astro.js
 index 8a04f2e..3a9ed29 100644
 --- a/node_modules/@sanity/astro/dist/sanity-astro.js

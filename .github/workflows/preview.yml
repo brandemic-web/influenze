@@ -1,27 +1,16 @@
-# Every pull request gets its own preview URL; production is never touched.
-#
-# `wrangler versions upload` uploads a build to Cloudflare and gives it a
-# <version>-influenze.<subdomain>.workers.dev URL, but routes no production
-# traffic to it. Only deploy.yml — push to main — changes what influenze.ai
-# serves, so "publish my branch for review" can no longer overwrite the site.
-#
-# PRs from forks cannot read repository secrets, so the upload step would fail
-# for them. Everything runs in-repo today, so that is not yet a concern.
-
 name: Preview
 
 on:
   pull_request:
     branches: [main]
 
-# A newer push to the same PR makes the in-flight run obsolete.
 concurrency:
   group: preview-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 permissions:
   contents: read
-  pull-requests: write # to post the preview URL back onto the PR
+  pull-requests: write
 
 jobs:
   preview:
@@ -31,26 +20,16 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22 # package.json engines wants >=22.12.0
+          node-version: 22
           cache: npm
 
       - run: npm ci
 
-      # AGENTS.md requires this to stay at zero errors. Running it before the
-      # upload means a red check blocks the merge, rather than being noticed later.
       - name: Typecheck
         run: npx astro check
 
       - name: Build
         env:
-          # astro.config.mjs reads these at build time to configure the
-          # Sanity integration. Without them the client gets an undefined
-          # projectId and throws `Configuration must contain projectId` on
-          # the first request in every real (workerd) environment — passes
-          # silently in local dev/preview, but 500s every route once deployed.
-          # PUBLIC_SITE_ORIGIN is deliberately not set here: it only feeds
-          # stega's studio edit-links, and the preview's actual URL isn't
-          # known until after this build finishes.
           PUBLIC_SANITY_PROJECT_ID: ${{ secrets.PUBLIC_SANITY_PROJECT_ID }}
           PUBLIC_SANITY_DATASET: ${{ secrets.PUBLIC_SANITY_DATASET }}
           SANITY_API_READ_TOKEN: ${{ secrets.SANITY_API_READ_TOKEN }}
@@ -61,9 +40,6 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          # PR title reaches the shell as an env var, never interpolated into the
-          # script body — a title containing quotes or backticks would otherwise
-          # break the command, or inject into it.
           PR_NUMBER: ${{ github.event.pull_request.number }}
           PR_TITLE: ${{ github.event.pull_request.title }}
         run: |
@@ -72,8 +48,6 @@ jobs:
             --tag "pr-$PR_NUMBER" \
             --message "PR #$PR_NUMBER: $PR_TITLE" 2>&1 | tee upload.log
 
-          # The host is <version>-influenze.<subdomain>.workers.dev, so the
-          # pattern has to allow the dots as well as the hyphens.
           url="$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' upload.log | head -1)"
           if [ -z "$url" ]; then
             echo "::warning::Upload succeeded but no preview URL was found in the output. Is preview_urls enabled?"
@@ -90,7 +64,5 @@ jobs:
         run: |
           body="$(printf '**Preview:** %s\n\nBuilt from `%s`. Production is untouched — merging this PR is what deploys it.' \
             "$URL" "${SHA:0:7}")"
-          # Edit the existing comment so repeated pushes do not spam the PR;
-          # fall back to a plain create on older gh versions.
           gh pr comment "$PR_NUMBER" --body "$body" --edit-last --create-if-none \
             || gh pr comment "$PR_NUMBER" --body "$body"

@@ -1,12 +1,3 @@
-# The only path to production. Merging a PR into main is the deploy.
-#
-# Identical to preview.yml up to the last step, which runs `wrangler deploy`
-# instead of `versions upload` — that is the single difference between "a build
-# sitting on the edge" and "what influenze.ai serves".
-#
-# Every deploy is a retained version, so a bad launch is `wrangler rollback`
-# rather than a rebuild. `npx wrangler versions list` shows the last ten.
-
 name: Deploy
 
 on:

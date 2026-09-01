@@ -52,8 +52,8 @@ export const PRICING_TIERS: PricingTier[] = [
 		id: "enterprise",
 		name: "Enterprise",
 		minSpend: SLIDER_MAX,
-		// The slider's own 1,00,000 dot still shows a price (quote mode only
-		// starts past that dot), so it keeps the +10-per-tier bonus pattern going.
+		// Never shown — Enterprise always quotes (see `custom`), but kept to
+		// continue the +10-per-tier bonus pattern for the data.
 		bonusPct: 30,
 		custom: true,
 	},

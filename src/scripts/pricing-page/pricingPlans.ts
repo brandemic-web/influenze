@@ -68,10 +68,10 @@ function initPanel(panel: HTMLElement): void {
 	function render(movePosition = true): void {
 		const index = tierIndexFromSpend(spend, tiers);
 		const tier = tiers[index];
-		// The last dot itself (₹1,00,000, reached via the Enterprise tab or dot)
-		// still shows a price — only the flat stretch past it quotes instead, so
-		// this is keyed off handle position, not the tier's `custom` flag.
-		const quoting = isPastLastDot(pos);
+		// Quoting is keyed off the tier's `custom` flag, not handle position —
+		// reaching Enterprise's own dot (₹1,00,000) already quotes, matching
+		// first paint's `initialTier.custom` check in PricingPlans.astro.
+		const quoting = tier.custom === true;
 
 		if (movePosition) moveTo(pos);
 
