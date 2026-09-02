@@ -20,8 +20,9 @@ function initFooterReveal() {
 
 	gsap
 		.timeline({ scrollTrigger: { trigger: footer, start: "top 80%", once: true } })
-		.fromTo(bolt, { clipPath: "inset(0% 0 100% 0)" }, { clipPath: "inset(0% 0 0% 0)", duration: 2, ease: "power2.inOut" }, 0)
-		.fromTo(wordmarks, { y: 80, opacity: 0 }, { y: 0, opacity: 1, duration: 1.5, ease: "power2.inOut" }, 0);
+		.fromTo(wordmarks, { y: 80, opacity: 0 }, { y: 0, opacity: 1, duration: 1.5, ease: "power2.inOut" }, 0)
+		.fromTo(bolt, { opacity: 0 }, { opacity: 1, duration: 2, ease: "power2.inOut" }, "-=0.8");
+		
 }
 
 initFooterReveal();
