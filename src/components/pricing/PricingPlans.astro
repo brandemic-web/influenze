@@ -207,11 +207,11 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
       {/*
 				Rail captions — positioned on each dot's centre rather than spaced. The
 				first hugs the left edge, since centring would push it off the rail.
-				Below `lg` only the two bounding labels survive; four would collide. The
-				dots are unaffected — all four still render.
+				Four labels across a phone-width rail collide at the desktop text size,
+				so they shrink below `lg` instead of dropping the two middle ones.
 			*/}
       <div
-        class="relative mt-1 h-5 text-[0.875rem] text-brand-primary lg:text-[1.125rem]"
+        class="relative mt-1 h-5 text-[0.5rem] text-brand-primary lg:text-[1.125rem]"
       >
         {
           railCaptions.map((caption, i) => (
@@ -219,7 +219,6 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
               class:list={[
                 "absolute whitespace-nowrap",
                 i === 0 ? "left-0" : "-translate-x-1/2",
-                i > 0 && i < VISIBLE_DOTS - 1 ? "hidden lg:block" : "",
               ]}
               style={i === 0 ? undefined : `left:${caption.pos}%`}
             >

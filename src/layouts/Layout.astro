@@ -5,8 +5,16 @@ import { SITE } from "../data/site";
 import Header from "../components/common/Header.astro";
 import CtaBand from "../components/common/CtaBand.astro";
 import Footer from "../components/common/Footer.astro";
+import SanityVisualEditing from "../components/common/SanityVisualEditing.tsx";
+import DisableDraftMode from "../components/common/DisableDraftMode.tsx";
+import { isDraftMode } from "../lib/draft-mode";
 import ogSource from "../assets/images/common/ui_images/campaign_creator_dashboard.png";
 import logoSource from "../assets/images/common/logos_and_icons/influenze_wordmark_mobile.png";
+
+// Driven entirely by Sanity: the Presentation tool sets a cookie via
+// /api/draft-mode/enable when you open it, and that cookie's presence is
+// what turns this on — no env flag to flip.
+const draftMode = isDraftMode(Astro.cookies);
 
 interface Props {
 	title?: string;
@@ -129,5 +137,13 @@ const structuredData = {
 		<slot />
 		{!hideCta && <CtaBand buttonLabel={ctaButtonLabel} />}
 		<Footer />
+		{
+			draftMode && (
+				<>
+					<SanityVisualEditing client:only="react" />
+					<DisableDraftMode client:only="react" />
+				</>
+			)
+		}
 	</body>
 </html>

@@ -1,15 +1,7 @@
 ---
 /**
- * The hero's product-workflow mockup: the app's screens as real markup, not a flat
- * image, so GSAP can drive them as a narrative. Authored on the app's 1440x900 canvas
- * and scaled to the hero's width — see `.wf-stage` in styles/app-tokens.css.
- *
- * The `StoryStep` list below is the only place step numbers are written down; beats
- * address layers by `data-wf-screen` and workflowCards.ts times off the same index.
- * Several steps are the same app screen in a different state, hence shared components.
- * Step 2 is absent on purpose — beat 1 animates step 1 into that state in place.
- *
- * Full walkthrough and per-beat reasoning: APP-SPEC.md.
+ * Hero product-workflow mockup: the app's screens as real markup (not a flat image)
+ * so GSAP can animate them as a narrative. See APP-SPEC.md for the full walkthrough.
  */
 import Analyze from "./screens/analyze/Analyze.astro";
 import AnalyzedCreator from "./screens/analyze/AnalyzedCreator.astro";
@@ -37,19 +29,13 @@ const { class: className = "" } = Astro.props;
 	data-canvas-fit
 	data-landscape-target="workflow"
 >
-	{/*
-		Hidden from assistive tech: this is a picture of the product, just drawn in markup
-		rather than exported — a screen reader would hear nine fake app shells with
-		invented handles and balances, and 83 stray `<header>`s would bury the page's real
-		landmarks. The explainer cards in `.wf-card-layer` carry the narration and stay
-		exposed. Nothing inside is focusable, which is what makes hiding it legal — the
-		landscape controls are siblings of this element on purpose. Keep it that way.
-	*/}
+	{/* Hidden from assistive tech — this is a markup picture of the product; narration lives in .wf-card-layer instead. */}
 	<div
 		class="wf-stage overflow-hidden rounded-[1.75rem] bg-wf-page"
 		data-canvas
 		aria-hidden="true"
 	>
+		{/* Step numbers here are the only source; step 2 is skipped on purpose (beat 1 animates step 1 into that state). */}
 		<StoryStep step={1} active><Analyze /></StoryStep>
 		<StoryStep step={3}><Analyze results /></StoryStep>
 		<StoryStep step={4}><AnalyzedCreator tab="about" /></StoryStep>
@@ -63,28 +49,32 @@ const { class: className = "" } = Astro.props;
 		<WorkflowPointer />
 	</div>
 
-	{/*
-		The cards hang past the app frame's right edge and the stage has to clip, so they
-		get their own unclipped layer at the same canvas geometry. See `.wf-card-layer`.
-	*/}
+	{/* Own unclipped layer so cards can hang past the stage's clipped edge — see .wf-card-layer. */}
 	<div class="wf-card-layer">
 		{WORKFLOW_CARDS.map((card) => <WorkflowCard card={card} />)}
 	</div>
+
+	{/* Play/pause control, revealed only once scripts/home-page/workflow claims it (data-wf-controls). */}
+	<button type="button" class="wf-play-toggle" data-wf-play-toggle aria-label="Pause walkthrough">
+		<svg class="wf-play-toggle-pause" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+			<rect x="6" y="5" width="4" height="14" rx="1" />
+			<rect x="14" y="5" width="4" height="14" rx="1" />
+		</svg>
+		<svg class="wf-play-toggle-play" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+			<path d="M8 5.5a1 1 0 0 1 1.53-.85l9 6.5a1 1 0 0 1 0 1.7l-9 6.5A1 1 0 0 1 8 18.5Z" />
+		</svg>
+		{/* Only shown once the story has run to its end, where the button becomes a replay. */}
+		<span class="wf-play-toggle-label">Play Again</span>
+	</button>
 </div>
 
-{/*
-	Below lg the canvas scales down too far to follow, so offer a quarter-turned
-	fullscreen view. Text, not an icon — it has to say what it does.
-*/}
+{/* Below lg the canvas scales too small to read — offers a fullscreen landscape view instead. */}
 <button type="button" class="wf-landscape-cue" data-landscape-open="workflow">
 	<img src={mousePointerClick.src} alt="" width="14" height="14" />
 	<span>Show in landscape mode</span>
 </button>
 
-{/*
-	The landscape view. Reparented to <body> on init — see scripts/landscape-viewer
-	for why — and the mockup above is moved into the rotor while it is open.
-*/}
+{/* Landscape view; reparented to <body> on init — see scripts/landscape-viewer. */}
 <div class="wf-landscape" data-landscape-host="workflow" role="dialog" aria-modal="true" aria-label="Workflow walkthrough, landscape view" hidden>
 	<div class="wf-landscape-rotor" data-landscape-rotor>
 		<button type="button" class="wf-landscape-close" data-landscape-close aria-label="Close landscape view">
@@ -106,7 +96,108 @@ const { class: className = "" } = Astro.props;
 </div>
 
 <style>
-	/* ── Landscape cue ──────────────────────────────────────────────────────── */
+	/* Hidden until claimed by scripts/home-page/workflow; shown on hover/focus/paused. */
+	.wf-play-toggle {
+		display: none;
+	}
+
+	/* The whole canvas is the hit area — the button is the affordance, not the target. */
+	.wf-mockup[data-wf-controls] {
+		cursor: pointer;
+	}
+
+	.wf-mockup[data-wf-controls] .wf-play-toggle {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		z-index: 2;
+		display: grid;
+		place-items: center;
+		width: 6rem;
+		height: 6rem;
+		transform: translate(-50%, -50%);
+		border-radius: 9999px;
+		border: 1px solid rgba(255, 255, 255, 0.35);
+		background: transparent;
+		backdrop-filter: blur(6px);
+		color: #fff;
+		cursor: pointer;
+		opacity: 0;
+		transition:
+			opacity 0.2s ease,
+			background-color 0.2s ease;
+	}
+
+	.wf-mockup[data-wf-controls]:hover .wf-play-toggle,
+	.wf-mockup[data-wf-controls] .wf-play-toggle:focus-visible,
+	.wf-mockup[data-wf-controls] .wf-play-toggle[data-paused] {
+		opacity: 1;
+	}
+
+	.wf-play-toggle svg {
+		width: 1.75rem;
+		height: 1.75rem;
+	}
+
+	/* One icon at a time: pause while playing, play while paused. */
+	.wf-play-toggle .wf-play-toggle-play,
+	.wf-play-toggle[data-paused] .wf-play-toggle-pause {
+		display: none;
+	}
+
+	.wf-play-toggle[data-paused] .wf-play-toggle-play {
+		display: block;
+	}
+
+	/* Ended state becomes a labelled "Play Again" pill that stays visible unhovered. */
+	.wf-play-toggle-label {
+		display: none;
+		font-size: 1rem;
+		line-height: 1;
+		white-space: nowrap;
+	}
+
+	.wf-mockup[data-wf-controls] .wf-play-toggle[data-ended] {
+		grid-auto-flow: column;
+		gap: 0.625rem;
+		width: auto;
+		height: auto;
+		padding: 1.2rem 1.85rem;
+		border: none;
+		border-radius: 9999px;
+		background: #653ee1;
+		color: #fff;
+		font-weight: 500;
+		opacity: 1;
+	}
+
+	.wf-play-toggle[data-ended] .wf-play-toggle-pause {
+		display: none;
+	}
+
+	.wf-play-toggle[data-ended] .wf-play-toggle-play {
+		display: block;
+		width: 1.25rem;
+		height: 1.25rem;
+	}
+
+	.wf-play-toggle[data-ended] .wf-play-toggle-label {
+		display: block;
+	}
+
+	/* Touch has no hover: control stays hidden while playing, shown on pause/end. */
+	@media (hover: none) {
+		.wf-mockup[data-wf-controls] .wf-play-toggle:not([data-ended], [data-paused]) {
+			display: none;
+		}
+
+		/* The canvas is scaled right down here, so the circle comes down with it. */
+		.wf-mockup[data-wf-controls] .wf-play-toggle:not([data-ended]) {
+			width: 4rem;
+			height: 4rem;
+		}
+	}
+
 	.wf-landscape-cue {
 		display: flex;
 		align-items: center;
@@ -133,27 +224,18 @@ const { class: className = "" } = Astro.props;
 		text-underline-offset: 0.25rem;
 	}
 
-	/*
-	 * Desktop shows the canvas at a readable size already. Hidden here rather than
-	 * with `lg:hidden`, because the `display: flex` above is a class+attribute
-	 * selector and would outrank the utility.
-	 */
+	/* Hidden here, not lg:hidden — that utility would lose to the attribute selector above. */
 	@media (min-width: 64rem) {
 		.wf-landscape-cue {
 			display: none;
 		}
 	}
 
-	/* ── Landscape view ─────────────────────────────────────────────────────── */
 	.wf-landscape[hidden] {
 		display: none;
 	}
 
-	/*
-	 * `container-type: size` publishes both axes as cq units, which is what lets the
-	 * rotor swap them below and the canvas fit itself without measuring anything in
-	 * JS. No `display` is set here on purpose — it would beat the `hidden` attribute.
-	 */
+	/* container-type: size publishes cq units the rotor and canvas fit off; no `display` so [hidden] still wins. */
 	.wf-landscape {
 		position: fixed;
 		inset: 0;
@@ -162,13 +244,7 @@ const { class: className = "" } = Astro.props;
 		background: #0a0718;
 	}
 
-	/*
-	 * Portrait: the box takes the screen's height as its width and vice versa, then
-	 * turns a quarter turn — so it covers the screen exactly while its contents are
-	 * laid out landscape. Everything inside, the close button included, turns with
-	 * it, which is what makes the whole thing read as a rotated screen rather than a
-	 * rotated picture on an upright one.
-	 */
+	/* Portrait: swaps the screen's height/width and rotates 90deg so contents lay out landscape. */
 	.wf-landscape-rotor {
 		position: absolute;
 		top: 50%;
@@ -180,14 +256,7 @@ const { class: className = "" } = Astro.props;
 		transform: translate(-50%, -50%) rotate(90deg);
 	}
 
-	/*
-	 * Contain-fit, in one expression. Percentages cannot do this — a percentage width
-	 * and a percentage height resolve against different axes — but cq units all
-	 * resolve against the same container, so the smaller of "all the width there is"
-	 * and "as wide as the height allows" is exactly the fit. `height: auto` lets
-	 * `.wf-mockup`'s own aspect-ratio supply the rest. In portrait the axes are
-	 * swapped to match the rotor.
-	 */
+	/* cq units give a contain-fit in one expression — percentages can't mix axes like this. */
 	.wf-landscape-rotor .wf-mockup {
 		width: min(100cqh, calc(100cqw * 1440 / 900));
 		height: auto;

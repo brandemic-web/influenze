@@ -52,9 +52,7 @@ export const PRICING_TIERS: PricingTier[] = [
 		id: "enterprise",
 		name: "Enterprise",
 		minSpend: SLIDER_MAX,
-		// Never rendered: reaching ₹1,00,000 puts the panel in quote mode, so the
-		// bonus is whatever the Enterprise conversation lands on.
-		bonusPct: 0,
+		bonusPct: 30,
 		custom: true,
 	},
 ];

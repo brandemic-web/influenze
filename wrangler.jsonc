@@ -13,8 +13,28 @@
   // deleting it here would silently take PR previews down too.
   "workers_dev": false,
   "preview_urls": true,
+  // Server-rendered now (see astro.config.mjs). `main` is deliberately not
+  // set here: @astrojs/cloudflare's build validates it eagerly against
+  // dist/server/entry.mjs before that file exists, which breaks a clean
+  // `astro build`. The adapter generates a complete config with `main`
+  // already resolved at dist/server/wrangler.json — deploy with that one
+  // (see the `deploy` script in package.json), not this file directly.
   "assets": {
-    "directory": "./dist",
-    "not_found_handling": "404-page"
+    "directory": "./dist/client",
+    "binding": "ASSETS"
+  },
+  "kv_namespaces": [
+    { "binding": "SESSION", "id": "2d824550d547478dadc7d3f942d884db" }
+  ],
+  // preview_urls (PR preview builds, uploaded via `wrangler versions upload`)
+  // read bindings from this block instead of the top-level ones above.
+  // @astrojs/cloudflare auto-injects a SESSION binding here too when one
+  // isn't already present — but, same as the top-level one, without an id —
+  // so every preview request threw `Invalid binding \`SESSION\`` the moment
+  // Astro's session middleware touched it, a 500 with an empty body.
+  "previews": {
+    "kv_namespaces": [
+      { "binding": "SESSION", "id": "2d824550d547478dadc7d3f942d884db" }
+    ]
   }
 }

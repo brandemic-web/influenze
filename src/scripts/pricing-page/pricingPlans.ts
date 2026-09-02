@@ -68,11 +68,9 @@ function initPanel(panel: HTMLElement): void {
 	function render(movePosition = true): void {
 		const index = tierIndexFromSpend(spend, tiers);
 		const tier = tiers[index];
-		// Reaching a `custom` tier — Enterprise, from ₹1,00,000 up — means there is
-		// no self-serve price to show, so the "talk to us" body takes the price
-		// body's place. Keyed off the tier, not the handle position, so hitting the
-		// last dot exactly (or clicking the Enterprise tab) already quotes. Matches
-		// the server render, which hides the bodies on `initialTier.custom`.
+		// Quoting is keyed off the tier's `custom` flag, not handle position —
+		// reaching Enterprise's own dot (₹1,00,000) already quotes, matching
+		// first paint's `initialTier.custom` check in PricingPlans.astro.
 		const quoting = tier.custom === true;
 
 		if (movePosition) moveTo(pos);

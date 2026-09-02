@@ -3,6 +3,8 @@ export interface UseCase {
 	description: string;
 }
 
+export const USE_CASES_HEADING = "Who is it for?";
+
 export const USE_CASES: UseCase[] = [
 	{
 		title: "INFLUENCER AGENCIES",

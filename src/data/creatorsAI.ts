@@ -5,6 +5,12 @@ export interface CreatorAIFeature {
 	description: string;
 }
 
+/** Two lines — the accent line renders in brand green. */
+export const CREATORS_AI_HEADING = {
+	lead: "The world's creators,",
+	accent: "found with AI",
+};
+
 export const CREATORS_AI_BUTTON = "Features";
 
 /**

@@ -1,11 +1,33 @@
 ---
 import { APP_URL } from "../../data/site";
 import { HERO_WORDS } from "../../data/heroWords";
+import { getHomePage } from "../../sanity/lib/queries";
+import { getPerspectiveCookie } from "../../lib/draft-mode";
 import Button from "../common/Button.astro";
 import WorkflowMockup from "../app/WorkflowMockup.astro";
 import backgroundArcs from "../../assets/images/home_page/hero/bg_svg_lines_hero.svg";
 import darkLayerSide from "../../assets/images/home_page/hero/dark_layer_side.svg";
 import darkLayerCenter from "../../assets/images/home_page/hero/dark_layer_center.svg";
+
+// Falls back to the local data file until a homePage document exists in
+// Sanity — the site keeps working while content gets migrated in.
+const { data: home } = await getHomePage(getPerspectiveCookie(Astro.cookies));
+const heading = home?.hero?.heading || "Find The Right";
+const words = home?.hero?.words?.length ? home.hero.words : HERO_WORDS;
+const ctaLabel = home?.hero?.cta?.label || "Free Trial";
+const ctaHref = home?.hero?.cta?.href || APP_URL;
+const ctaNewTab = home?.hero?.cta?.newTab ?? true;
+// Structured (lead/highlight/trail) so the brand-green phrase survives
+// editing in Sanity — a plain string field would have dropped it, since it
+// can't carry per-word formatting.
+const subcopy =
+	home?.hero?.subcopy?.lead || home?.hero?.subcopy?.highlight || home?.hero?.subcopy?.trail
+		? home.hero.subcopy
+		: {
+				lead: "Get access to the world's largest database of ",
+				highlight: "450M+ creators",
+				trail: " across Instagram, Youtube, TikTok & LinkedIn",
+			};
 ---
 
 <section class="relative h-auto mb-2 lg:mb-auto lg:h-344 overflow-x-hidden lg:overflow-visible">
@@ -68,11 +90,12 @@ import darkLayerCenter from "../../assets/images/home_page/hero/dark_layer_cente
 			>
 				<span
 					class="font-light text-[2.75rem] text-brand-primary max-lg:[text-box:trim-both_cap_alphabetic] lg:text-[5.5rem]"
-					>Find The Right</span
+					>{heading}</span
 				><br class="max-lg:hidden" />
 				<span
 					class="inline-block font-normal text-[clamp(2rem,calc((100vw-3rem)/8.4),3.625rem)] leading-1 whitespace-nowrap text-white uppercase max-lg:mt-[0.5em] max-lg:[text-box:trim-both_cap_alphabetic] lg:text-[8.25rem]"
-					data-hero-word>{HERO_WORDS[0]}</span
+					data-hero-word
+					data-hero-words={JSON.stringify(words)}>{words[0]}</span
 				>
 			</h1>
 
@@ -82,12 +105,12 @@ import darkLayerCenter from "../../assets/images/home_page/hero/dark_layer_cente
 				data-reveal-item
 			>
 				<p class="text-center text-[0.875rem] leading-4 text-white [text-box:trim-both_cap_alphabetic] lg:text-sm lg:leading-7.25">
-					Get access to the world's largest database of <span class="font-semibold text-brand-primary">450M+ creators</span> across Instagram, Youtube, TikTok &amp; LinkedIn
+					{subcopy.lead}<span class="font-semibold text-brand-primary"> {subcopy.highlight}</span> {subcopy.trail}
 				</p>
 			</div>
 
 			<div class="order-4 lg:order-3 -mt-2 lg:mt-3.75" data-reveal-item>
-				<Button href={APP_URL} newTab>Free Trial</Button>
+				<Button href={ctaHref} newTab={ctaNewTab}>{ctaLabel}</Button>
 			</div>
 		</div>
 

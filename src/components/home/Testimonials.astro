@@ -3,6 +3,8 @@ import { Image } from "astro:assets";
 import bolt from "../../assets/images/common/decor/green_bolt.png";
 import avatar from "../../assets/images/home_page/testimonial/testimonial_profile_image.png";
 import { TESTIMONIALS, TESTIMONIALS_HEADING, TESTIMONIALS_BAND } from "../../data/testimonials";
+import { getHomePage } from "../../sanity/lib/queries";
+import { getPerspectiveCookie } from "../../lib/draft-mode";
 
 const cardPositions = [
 	{ left: 291, top: 234 },
@@ -12,7 +14,18 @@ const cardPositions = [
 	{ left: 320, top: 866 },
 ].map(({ left, top }) => ({ left: left / 16, top: top / 16 }));
 
-const cards = [...TESTIMONIALS, ...TESTIMONIALS];
+const { data: home } = await getHomePage(getPerspectiveCookie(Astro.cookies));
+// Each card is placed at a fixed hand-tuned position by index (cardPositions
+// has exactly 5 slots), so more than 5 testimonials would read
+// cardPositions[undefined] and crash — cap at that length rather than
+// falling all the way back for a harmless overage.
+const testimonials = home?.testimonials?.items?.length
+	? home.testimonials.items.slice(0, cardPositions.length)
+	: TESTIMONIALS;
+const heading = home?.testimonials?.heading || TESTIMONIALS_HEADING;
+const band = home?.testimonials?.band || TESTIMONIALS_BAND;
+
+const cards = [...testimonials, ...testimonials];
 ---
 
 <section class="relative flex flex-col items-center gap-4 overflow-hidden pb-15 lg:h-317.25 lg:gap-0 lg:overflow-visible lg:py-0 lg:w-full lg:max-w-full" aria-labelledby="testimonials-heading">
@@ -21,7 +34,7 @@ const cards = [...TESTIMONIALS, ...TESTIMONIALS];
 			id="testimonials-heading"
 			class="max-w-55 text-center text-md capitalize leading-[1.1] text-brand-primary lg:w-82.5 lg:max-w-none lg:text-[2.25rem] lg:leading-[normal] [text-box:trim-both_cap_alphabetic]"
 		>
-			{TESTIMONIALS_HEADING}
+			{heading}
 		</h2>
 		<Image
 			src={bolt}
@@ -38,7 +51,7 @@ const cards = [...TESTIMONIALS, ...TESTIMONIALS];
 		class="pointer-events-none absolute bottom-5 left-0 w-full whitespace-nowrap text-center font-['Open_Sauce_One'] text-6xl font-bold text-wf-section-rule [text-box:trim-both_cap_alphabetic] lg:top-149.5 lg:left-[-115.8125rem] lg:-translate-y-1/2 lg:bottom-auto lg:text-left lg:text-[13.225rem]"
 		aria-hidden="true"
 	>
-		{TESTIMONIALS_BAND}<span class="hidden lg:inline"> {TESTIMONIALS_BAND}</span>
+		{band}<span class="hidden lg:inline"> {band}</span>
 	</p>
 
 	{/* Cards: mobile renders as a GSAP marquee track (duplicated for a gapless loop), */}
@@ -50,9 +63,9 @@ const cards = [...TESTIMONIALS, ...TESTIMONIALS];
 		<div class="flex w-max gap-4 px-6 lg:contents" data-marquee-track>
 			{
 				cards.map((testimonial, i) => {
-					const idx = i % TESTIMONIALS.length;
+					const idx = i % testimonials.length;
 					const pos = cardPositions[idx];
-					const isDuplicate = i >= TESTIMONIALS.length;
+					const isDuplicate = i >= testimonials.length;
 					return (
 						<figure
 							class={`w-85 shrink-0 rounded-sm bg-[linear-gradient(85.56deg,#A78EF6_19.24%,#8C69FD_36.03%)] px-2.75 py-4 lg:h-63.75 lg:w-123 lg:shrink-0 lg:rounded-[1.25rem] lg:px-0 lg:py-0 lg:absolute ${isDuplicate ? "hidden" : ""}`}

@@ -1,41 +1,74 @@
 ---
-import hammerhead from "../../assets/images/home_page/trusted_by/hammerhead_logo.svg";
-import brandemic from "../../assets/images/home_page/trusted_by/brandemic_logo.svg";
-import hyper from "../../assets/images/home_page/trusted_by/hyper_logo.svg";
-import owled from "../../assets/images/home_page/trusted_by/owled_logo.svg";
-import iplixMedia from "../../assets/images/home_page/trusted_by/iplix_media_logo.svg";
-import circuit from "../../assets/images/home_page/trusted_by/circuit_logo.png";
-/**
- * Every logo shares one box on mobile; from `lg:` up they are sized
- * individually. `size` and `class` are therefore lg-only — mobile keeps the
- * uniform MOBILE_SIZE below.
- *
- * `size` replaces DESKTOP_SIZE rather than adding to it: two width utilities on
- * one element collide, and which one wins depends on the order Tailwind emits
- * them, not the order written here.
- */
-const MOBILE_SIZE = "w-25 h-8";
-const DESKTOP_SIZE = "lg:w-64 lg:h-17";
+import {
+	TRUSTED_BY_HEADING,
+	TRUSTED_BY_LOGOS,
+	TRUSTED_BY_MOBILE_BOX,
+	TRUSTED_BY_DESKTOP_BOX,
+	type TrustedByBox,
+	type TrustedByLogo,
+} from "../../data/trustedBy";
+import { getHomePage } from "../../sanity/lib/queries";
+import { getPerspectiveCookie } from "../../lib/draft-mode";
+import { urlFor } from "../../sanity/lib/image";
 
-const logos = [
-	{ src: brandemic, alt: "Brandemic", w: 191, h: 42, class: "lg:pl-8" },
-	{ src: hyper, alt: "Hyper", w: 97, h: 56, size: "lg:w-24 lg:h-14" },
-	{
-		src: iplixMedia,
-		alt: "Iplix Media",
-		w: 86,
-		h: 53,
-		// 86×53 is the artwork's own size, so it renders undistorted.
-		size: "lg:w-21.5 lg:h-13.25",
-	},
-	{ src: circuit, alt: "Circuit", mobileSize: "w-22 h-5", size: "lg:w-40 lg:h-9" },
-	{ src: owled, alt: "Owled", w: 93, h: 64, size: "lg:w-19 lg:h-13" },
-	{ src: hammerhead, alt: "Hammerhead Global", w: 245, h: 68 },
-];
+const { data: home } = await getHomePage(getPerspectiveCookie(Astro.cookies));
+const trusted = home?.trustedBy;
+const heading = trusted?.heading || TRUSTED_BY_HEADING;
+
+/** Design px → rem, so the desktop row scales on the 1728px grid (see global.css). */
+const rem = (px: number) => `${px / 16}rem`;
+/** A padding/margin shorthand; any side left blank is 0. */
+const spacing = (box?: TrustedByBox) =>
+	box && (box.top || box.right || box.bottom || box.left)
+		? [box.top, box.right, box.bottom, box.left].map((side) => rem(side ?? 0)).join(" ")
+		: undefined;
+
+/**
+ * Sizes and spacing come through as CSS custom properties rather than classes:
+ * they are per-logo numbers from Studio, and the <style> block below is what
+ * gives each one its mobile value and its `lg` override without two width
+ * utilities colliding on one element.
+ */
+type Logo = { src: string; alt: string; w?: number; h?: number; style: string };
+
+const cssVars = (logo: Pick<TrustedByLogo, "mobile" | "desktop" | "padding" | "margin">) =>
+	Object.entries({
+		"--logo-w": rem(logo.mobile?.width ?? TRUSTED_BY_MOBILE_BOX.width),
+		"--logo-h": rem(logo.mobile?.height ?? TRUSTED_BY_MOBILE_BOX.height),
+		"--logo-w-lg": rem(logo.desktop?.width ?? TRUSTED_BY_DESKTOP_BOX.width),
+		"--logo-h-lg": rem(logo.desktop?.height ?? TRUSTED_BY_DESKTOP_BOX.height),
+		"--logo-padding": spacing(logo.padding),
+		"--logo-margin": spacing(logo.margin),
+	})
+		.filter(([, value]) => value)
+		.map(([name, value]) => `${name}:${value}`)
+		.join(";");
+
+// A logo is only usable with both an image and an alt, so a half-filled row in
+// Studio falls the whole set back to the local logos rather than rendering a
+// gap in the middle of the row.
+const sanityLogos = trusted?.logos ?? [];
+const logos: Logo[] = sanityLogos.length && sanityLogos.every((logo) => logo.image?.asset && logo.alt)
+	? sanityLogos.map((logo) => ({
+			// 2x the widest box any logo draws at, and PNG/JPG uploads come back
+			// as-is when the source is an SVG.
+			src: urlFor(logo.image as never).width(640).url(),
+			alt: logo.alt!,
+			w: logo.intrinsic?.width,
+			h: logo.intrinsic?.height,
+			style: cssVars(logo),
+		}))
+	: TRUSTED_BY_LOGOS.map((logo) => ({
+			src: logo.src.src,
+			alt: logo.alt,
+			w: logo.w,
+			h: logo.h,
+			style: cssVars(logo),
+		}));
 ---
 
-<section class="relative z-2 pt-15 pb-5 lg:pb-20 lg:pt-36.5 overflow-hidden" aria-label="Trusted by">
-	<h2 class="text-center text-md lg:text-2xl capitalize leading-[normal] text-white [text-box:trim-both_cap_alphabetic]">Trusted By</h2>
+<section class="relative z-2 pt-15 pb-5 lg:pb-20 lg:pt-36.5 overflow-hidden" aria-label={heading}>
+	<h2 class="text-center text-md lg:text-2xl capitalize leading-[normal] text-white [text-box:trim-both_cap_alphabetic]">{heading}</h2>
 	{/* Mobile: GSAP ticker (logos rendered twice so the loop stays gapless on tablets). Desktop: static centered row. */}
 	<div class="mt-8 overflow-x-auto overscroll-x-contain lg:overflow-visible" data-marquee>
 		<ul
@@ -50,11 +83,12 @@ const logos = [
 						aria-hidden={i >= logos.length ? "true" : undefined}
 					>
 						<img
-							src={logo.src.src}
+							src={logo.src}
 							alt={i >= logos.length ? "" : logo.alt}
 							width={logo.w}
 							height={logo.h}
-							class:list={[logo.mobileSize ?? MOBILE_SIZE, logo.size ?? DESKTOP_SIZE, logo.class]}
+							class="trusted-logo"
+							style={logo.style}
 							loading="lazy"
 						/>
 					</li>
@@ -63,6 +97,27 @@ const logos = [
 		</ul>
 	</div>
 </section>
+
+<style>
+	/* The vars are set per logo above; the fallbacks here never fire, but keep
+	   the rule readable on its own. */
+	.trusted-logo {
+		width: var(--logo-w, 6.25rem);
+		height: var(--logo-h, 2rem);
+	}
+
+	/* `lg` — kept in sync with scripts/breakpoints.ts. Padding and margin land
+	   here only: the mobile row is a uniform ticker, and per-logo spacing in it
+	   would squeeze one logo inside the shared box. */
+	@media (min-width: 64rem) {
+		.trusted-logo {
+			width: var(--logo-w-lg, 16rem);
+			height: var(--logo-h-lg, 4.25rem);
+			padding: var(--logo-padding, 0);
+			margin: var(--logo-margin, 0);
+		}
+	}
+</style>
 
 <script>
 	import "../../scripts/home-page/marquee";
