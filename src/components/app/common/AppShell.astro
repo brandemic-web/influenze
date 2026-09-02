@@ -33,3 +33,15 @@ const { active = "analyze", showCredits = true, credits } = Astro.props;
 		<slot />
 	</div>
 </div>
+
+<style>
+	/*
+	 * Blurred once the walkthrough ends and the "Play Again" pill shows — set on
+	 * the mockup root by scripts/home-page/workflow, since the visible layer at
+	 * that point (screen 1, Analyze) isn't a descendant of the toggle button.
+	 */
+	:global(.wf-mockup[data-wf-ended]) [data-wf-card-body] {
+		filter: blur(0.5rem);
+		transition: filter 0.5s ease;
+	}
+</style>

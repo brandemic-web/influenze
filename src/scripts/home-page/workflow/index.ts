@@ -70,6 +70,9 @@ function initWorkflow(mockup: HTMLElement) {
 			ended = true;
 			toggle?.setAttribute("data-ended", "");
 			toggle?.setAttribute("aria-label", "Play the walkthrough again");
+			// Read by AppShell's blur rule — the visible screen at this point is
+			// Analyze (screen 1), which `restart` has already handed back.
+			mockup.setAttribute("data-wf-ended", "");
 		},
 	});
 	// Declared before the timeline so its onComplete can close over them; both are
@@ -182,6 +185,7 @@ function initWorkflow(mockup: HTMLElement) {
 	function restartStory() {
 		ended = false;
 		toggle?.removeAttribute("data-ended");
+		mockup.removeAttribute("data-wf-ended");
 		for (const layer of Object.values(screen)) layer.removeAttribute("data-wf-active");
 		screen.analyze.setAttribute("data-wf-active", "");
 		master.restart();

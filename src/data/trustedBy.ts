@@ -52,4 +52,5 @@ export const TRUSTED_BY_LOGOS: TrustedByLogo[] = [
 	{ src: circuit, alt: "Circuit", mobile: { width: 88, height: 20 }, desktop: { width: 160, height: 36 } },
 	{ src: owled, alt: "Owled", w: 93, h: 64, desktop: { width: 76, height: 52 } },
 	{ src: hammerhead, alt: "Hammerhead Global", w: 245, h: 68 },
+
 ];

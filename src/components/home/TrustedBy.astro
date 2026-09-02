@@ -44,35 +44,38 @@ const cssVars = (logo: Pick<TrustedByLogo, "mobile" | "desktop" | "padding" | "m
 		.map(([name, value]) => `${name}:${value}`)
 		.join(";");
 
-// A logo is only usable with both an image and an alt, so a half-filled row in
-// Studio falls the whole set back to the local logos rather than rendering a
-// gap in the middle of the row.
-const sanityLogos = trusted?.logos ?? [];
-const logos: Logo[] = sanityLogos.length && sanityLogos.every((logo) => logo.image?.asset && logo.alt)
-	? sanityLogos.map((logo) => ({
-			// 2x the widest box any logo draws at, and PNG/JPG uploads come back
-			// as-is when the source is an SVG.
-			src: urlFor(logo.image as never).width(640).url(),
-			alt: logo.alt!,
-			w: logo.intrinsic?.width,
-			h: logo.intrinsic?.height,
-			style: cssVars(logo),
-		}))
-	: TRUSTED_BY_LOGOS.map((logo) => ({
-			src: logo.src.src,
-			alt: logo.alt,
-			w: logo.w,
-			h: logo.h,
-			style: cssVars(logo),
-		}));
+// Studio logos append to the local set rather than replacing it. A logo is
+// only usable with both an image and an alt, so an entry still missing one in
+// Studio is skipped on its own instead of dropping the rest of the row.
+const localLogos: Logo[] = TRUSTED_BY_LOGOS.map((logo) => ({
+	src: logo.src.src,
+	alt: logo.alt,
+	w: logo.w,
+	h: logo.h,
+	style: cssVars(logo),
+}));
+
+const sanityLogos: Logo[] = (trusted?.logos ?? [])
+	.filter((logo) => logo.image?.asset && logo.alt)
+	.map((logo) => ({
+		// 2x the widest box any logo draws at, and PNG/JPG uploads come back
+		// as-is when the source is an SVG.
+		src: urlFor(logo.image as never).width(640).url(),
+		alt: logo.alt!,
+		w: logo.intrinsic?.width,
+		h: logo.intrinsic?.height,
+		style: cssVars(logo),
+	}));
+
+const logos: Logo[] = [...localLogos, ...sanityLogos];
 ---
 
 <section class="relative z-2 pt-15 pb-5 lg:pb-20 lg:pt-36.5 overflow-hidden" aria-label={heading}>
 	<h2 class="text-center text-md lg:text-2xl capitalize leading-[normal] text-white [text-box:trim-both_cap_alphabetic]">{heading}</h2>
-	{/* Mobile: GSAP ticker (logos rendered twice so the loop stays gapless on tablets). Desktop: static centered row. */}
-	<div class="mt-8 overflow-x-auto overscroll-x-contain lg:overflow-visible" data-marquee>
+	{/* GSAP ticker at every width (logos rendered twice so the loop stays gapless). */}
+	<div class="mt-8 overflow-x-auto overscroll-x-contain" data-marquee="always">
 		<ul
-			class="mx-auto flex w-max items-center gap-x-10 px-6 flex-nowrap opacity-60 grayscale-100 lg:w-auto lg:max-w-7xl lg:justify-center lg:gap-x-28"
+			class="mx-auto flex w-max items-center justify-center gap-x-10 px-6 flex-nowrap opacity-60 grayscale-100 lg:gap-x-28"
 			data-marquee-track
 		>
 			{
