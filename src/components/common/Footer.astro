@@ -11,7 +11,7 @@ import { FOOTER_COLUMNS } from "../../data/footer";
 // the bolt rather than sinking below it. Desktop is the flex row of columns.
 ---
 
-<footer class="relative lg:overflow-hidden bg-surface-dark">
+<footer class="relative lg:overflow-hidden bg-surface-dark" data-footer>
 	<img
 		src={gradientBg.src}
 		alt=""
@@ -32,6 +32,7 @@ import { FOOTER_COLUMNS } from "../../data/footer";
 			widths={[360, 760]}
 			sizes="(min-width: 1024px) 380px, 180px"
 			loading="lazy"
+			data-footer-bolt
 		/>
 
 		<div
@@ -70,13 +71,19 @@ import { FOOTER_COLUMNS } from "../../data/footer";
 				alt="influenze.ai"
 				class="block w-full max-w-346.5 lg:hidden"
 				loading="lazy"
+				data-footer-wordmark
 			/>
 			<Image
 				src={wordmark}
 				alt="influenze.ai"
 				class="hidden w-full max-w-346.5 translate-y-[0%] lg:block"
 				loading="lazy"
+				data-footer-wordmark
 			/>
 		</div>
 	</div>
 </footer>
+
+<script>
+	import "../../scripts/footer-reveal";
+</script>
