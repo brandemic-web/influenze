@@ -149,8 +149,24 @@ export const featuresPageQuery = groq`*[_type == "featuresPage"][0]{
 	hero,
 	featureBlocksHeading,
 	featureBlocks,
+	creatorShowcase,
 }`;
 
+/** Only the fields components currently consume are typed. */
+export interface FeaturesPageDoc {
+	hero?: {
+		heading?: string;
+		subcopy?: { lead?: string; highlight?: string; trail?: string };
+		creatorImages?: { image?: Image; alt?: string }[];
+	};
+	featureBlocksHeading?: { lead?: string; accent?: string };
+	featureBlocks?: { title?: string; description?: string }[];
+	creatorShowcase?: {
+		heading?: { top?: string; bottom?: string };
+	};
+	seo?: { title?: string; description?: string; ogImage?: Image; noindex?: boolean };
+}
+
 export async function getFeaturesPage(perspectiveCookie?: string) {
-	return loadQuery({ query: featuresPageQuery, perspectiveCookie });
+	return loadQuery<FeaturesPageDoc | null>({ query: featuresPageQuery, perspectiveCookie });
 }

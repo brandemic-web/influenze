@@ -3,11 +3,16 @@ import Layout from "../layouts/Layout.astro";
 import FeaturesHero from "../components/features/FeaturesHero.astro";
 import CreatorShowcase from "../components/features/CreatorShowcase.astro";
 import FeatureBlockHeading from "../components/features/FeatureBlockHeading.astro";
+import { getFeaturesPage } from "../sanity/lib/queries";
+import { getPerspectiveCookie } from "../lib/draft-mode";
+
+const { data: features } = await getFeaturesPage(getPerspectiveCookie(Astro.cookies));
 ---
 
 <Layout
-	title="Features — Influenze.ai"
-	description="A product that caters to you: targeted discovery, creator analytics, contact unlocks, comparisons, shortlists, sharing and reusable creator pools."
+	title={features?.seo?.title || "Features — Influenze.ai"}
+	description={features?.seo?.description || "A product that caters to you: targeted discovery, creator analytics, contact unlocks, comparisons, shortlists, sharing and reusable creator pools."}
+	noindex={features?.seo?.noindex ?? false}
 >
 	<main>
 		<FeaturesHero />

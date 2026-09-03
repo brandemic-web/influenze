@@ -1,6 +1,8 @@
 ---
 import { Image } from "astro:assets";
 import { FEATURE_BLOCKS } from "../../data/featureBlocks";
+import { getFeaturesPage } from "../../sanity/lib/queries";
+import { getPerspectiveCookie } from "../../lib/draft-mode";
 
 import bubblesTrio from "../../assets/images/home_page/featured_tabs/discover_and_analyze_image.png";
 import filtersPanel from "../../assets/images/common/ui_images/creator_filters_panel.png";
@@ -15,6 +17,14 @@ import csv_progress from "../../assets/images/featured_page/blocks/csv_export_pr
 import csv_export_complete from "../../assets/images/featured_page/blocks/csv_export_complete.png";
 import shareToEmail from "../../assets/images/featured_page/blocks/share.svg";
 
+const { data: features } = await getFeaturesPage(getPerspectiveCookie(Astro.cookies));
+const sanityBlocks = features?.featureBlocks ?? [];
+const blocks = FEATURE_BLOCKS.map((local, i) => ({
+	...local,
+	title: sanityBlocks[i]?.title || local.title,
+	description: sanityBlocks[i]?.description || local.description,
+}));
+
 const [
 	discovery,
 	analytics,
@@ -23,7 +33,7 @@ const [
 	shortlists,
 	sharing,
 	pools,
-] = FEATURE_BLOCKS;
+] = blocks;
 ---
 
 {/* Powerful Targeted Discovery */}

@@ -1,7 +1,7 @@
 import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
 import { visionTool } from "@sanity/vision";
-import { presentationTool } from "sanity/presentation";
+import { presentationTool, defineDocuments } from "sanity/presentation";
 import { schemaTypes } from "./src/sanity/schemaTypes";
 import { structure } from "./src/sanity/structure";
 
@@ -39,6 +39,14 @@ export default defineConfig({
 				},
 			},
 			resolve: {
+				// Maps each route straight to its document by type, so Presentation
+				// can find and live-refresh a singleton even before it has content.
+				mainDocuments: defineDocuments(
+					Object.entries(DOCUMENT_ROUTES).map(([type, { href }]) => ({
+						route: href,
+						type,
+					})),
+				),
 				locations: (params) => {
 					const route = DOCUMENT_ROUTES[params.type];
 					if (!route) return undefined;
