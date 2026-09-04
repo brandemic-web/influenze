@@ -2,12 +2,19 @@
 import SectionHeading from "../common/SectionHeading.astro";
 import bg_gradient from "../../assets/images/common/decor/gradient_s_bg.svg"
 import FeatureBlock from "./FeatureBlock.astro";
+import { getFeaturesPage } from "../../sanity/lib/queries";
+import { getPerspectiveCookie } from "../../lib/draft-mode";
 
+const { data: features } = await getFeaturesPage(getPerspectiveCookie(Astro.cookies));
+const heading = {
+	lead: features?.featureBlocksHeading?.lead || "The platform that actually",
+	accent: features?.featureBlocksHeading?.accent || " does the work",
+};
 ---
 
 <section class="relative bg-background-primary pt-15 pb-5 lg:py-25" aria-label="The platform that actually does the work">
     <SectionHeading
-        segments={[{ text: "The platform that actually" }, { text: " does the work", accent: true }]}
+        segments={[{ text: heading.lead }, { text: heading.accent, accent: true }]}
         class="mx-auto max-w-204 px-6 max-md:text-md"
     />
     <div class="absolute top-0 lg:-top-50 w-full mx-auto">
