@@ -54,7 +54,12 @@ export interface LegalDoc {
  * The drafts date from 18 August 2026 (per their filenames), which is what both
  * pages show as "Last updated". Re-date on the next counsel revision.
  */
-export const LEGAL_UPDATED = "18 August 2026";
+export const LEGAL_UPDATED_ISO = "2026-08-18";
+
+export const LEGAL_UPDATED = new Date(`${LEGAL_UPDATED_ISO}T00:00:00Z`).toLocaleDateString(
+	"en-GB",
+	{ day: "numeric", month: "long", year: "numeric", timeZone: "UTC" },
+);
 
 /**
  * Every `[---]` email blank in both drafts resolves here. `info@dotme.in` is the

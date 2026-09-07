@@ -8,7 +8,7 @@ import Footer from "../components/common/Footer.astro";
 import SanityVisualEditing from "../components/common/SanityVisualEditing.tsx";
 import DisableDraftMode from "../components/common/DisableDraftMode.tsx";
 import { isDraftMode } from "../lib/draft-mode";
-import ogSource from "../assets/images/common/ui_images/campaign_creator_dashboard.png";
+import ogSource from "../assets/images/common/social/og_card.webp";
 import logoSource from "../assets/images/common/logos_and_icons/influenze_wordmark_mobile.png";
 
 // Driven entirely by Sanity: the Presentation tool sets a cookie via
@@ -23,6 +23,8 @@ interface Props {
 	hideCta?: boolean;
 	/** Keeps a page out of search results. Used by 404. */
 	noindex?: boolean;
+	/** ISO 8601 date for the page's WebPage node. Used by the legal routes. */
+	dateModified?: string;
 	/**
 	 * Extra JSON-LD nodes for this page, merged into the site-wide `@graph`.
 	 * The homepage passes its FAQ and the product itself; see pages/index.astro.
@@ -36,21 +38,22 @@ const {
 	ctaButtonLabel,
 	hideCta = false,
 	noindex = false,
+	dateModified,
 	schema = [],
 } = Astro.props;
 
 const site = Astro.site ?? new URL(Astro.url.origin);
-const canonical = new URL(Astro.url.pathname, site);
+const path = Astro.url.pathname.endsWith("/") ? Astro.url.pathname : `${Astro.url.pathname}/`;
+const canonical = new URL(path, site);
 
-// Social cards want 1.91:1. The source screenshot is 1.85:1, so `cover` trims a
-// few pixels top and bottom rather than squashing it. Swap `ogSource` for a
-// purpose-built card when design has one — nothing else here has to change.
+// The card is drawn at 2400x1260, exactly 2x the 1.91:1 social target, so this
+// only downscales. JPEG because some scrapers still refuse WebP.
 const og = await getImage({
 	src: ogSource,
 	width: 1200,
 	height: 630,
-	fit: "cover",
 	format: "jpeg",
+	quality: 90,
 });
 const ogImage = new URL(og.src, site);
 
@@ -85,6 +88,7 @@ const structuredData = {
 			name: title,
 			description,
 			isPartOf: { "@id": new URL("/#website", site).href },
+			...(dateModified ? { dateModified } : {}),
 		},
 		...schema,
 	],
@@ -96,8 +100,8 @@ const structuredData = {
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.webp" />
-		<link rel="icon" href="/favicon.webp" />
+		<link rel="icon" type="image/webp" href="/favicon.webp" />
+		<link rel="apple-touch-icon" href="/favicon.webp" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
 		<meta name="description" content={description} />
@@ -112,10 +116,12 @@ const structuredData = {
 		<meta property="og:image:width" content="1200" />
 		<meta property="og:image:height" content="630" />
 		<meta property="og:image:alt" content={SITE.name} />
+		<meta property="og:locale" content="en_US" />
 		<meta name="twitter:card" content="summary_large_image" />
 		<meta name="twitter:title" content={title} />
 		<meta name="twitter:description" content={description} />
 		<meta name="twitter:image" content={ogImage} />
+		<meta name="twitter:image:alt" content={SITE.name} />
 		<link
 			rel="preload"
 			href="/fonts/open-sauce-two-latin-400-normal.woff2"

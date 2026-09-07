@@ -1,4 +1,37 @@
+# Traditional search indexing
+User-agent: Googlebot
+User-agent: Bingbot
+Allow: /
+Disallow: /studio
+Disallow: /api/
+
+# AI search, agents and training. Each is named explicitly because Cloudflare's
+# managed robots.txt injects `Disallow: /` groups for GPTBot, ClaudeBot, CCBot
+# and Google-Extended above this file — an equal-specificity Allow is the only
+# thing that overrides that from here. The rest of that managed block, and its
+# `Content-Signal: ai-train=no`, can only be lifted in the Cloudflare dashboard.
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: PerplexityBot
+User-agent: FirecrawlAgent
+User-agent: AndiBot
+User-agent: ExaBot
+User-agent: PhindBot
+User-agent: YouBot
+User-agent: GPTBot
+User-agent: CCBot
+User-agent: Google-Extended
+User-agent: ClaudeBot
+User-agent: anthropic-ai
+Allow: /
+Disallow: /studio
+Disallow: /api/
+
+# Sanity Studio and the draft-mode endpoints are app surfaces, not content.
+# Longest-match wins over the Allow above, so these stay out of every index.
 User-agent: *
 Allow: /
+Disallow: /studio
+Disallow: /api/
 
 Sitemap: https://influenze.ai/sitemap-index.xml
