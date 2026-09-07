@@ -108,6 +108,14 @@ Open items, all content rather than code:
 
 Known and accepted:
 
+- **AI crawler policy lives half outside this repo.** `public/robots.txt` blocks
+  training crawlers and allows AI search/assistants, but the enforcement is
+  Cloudflare AI Crawl Control on the `influenze.ai` zone (per-crawler Block
+  Crawler toggles, plus "Managed robots.txt", which prepends its own block to
+  the served file). Keep the two in step: a token allowed here but blocked there
+  still gets a 403, and testing with a spoofed user-agent will not show it —
+  Cloudflare verifies crawlers by IP and signature, so a fake UA gets 200.
+
 - `perf-use-image-component` × 7 in the dev toolbar — all SVGs, which Astro's
   image service rejects outright. The real fix is asset-side (SVGO, and
   `iplix_media_logo.svg` is a base64 raster that should be a `.webp`).

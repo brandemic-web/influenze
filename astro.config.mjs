@@ -23,6 +23,10 @@ export default defineConfig({
   // see loadQuery.ts's useCdn logic.
   output: "server",
 
+  redirects: {
+      "/sitemap.xml": { status: 301, destination: "/sitemap-index.xml" },
+  },
+
   integrations: [sitemap(), sanity({
       projectId: env.PUBLIC_SANITY_PROJECT_ID,
       dataset: env.PUBLIC_SANITY_DATASET ?? "production",
