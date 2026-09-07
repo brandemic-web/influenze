@@ -8,7 +8,6 @@ import Footer from "../components/common/Footer.astro";
 import SanityVisualEditing from "../components/common/SanityVisualEditing.tsx";
 import DisableDraftMode from "../components/common/DisableDraftMode.tsx";
 import { isDraftMode } from "../lib/draft-mode";
-import ogSource from "../assets/images/common/social/og_card.webp";
 import logoSource from "../assets/images/common/logos_and_icons/influenze_wordmark_mobile.png";
 
 // Driven entirely by Sanity: the Presentation tool sets a cookie via
@@ -46,16 +45,16 @@ const site = Astro.site ?? new URL(Astro.url.origin);
 const path = Astro.url.pathname.endsWith("/") ? Astro.url.pathname : `${Astro.url.pathname}/`;
 const canonical = new URL(path, site);
 
-// The card is drawn at 2400x1260, exactly 2x the 1.91:1 social target, so this
-// only downscales. JPEG because some scrapers still refuse WebP.
-const og = await getImage({
-	src: ogSource,
-	width: 1200,
-	height: 630,
-	format: "jpeg",
-	quality: 90,
-});
-const ogImage = new URL(og.src, site);
+// Deliberately a plain static file rather than `getImage()`. Under SSR,
+// getImage emits a runtime `/_image?href=...&w=...` URL, and `&` has to be
+// written `&amp;` inside an HTML attribute — scrapers that don't decode
+// entities then request `amp;f=jpeg` and get a 400, so WhatsApp fell back to
+// the favicon. A query-string-free URL can't be mangled that way.
+//
+// public/og-card.jpg is 1200x630, generated from the 2400x1260 master at
+// src/assets/images/common/social/og_card.webp:
+//   sharp(master).resize(1200, 630).jpeg({ quality: 90, mozjpeg: true })
+const ogImage = new URL("/og-card.jpg", site);
 
 // Google wants a raster logo it can crop to a square, so this points at the
 // wordmark PNG rather than the nav SVG.
@@ -100,6 +99,20 @@ const structuredData = {
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<!-- Google Tag Manager -->
+		<script is:inline>
+			(function (w, d, s, l, i) {
+				w[l] = w[l] || [];
+				w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+				var f = d.getElementsByTagName(s)[0],
+					j = d.createElement(s),
+					dl = l != "dataLayer" ? "&l=" + l : "";
+				j.async = true;
+				j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+				f.parentNode.insertBefore(j, f);
+			})(window, document, "script", "dataLayer", "GTM-TTJDWGW3");
+		</script>
+		<!-- End Google Tag Manager -->
 		<link rel="icon" type="image/webp" href="/favicon.webp" />
 		<link rel="apple-touch-icon" href="/favicon.webp" />
 		<meta name="generator" content={Astro.generator} />
@@ -113,6 +126,7 @@ const structuredData = {
 		<meta property="og:description" content={description} />
 		<meta property="og:url" content={canonical} />
 		<meta property="og:image" content={ogImage} />
+		<meta property="og:image:type" content="image/jpeg" />
 		<meta property="og:image:width" content="1200" />
 		<meta property="og:image:height" content="630" />
 		<meta property="og:image:alt" content={SITE.name} />
@@ -139,6 +153,15 @@ const structuredData = {
 		<script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
 	</head>
 	<body class="min-h-screen overflow-x-clip antialiased">
+		<!-- Google Tag Manager (noscript) -->
+		<noscript
+			><iframe
+				src="https://www.googletagmanager.com/ns.html?id=GTM-TTJDWGW3"
+				height="0"
+				width="0"
+				style="display:none;visibility:hidden"></iframe></noscript
+		>
+		<!-- End Google Tag Manager (noscript) -->
 		<Header />
 		<slot />
 		{!hideCta && <CtaBand buttonLabel={ctaButtonLabel} />}
