@@ -8,14 +8,16 @@ import type { BlogPost } from "../../data/blog";
 
 interface Props {
 	posts: BlogPost[];
+	/** Rendered as an extra, initially-hidden card so its category filter isn't empty even though the banner already covers "All". */
+	featured?: BlogPost;
 	class?: string;
 }
 
-const { posts, class: className = "" } = Astro.props;
+const { posts, featured, class: className = "" } = Astro.props;
 ---
 
 {
-	posts.length === 0 ? (
+	posts.length === 0 && !featured ? (
 		<div class="rounded-sm border border-white/10 bg-surface-card px-6 py-16 text-center">
 			<p class="text-[1rem] text-white lg:text-[1.25rem]">No posts yet</p>
 			<p class="mx-auto mt-2 max-w-100 text-[0.875rem] leading-6.5 text-[#CECECE]/70 lg:text-[1rem]">
@@ -32,6 +34,7 @@ const { posts, class: className = "" } = Astro.props;
 				{posts.map((post) => (
 					<PostCard post={post} />
 				))}
+				{featured && <PostCard post={featured} hideOnAll />}
 			</ul>
 
 			{/* Shown by the filter script when a category matches nothing. Never

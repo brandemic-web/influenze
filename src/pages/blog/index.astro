@@ -31,6 +31,7 @@ const schema = [
 <Layout
 	title="Blog — Influenze.ai"
 	description="Research, benchmarks and product notes on creator discovery, audience measurement and campaign design."
+	noindex
 	schema={schema}
 >
 	<main>
@@ -45,7 +46,7 @@ const schema = [
 
 				<CategoryFilter categories={BLOG_CATEGORIES} class="mt-10 lg:mt-16" />
 
-				<PostGrid posts={rest} class="mt-6 lg:mt-10" />
+				<PostGrid posts={rest} featured={lead} class="mt-6 lg:mt-10" />
 			</div>
 		</section>
 	</main>

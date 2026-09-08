@@ -11,9 +11,11 @@ import { readMinutes } from "../../data/blog";
 
 interface Props {
 	post: BlogPost;
+	/** For the featured post's grid twin: stays hidden under "All" (the banner already covers it), only appears once its own category is picked. */
+	hideOnAll?: boolean;
 }
 
-const { post } = Astro.props;
+const { post, hideOnAll = false } = Astro.props;
 ---
 
 {/* data-category lets the filter script show/hide without re-rendering. */}
@@ -21,7 +23,9 @@ const { post } = Astro.props;
 	class="rounded-md border border-white/15 bg-[rgba(246,246,244,0.1)] shadow-[0_8px_32px_rgba(0,0,0,0.18),inset_0_1px_0_rgba(255,255,255,0.18)] backdrop-blur-md backdrop-saturate-150"
 	data-blog-card
 	data-category={post.categories.join("|")}
+	data-hide-on-all={hideOnAll ? "true" : undefined}
 	data-reveal-item
+	hidden={hideOnAll}
 >
 	<a
 		href={`/blog/${post.slug}`}

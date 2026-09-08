@@ -1,8 +1,8 @@
 ---
 /**
- * Article contents box: fixed-height scrolling list on desktop, collapsed
- * `<details>` below `lg`. `data-toc` / `data-toc-link` are read by
- * scripts/toc.ts to light the heading currently on screen.
+ * Article contents box: fixed-height scrolling list on desktop, a fixed
+ * bottom bar below `lg` that expands upward. `data-toc` / `data-toc-link`
+ * are read by scripts/toc.ts to light the heading currently on screen.
  */
 import type { ArticleHeading } from "../../lib/article-headings";
 
@@ -23,12 +23,12 @@ const indent = (level: 2 | 3) => (level === 3 ? "pl-10" : "");
 {
 	headings.length > 1 && (
 		<>
-			{/* Mobile/tablet: collapsed by default so the copy starts near the top. */}
-			<details class="group rounded-md border border-white/10 bg-surface-dark lg:hidden">
+			{/* Mobile/tablet: a fixed bar pinned to the bottom, list expands upward via flex-col-reverse. */}
+			<details class="group fixed inset-x-0 bottom-0 z-40 flex flex-col-reverse border-t border-white/10 bg-surface-dark shadow-[0_-8px_24px_rgba(0,0,0,0.35)] lg:hidden">
 				<summary class="flex cursor-pointer list-none items-center justify-between gap-4 p-5 [&::-webkit-details-marker]:hidden">
 					<span class="text-[1rem] font-semibold text-white">Contents</span>
 					<svg
-						class="h-1.5 w-3 shrink-0 text-white transition-transform group-open:rotate-180"
+						class="h-1.5 w-3 shrink-0 rotate-180 text-white transition-transform group-open:rotate-0"
 						viewBox="0 0 12 6"
 						fill="none"
 						aria-hidden="true"
@@ -36,11 +36,15 @@ const indent = (level: 2 | 3) => (level === 3 ? "pl-10" : "");
 						<path d="M1 1l5 4 5-4" stroke="currentColor" stroke-width="1.5" />
 					</svg>
 				</summary>
-				<nav aria-label="Article contents" class="px-5 pb-5">
+				<nav aria-label="Article contents" class="max-h-[60vh] overflow-y-auto border-b border-white/10 px-5 pt-4 pb-5" data-toc>
 					<ol class="flex flex-col">
 						{headings.map((heading) => (
 							<li>
-								<a href={`#${heading.id}`} class:list={[linkClass, indent(heading.level)]}>
+								<a
+									href={`#${heading.id}`}
+									class:list={[linkClass, indent(heading.level)]}
+									data-toc-link={heading.id}
+								>
 									{heading.text}
 								</a>
 							</li>

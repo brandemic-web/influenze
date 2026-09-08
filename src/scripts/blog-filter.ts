@@ -32,7 +32,11 @@ function initBlogFilter() {
 
 		cards.forEach((card) => {
 			const categories = (card.dataset.category ?? "").split("|");
-			const matches = selected === "all" || categories.includes(selected);
+			// hideOnAll cards (the featured post's grid twin) never show under "All" — the banner already covers it.
+			const matches =
+				card.dataset.hideOnAll === "true"
+					? selected !== "all" && categories.includes(selected)
+					: selected === "all" || categories.includes(selected);
 
 			card.hidden = !matches;
 			if (matches) {
