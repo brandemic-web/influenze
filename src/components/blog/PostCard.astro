@@ -1,18 +1,8 @@
 ---
 /**
- * One post card — used in the index grid and the related-posts row. The whole
- * card is a single anchor, so the hit target is the card rather than just the
- * title. Content is deliberately spare: cover, category, date · read time,
- * title — no excerpt, no author.
- *
- * The card recipe is the pricing page's "Use cases for brands and agencies"
- * panel (see UseCasesSplit.astro) — a translucent bordered panel rather than
- * the site's other gradient-hairline card trick.
- *
- * No `capitalize` on the title: post headlines are sentence-case, and CSS
- * capitalize would title-case every word ("How to vet creators" → "How To Vet
- * Creators"). The marketing sections can use it because their headings are
- * written for it; article titles are not.
+ * One post card, used in the index grid and the related-posts row. Whole
+ * card is a single anchor. Card recipe from UseCasesSplit.astro. No
+ * `capitalize` on the title — post headlines are sentence-case.
  */
 import { Image } from "astro:assets";
 import AuthorByline from "./AuthorByline.astro";

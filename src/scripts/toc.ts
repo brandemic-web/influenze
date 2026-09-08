@@ -1,16 +1,8 @@
 /**
  * Marks the on-screen section in a sticky contents rail. Shared by the legal
- * routes and the blog article page — both build a `[data-toc]` nav whose links
- * carry `data-toc-link="<heading id>"`.
- *
- * The observer's root is inset from the top by the header height and from the
- * bottom by most of the viewport, leaving a thin band just under the header;
- * whichever heading sits in that band is the one being read. Headings are the
- * targets rather than whole sections, since a single clause list can be taller
- * than the viewport and would otherwise never leave the band.
- *
- * Every rail on the page is wired independently, so a page may carry more than
- * one. Without JS the links still navigate — nothing here is required to read.
+ * routes and the blog article page, both building a `[data-toc]` nav with
+ * `data-toc-link="<heading id>"` links. Whichever heading sits in a thin
+ * band under the header is the one marked active.
  */
 const HEADER_OFFSET = 128; // px — clears the fixed header, matches `scroll-mt-32`
 

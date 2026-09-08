@@ -1,12 +1,8 @@
 ---
 /**
- * Article header: full-width gradient stage, copy on the left and the cover
- * image on the right at a 70/30 split. Stacks below `lg`, where the image sits
- * under the byline.
- *
- * Deliberately not SectionHeading — that component hardcodes `capitalize` and
- * `text-center`, and CSS capitalize title-cases every word, which mangles a
- * sentence-case headline. Article titles are left-aligned and set as written.
+ * Article header: gradient stage, copy/cover at 70/30, stacks below `lg`.
+ * Not SectionHeading — it forces `capitalize`/`text-center`, which mangles
+ * a sentence-case headline.
  */
 import { Image } from "astro:assets";
 import AuthorByline from "./AuthorByline.astro";
@@ -24,13 +20,9 @@ const { post, readMinutes } = Astro.props;
 	class="relative overflow-hidden bg-[radial-gradient(160%_100%_at_50%_-20%,#7B4DFF_0%,#5A2FD8_30%,#2A1655_58%,#010101_100%)] pt-26 pb-12 lg:flex lg:h-screen lg:items-center lg:justify-items-stretch lg:pt-50 lg:pb-20"
 	aria-label="Article header"
 >
-	{/* Same envelope as the FAQ section and the article body (px-6 / lg:px-14,
-	    no max-width), so every block on the page shares one left and right
-	    edge. */}
+	{/* Same envelope as the FAQ section and article body, for shared edges. */}
 	<div class="mx-auto px-6 lg:w-full lg:px-14">
-		{/* Glass card: the site's existing recipe for a defined boundary over a
-		    gradient backdrop (see UseCasesSplit.astro) — gives the hero a clean
-		    edge without hiding the gradient behind it. */}
+		{/* Glass card recipe from UseCasesSplit.astro — a clean edge over the gradient. */}
 		<div class="rounded-md border border-white/15 bg-[rgba(246,246,244,0.1)] px-5 py-7 shadow-[0_8px_32px_rgba(0,0,0,0.18),inset_0_1px_0_rgba(255,255,255,0.18)] backdrop-blur-md backdrop-saturate-150 lg:px-14 lg:py-13">
 			<div class="flex flex-col gap-8 lg:flex-row lg:items-stretch lg:justify-between lg:gap-16">
 				{/* 70 — the copy */}
@@ -83,9 +75,7 @@ const { post, readMinutes } = Astro.props;
 					/>
 				</div>
 
-				{/* 30 — the cover, flush to the right edge. Square on desktop rather
-				    than the taller 4:5 it was — wider and larger without also
-				    growing the section's height as much; 16:9 when stacked. */}
+				{/* Cover: square on desktop (wider without growing section height), 16:9 when stacked. */}
 				<Image
 					src={post.cover}
 					alt={post.coverAlt}

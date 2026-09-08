@@ -1,14 +1,7 @@
 /**
- * Pulls the heading outline out of an article body and gives every heading an
- * `id` to anchor to.
- *
- * Derived at render time rather than stored, for the same reason the legal
- * routes derive their numbering in LegalBody.astro: the body is the single
- * source, so a contents rail built from it can never drift from the copy it
- * points at.
- *
- * Regex rather than a parser because there is no DOM here — this runs in the
- * Cloudflare worker — and the input is our own markup, not arbitrary HTML.
+ * Pulls the heading outline out of an article body and gives every heading
+ * an `id` to anchor to. Derived at render time so the rail can never drift
+ * from the body. Regex, not a parser — no DOM in the Cloudflare worker.
  */
 
 export interface ArticleHeading {

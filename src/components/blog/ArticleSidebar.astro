@@ -1,12 +1,7 @@
 ---
 /**
- * The article's right-hand rail: contents, a login/signup CTA, then share
- * links — sticky as one unit on desktop, so all three track together while
- * reading rather than just the contents box. Stacks in the same order above
- * the body on mobile.
- *
- * Renders unconditionally even when ArticleToc has nothing to show (one
- * heading or fewer): the CTA and share cards are still useful on their own.
+ * Article's right-hand rail: contents, CTA, then share links — sticky as
+ * one unit on desktop. Renders even when ArticleToc has nothing to show.
  */
 import ArticleToc from "./ArticleToc.astro";
 import ArticleShare from "./ArticleShare.astro";

@@ -1,12 +1,8 @@
 import { prefersReducedMotion } from "./breakpoints";
 
 /**
- * Category filtering on the blog index. Pure show/hide over cards that are
- * already in the DOM — no fetching, no re-rendering, and nothing hidden until
- * the reader asks for it, so the full grid is what you get without JS.
- *
- * Cards carry their categories as a "|"-joined `data-category`, because a post
- * can sit in more than one.
+ * Category filtering on the blog index. Pure show/hide over cards already
+ * in the DOM. Cards carry categories as a "|"-joined `data-category`.
  */
 
 // Kept in step with CategoryFilter.astro, which renders the initial state.
@@ -41,9 +37,7 @@ function initBlogFilter() {
 			card.hidden = !matches;
 			if (matches) {
 				shown += 1;
-				// Re-trigger the fade only when motion is welcome. The reveal
-				// animation has already run by now, so this is a fresh, cheap
-				// transition rather than a GSAP timeline.
+				// Re-trigger the fade only when motion is welcome.
 				if (!reduceMotion) {
 					card.animate(
 						[

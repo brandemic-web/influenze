@@ -1,13 +1,8 @@
 ---
 /**
  * "Use AI to summarize this article" card. Deep-links to five AI chat tools
- * with a prefilled prompt built from this article's URL. Every link opens in
- * a new tab and needs no JavaScript — the prompt lives entirely in the href,
- * so a reader with scripting off gets the same buttons.
- *
- * The prompt is one template, kept here rather than duplicated per link, so
- * the wording — including which source it tells the assistant to cite — is a
- * single edit.
+ * with a prefilled prompt built from this article's URL — no JS needed, the
+ * prompt lives entirely in the href.
  */
 import AiPlatformIcon from "./AiPlatformIcon.astro";
 
@@ -40,9 +35,7 @@ const PLATFORMS = [
 		Use AI to summarize this article
 	</p>
 
-	{/* No border, per the earlier request — just the pill's own dark fill.
-	    The source SVGs now carry their own consistent look, so every icon
-	    renders at the same size. */}
+	{/* No border, just the pill's own dark fill. */}
 	<div class="mt-4 flex flex-wrap gap-2.5">
 		{
 			PLATFORMS.map((platform) => (

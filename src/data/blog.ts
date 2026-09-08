@@ -1,17 +1,7 @@
 /**
- * PLACEHOLDER POSTS — Phase A only.
- *
- * These exist so the blog design can be reviewed before the CMS is wired. The
- * shape deliberately mirrors what the `post` document will project from Sanity
- * (see the plan), so Phase B swaps the source rather than reworking components.
- *
- * When Sanity lands, this file is DELETED, not kept as a fallback. Every other
- * section on the site merges Sanity over local copy per field, but that idiom
- * cannot apply to a list of real articles — an empty dataset has to render an
- * honest empty state, not three invented posts.
- *
- * Cover art and avatars reuse the creator portraits already in the repo; none
- * of this imagery is final.
+ * PLACEHOLDER POSTS — Phase A only. Shape mirrors the future Sanity `post`
+ * document, so Phase B swaps the source. This file is DELETED once Sanity
+ * lands, not kept as a fallback. Cover art and avatars are not final.
  */
 import type { ImageMetadata } from "astro";
 import { readingMinutesFromHtml } from "../lib/reading-time";
@@ -87,9 +77,7 @@ const SEEDS: PostSeed[] = [
 		publishedAt: "2026-08-28",
 		author: AUTHORS.priya,
 		featured: true,
-		// The lead post deliberately exercises every element the body supports —
-		// h2/h3, paragraphs, a captioned image and two tables — so the rich-text
-		// treatment can be reviewed without hunting for a post that uses each one.
+		// Exercises every element the body supports, for rich-text review.
 		body: `
 <p>Every brief we see still opens with a follower range. It is the easiest number to get and the least useful one to plan against, because it describes the size of an audience without describing its behaviour, its location, or whether it is <em>real</em>.</p>
 <p>A creator with 80,000 engaged followers in one metro will consistently outperform one with 400,000 scattered across markets you do not ship to. The second creator costs four times more.</p>

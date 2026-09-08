@@ -1,15 +1,8 @@
 ---
 /**
- * Contents box for an article: a bordered card with a fixed-height, internally
- * scrolling list, so a long outline never pushes the CTA/share cards below it
- * further down the page. A collapsed `<details>` stands in for it below `lg`.
- *
- * Sticky positioning lives one level up, in ArticleSidebar.astro, which pins
- * this box together with the CTA and share cards as one unit.
- *
- * `data-toc` / `data-toc-link` are read by scripts/toc.ts, which lights the
- * heading currently on screen. Headings and their ids are derived from the body
- * by lib/article-headings.ts, so this cannot drift from the copy.
+ * Article contents box: fixed-height scrolling list on desktop, collapsed
+ * `<details>` below `lg`. `data-toc` / `data-toc-link` are read by
+ * scripts/toc.ts to light the heading currently on screen.
  */
 import type { ArticleHeading } from "../../lib/article-headings";
 
@@ -19,9 +12,7 @@ interface Props {
 
 const { headings } = Astro.props;
 
-// Deliberately a step larger than the legal routes' rail: that one indexes 23
-// short clause titles, where this carries a handful of full heading sentences
-// and is the article's main secondary navigation.
+// A step larger than the legal routes' rail — this carries full heading sentences.
 const linkClass =
 	"block border-l border-white/10 py-2 pl-5 text-[0.9375rem] leading-6 text-white/45 transition-colors hover:border-brand-primary hover:text-white data-active:border-brand-primary data-active:text-brand-primary lg:text-[1.0625rem] lg:leading-7";
 
@@ -32,7 +23,7 @@ const indent = (level: 2 | 3) => (level === 3 ? "pl-10" : "");
 {
 	headings.length > 1 && (
 		<>
-			{/* Mobile / tablet: collapsed by default so the copy starts near the top. */}
+			{/* Mobile/tablet: collapsed by default so the copy starts near the top. */}
 			<details class="group rounded-md border border-white/10 bg-surface-dark lg:hidden">
 				<summary class="flex cursor-pointer list-none items-center justify-between gap-4 p-5 [&::-webkit-details-marker]:hidden">
 					<span class="text-[1rem] font-semibold text-white">Contents</span>
@@ -58,9 +49,7 @@ const indent = (level: 2 | 3) => (level === 3 ? "pl-10" : "");
 				</nav>
 			</details>
 
-			{/* Desktop: a bordered card with a fixed-height, internally scrolling
-			    list — a long outline scrolls inside the box rather than growing it,
-			    which is what keeps the CTA and share cards below it in place. */}
+			{/* Desktop: a long outline scrolls inside the box rather than growing it. */}
 			<div class="hidden rounded-md border border-white/10 bg-surface-dark p-5 lg:block lg:p-6">
 				<h2 class="mb-5 text-[0.875rem] tracking-[0.14em] uppercase text-white/40 lg:text-[1rem]">
 					Contents
@@ -86,12 +75,7 @@ const indent = (level: 2 | 3) => (level === 3 ? "pl-10" : "");
 }
 
 <style>
-	/*
-	 * The rail scrolls independently of the page, so it needs a visible bar — but
-	 * the platform default is a light-mode widget on a near-black column. Thin,
-	 * trackless and faint until pointed at. px rather than rem: the bar should not
-	 * grow with the 1728 grid.
-	 */
+	/* Thin, faint scrollbar for a near-black column. px, not rem: shouldn't grow with the 1728 grid. */
 	.toc-rail {
 		scrollbar-width: thin; /* Firefox */
 		scrollbar-color: rgb(255 255 255 / 0.14) transparent;
