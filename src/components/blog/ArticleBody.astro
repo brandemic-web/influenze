@@ -1,0 +1,54 @@
+---
+/**
+ * The article body and its right rail — 80/20 from `lg` up, single column
+ * below, where the rail's contents box collapses into a <details> above the
+ * copy and the CTA/share cards stack after it.
+ *
+ * Prose styling lives in src/styles/article.css, keyed off `.article-body`:
+ * the markup arrives as a string with no classes on it, so it is styled by
+ * tag. Heading ids come from buildOutline(), which also feeds the rail.
+ *
+ * `set:html` is safe here: the HTML is first-party, and in Phase B it comes
+ * from @portabletext/to-html, which escapes every text node it emits.
+ */
+import ArticleSidebar from "./ArticleSidebar.astro";
+import ArticleAiSummary from "./ArticleAiSummary.astro";
+import { buildOutline } from "../../lib/article-headings";
+
+interface Props {
+	html: string;
+	title: string;
+	url: string;
+}
+
+const { html, title, url } = Astro.props;
+
+// Ids are injected here rather than authored into the body, so the rail and
+// the copy are built from one source and cannot disagree.
+const { html: body, headings } = buildOutline(html);
+---
+
+<section class="bg-background-primary pt-10 pb-14 lg:pt-14 lg:pb-20" aria-label="Article">
+	{/* Same envelope as the FAQ section below it (px-6 / lg:px-14, no
+	    max-width) so the copy's left edge and the rail's right edge line up
+	    with it. The wide column is capped at max-w-196.5 — the FAQ's answer
+	    column width — to keep the measure readable. */}
+	<div
+		class="mx-auto flex flex-col gap-8 px-6 lg:flex-row lg:justify-between lg:gap-10 lg:px-14"
+	>
+		{/* The sidebar always renders — CTA and share are useful even on a post
+		    with no outline to show. Declared first so it sits above the copy on
+		    mobile; `lg:order-2` moves it to the right column on desktop. */}
+		<div class="lg:order-2 lg:w-90 lg:shrink-0">
+			<ArticleSidebar headings={headings} url={url} title={title} />
+		</div>
+
+		{/* lg:max-w-196.5 overrides the stylesheet's standalone 46.25rem cap —
+		    utilities outrank the `components` layer article.css sits in, which
+		    is the point of it being layered rather than scoped. */}
+		<div class="min-w-0 w-full lg:order-1 lg:max-w-250 lg:pl-10">
+			<ArticleAiSummary url={url} class="mb-8 lg:mb-10 w-fit" />
+			<div class="article-body lg:max-w-none" set:html={body} />
+		</div>
+	</div>
+</section>

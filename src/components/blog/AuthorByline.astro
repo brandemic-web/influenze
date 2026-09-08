@@ -1,0 +1,54 @@
+---
+/**
+ * Avatar + name/role, and the date · read-time meta line. Used by the article
+ * header and the featured-post card. `metaOnly` drops the avatar and name
+ * entirely, leaving just the date · read time line — the post cards show only
+ * that, not the author.
+ */
+import { Image } from "astro:assets";
+import type { BlogAuthor } from "../../data/blog";
+
+interface Props {
+	author: BlogAuthor;
+	/** ISO 8601 — rendered through <time datetime> so it stays machine-readable. */
+	publishedAt: string;
+	readMinutes: number;
+	metaOnly?: boolean;
+	class?: string;
+}
+
+const { author, publishedAt, readMinutes, metaOnly = false, class: className = "" } = Astro.props;
+
+const readable = new Date(publishedAt).toLocaleDateString("en-GB", {
+	day: "numeric",
+	month: "short",
+	year: "numeric",
+});
+---
+
+{
+	metaOnly ? (
+		<p class:list={["text-[0.75rem] text-white/50 lg:text-[0.875rem]", className]}>
+			<time datetime={publishedAt}>{readable}</time>
+			<span aria-hidden="true"> · </span>{readMinutes} min read
+		</p>
+	) : (
+		<div class:list={["flex items-center gap-3", className]}>
+			<Image
+				src={author.avatar}
+				alt={author.name}
+				width={96}
+				height={96}
+				class="h-11 w-11 shrink-0 rounded-full object-cover lg:h-13 lg:w-13"
+			/>
+			<div class="min-w-0">
+				<p class="truncate text-[0.9375rem] text-white lg:text-[1.0625rem]">{author.name}</p>
+				<p class="truncate text-[0.8125rem] text-white/40 lg:text-[0.9375rem]">{author.role}</p>
+				<p class="text-[0.75rem] text-white/50 lg:text-[0.875rem]">
+					<time datetime={publishedAt}>{readable}</time>
+					<span aria-hidden="true"> · </span>{readMinutes} min read
+				</p>
+			</div>
+		</div>
+	)
+}

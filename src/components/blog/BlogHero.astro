@@ -1,0 +1,31 @@
+---
+/**
+ * Blog index hero. Same radial-gradient stage and top clearance as the
+ * features hero, so the two pages open identically.
+ */
+import SectionHeading from "../common/SectionHeading.astro";
+
+interface Props {
+	heading: { lead: string; accent: string };
+	subcopy: string;
+}
+
+const { heading, subcopy } = Astro.props;
+---
+
+<section
+	class="relative overflow-hidden bg-[radial-gradient(160%_100%_at_50%_-10%,#7B4DFF_0%,#5A2FD8_35%,#2A1655_65%,#010101_100%)] pt-26 pb-12 lg:pt-50 lg:pb-20"
+	aria-label="Blog introduction"
+>
+	<div class="mx-auto flex max-w-256.75 flex-col items-center px-6 text-center">
+		<SectionHeading
+			level="h1"
+			segments={[{ text: heading.lead }, { text: heading.accent, accent: true }]}
+			class="mt-4 max-w-215 lg:mt-7"
+		/>
+
+		<p class="mt-4 max-w-185 text-[1rem] leading-6.5 text-[#CECECE]/70 lg:mt-6 lg:text-[1.125rem]">
+			{subcopy}
+		</p>
+	</div>
+</section>

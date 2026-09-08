@@ -1,0 +1,38 @@
+---
+/**
+ * The article's right-hand rail: contents, a login/signup CTA, then share
+ * links — sticky as one unit on desktop, so all three track together while
+ * reading rather than just the contents box. Stacks in the same order above
+ * the body on mobile.
+ *
+ * Renders unconditionally even when ArticleToc has nothing to show (one
+ * heading or fewer): the CTA and share cards are still useful on their own.
+ */
+import ArticleToc from "./ArticleToc.astro";
+import ArticleShare from "./ArticleShare.astro";
+import Button from "../common/Button.astro";
+import { APP_URL } from "../../data/site";
+import type { ArticleHeading } from "../../lib/article-headings";
+
+interface Props {
+	headings: ArticleHeading[];
+	url: string;
+	title: string;
+}
+
+const { headings, url, title } = Astro.props;
+---
+
+<div class="flex flex-col gap-6 lg:sticky lg:top-32">
+	<ArticleToc headings={headings} />
+
+	<div class="rounded-md border border-white/10 bg-surface-dark p-5 text-center lg:p-6">
+		<p class="text-[0.875rem] text-white/70 lg:text-[0.9375rem]">
+			Ready to find your next creator?
+		</p>
+		{/* Same label as the header's own CTA, for one voice across the site. */}
+		<Button href={APP_URL} newTab class="mt-4 w-full justify-center">Free Trail</Button>
+	</div>
+
+	<ArticleShare url={url} title={title} />
+</div>

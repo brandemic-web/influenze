@@ -4,8 +4,8 @@
  * `<details>` above the copy below it — the same list either way, so there is
  * only one set of links to keep in step with the body.
  *
- * `data-legal-toc` / `data-toc-link` are read by scripts/legal-toc.ts, which
- * marks the section currently on screen. Without JS the list still navigates.
+ * `data-toc` / `data-toc-link` are read by scripts/toc.ts, which marks the
+ * section currently on screen. Without JS the list still navigates.
  */
 import type { LegalSection } from "../../data/legal";
 
@@ -60,7 +60,7 @@ const linkClass =
 <nav
 	aria-label={label}
 	class="toc-rail sticky top-32 hidden max-h-[calc(100vh-10rem)] shrink-0 overflow-y-auto pr-4 lg:block lg:w-72"
-	data-legal-toc
+	data-toc
 >
 	<h2 class="mb-5 text-[0.75rem] tracking-[0.14em] uppercase text-white/40">Contents</h2>
 	<ol class="flex flex-col">
@@ -114,5 +114,5 @@ const linkClass =
 </style>
 
 <script>
-	import "../../scripts/legal-toc";
+	import "../../scripts/toc";
 </script>

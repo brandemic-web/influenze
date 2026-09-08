@@ -1,0 +1,47 @@
+---
+/**
+ * Up to three more posts sharing a category. Renders nothing at all when there
+ * is no overlap, rather than an empty heading.
+ */
+import PostCard from "./PostCard.astro";
+import type { BlogPost } from "../../data/blog";
+
+interface Props {
+	posts: BlogPost[];
+}
+
+const { posts } = Astro.props;
+---
+
+{
+	posts.length > 0 && (
+		<section
+			class="bg-background-primary pt-10 pb-14 lg:pt-16 lg:pb-24"
+			aria-labelledby="related-posts-heading"
+		>
+			{/* Same envelope as the hero, body and FAQ above it. */}
+			<div class="mx-auto px-6 lg:px-14">
+				<h2
+					id="related-posts-heading"
+					class="border-t border-white/10 pt-10 text-md capitalize leading-[1.2] text-white lg:pt-14 lg:text-[2.25rem]"
+				>
+					Keep reading
+				</h2>
+
+				<ul
+					class="mt-7 grid gap-5 sm:grid-cols-2 lg:mt-10 lg:grid-cols-3 lg:gap-8"
+					data-reveal
+					data-reveal-stagger="0.12"
+				>
+					{posts.map((post) => (
+						<PostCard post={post} />
+					))}
+				</ul>
+			</div>
+		</section>
+	)
+}
+
+<script>
+	import "../../scripts/reveals";
+</script>

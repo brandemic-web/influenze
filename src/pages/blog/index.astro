@@ -1,0 +1,56 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import BlogHero from "../../components/blog/BlogHero.astro";
+import CategoryFilter from "../../components/blog/CategoryFilter.astro";
+import FeaturedPost from "../../components/blog/FeaturedPost.astro";
+import PostGrid from "../../components/blog/PostGrid.astro";
+import { BLOG_CATEGORIES, BLOG_HERO, BLOG_POSTS_SORTED } from "../../data/blog";
+import { SITE } from "../../data/site";
+
+// The lead slot takes the featured post (or the newest, since the list is
+// already sorted featured-first); the grid takes the rest.
+const [lead, ...rest] = BLOG_POSTS_SORTED;
+
+const schema = [
+	{
+		"@type": "Blog",
+		name: `${SITE.name} blog`,
+		description: BLOG_HERO.subcopy,
+		blogPost: BLOG_POSTS_SORTED.map((post) => ({
+			"@type": "BlogPosting",
+			headline: post.title,
+			description: post.excerpt,
+			datePublished: post.publishedAt,
+			author: { "@type": "Person", name: post.author.name },
+			url: new URL(`/blog/${post.slug}/`, Astro.site ?? Astro.url.origin).href,
+		})),
+	},
+];
+---
+
+<Layout
+	title="Blog — Influenze.ai"
+	description="Research, benchmarks and product notes on creator discovery, audience measurement and campaign design."
+	schema={schema}
+>
+	<main>
+		<BlogHero
+			heading={BLOG_HERO.heading}
+			subcopy={BLOG_HERO.subcopy}
+		/>
+
+		<section class="bg-background-primary pb-14 lg:pb-25" aria-label="All posts">
+			<div class="mx-auto max-w-393 px-6 lg:px-25">
+				{lead && <FeaturedPost post={lead} />}
+
+				<CategoryFilter categories={BLOG_CATEGORIES} class="mt-10 lg:mt-16" />
+
+				<PostGrid posts={rest} class="mt-6 lg:mt-10" />
+			</div>
+		</section>
+	</main>
+</Layout>
+
+<script>
+	import "../../scripts/reveals";
+</script>

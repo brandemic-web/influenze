@@ -1,0 +1,32 @@
+---
+/**
+ * One brand mark, rendered as-is. The source SVGs in
+ * src/assets/icons/common/ already carry whatever background/colouring they
+ * need, so this stays a plain wrapper — same rounded clip and size for every
+ * icon regardless of source.
+ *
+ * Rendered as a plain `<img>`, not `<Image>` — Astro's image service rejects
+ * SVGs outright (see CLAUDE.md), so these go through unprocessed like every
+ * other SVG import on the site (e.g. FeatureBlock.astro).
+ */
+import type { ImageMetadata } from "astro";
+
+interface Props {
+	src: ImageMetadata;
+	/** Defaults to h-6 w-6; pass a full replacement to size differently. */
+	class?: string;
+}
+
+const { src, class: className = "h-6 w-6" } = Astro.props;
+---
+
+<span
+	class:list={[
+		"inline-flex shrink-0 items-center justify-center overflow-hidden rounded-[0.375rem]",
+		className,
+	]}
+>
+	{/* Decorative: every button that uses this also carries a visible text
+	    label or aria-label naming the platform, so no alt text here. */}
+	<img src={src.src} alt="" class="h-full w-full object-contain" />
+</span>

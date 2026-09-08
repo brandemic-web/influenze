@@ -1,0 +1,50 @@
+---
+/**
+ * The post grid, plus the empty state. Renders complete without JavaScript —
+ * the filter script only ever hides cards that are already here.
+ */
+import PostCard from "./PostCard.astro";
+import type { BlogPost } from "../../data/blog";
+
+interface Props {
+	posts: BlogPost[];
+	class?: string;
+}
+
+const { posts, class: className = "" } = Astro.props;
+---
+
+{
+	posts.length === 0 ? (
+		<div class="rounded-sm border border-white/10 bg-surface-card px-6 py-16 text-center">
+			<p class="text-[1rem] text-white lg:text-[1.25rem]">No posts yet</p>
+			<p class="mx-auto mt-2 max-w-100 text-[0.875rem] leading-6.5 text-[#CECECE]/70 lg:text-[1rem]">
+				We're writing. Check back shortly.
+			</p>
+		</div>
+	) : (
+		<>
+			<ul
+				class:list={["grid gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8", className]}
+				data-reveal
+				data-reveal-stagger="0.12"
+			>
+				{posts.map((post) => (
+					<PostCard post={post} />
+				))}
+			</ul>
+
+			{/* Shown by the filter script when a category matches nothing. Never
+			    reachable without JS, since no card is hidden then. */}
+			{/* Toggled via the `hidden` attribute, not a class — a Tailwind
+			    `hidden` class would outlive `el.hidden = false`. */}
+			<p
+				class="py-16 text-center text-[0.875rem] text-[#CECECE]/70 lg:text-[1rem]"
+				hidden
+				data-blog-empty
+			>
+				No posts in this category yet.
+			</p>
+		</>
+	)
+}

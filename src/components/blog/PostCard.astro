@@ -1,0 +1,64 @@
+---
+/**
+ * One post card — used in the index grid and the related-posts row. The whole
+ * card is a single anchor, so the hit target is the card rather than just the
+ * title. Content is deliberately spare: cover, category, date · read time,
+ * title — no excerpt, no author.
+ *
+ * The card recipe is the pricing page's "Use cases for brands and agencies"
+ * panel (see UseCasesSplit.astro) — a translucent bordered panel rather than
+ * the site's other gradient-hairline card trick.
+ *
+ * No `capitalize` on the title: post headlines are sentence-case, and CSS
+ * capitalize would title-case every word ("How to vet creators" → "How To Vet
+ * Creators"). The marketing sections can use it because their headings are
+ * written for it; article titles are not.
+ */
+import { Image } from "astro:assets";
+import AuthorByline from "./AuthorByline.astro";
+import type { BlogPost } from "../../data/blog";
+import { readMinutes } from "../../data/blog";
+
+interface Props {
+	post: BlogPost;
+}
+
+const { post } = Astro.props;
+---
+
+{/* data-category lets the filter script show/hide without re-rendering. */}
+<li
+	class="rounded-md border border-white/15 bg-[rgba(246,246,244,0.1)] shadow-[0_8px_32px_rgba(0,0,0,0.18),inset_0_1px_0_rgba(255,255,255,0.18)] backdrop-blur-md backdrop-saturate-150"
+	data-blog-card
+	data-category={post.categories.join("|")}
+	data-reveal-item
+>
+	<a
+		href={`/blog/${post.slug}`}
+		class="group flex h-full flex-col rounded-md p-4 transition-colors duration-300 hover:bg-white/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary lg:p-5"
+	>
+		<Image
+			src={post.cover}
+			alt={post.coverAlt}
+			widths={[400, 800, 1200]}
+			sizes="(min-width: 1024px) 30vw, 92vw"
+			class="aspect-video w-full rounded-sm object-cover"
+		/>
+
+		<p class="mt-6 w-fit rounded-[100px] border border-white/10 bg-surface-card px-3 py-1.5 text-[0.6875rem] text-brand-primary lg:text-[0.75rem]">
+			{post.categories[0]}
+		</p>
+
+		<AuthorByline
+			author={post.author}
+			publishedAt={post.publishedAt}
+			readMinutes={readMinutes(post)}
+			metaOnly
+			class="mt-5"
+		/>
+
+		<h3 class="mt-4 mb-4 text-[1.25rem] leading-[1.3] text-white transition-colors duration-300 group-hover:text-brand-primary lg:text-[1.625rem]">
+			{post.title}
+		</h3>
+	</a>
+</li>

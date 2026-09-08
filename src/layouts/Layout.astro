@@ -24,6 +24,10 @@ interface Props {
 	noindex?: boolean;
 	/** ISO 8601 date for the page's WebPage node. Used by the legal routes. */
 	dateModified?: string;
+	/** ISO 8601 publish date. Blog posts pass this; nothing else has one. */
+	datePublished?: string;
+	/** "article" for blog posts. Everything else on the site is a "website". */
+	ogType?: "website" | "article";
 	/**
 	 * Extra JSON-LD nodes for this page, merged into the site-wide `@graph`.
 	 * The homepage passes its FAQ and the product itself; see pages/index.astro.
@@ -38,6 +42,8 @@ const {
 	hideCta = false,
 	noindex = false,
 	dateModified,
+	datePublished,
+	ogType = "website",
 	schema = [],
 } = Astro.props;
 
@@ -88,6 +94,7 @@ const structuredData = {
 			description,
 			isPartOf: { "@id": new URL("/#website", site).href },
 			...(dateModified ? { dateModified } : {}),
+			...(datePublished ? { datePublished } : {}),
 		},
 		...schema,
 	],
@@ -120,7 +127,7 @@ const structuredData = {
 		<meta name="description" content={description} />
 		<link rel="canonical" href={canonical} />
 		{noindex && <meta name="robots" content="noindex, follow" />}
-		<meta property="og:type" content="website" />
+		<meta property="og:type" content={ogType} />
 		<meta property="og:site_name" content={SITE.name} />
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />

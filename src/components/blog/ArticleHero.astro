@@ -1,0 +1,100 @@
+---
+/**
+ * Article header: full-width gradient stage, copy on the left and the cover
+ * image on the right at a 70/30 split. Stacks below `lg`, where the image sits
+ * under the byline.
+ *
+ * Deliberately not SectionHeading — that component hardcodes `capitalize` and
+ * `text-center`, and CSS capitalize title-cases every word, which mangles a
+ * sentence-case headline. Article titles are left-aligned and set as written.
+ */
+import { Image } from "astro:assets";
+import AuthorByline from "./AuthorByline.astro";
+import type { BlogPost } from "../../data/blog";
+
+interface Props {
+	post: BlogPost;
+	readMinutes: number;
+}
+
+const { post, readMinutes } = Astro.props;
+---
+
+<section
+	class="relative overflow-hidden bg-[radial-gradient(160%_100%_at_50%_-20%,#7B4DFF_0%,#5A2FD8_30%,#2A1655_58%,#010101_100%)] pt-26 pb-12 lg:flex lg:h-screen lg:items-center lg:justify-items-stretch lg:pt-50 lg:pb-20"
+	aria-label="Article header"
+>
+	{/* Same envelope as the FAQ section and the article body (px-6 / lg:px-14,
+	    no max-width), so every block on the page shares one left and right
+	    edge. */}
+	<div class="mx-auto px-6 lg:w-full lg:px-14">
+		{/* Glass card: the site's existing recipe for a defined boundary over a
+		    gradient backdrop (see UseCasesSplit.astro) — gives the hero a clean
+		    edge without hiding the gradient behind it. */}
+		<div class="rounded-md border border-white/15 bg-[rgba(246,246,244,0.1)] px-5 py-7 shadow-[0_8px_32px_rgba(0,0,0,0.18),inset_0_1px_0_rgba(255,255,255,0.18)] backdrop-blur-md backdrop-saturate-150 lg:px-14 lg:py-13">
+			<div class="flex flex-col gap-8 lg:flex-row lg:items-stretch lg:justify-between lg:gap-16">
+				{/* 70 — the copy */}
+				<div class="flex w-full flex-col lg:max-w-196.5">
+					<a
+						href="/blog"
+						class="inline-flex w-fit items-center gap-2 text-[0.8125rem] text-white/60 transition-colors duration-300 hover:text-brand-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary lg:text-[0.9375rem]"
+					>
+						<svg
+							width="16"
+							height="16"
+							viewBox="0 0 16 16"
+							fill="none"
+							aria-hidden="true"
+							class="shrink-0"
+						>
+							<path
+								d="M10 12.5 5.5 8 10 3.5"
+								stroke="currentColor"
+								stroke-width="1.5"
+								stroke-linecap="round"
+								stroke-linejoin="round"></path>
+						</svg>
+						All posts
+					</a>
+
+					<ul class="mt-6 flex flex-wrap gap-2 lg:mt-8">
+						{
+							post.categories.map((category) => (
+								<li class="rounded-[100px] border border-white/10 bg-surface-card px-3 py-1.5 text-[0.6875rem] text-brand-primary lg:text-[0.75rem]">
+									{category}
+								</li>
+							))
+						}
+					</ul>
+
+					<h1 class="mt-4 text-3xl leading-[1.15] text-white lg:mt-6 lg:text-[3.4375rem]">
+						{post.title}
+					</h1>
+
+					<p class="mt-4 max-w-185 text-[1rem] leading-6.5 text-[#CECECE]/70 lg:mt-6 lg:text-[1.25rem]">
+						{post.excerpt}
+					</p>
+
+					<AuthorByline
+						author={post.author}
+						publishedAt={post.publishedAt}
+						readMinutes={readMinutes}
+						class="mt-7 lg:mt-10"
+					/>
+				</div>
+
+				{/* 30 — the cover, flush to the right edge. Square on desktop rather
+				    than the taller 4:5 it was — wider and larger without also
+				    growing the section's height as much; 16:9 when stacked. */}
+				<Image
+					src={post.cover}
+					alt={post.coverAlt}
+					widths={[500, 1000, 1600]}
+					sizes="(min-width: 1024px) 31.25rem, 92vw"
+					class="aspect-video w-full rounded-md object-cover lg:aspect-square lg:w-125 lg:shrink-0"
+					loading="eager"
+				/>
+			</div>
+		</div>
+	</div>
+</section>
