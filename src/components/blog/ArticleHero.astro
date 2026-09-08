@@ -24,7 +24,7 @@ const { post, readMinutes } = Astro.props;
 	<div class="mx-auto px-6 lg:w-full lg:px-14">
 		{/* Glass card recipe from UseCasesSplit.astro — a clean edge over the gradient. */}
 		<div class="rounded-md border border-white/15 bg-[rgba(246,246,244,0.1)] px-5 py-7 shadow-[0_8px_32px_rgba(0,0,0,0.18),inset_0_1px_0_rgba(255,255,255,0.18)] backdrop-blur-md backdrop-saturate-150 lg:px-14 lg:py-13">
-			<div class="flex flex-col gap-3 lg:flex-row lg:items-stretch lg:justify-between lg:gap-16">
+			<div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between lg:gap-16">
 				{/* 70 — the copy. Contents on mobile so the byline can order after the cover; a real box again at `lg`. */}
 				<div class="contents lg:flex lg:w-full lg:max-w-196.5 lg:flex-col">
 					<div class="order-1 lg:order-0">
@@ -60,7 +60,7 @@ const { post, readMinutes } = Astro.props;
 							}
 						</ul>
 
-						<h1 class="mt-4 text-3xl leading-[1.15] text-white lg:mt-6 lg:text-[3.4375rem]">
+						<h1 class="mt-4 text-3xl leading-[1.15] text-white lg:mt-6 lg:text-[4.0625rem]">
 							{post.title}
 						</h1>
 
@@ -79,13 +79,13 @@ const { post, readMinutes } = Astro.props;
 					</div>
 				</div>
 
-				{/* Cover: square on desktop (wider without growing section height), 16:9 when stacked. mt-5 restores the text-to-cover gap the tighter container gap took from it. */}
+				{/* Cover: square on desktop (bigger, per the reference layout), 16:9 when stacked. mt-5 restores the text-to-cover gap the tighter container gap took from it. */}
 				<Image
 					src={post.cover}
 					alt={post.coverAlt}
 					widths={[500, 1000, 1600]}
-					sizes="(min-width: 1024px) 31.25rem, 92vw"
-					class="order-2 mt-5 aspect-video w-full rounded-md object-cover lg:order-0 lg:mt-0 lg:aspect-square lg:w-125 lg:shrink-0"
+					sizes="(min-width: 1024px) 37.5rem, 92vw"
+					class="order-2 mt-5 aspect-video w-full rounded-md object-cover lg:order-0 lg:mt-0 lg:aspect-square lg:w-150 lg:shrink-0"
 					loading="eager"
 				/>
 			</div>
