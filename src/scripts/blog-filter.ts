@@ -5,14 +5,10 @@ import { prefersReducedMotion } from "./breakpoints";
  * in the DOM. Cards carry categories as a "|"-joined `data-category`.
  */
 
-// Kept in step with CategoryFilter.astro, which renders the initial state.
-const ACTIVE_CLASSES = ["border-transparent", "bg-button-primary", "text-button-text"];
-const INACTIVE_CLASSES = ["border-white/10", "bg-surface-card", "text-white/70", "hover:text-white"];
-
+// The border-vs-fill look is pure CSS off this attribute (see CategoryFilter.astro's
+// aria-pressed: variants) — no classes to keep in step here.
 function setPressed(button: HTMLElement, pressed: boolean) {
 	button.setAttribute("aria-pressed", String(pressed));
-	button.classList.remove(...(pressed ? INACTIVE_CLASSES : ACTIVE_CLASSES));
-	button.classList.add(...(pressed ? ACTIVE_CLASSES : INACTIVE_CLASSES));
 }
 
 function initBlogFilter() {

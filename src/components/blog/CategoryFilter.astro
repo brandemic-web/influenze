@@ -2,6 +2,8 @@
 /**
  * Category pills. Progressive enhancement: with no JS every card stays
  * visible, so these read as inert labels rather than a broken control.
+ * A hairline mint border on hover/press — driven purely by `aria-pressed`
+ * (see blog-filter.ts), no classes to keep in step.
  */
 interface Props {
 	categories: readonly string[];
@@ -11,9 +13,7 @@ interface Props {
 const { categories, class: className = "" } = Astro.props;
 
 const PILL =
-	"shrink-0 cursor-pointer rounded-[100px] border px-4 py-2.5 text-[0.75rem] whitespace-nowrap transition-colors duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary lg:text-[0.875rem]";
-const INACTIVE = "border-white/10 bg-surface-card text-white/70 hover:text-white";
-const ACTIVE = "border-transparent bg-button-primary text-button-text";
+	"shrink-0 cursor-pointer rounded-[100px] border border-white/10 bg-surface-pill px-6 py-2.5 text-[0.75rem] whitespace-nowrap text-white transition-colors duration-300 hover:border-brand-primary/60 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary aria-pressed:border-transparent aria-pressed:bg-button-primary aria-pressed:text-button-text lg:text-[0.875rem] ";
 ---
 
 {/* -mx-6 px-6 lets the row bleed to the screen edge while scrolling on mobile. */}
@@ -23,17 +23,12 @@ const ACTIVE = "border-transparent bg-button-primary text-button-text";
 	aria-label="Filter posts by category"
 	data-blog-filter
 >
-	<button type="button" class:list={[PILL, ACTIVE]} data-filter="all" aria-pressed="true">
+	<button type="button" class={PILL} data-filter="all" aria-pressed="true">
 		All
 	</button>
 	{
 		categories.map((category) => (
-			<button
-				type="button"
-				class:list={[PILL, INACTIVE]}
-				data-filter={category}
-				aria-pressed="false"
-			>
+			<button type="button" class={PILL} data-filter={category} aria-pressed="false">
 				{category}
 			</button>
 		))

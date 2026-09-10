@@ -1,41 +1,57 @@
 ---
 /**
  * The lead post: same content as a card, given a wide two-column treatment.
- * Stacks below `lg`, where it is visually just a slightly larger card.
+ * Stacks below `lg`, where it is visually just a slightly larger card. Outer
+ * card is Pricing's panel look (glass-rim); the tag pills are its mid purple
+ * panel — see PricingPlans.astro.
  */
-import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+import type { Image as SanityImage } from "sanity";
+import BlogImage from "./BlogImage.astro";
 import AuthorByline from "./AuthorByline.astro";
-import type { BlogPost } from "../../data/blog";
-import { readMinutes } from "../../data/blog";
 
-interface Props {
-	post: BlogPost;
+interface FeaturedPostData {
+	slug: string;
+	title: string;
+	excerpt: string;
+	cover: ImageMetadata | SanityImage;
+	coverAlt?: string;
+	categories: string[];
+	publishedAt: string;
+	author: { name: string; role?: string; avatar: ImageMetadata | SanityImage };
 }
 
-const { post } = Astro.props;
+interface Props {
+	post: FeaturedPostData;
+	readMinutes: number;
+}
+
+const { post, readMinutes } = Astro.props;
 ---
 
 {/* No data-blog-card: the featured post stays put regardless of the category filter below. */}
-<div class="rounded-sm bg-linear-to-r from-[#19123A] via-[#19123A] to-[#575757] p-px">
+<div class="rounded-md border border-white/15 bg-[rgba(246,246,244,0.1)] px-5 py-7 shadow-[0_8px_32px_rgba(0,0,0,0.18),inset_0_1px_0_rgba(255,255,255,0.18)] backdrop-blur-md backdrop-saturate-150">
 	<a
 		href={`/blog/${post.slug}`}
-		class="group grid gap-5 rounded-sm bg-background-primary p-4 transition-colors duration-300 hover:bg-surface-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary lg:grid-cols-2 lg:items-center lg:gap-10 lg:p-6"
+		class="group grid gap-5 rounded-[1.25rem] p-4 transition-colors duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary lg:grid-cols-2 lg:items-center lg:gap-10 lg:p-6"
 	>
-		<Image
-			src={post.cover}
-			alt={post.coverAlt}
-			widths={[600, 1000, 1600]}
-			sizes="(min-width: 1024px) 46vw, 92vw"
-			class="aspect-16/10 w-full rounded-sm object-cover"
-			loading="eager"
-		/>
+		<div class="aspect-16/10 w-full overflow-hidden rounded-sm">
+			<BlogImage
+				src={post.cover}
+				alt={post.coverAlt ?? ""}
+				widths={[600, 1000, 1600]}
+				sizes="(min-width: 1024px) 46vw, 92vw"
+				class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+				loading="eager"
+			/>
+		</div>
 
 		<div class="flex flex-col lg:pr-6">
 			<div class="flex items-center gap-2">
-				<p class="w-fit rounded-[100px] bg-button-primary px-3 py-1.5 text-[0.6875rem] text-button-text lg:text-[0.75rem]">
+				<p class="w-fit rounded-[1.25rem] border border-white/12 bg-[rgba(73,40,179,0.22)] px-3 py-1.5 text-[0.6875rem] text-white shadow-[inset_0_1px_0_0_rgba(255,255,255,0.14),0_12px_40px_-12px_rgba(0,0,0,0.45)] lg:text-[0.75rem]">
 					Featured
 				</p>
-				<p class="w-fit rounded-[100px] border border-white/10 bg-surface-card px-3 py-1.5 text-[0.6875rem] text-brand-primary lg:text-[0.75rem]">
+				<p class="w-fit rounded-[1.25rem] border border-white/12 bg-[rgba(73,40,179,0.22)] px-3 py-1.5 text-[0.6875rem] text-white shadow-[inset_0_1px_0_0_rgba(255,255,255,0.14),0_12px_40px_-12px_rgba(0,0,0,0.45)] lg:text-[0.75rem]">
 					{post.categories[0]}
 				</p>
 			</div>
@@ -46,16 +62,25 @@ const { post } = Astro.props;
 				{post.title}
 			</h2>
 
-			<p class="mt-3 text-[0.875rem] leading-6.5 text-[#CECECE]/70 lg:mt-5 lg:text-[1.125rem]">
+			<p class="mt-4 text-[0.875rem] leading-6.5 text-[#CECECE]/70 lg:mt-6 lg:text-[1.125rem]">
 				{post.excerpt}
 			</p>
 
-			<AuthorByline
-				author={post.author}
-				publishedAt={post.publishedAt}
-				readMinutes={readMinutes(post)}
-				class="mt-6 lg:mt-9"
-			/>
+			<div class="mt-4 flex items-center justify-between gap-4 lg:mt-6">
+				<AuthorByline
+					author={post.author}
+					publishedAt={post.publishedAt}
+					readMinutes={readMinutes}
+					hideMeta
+				/>
+
+				<AuthorByline
+					author={post.author}
+					publishedAt={post.publishedAt}
+					readMinutes={readMinutes}
+					metaOnly
+				/>
+			</div>
 		</div>
 	</a>
 </div>

@@ -4,12 +4,28 @@
  * the filter script only ever hides cards that are already here.
  */
 import PostCard from "./PostCard.astro";
-import type { BlogPost } from "../../data/blog";
+import type { ImageMetadata } from "astro";
+import type { Image as SanityImage } from "sanity";
+
+interface GridPost {
+	slug: string;
+	title: string;
+	cover: ImageMetadata | SanityImage;
+	coverAlt?: string;
+	categories: string[];
+	publishedAt: string;
+	author: { name: string; role?: string; avatar: ImageMetadata | SanityImage };
+}
+
+interface PostWithMinutes {
+	post: GridPost;
+	readMinutes: number;
+}
 
 interface Props {
-	posts: BlogPost[];
+	posts: PostWithMinutes[];
 	/** Rendered as an extra, initially-hidden card so its category filter isn't empty even though the banner already covers "All". */
-	featured?: BlogPost;
+	featured?: PostWithMinutes;
 	class?: string;
 }
 
@@ -31,10 +47,10 @@ const { posts, featured, class: className = "" } = Astro.props;
 				data-reveal
 				data-reveal-stagger="0.12"
 			>
-				{posts.map((post) => (
-					<PostCard post={post} />
+				{posts.map(({ post, readMinutes }) => (
+					<PostCard post={post} readMinutes={readMinutes} />
 				))}
-				{featured && <PostCard post={featured} hideOnAll />}
+				{featured && <PostCard post={featured.post} readMinutes={featured.readMinutes} hideOnAll />}
 			</ul>
 
 			{/* Shown by the filter script when a category matches nothing. Never

@@ -6,18 +6,18 @@
  */
 import ArticleSidebar from "./ArticleSidebar.astro";
 import ArticleAiSummary from "./ArticleAiSummary.astro";
-import { buildOutline } from "../../lib/article-headings";
+import ArticleInlineCta from "./ArticleInlineCta.astro";
+import type { ArticleHeading } from "../../lib/article-headings";
+import type { BodySegment } from "../../lib/article-cta";
 
 interface Props {
-	html: string;
+	segments: BodySegment[];
+	headings: ArticleHeading[];
 	title: string;
 	url: string;
 }
 
-const { html, title, url } = Astro.props;
-
-// Ids injected here so the rail and copy stay in sync.
-const { html: body, headings } = buildOutline(html);
+const { segments, headings, title, url } = Astro.props;
 ---
 
 <section class="bg-background-primary pt-6 pb-6 lg:pt-14 lg:pb-20" aria-label="Article">
@@ -38,7 +38,22 @@ const { html: body, headings } = buildOutline(html);
 				<ArticleAiSummary url={url} class="mb-8 lg:mb-10 w-fit" />
 			</div>
 			{/* lg:max-w-196.5 overrides article.css's standalone cap — utilities outrank its `components` layer. */}
-			<div class="order-3 article-body lg:order-0 lg:max-w-none" set:html={body} />
+			<div class="order-3 lg:order-0">
+				{
+					segments.map((segment) =>
+						segment.type === "prose" ? (
+							<div class="article-body lg:max-w-none" set:html={segment.html} />
+						) : (
+							<ArticleInlineCta
+								heading={segment.heading}
+								subcopy={segment.subcopy}
+								buttonLabel={segment.buttonLabel}
+								buttonHref={segment.buttonHref}
+							/>
+						),
+					)
+				}
+			</div>
 		</div>
 	</div>
 </section>

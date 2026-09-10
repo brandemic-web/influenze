@@ -1,24 +1,22 @@
 /**
- * Pulls the heading outline out of an article body and gives every heading
- * an `id` to anchor to. Derived at render time so the rail can never drift
- * from the body. Regex, not a parser — no DOM in the Cloudflare worker.
+ * Builds the heading outline for a post's Portable Text body — walks h2/h3
+ * blocks directly (no DOM, no regex over rendered HTML) and slugifies each
+ * into an id, keyed by the block's own `_key` so lib/portable-text.ts can
+ * inject the same id when it serializes that block to HTML.
  */
+import type { PortableTextBlock } from "@portabletext/types";
+import type { HeadingId } from "./portable-text";
 
 export interface ArticleHeading {
 	id: string;
 	text: string;
-	/** h2 is a top-level section; h3 indents under it in the rail. */
 	level: 2 | 3;
 }
 
 export interface ArticleOutline {
-	/** The body with an `id` on every h2/h3 that lacked one. */
-	html: string;
+	headingIds: Map<string, HeadingId>;
 	headings: ArticleHeading[];
 }
-
-const HEADING = /<h([23])([^>]*)>([\s\S]*?)<\/h\1>/gi;
-const EXISTING_ID = /\bid\s*=\s*["']([^"']+)["']/i;
 
 function slugify(text: string): string {
 	return (
@@ -31,48 +29,38 @@ function slugify(text: string): string {
 	);
 }
 
-/** Heading text with any inline markup (links, <code>, <em>) stripped out. */
-function plainText(inner: string): string {
-	return inner
-		.replace(/<[^>]+>/g, "")
-		.replace(/&amp;/g, "&")
-		.replace(/&lt;/g, "<")
-		.replace(/&gt;/g, ">")
-		.replace(/&#39;|&apos;/g, "'")
-		.replace(/&quot;/g, '"')
-		.replace(/&nbsp;/g, " ")
-		.replace(/\s+/g, " ")
+function plainText(block: PortableTextBlock): string {
+	return (block.children ?? [])
+		.map((child) => ("text" in child && typeof child.text === "string" ? child.text : ""))
+		.join("")
 		.trim();
 }
 
-export function buildOutline(html: string): ArticleOutline {
+export function buildOutline(blocks: PortableTextBlock[]): ArticleOutline {
+	const headingIds = new Map<string, HeadingId>();
 	const headings: ArticleHeading[] = [];
-	// Two posts can legitimately share a heading ("Why it matters"), and a
+	// Two headings can legitimately share text ("Why it matters"), and a
 	// duplicate id would make the rail jump to the wrong one.
 	const used = new Set<string>();
 
-	const out = html.replace(HEADING, (match, rawLevel: string, attrs: string, inner: string) => {
-		const text = plainText(inner);
-		if (!text) return match;
+	for (const block of blocks) {
+		if (block._type !== "block" || (block.style !== "h2" && block.style !== "h3")) continue;
 
-		const level = Number(rawLevel) as 2 | 3;
-		const existing = EXISTING_ID.exec(attrs)?.[1];
+		const text = plainText(block);
+		if (!text) continue;
 
-		let id = existing ?? slugify(text);
-		if (!existing) {
+		const level = block.style === "h2" ? 2 : 3;
+		let id = slugify(text);
+		if (used.has(id)) {
 			let n = 2;
 			const base = id;
 			while (used.has(id)) id = `${base}-${n++}`;
 		}
 		used.add(id);
 
+		if (block._key) headingIds.set(block._key, { id, level });
 		headings.push({ id, text, level });
+	}
 
-		// Leave an authored id alone; otherwise add one, keeping other attributes.
-		return existing
-			? match
-			: `<h${level}${attrs} id="${id}">${inner}</h${level}>`;
-	});
-
-	return { html: out, headings };
+	return { headingIds, headings };
 }

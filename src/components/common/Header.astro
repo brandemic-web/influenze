@@ -5,10 +5,35 @@
 // ComparisonTable reach for the same asset the same way, so all eleven places the
 // logo appears on the homepage share one download.
 import logo from "../../assets/images/common/logos_and_icons/influenze_logo_nav.webp";
-import { NAV_ITEMS } from "../../data/nav";
+import { NAV_ITEMS, type NavItem } from "../../data/nav";
 import Button from "./Button.astro";
 import MobileMenu from "./MobileMenu.astro";
 import { APP_URL } from "../../data/site";
+import { getSiteSettings } from "../../sanity/lib/queries";
+import { getPerspectiveCookie } from "../../lib/draft-mode";
+
+// Site Settings > Navigation in Studio fully replaces the built-in list once
+// it has at least one item — editors manage the whole nav there, not
+// field-by-field, since add/remove/reorder/hide don't fit the "merge per
+// field" idiom the rest of the site uses for fixed-shape content.
+const { data: siteSettings } = await getSiteSettings(getPerspectiveCookie(Astro.cookies));
+const navItems: NavItem[] =
+	siteSettings?.navItems && siteSettings.navItems.length > 0
+		? siteSettings.navItems
+				.filter((item) => !item.hidden && item.label)
+				.map((item) => ({
+					label: item.label!,
+					href: item.href ?? "#",
+					newTab: item.newTab,
+					badge: item.badge,
+					dropdown: (() => {
+						const links = (item.dropdown ?? [])
+							.filter((link) => !link.hidden && link.label)
+							.map((link) => ({ label: link.label!, href: link.href ?? "#", newTab: link.newTab }));
+						return links.length > 0 ? links : undefined;
+					})(),
+				}))
+		: NAV_ITEMS;
 
 // Current page gets the hover green. Trailing slash stripped so "/pricing/" matches "/pricing".
 const currentPath = Astro.url.pathname.replace(/\/+$/, "") || "/";
@@ -38,7 +63,7 @@ const isActive = (item: { href: string; newTab?: boolean }) => {
 
 		<nav class="hidden items-center gap-10 lg:flex xl:gap-15" aria-label="Main">
 			{
-				NAV_ITEMS.map((item) =>
+				navItems.map((item) =>
 					item.dropdown ? (
 						<div class="group relative" data-nav-dropdown>
 							<button
@@ -114,7 +139,7 @@ const isActive = (item: { href: string; newTab?: boolean }) => {
 			</a>
 		</div>
 
-		<MobileMenu />
+		<MobileMenu navItems={navItems} />
 	</div>
 </header>
 

@@ -6,11 +6,10 @@
 import SectionHeading from "../common/SectionHeading.astro";
 
 interface Props {
-	heading: { lead: string; accent: string };
-	subcopy: string;
+	heading: { lead: string; };
 }
 
-const { heading, subcopy } = Astro.props;
+const { heading } = Astro.props;
 ---
 
 <section
@@ -20,12 +19,12 @@ const { heading, subcopy } = Astro.props;
 	<div class="mx-auto flex max-w-256.75 flex-col items-center px-6 text-center">
 		<SectionHeading
 			level="h1"
-			segments={[{ text: heading.lead }, { text: heading.accent, accent: true }]}
+			segments={[{ text: heading.lead }]}
 			class="mt-4 max-w-215 lg:mt-7"
 		/>
 
 		<p class="mt-4 max-w-185 text-[1rem] leading-6.5 text-[#CECECE]/70 lg:mt-6 lg:text-[1.125rem]">
-			{subcopy}
+			
 		</p>
 	</div>
 </section>
