@@ -19,6 +19,12 @@ export default defineType({
 	fields: [
 		defineField({ name: "seo", title: "SEO", type: "seo" }),
 		defineField({
+			name: "customCode",
+			title: "Custom Code",
+			type: "customCode",
+			description: "Header/footer code for this page only, in addition to the site-wide code in Site Settings.",
+		}),
+		defineField({
 			name: "hero",
 			title: "Hero",
 			type: "object",

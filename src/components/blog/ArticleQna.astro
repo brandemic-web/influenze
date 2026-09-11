@@ -1,0 +1,57 @@
+---
+/**
+ * Per-post Q&A, replacing the sitewide <Faq/> on the article page — same
+ * accordion markup/script as Faq.astro, driven by the post's own qna items
+ * (already filtered to visible ones by the Sanity query) instead of the
+ * homepage FAQ.
+ */
+interface Props {
+	items: { question: string; answer: string }[];
+}
+
+const { items } = Astro.props;
+---
+
+{
+	items.length > 0 && (
+		<section class="bg-background-primary pb-20.5 max-lg:pt-11 max-lg:pb-8 lg:pl-15" aria-labelledby="article-qna-heading">
+			<div class="mx-auto flex flex-col gap-5 px-6 lg:flex-row lg:justify-between lg:gap-10 lg:px-14 lg:relative">
+				<div class="lg:max-w-120 max-w-full px-3 lg:sticky lg:top-38 h-fit">
+					<h2 id="article-qna-heading" class="text-md max-w-54 lg:max-w-full capitalize leading-[1.2] text-white lg:text-[3.4375rem] lg:leading-16.25">
+						Questions &amp; answers
+					</h2>
+				</div>
+
+				<div class="flex w-full max-w-196.5 flex-col gap-2.5 pl-20" data-faq-list>
+					{
+						items.map((item, i) => (
+							<details class="group rounded-sm" open={i === 0} data-faq>
+								<summary class="flex cursor-pointer list-none items-center justify-between gap-2.5 rounded-sm bg-[#131212] p-4 lg:p-7.5 [&::-webkit-details-marker]:hidden">
+									<span class="text-[0.875rem] lg:text-[1.125rem] font-semibold leading-[normal] text-white [text-box:trim-both_cap_alphabetic]">
+										{item.question}
+									</span>
+									<svg
+										class="h-1.5 w-3 shrink-0 text-white transition-transform group-open:rotate-180"
+										viewBox="0 0 12 6"
+										fill="none"
+										aria-hidden="true"
+										data-faq-chevron
+									>
+										<path d="M1 1l5 4 5-4" stroke="currentColor" stroke-width="1.5" />
+									</svg>
+								</summary>
+								<div class="overflow-hidden" data-faq-body>
+									<p class="p-5 lg:p-7.5 text-[0.875rem] lg:text-[1rem] leading-7 text-[#CECECE]/70">{item.answer}</p>
+								</div>
+							</details>
+						))
+					}
+				</div>
+			</div>
+		</section>
+	)
+}
+
+<script>
+	import "../../scripts/faq";
+</script>

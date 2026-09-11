@@ -1,0 +1,40 @@
+---
+/**
+ * Category pills. Progressive enhancement: with no JS every card stays
+ * visible, so these read as inert labels rather than a broken control.
+ * A hairline mint border on hover/press — driven purely by `aria-pressed`
+ * (see blog-filter.ts), no classes to keep in step.
+ */
+interface Props {
+	categories: readonly string[];
+	class?: string;
+}
+
+const { categories, class: className = "" } = Astro.props;
+
+const PILL =
+	"shrink-0 cursor-pointer rounded-[100px] border border-white/10 bg-surface-pill px-6 py-2.5 text-[0.75rem] whitespace-nowrap text-white transition-colors duration-300 hover:border-brand-primary/60 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary aria-pressed:border-transparent aria-pressed:bg-button-primary aria-pressed:text-button-text lg:text-[0.875rem] ";
+---
+
+{/* -mx-6 px-6 lets the row bleed to the screen edge while scrolling on mobile. */}
+<div
+	class:list={["-mx-6 flex gap-2.5 overflow-x-auto px-6 lg:mx-0 lg:flex-wrap lg:px-0", className]}
+	role="group"
+	aria-label="Filter posts by category"
+	data-blog-filter
+>
+	<button type="button" class={PILL} data-filter="all" aria-pressed="true">
+		All
+	</button>
+	{
+		categories.map((category) => (
+			<button type="button" class={PILL} data-filter={category} aria-pressed="false">
+				{category}
+			</button>
+		))
+	}
+</div>
+
+<script>
+	import "../../scripts/blog-filter";
+</script>

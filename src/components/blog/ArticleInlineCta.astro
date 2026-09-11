@@ -1,0 +1,28 @@
+---
+/**
+ * Reusable CTA card for a mid-article break — see lib/article-cta.ts for how
+ * a post body opts in. Same panel look as the other blog cards (glass-rim).
+ */
+import Button from "../common/Button.astro";
+import { APP_URL } from "../../data/site";
+
+interface Props {
+	heading?: string;
+	subcopy?: string;
+	buttonLabel?: string;
+	buttonHref?: string;
+}
+
+const {
+	heading = "Ready to find your next creator?",
+	subcopy = "Search 450M+ profiles and shortlist the right ones in minutes.",
+	buttonLabel = "Free Trail",
+	buttonHref,
+} = Astro.props;
+---
+
+<div class="glass-rim relative my-8 rounded-[1.25rem] border border-transparent bg-[#0a071885] px-6 py-8 text-center shadow-[inset_0_1px_0_0_rgba(255,255,255,0.14),inset_0_-1px_0_0_rgba(255,255,255,0.04),0_24px_70px_-12px_rgba(0,0,0,0.55)] lg:my-10 lg:px-10 lg:py-10">
+	<p class="text-[1.125rem] font-semibold text-white lg:text-[1.375rem]">{heading}</p>
+	<p class="mx-auto mt-2 max-w-125 text-[0.875rem] text-white/60 lg:text-[1rem]">{subcopy}</p>
+	<Button href={buttonHref || APP_URL} newTab class="mt-5 lg:mt-6">{buttonLabel}</Button>
+</div>

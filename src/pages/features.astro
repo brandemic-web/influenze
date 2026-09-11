@@ -5,14 +5,20 @@ import CreatorShowcase from "../components/features/CreatorShowcase.astro";
 import FeatureBlockHeading from "../components/features/FeatureBlockHeading.astro";
 import { getFeaturesPage } from "../sanity/lib/queries";
 import { getPerspectiveCookie } from "../lib/draft-mode";
+import { urlFor } from "../sanity/lib/image";
 
 const { data: features } = await getFeaturesPage(getPerspectiveCookie(Astro.cookies));
+const ogImage = features?.seo?.ogImage ? urlFor(features.seo.ogImage).width(1200).height(630).url() : undefined;
 ---
 
 <Layout
 	title={features?.seo?.title || "Features — Influenze.ai"}
 	description={features?.seo?.description || "A product that caters to you: targeted discovery, creator analytics, contact unlocks, comparisons, shortlists, sharing and reusable creator pools."}
 	noindex={features?.seo?.noindex ?? false}
+	ogImage={ogImage}
+	canonicalUrl={features?.seo?.canonicalUrl}
+	pageHeaderCode={features?.customCode?.headerCode}
+	pageFooterCode={features?.customCode?.footerCode}
 >
 	<main>
 		<FeaturesHero />

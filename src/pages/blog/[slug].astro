@@ -1,0 +1,61 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import ArticleHero from "../../components/blog/ArticleHero.astro";
+import ArticleBody from "../../components/blog/ArticleBody.astro";
+import ArticleQna from "../../components/blog/ArticleQna.astro";
+import RelatedPosts from "../../components/blog/RelatedPosts.astro";
+import { getPost, getRelatedPosts } from "../../sanity/lib/queries";
+import { getPerspectiveCookie } from "../../lib/draft-mode";
+import { urlFor } from "../../sanity/lib/image";
+import { buildOutline } from "../../lib/article-headings";
+import { splitBody } from "../../lib/article-cta";
+import { readingMinutesFromBlocks } from "../../lib/reading-time";
+import { SITE } from "../../data/site";
+
+// No getStaticPaths: the site is `output: "server"`, so the slug is read per
+// request and an unknown one falls through to the 404 route.
+const perspectiveCookie = getPerspectiveCookie(Astro.cookies);
+const { data: post } = await getPost(Astro.params.slug ?? "", perspectiveCookie);
+if (!post) return Astro.rewrite("/404");
+
+const minutes = post.readTimeOverride ?? readingMinutesFromBlocks(post.body);
+const { headingIds, headings } = buildOutline(post.body);
+const segments = splitBody(post.body, headingIds);
+
+const { data: related } = await getRelatedPosts(post.slug, post.categoryIds, perspectiveCookie);
+
+const site = Astro.site ?? new URL(Astro.url.origin);
+const canonicalUrl = new URL(`/blog/${post.slug}/`, site).href;
+
+const schema = [
+	{
+		"@type": "BlogPosting",
+		headline: post.title,
+		description: post.excerpt,
+		image: urlFor(post.cover).width(1200).height(630).url(),
+		datePublished: post.publishedAt,
+		dateModified: post.publishedAt,
+		author: { "@type": "Person", name: post.author.name, jobTitle: post.author.role },
+		publisher: { "@id": new URL("/#organization", site).href },
+		mainEntityOfPage: canonicalUrl,
+		articleSection: post.categories[0],
+	},
+];
+---
+
+<Layout
+	title={`${post.title} — ${SITE.name}`}
+	description={post.excerpt}
+	ogType="article"
+	datePublished={post.publishedAt}
+	dateModified={post.publishedAt}
+	noindex
+	schema={schema}
+>
+	<main>
+		<ArticleHero post={post} readMinutes={minutes} />
+		<ArticleBody segments={segments} headings={headings} title={post.title} url={canonicalUrl} />
+		<ArticleQna items={post.qna} />
+		<RelatedPosts posts={related ?? []} />
+	</main>
+</Layout>

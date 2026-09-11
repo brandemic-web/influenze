@@ -10,9 +10,15 @@ import UseCaseCards from "../components/common/UseCaseCards.astro";
 // Re-enable this import and the tag below once real quotes land in data/testimonials.ts.
 // import Testimonials from "../components/home/Testimonials.astro";
 import ComparisonTable from "../components/common/ComparisonTable.astro";
-import Faq from "../components/home/Faq.astro";
+import Faq from "../components/common/Faq.astro";
 import { FAQS } from "../data/faqs";
 import { SITE } from "../data/site";
+import { getHomePage } from "../sanity/lib/queries";
+import { getPerspectiveCookie } from "../lib/draft-mode";
+import { urlFor } from "../sanity/lib/image";
+
+const { data: home } = await getHomePage(getPerspectiveCookie(Astro.cookies));
+const ogImage = home?.seo?.ogImage ? urlFor(home.seo.ogImage).width(1200).height(630).url() : undefined;
 
 // Built from the same FAQS the page renders, so the JSON-LD can never drift from
 // the visible answers — Google's condition for FAQ rich results.
@@ -35,7 +41,16 @@ const schema = [
 ];
 ---
 
-<Layout schema={schema}>
+<Layout
+	title={home?.seo?.title}
+	description={home?.seo?.description}
+	noindex={home?.seo?.noindex ?? false}
+	ogImage={ogImage}
+	canonicalUrl={home?.seo?.canonicalUrl}
+	pageHeaderCode={home?.customCode?.headerCode}
+	pageFooterCode={home?.customCode?.footerCode}
+	schema={schema}
+>
 	<main class="xl:overflow-x-clip">
 		<HomeHero />
 		<CreatorCollage />

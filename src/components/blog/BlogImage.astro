@@ -1,0 +1,48 @@
+---
+/**
+ * Renders either a local astro:assets image (the index page's still-local
+ * posts) or a Sanity image (the article page's live posts) through the same
+ * slot — the two paths are never mixed for the same field, so callers just
+ * pass whichever `cover`/`avatar` they have.
+ */
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+import type { Image as SanityImage } from "sanity";
+import { urlFor } from "../../sanity/lib/image";
+
+interface Props {
+	src: ImageMetadata | SanityImage;
+	alt: string;
+	class?: string;
+	widths?: number[];
+	sizes?: string;
+	width?: number;
+	height?: number;
+	loading?: "eager" | "lazy";
+}
+
+const { src, alt, class: className, widths, sizes, width = 1200, height, loading } = Astro.props;
+const isLocal = typeof src === "object" && "src" in src;
+---
+
+{
+	isLocal ? (
+		<Image
+			src={src as ImageMetadata}
+			alt={alt}
+			widths={widths}
+			sizes={sizes}
+			width={widths ? undefined : width}
+			height={widths ? undefined : height}
+			class={className}
+			loading={loading}
+		/>
+	) : (
+		<img
+			src={urlFor(src as SanityImage).width(width).url()}
+			alt={alt}
+			class={className}
+			loading={loading ?? "lazy"}
+		/>
+	)
+}

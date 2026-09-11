@@ -598,49 +598,4 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
 
     initPricingPlans();
   </script>
-
-  <style>
-    /*
-	 * .glass-rim — a 1px gradient ring faking the design's "Glass" edge, which is an
-	 * effect rather than a stroke: brightest at the top-left where the light lands,
-	 * with a weaker refracted highlight returning at the bottom-right.
-	 *
-	 * A masked pseudo-element, not a border-box gradient — the card's fill is
-	 * semi-transparent, so a gradient beneath it would tint the whole card. Pair with
-	 * `border-transparent` so the ring lands on the border box.
-	 */
-    .glass-rim {
-      position: relative;
-    }
-
-    .glass-rim::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      padding: 1px;
-      border-radius: inherit;
-      /*
-		 * A 135deg axis puts BOTH the top-right and bottom-left corners at the 50%
-		 * midpoint, so the midpoint stops must stay visible or the edge vanishes there.
-		 * 0.2 is the floor.
-		 */
-      background: linear-gradient(
-        135deg,
-        rgba(255, 255, 255, 0.55) 0%,
-        rgba(255, 255, 255, 0.3) 25%,
-        rgba(255, 255, 255, 0.2) 50%,
-        rgba(255, 255, 255, 0.3) 75%,
-        rgba(255, 255, 255, 0.45) 100%
-      );
-      -webkit-mask:
-        linear-gradient(#000 0 0) content-box,
-        linear-gradient(#000 0 0);
-      -webkit-mask-composite: xor;
-      mask:
-        linear-gradient(#000 0 0) content-box,
-        linear-gradient(#000 0 0);
-      mask-composite: exclude;
-      pointer-events: none;
-    }
-  </style>
 </section>

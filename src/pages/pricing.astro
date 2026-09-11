@@ -3,11 +3,22 @@ import Layout from "../layouts/Layout.astro";
 import PricingPlans from "../components/pricing/PricingPlans.astro";
 import ComparisonTable from "../components/common/ComparisonTable.astro";
 import UseCasesSplit from "../components/pricing/UseCasesSplit.astro";
+import { getPricingPage } from "../sanity/lib/queries";
+import { getPerspectiveCookie } from "../lib/draft-mode";
+import { urlFor } from "../sanity/lib/image";
+
+const { data: pricing } = await getPricingPage(getPerspectiveCookie(Astro.cookies));
+const ogImage = pricing?.seo?.ogImage ? urlFor(pricing.seo.ogImage).width(1200).height(630).url() : undefined;
 ---
 
 <Layout
-	title="Pricing — Influenze.ai"
-	description="Built for teams that demand accuracy. Transparent, credit-based plans that cater to you."
+	title={pricing?.seo?.title || "Pricing — Influenze.ai"}
+	description={pricing?.seo?.description || "Built for teams that demand accuracy. Transparent, credit-based plans that cater to you."}
+	noindex={pricing?.seo?.noindex ?? false}
+	ogImage={ogImage}
+	canonicalUrl={pricing?.seo?.canonicalUrl}
+	pageHeaderCode={pricing?.customCode?.headerCode}
+	pageFooterCode={pricing?.customCode?.footerCode}
 	ctaButtonLabel="Sign Up"
 >
 	<main>

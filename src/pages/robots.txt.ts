@@ -1,4 +1,12 @@
-# Traditional search indexing.
+import type { APIRoute } from "astro";
+import { getSiteSettings } from "../sanity/lib/queries";
+
+export const prerender = false;
+
+// Same content as Site Settings > AI & Search > robots.txt's initialValue —
+// kept here too so the route still serves something sensible before that
+// document exists, or if the field is ever left blank.
+const FALLBACK = `# Traditional search indexing.
 User-agent: Googlebot
 User-agent: Bingbot
 Allow: /
@@ -53,3 +61,15 @@ Disallow: /studio
 Disallow: /api/
 
 Sitemap: https://influenze.ai/sitemap-index.xml
+`;
+
+// No draft-mode wiring here — crawlers only ever see published content, same
+// as llms.txt.
+export const GET: APIRoute = async () => {
+	const { data: siteSettings } = await getSiteSettings();
+	const body = siteSettings?.robotsTxt?.trim() || FALLBACK;
+
+	return new Response(body, {
+		headers: { "Content-Type": "text/plain; charset=utf-8" },
+	});
+};

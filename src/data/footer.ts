@@ -9,7 +9,7 @@ export interface FooterColumn {
 }
 
 /**
- * Two columns, four links then two. Every href resolves — a real route, the
+ * Two columns, five links then two. Every href resolves — a real route, the
  * DotMe site or a mailto — so nothing here is a placeholder.
  */
 export const FOOTER_COLUMNS: FooterColumn[] = [
@@ -18,6 +18,7 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
 		links: [
 			{ label: "Pricing", href: "/pricing" },
 			{ label: "Features", href: "/features" },
+			{ label: "Blog", href: "/blog" },
 			// Same destination as the header's "Link-in Bio" entry in data/nav.ts.
 			{ label: "DotMe", href: "https://www.dotme.in/", newTab: true },
 			{ label: "Contact Us", href: "mailto:info@dotme.in" },

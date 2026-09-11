@@ -7,13 +7,19 @@ import CtaBand from "../components/common/CtaBand.astro";
 import Footer from "../components/common/Footer.astro";
 import SanityVisualEditing from "../components/common/SanityVisualEditing.tsx";
 import DisableDraftMode from "../components/common/DisableDraftMode.tsx";
-import { isDraftMode } from "../lib/draft-mode";
+import { isDraftMode, getPerspectiveCookie } from "../lib/draft-mode";
+import { getSiteSettings } from "../sanity/lib/queries";
+import { urlFor } from "../sanity/lib/image";
 import logoSource from "../assets/images/common/logos_and_icons/influenze_wordmark_mobile.png";
 
 // Driven entirely by Sanity: the Presentation tool sets a cookie via
 // /api/draft-mode/enable when you open it, and that cookie's presence is
 // what turns this on — no env flag to flip.
 const draftMode = isDraftMode(Astro.cookies);
+
+// Every page goes through this for the site-wide Custom Code fields and the
+// default title/description/OG image fallback — see Site Settings in Studio.
+const { data: siteSettings } = await getSiteSettings(getPerspectiveCookie(Astro.cookies));
 
 interface Props {
 	title?: string;
@@ -24,6 +30,18 @@ interface Props {
 	noindex?: boolean;
 	/** ISO 8601 date for the page's WebPage node. Used by the legal routes. */
 	dateModified?: string;
+	/** ISO 8601 publish date. Blog posts pass this; nothing else has one. */
+	datePublished?: string;
+	/** "article" for blog posts. Everything else on the site is a "website". */
+	ogType?: "website" | "article";
+	/** Absolute image URL. Falls back to Site Settings' default, then the static og-card.jpg. */
+	ogImage?: string;
+	/** Overrides the auto-computed canonical URL — see the page's own SEO > Canonical URL override. */
+	canonicalUrl?: string;
+	/** This page's own Custom Code > Header code, rendered in addition to the site-wide one above it. */
+	pageHeaderCode?: string;
+	/** This page's own Custom Code > Footer code, rendered in addition to the site-wide one above it. */
+	pageFooterCode?: string;
 	/**
 	 * Extra JSON-LD nodes for this page, merged into the site-wide `@graph`.
 	 * The homepage passes its FAQ and the product itself; see pages/index.astro.
@@ -32,29 +50,42 @@ interface Props {
 }
 
 const {
-	title = SITE.title,
-	description = SITE.description,
+	title = siteSettings?.defaultTitle || SITE.title,
+	description = siteSettings?.defaultDescription || SITE.description,
 	ctaButtonLabel,
 	hideCta = false,
 	noindex = false,
 	dateModified,
+	datePublished,
+	ogType = "website",
+	ogImage: ogImageProp,
+	canonicalUrl,
+	pageHeaderCode,
+	pageFooterCode,
 	schema = [],
 } = Astro.props;
 
 const site = Astro.site ?? new URL(Astro.url.origin);
 const path = Astro.url.pathname.endsWith("/") ? Astro.url.pathname : `${Astro.url.pathname}/`;
-const canonical = new URL(path, site);
+const canonical = canonicalUrl ? new URL(canonicalUrl, site) : new URL(path, site);
 
-// Deliberately a plain static file rather than `getImage()`. Under SSR,
-// getImage emits a runtime `/_image?href=...&w=...` URL, and `&` has to be
-// written `&amp;` inside an HTML attribute — scrapers that don't decode
-// entities then request `amp;f=jpeg` and get a 400, so WhatsApp fell back to
-// the favicon. A query-string-free URL can't be mangled that way.
+// Deliberately a plain static file as the last-resort fallback rather than
+// `getImage()`. Under SSR, getImage emits a runtime `/_image?href=...&w=...`
+// URL, and `&` has to be written `&amp;` inside an HTML attribute — scrapers
+// that don't decode entities then request `amp;f=jpeg` and get a 400, so
+// WhatsApp fell back to the favicon. A query-string-free URL can't be
+// mangled that way.
 //
 // public/og-card.jpg is 1200x630, generated from the 2400x1260 master at
 // src/assets/images/common/social/og_card.webp:
 //   sharp(master).resize(1200, 630).jpeg({ quality: 90, mozjpeg: true })
-const ogImage = new URL("/og-card.jpg", site);
+const ogImage =
+	ogImageProp ||
+	(siteSettings?.defaultOgImage ? urlFor(siteSettings.defaultOgImage).width(1200).height(630).url() : undefined) ||
+	new URL("/og-card.jpg", site).href;
+
+const siteWideHeaderCode = siteSettings?.customCode?.headerCode;
+const siteWideFooterCode = siteSettings?.customCode?.footerCode;
 
 // Google wants a raster logo it can crop to a square, so this points at the
 // wordmark PNG rather than the nav SVG.
@@ -88,6 +119,7 @@ const structuredData = {
 			description,
 			isPartOf: { "@id": new URL("/#website", site).href },
 			...(dateModified ? { dateModified } : {}),
+			...(datePublished ? { datePublished } : {}),
 		},
 		...schema,
 	],
@@ -121,7 +153,7 @@ const structuredData = {
 		<meta name="description" content={description} />
 		<link rel="canonical" href={canonical} />
 		{noindex && <meta name="robots" content="noindex, follow" />}
-		<meta property="og:type" content="website" />
+		<meta property="og:type" content={ogType} />
 		<meta property="og:site_name" content={SITE.name} />
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
@@ -152,6 +184,11 @@ const structuredData = {
 			crossorigin
 		/>
 		<script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
+		{/* Site Settings > Custom Code, then this page's own Custom Code — both
+		    additive, never a replacement for the other. Content-team-authored,
+		    so this is a deliberate raw-HTML injection point, not user input. */}
+		{siteWideHeaderCode && <Fragment set:html={siteWideHeaderCode} />}
+		{pageHeaderCode && <Fragment set:html={pageHeaderCode} />}
 	</head>
 	<body class="min-h-screen overflow-x-clip antialiased">
 		<!-- Google Tag Manager (noscript) -->
@@ -167,6 +204,8 @@ const structuredData = {
 		<slot />
 		{!hideCta && <CtaBand buttonLabel={ctaButtonLabel} />}
 		<Footer />
+		{siteWideFooterCode && <Fragment set:html={siteWideFooterCode} />}
+		{pageFooterCode && <Fragment set:html={pageFooterCode} />}
 		{
 			draftMode && (
 				<>

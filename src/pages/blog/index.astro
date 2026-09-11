@@ -1,0 +1,63 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import BlogHero from "../../components/blog/BlogHero.astro";
+import CategoryFilter from "../../components/blog/CategoryFilter.astro";
+import FeaturedPost from "../../components/blog/FeaturedPost.astro";
+import PostGrid from "../../components/blog/PostGrid.astro";
+import { getAllPosts, getCategories } from "../../sanity/lib/queries";
+import { getPerspectiveCookie } from "../../lib/draft-mode";
+import { readingMinutesFromBlocks } from "../../lib/reading-time";
+import { SITE } from "../../data/site";
+
+const perspectiveCookie = getPerspectiveCookie(Astro.cookies);
+const { data: rawPosts } = await getAllPosts(perspectiveCookie);
+const { data: rawCategories } = await getCategories(perspectiveCookie);
+
+const posts = (rawPosts ?? []).map((post) => ({
+	post,
+	readMinutes: post.readTimeOverride ?? readingMinutesFromBlocks(post.body),
+}));
+const categories = (rawCategories ?? []).map((category) => category.title);
+
+const [lead, ...rest] = posts;
+
+const schema = [
+	{
+		"@type": "Blog",
+		name: `${SITE.name} blog`,
+		blogPost: posts.map(({ post }) => ({
+			"@type": "BlogPosting",
+			headline: post.title,
+			description: post.excerpt,
+			datePublished: post.publishedAt,
+			author: { "@type": "Person", name: post.author.name },
+			url: new URL(`/blog/${post.slug}/`, Astro.site ?? Astro.url.origin).href,
+		})),
+	},
+];
+---
+
+<Layout
+	title="Blog — Influenze.ai"
+	description="Research, benchmarks and product notes on creator discovery, audience measurement and campaign design."
+	noindex
+	schema={schema}
+>
+	<main>
+		<BlogHero heading={{ lead: "Blog" }} />
+
+		<section class="bg-background-primary pb-14 lg:pb-25" aria-label="All posts">
+			<div class="mx-auto max-w-393 px-6 lg:px-25">
+				{lead && <FeaturedPost post={lead.post} readMinutes={lead.readMinutes} />}
+
+				<CategoryFilter categories={categories} class="mt-10 lg:mt-16" />
+
+				<PostGrid posts={rest} featured={lead} class="mt-6 lg:mt-10" />
+			</div>
+		</section>
+	</main>
+</Layout>
+
+<script>
+	import "../../scripts/reveals";
+</script>

@@ -35,6 +35,14 @@ export default defineType({
 			title: "Hide from search engines",
 			type: "boolean",
 			initialValue: false,
+			description: "Adds a noindex tag so search engines don't list this page. Leave off for anything that should be found on Google.",
+		}),
+		defineField({
+			name: "canonicalUrl",
+			title: "Canonical URL override",
+			type: "url",
+			description:
+				"Overrides the canonical URL this page reports to search engines. Leave this blank almost always — it defaults to the page's own address. Only set it when this content is a duplicate/syndicated copy that should point search engines at another URL instead.",
 		}),
 	],
 });
