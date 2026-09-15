@@ -2,13 +2,16 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { addToListDialog } from "./beats/addToListDialog";
 import { analyzeLookalike } from "./beats/analyzeLookalike";
+import { backToShortlist } from "./beats/backToShortlist";
 import { compareMode } from "./beats/compareMode";
-import { creatorProfile } from "./beats/creatorProfile";
 import { leaveCompare } from "./beats/leaveCompare";
 import { listDetail } from "./beats/listDetail";
 import { mediaKitTab } from "./beats/mediaKitTab";
 import { myLists } from "./beats/myLists";
+import { openCreator } from "./beats/openCreator";
+import { openShortlist } from "./beats/openShortlist";
 import { shareModal } from "./beats/shareModal";
+import { shortlistSelect } from "./beats/shortlistSelect";
 import { createPointer } from "./utils/pointer";
 import { restart } from "./beats/restart";
 import { resultsList } from "./beats/resultsList";
@@ -19,9 +22,9 @@ import { LANDSCAPE_CLOSE, LANDSCAPE_OPEN } from "../../landscape-viewer";
 gsap.registerPlugin(ScrollTrigger);
 
 /**
- * Composes the hero mockup's eleven beats into one looping timeline. A beat
- * returns null when its markup is missing and is skipped; nothing here is
- * load-bearing for layout, so a failure leaves the hero static.
+ * Composes the hero mockup's sixteen beats into one timeline. A beat returns null
+ * when its markup is missing and is skipped; nothing here is load-bearing for
+ * layout, so a failure leaves the hero static.
  *
  * Beat order, cast and per-beat reasoning: components/app/APP-SPEC.md.
  */
@@ -36,23 +39,31 @@ function initWorkflow(mockup: HTMLElement) {
 
 	// The layers beats move between, by story step. 2 is skipped: beat 1 builds the
 	// search inside step 1 rather than cutting to a filled-in copy of it.
+	//
+	// The shortlist is three layers, not one, because the story visits it twice at
+	// states no tween could fake: `shortlist` before the unlock, `shortlistDone`
+	// after it, with a filled Media Kit cell and 50 fewer credits.
 	const layer = (step: number) => mockup.querySelector<HTMLElement>(`[data-wf-screen="${step}"]`);
 	const found = {
 		analyze: layer(1),
 		results: layer(3),
-		profile: layer(4),
-		kit: layer(5),
-		dialog: layer(6),
-		lists: layer(7),
-		list: layer(8),
-		compare: layer(9),
-		share: layer(10),
+		shortlistAdd: layer(4),
+		shortlists: layer(5),
+		shortlist: layer(6),
+		profile: layer(7),
+		kit: layer(8),
+		shortlistDone: layer(9),
+		listAdd: layer(10),
+		lists: layer(11),
+		list: layer(12),
+		compare: layer(13),
+		share: layer(14),
 	};
 	if (!Object.values(found).every(Boolean)) return;
 	const screen = found as { [K in keyof typeof found]: HTMLElement };
 
-	// Reduced motion gets one static frame. Screen 3 (results) says more about the
-	// product than screen 1's empty search, and the loop has no natural last frame.
+	// Reduced motion gets one static frame. The results say more about the product
+	// than screen 1's empty search, and the story has no natural last frame.
 	if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
 		screen.analyze.removeAttribute("data-wf-active");
 		screen.results.setAttribute("data-wf-active", "");
@@ -88,10 +99,18 @@ function initWorkflow(mockup: HTMLElement) {
 	const beats = [
 		analyze?.timeline,
 		resultsList({ from: screen.analyze, to: screen.results }, pointer),
-		creatorProfile({ from: screen.results, to: screen.profile }, pointer),
+		shortlistSelect({ screen: screen.results }, pointer),
+		addToListDialog({ from: screen.results, to: screen.shortlistAdd }, pointer),
+		myLists({ from: screen.shortlistAdd, to: screen.shortlists }, pointer),
+		openShortlist({ from: screen.shortlists, to: screen.shortlist }, pointer),
+		openCreator({ from: screen.shortlist, to: screen.profile }, pointer),
 		mediaKitTab({ from: screen.profile, to: screen.kit }, pointer),
-		addToListDialog({ from: screen.kit, to: screen.dialog }),
-		myLists({ from: screen.dialog, to: screen.lists }, pointer),
+		backToShortlist({ from: screen.kit, to: screen.shortlistDone }, pointer),
+		// Opened from the shortlist's own actions pill, so this one presses its way in.
+		addToListDialog({ from: screen.shortlistDone, to: screen.listAdd }, pointer, {
+			trigger: "[data-wf-shortlist-add]",
+		}),
+		myLists({ from: screen.listAdd, to: screen.lists }, pointer),
 		listDetail({ from: screen.lists, to: screen.list }, pointer),
 		compareMode({ from: screen.list, to: screen.compare }),
 		leaveCompare({ from: screen.compare, to: screen.list }, pointer),
@@ -179,8 +198,8 @@ function initWorkflow(mockup: HTMLElement) {
 	//
 	// The active layer must be set by hand: screen swaps are `tl.call()` callbacks,
 	// which don't fire on a backwards seek. Beat 1 works in place and never claims
-	// screen 1 — beat 11 normally hands it over — so without this the old screen
-	// stays frozen until the story reaches its first swap. Inner state needs nothing;
+	// screen 1 — the restart beat normally hands it over — so without this the old
+	// screen stays frozen until the story reaches its first swap. Inner state needs nothing;
 	// each beat resets what it touches as the story arrives.
 	function restartStory() {
 		ended = false;

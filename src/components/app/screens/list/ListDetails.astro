@@ -15,7 +15,7 @@ import ProfileCardColumns from "../../common/ProfileCardColumns.astro";
 import ListCompareSection from "./widgets/ListCompareSection.astro";
 import ListDetailShell from "./widgets/ListDetailShell.astro";
 import ToolbarAction from "./widgets/ToolbarAction.astro";
-import { CREDITS, LIST_CREATORS, STORY_LIST } from "../../../../data/workflowMockup";
+import { CREDITS, LIST_CREATORS, LIST_MEDIA_KITS, STORY_LIST } from "../../../../data/workflowMockup";
 
 interface Props {
 	/** Compare mode: the two-column comparison in place of the creator list. */
@@ -35,11 +35,14 @@ const { compare = false, blurred = false } = Astro.props;
 			</ListDetailShell>
 		) : (
 			<ListDetailShell title={STORY_LIST} blurred={blurred}>
-				{/* Toolbar: search is 22vw wide, inset 28, and carries no leading icon. */}
+				{/* Toolbar: search is 22vw wide, inset 28, with a 14px leading glyph. */}
 				<div class="mt-8 flex shrink-0 items-center">
 					<div class="w-[19.8rem] shrink-0 pl-7">
-						<div class="flex items-center rounded-md bg-wf-search px-4 py-2.5 text-[0.875rem] font-medium">
-							<span class="text-wf-text-muted">Search&nbsp;</span><span class="text-[#a589ff]">Creators</span>
+						<div class="flex items-center gap-1.5 rounded-md bg-wf-search px-4 py-2.5 text-[0.875rem] font-medium">
+							<Icon name="search" size="0.875rem" class="shrink-0 text-wf-text-muted" />
+							<span class="whitespace-nowrap"
+								><span class="text-wf-text-muted">Search&nbsp;</span><span class="text-[#a589ff]">Creators</span></span
+							>
 						</div>
 					</div>
 
@@ -78,6 +81,7 @@ const { compare = false, blurred = false } = Astro.props;
 						<span slot="followers" class="text-[0.75rem] whitespace-nowrap text-wf-table-label">Followers</span>
 						<span slot="likes" class="text-[0.75rem] whitespace-nowrap text-wf-table-label">Avg. Likes</span>
 						<span slot="engagement" class="text-[0.75rem] whitespace-nowrap text-wf-table-label">Engagement Rate</span>
+						<span slot="mediaKit" class="text-[0.75rem] whitespace-nowrap text-wf-table-label">Media Kit</span>
 					</ProfileCardColumns>
 				</div>
 
@@ -87,7 +91,12 @@ const { compare = false, blurred = false } = Astro.props;
 							<div class="flex shrink-0 items-center">
 								<Icon name="dragDots" size="1rem" class="mr-3 shrink-0 text-[#51466f]" />
 								<div class="min-w-0 flex-1">
-									<ProfileCard creator={creator} variant="list" />
+									{/*
+										Three rows, three states: the unlock the story just paid for reads
+										Latest, an older one has gone stale past the app's 15 days, and the
+										creator nobody opened gets no cell at all.
+									*/}
+									<ProfileCard creator={creator} variant="list" mediaKit={LIST_MEDIA_KITS[creator.handle]} />
 								</div>
 							</div>
 						))

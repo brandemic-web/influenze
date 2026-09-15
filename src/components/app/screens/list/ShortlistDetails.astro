@@ -1,0 +1,125 @@
+---
+/**
+ * Inside a shortlist — `list/shortlist_details.dart`. The same shell as list detail
+ * and the same rows, with the three differences that are the whole point of the
+ * screen: no Compare and no Share (both need unlocked media kits, which a shortlist
+ * by definition does not have), Export reads **Quick Export**, and the selection
+ * controls are an `ActionsPill` of two icon buttons rather than a row of labels.
+ *
+ * `Add to` in that pill is what promotes a creator into a list — the story's next
+ * step, and the only paid-for thing a shortlist leads to.
+ */
+import AppShell from "../../common/AppShell.astro";
+import Icon from "../../common/Icon.astro";
+import ProfileCard from "../../common/ProfileCard.astro";
+import ProfileCardColumns from "../../common/ProfileCardColumns.astro";
+import ListDetailShell from "./widgets/ListDetailShell.astro";
+import ToolbarAction from "./widgets/ToolbarAction.astro";
+import {
+	CREDITS,
+	PROFILED_HANDLE,
+	SHORTLIST_CREATORS,
+	SHORTLIST_UNLOCKED,
+	STORY_SHORTLIST,
+} from "../../../../data/workflowMockup";
+
+interface Props {
+	/**
+	 * After the story has opened Selwyn and come back: his Media Kit cell is filled
+	 * and the row is ticked, ready for the promote. Before it, the whole column is
+	 * blank — nobody here has been paid for.
+	 */
+	unlocked?: boolean;
+}
+
+const { unlocked = false } = Astro.props;
+
+/**
+ * The balance each state is authored holding. The spend happens on the *open*
+ * between them, so the shortlist is the one screen the story visits twice at two
+ * different balances — and the promote that follows costs nothing.
+ */
+const credits = unlocked ? CREDITS.afterProfile : CREDITS.afterSearch;
+---
+
+<AppShell active="lists" credits={credits}>
+	<ListDetailShell title={STORY_SHORTLIST} share={false}>
+		{/* Toolbar: search, then the actions pill, then Quick Export / Import. */}
+		<div class="mt-8 flex shrink-0 items-center">
+			<div class="w-[19.8rem] shrink-0 pl-7">
+				<div class="flex items-center gap-1.5 rounded-md bg-wf-search px-4 py-2.5 text-[0.875rem] font-medium">
+					<Icon name="search" size="0.875rem" class="shrink-0 text-wf-text-muted" />
+					<span class="whitespace-nowrap"
+						><span class="text-wf-text-muted">Search&nbsp;</span><span class="text-wf-shortlist">Creators</span></span
+					>
+				</div>
+			</div>
+
+			{/*
+				`ActionsPill` — `py5 px6`, radius 999. It carries the live fill and border
+				only once something is ticked, so it starts on lavender50 and the beat
+				lights it as the selection lands.
+			*/}
+			<span
+				class:list={[
+					"ml-2 flex shrink-0 items-center rounded-full border px-1.5 py-1.25",
+					unlocked ? "border-wf-io-pill-on bg-wf-io-pill" : "border-transparent bg-wf-select-pill",
+				]}
+				data-wf-actions-pill
+			>
+				<span class="grid size-7 place-items-center rounded-full" data-wf-shortlist-add>
+					<Icon name="plus" size="0.75rem" class="text-wf-select-icon" />
+				</span>
+				<span class="w-0.5 shrink-0"></span>
+				<span class="grid size-7 place-items-center rounded-full">
+					<Icon name="removeCreator" size="0.75rem" class="text-wf-danger" />
+				</span>
+			</span>
+
+			<span class="ml-auto flex items-center">
+				{/* A shortlist exports a cut-down sheet, so the app names it differently. */}
+				<ToolbarAction label="Quick Export" icon="export" />
+				<ToolbarAction label="Import" icon="import" class="ml-3" />
+			</span>
+		</div>
+
+		{/* Column header: padding l42 aligns it with card content past the drag gutter. */}
+		<div class="mt-6 shrink-0">
+			<ProfileCardColumns class="pr-3.5 pb-3.75 pl-10.5">
+				<span slot="leading" class="flex items-center gap-2">
+					<span class="size-3 shrink-0 rounded-xs border-[0.083rem] border-wf-table-label"></span>
+					<span class="text-[0.75rem] whitespace-nowrap text-wf-table-label">Select all</span>
+				</span>
+				<span slot="identity" class="text-[0.75rem] whitespace-nowrap text-wf-table-label">Name</span>
+				<span slot="followers" class="text-[0.75rem] whitespace-nowrap text-wf-table-label">Followers</span>
+				<span slot="likes" class="text-[0.75rem] whitespace-nowrap text-wf-table-label">Avg. Likes</span>
+				<span slot="engagement" class="text-[0.75rem] whitespace-nowrap text-wf-table-label">Engagement Rate</span>
+				<span slot="mediaKit" class="text-[0.75rem] whitespace-nowrap text-wf-table-label">Media Kit</span>
+			</ProfileCardColumns>
+		</div>
+
+		<div class="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden">
+			{
+				SHORTLIST_CREATORS.map((creator) => (
+					<div class="flex shrink-0 items-center">
+						<Icon name="dragDots" size="1rem" class="mr-3 shrink-0 text-[#51466f]" />
+						<div class="min-w-0 flex-1">
+							{/*
+								Locked is the absence of a cell, not a hidden one — `buildMediaKitCell`
+								shrinks to nothing. So before the unlock every row here genuinely has
+								no Media Kit column, and after it exactly one does. `backToShortlist`
+								hides that cell for itself and fades it in, so skipping the beat still
+								leaves this screen reading correctly.
+							*/}
+							<ProfileCard
+								creator={{ ...creator, checked: unlocked && creator.handle === PROFILED_HANDLE }}
+								variant="shortlist"
+								mediaKit={unlocked && creator.handle === PROFILED_HANDLE ? SHORTLIST_UNLOCKED : undefined}
+							/>
+						</div>
+					</div>
+				))
+			}
+		</div>
+	</ListDetailShell>
+</AppShell>

@@ -16,7 +16,7 @@ names, so a name grepped here is findable there and vice versa.
 ```
 components/app/                 everything that reproduces the product
   APP-SPEC.md                   this file
-  WorkflowMockup.astro          the hero's nine story steps, stacked as layers
+  WorkflowMockup.astro          the hero's thirteen story steps, stacked as layers
 
   common/                       ← lib/common/widgets — primitives, shared by both
     Icon.astro                    every glyph, read from the app's own SVGs
@@ -24,13 +24,16 @@ components/app/                 everything that reproduces the product
 
   screens/                      ← lib/src/screens — whole screens at 1:1 app pixels
     analyze/                      ← lib/src/screens/analyze
-      Analyze.astro                 steps 1 and 3 (`results`)
-      AnalyzedCreator.astro         steps 4 and 5 (`tab`)
-      AddToListDialog.astro         step 6
+      Analyze.astro                 steps 1 and 3 (`results`, `selected`)
+      AnalyzedCreator.astro         the Analyze-hosted creator panel — unused by the
+                                    story since it opens creators from the shortlist
+      AddToListDialog.astro         steps 4 and 10 (`tab`)
       widgets/  filters/  media-kit/
     list/                         ← lib/src/screens/list
-      Lists.astro                   step 7
-      ListDetails.astro             steps 8 and 9 (`compare`)
+      Lists.astro                   steps 5 and 11 (`type`)
+      ShortlistDetails.astro        steps 6 and 9 (`unlocked`)
+      ShortlistCreator.astro        steps 7 and 8 — CreatorDetail in the lists shell
+      ListDetails.astro             steps 12 and 13 (`compare`)
       widgets/
     share-management/             ← lib/src/screens/share_management
       ShareModal.astro              step 10
@@ -111,16 +114,29 @@ in both trees the two files share a name and only the folder differs.
 Nav bar, left to right: logo (`influenze_logo.webp`, h40) · centred links
 (`Analyze` / `My Lists` / `Roster`, gap 32; active = `white/10`, radius 20,
 `px16 py8`, 14px w500; inactive = 14px w400 `white/50`) · notification bell · 16 ·
+**`AppConstants.rosterEnabled` is `false`**, so Roster takes `buildComingSoonNavLink`
+instead: the inactive style under a further `Opacity(0.45)`, with a `Coming soon`
+tooltip that needs a hover the mockup never gets. The screen behind it is built and
+routed — it is just not switched on.
 credits pill · 16 · profile pill.
 
 - credits pill — `px12 py8`, radius 100, border `green1` `#256745`,
   gradient `#15613A → #1b3e2c`; icon 16, gap 10, `Credits` 14px `#33e889`,
   gap 4, value 14px `#1aae55`.
-  The value is **story state, not a constant**: the app bills 5 credits a profile,
-  so Apply & Search costs 50 for the ten it analyses and opening a creator costs
-  the 50-per-handle unlock — `2,540 → 2,490 → 2,440`. Balances live in `CREDITS`
-  (`data/workflowMockup.ts`); every screen is authored holding the one it should
-  show, and beats 1 and 2 tick the chip on the layer the spend happens on.
+  The value is **story state, not a constant**, and *where* it moves is the whole
+  argument for shortlists. The app bills 5 credits a profile, so Apply & Search
+  costs 50 for the ten it analyses; the 50-per-handle media-kit unlock is billed
+  when a creator is **opened** — `CreatorDetail` watches `mediaKitByProfileKeyPod`
+  as it builds, so arriving on that panel is what fires `GET /mkit`. The story
+  therefore spends exactly twice: `2,540 → 2,490` on Apply & Search, then
+  `2,490 → 2,440` when the shortlist opens a creator.
+
+  Everything between those two is free, deliberately: saving to a shortlist opens
+  nobody, and promoting an already-opened creator into a list costs nothing either,
+  because the dialog charges "50 credits per *new* unlock" and that one is bought.
+  Balances live in `CREDITS` (`data/workflowMockup.ts`); every screen is authored
+  holding the one it should show, and `analyzeLookalike` and `openCreator` tick the
+  chip on the layer the spend happens on.
 - profile pill — `pl12 pr4 py4`, bg `green2` `#1b3e2c`, radius 100;
   label 14px `#33e889`, gap 10, avatar 32 circle.
   App says `Hello!`; the mockup uses **`Hi, Harsh`** by choice.
@@ -407,14 +423,33 @@ Then 12 · 1px rule `#383869` full width of the 925 column · 32 (list) / 24
 Different frame from list detail: `padding 50` → panel `#232339` radius 12 →
 `padding 40`. Content width = viewport − 212 = **1228** at 1440.
 
-Heading is a **centred `My Lists` 24px/300** white — the app has no tab pair here.
-(Figma showed ShortLists/Lists; kept as the upcoming-feature presentation.)
-Then 20 · 1px `#383869` rule full width · 24 · toolbar · 32 · grid.
+**The centred `My Lists` heading is gone.** `lists.dart` now heads the panel with
+`MyListsTabsHeader` and closes the toolbar with a second rule:
+tabs · 20 · toolbar · 20 · `Divider(#383869)` · 20 · grid.
 
-Toolbar `Row`: search field (**width = 30% of the window** = 432) · 8 ·
+### ShortLists / Lists tabs — `list/widgets/my_lists_tabs_header.dart`
+
+One set of screens serves both, with the word and the accent swapped
+(`models/list_type.dart`). Labels **24px/300**, active white against inactive
+`white/30`, **48 apart**, then 20 of air and a 2px-tall strip holding the 1px
+`#383869` rule with the accent indicator over it, radius 1.
+
+Accents are the only thing telling the two apart: ShortLists `#A589FF`
+(`lavender47`), Lists `#3aff98` (`green8`). The app measures each label with a
+`TextPainter` to size the indicator — ShortLists gets `textWidth + 20` anchored at
+the label's left, so it overhangs only right; Lists gets `textWidth + 48` centred,
+so it overhangs 24 either side. The mockup anchors each indicator to its own label,
+which gives the same geometry without measuring. Switching tabs is an
+`AnimatedPositioned`, 450ms `easeOutCubic` — **the story never plays it**: its two
+visits are separate layers six beats apart (screen 5 on ShortLists, screen 11 on
+Lists), because they also sit at different credit balances.
+
+Toolbar `Row`: search field (**width = `0.21 × window − 7`** = 295 at 1440) · 17 ·
 platform dropdown **72×56** · `Expanded` · Import · 12 · delete group.
-- search — bg `#2c2c49`, radius **12**, `padding h24 v16`, **no leading icon**,
-  height ≈65; hint is `Search␣␣` 14px/500 `#847aa4` + `Lists` 14px/500 `#33e889`
+- search — bg `#2c2c49`, radius **12**, `padding h24 v16`, height ≈65, with a
+  **14px leading `search` glyph** `#847aa4`; hint is `Search␣␣` 14px/500 `#847aa4`
+  then the type's own word, accent-coloured: `Lists` `#3aff98` /
+  `ShortLists` `#A589FF`
 - dropdown — `padding 8`, bg `#2c2c49`, radius 12; platform tile **40×40**
   (`padding 8`, radius 8, black for Instagram) · 4 · chevron 12 `#d0c2ff`.
   **Icon only, no platform name.**
@@ -446,8 +481,8 @@ inline-editable field: `padding-left 24` then `px6 py12`, 24px/400 white.
 Then `Back` 14px/500 `#32e889`, share 28×28 `#653ee1` radius 8.
 
 Toolbar left: `width 22vw` wrapper → `padding-left 28` → field bg `#2c2c49`,
-radius 12, `px16 py10`, **no leading icon**; hint `Search␣` 14px/500 `#847aa4` +
-`Creators` 14px/500 **`#a589ff`**.
+radius 12, `px16 py10`, with a **14px leading `search` glyph** `#847aa4`; hint
+`Search␣` 14px/500 `#847aa4` + `Creators` 14px/500 **`#a589ff`**.
 
 Toolbar right, in order (each preceded by 12):
 - **Compare** — only when **2+ selected**; transparent button, min 64×36, label
@@ -455,9 +490,12 @@ Toolbar right, in order (each preceded by 12):
   1×18 rule `#847aa4`. Over 6 selected it disables to `white/50` and shows a
   `Max limit is 6` badge (`px8 py3`, bg `#2c263d`, radius 6, 1px `#ff9e49`,
   9px/500 `#ff9e49`) at `top:-20 left:12`.
-- **Import** / **Export** — no bg or padding: icon 12 `#a589ff` · 4 · label
-  12px/400 white. Export reads `Export (N)` with a selection and is hidden on an
-  empty list.
+- **Import** / **Export** — `IoPillButton`, which **does** have a background now:
+  `padding 10`, radius 4 on `lavender86` `#343461`, icon 12 `#a589ff` · 4 · label
+  12px/400 white. (It gained that fill when import and export grew into real
+  dialogs; this file used to say it had none.) Export reads `Export (N)` with a
+  selection and is hidden on an empty list. On a **shortlist** the same button
+  reads **`Quick Export`**.
 - **Remove from List** — only with a selection: 1×18 rule · 12 · button
   `pl12 pr12 pt8 pb8`, bg `#3d2222`, radius 6, icon 10×8 · 8 · label 10px/**500**
   `#ff4b52` · 8 · bare count 10px/400 `#8f4242`.
@@ -477,9 +515,45 @@ The internal rule is `Divider(#383869, height: 28)` — a 1px line **centred in 
 right of the card's content-left, not at the edge. The metadata row below it lives
 in the **flex-4 column only**: `map_pin` 10 · 4 · text 10px/400 `#a89ccb`, gaps 16.
 
-Actions slot 130, right-aligned: Enquire compact (`px12 py8`, radius 20,
-bg `#202427`, 1px `#32e889`; icon 12 · 4 · `Enquire` 10px/400 white · 4 ·
-chevron 10 `#3e9761`) · 8 · remove circle **30×30**, bg `#3d2222`, 1px `#5b2929`.
+### The table's columns — `common/widgets/profile_card.dart`
+
+**IZ-147 rebalanced every table and added the Media Kit column in one change**, so
+the two go together: leading 84 · gap **12** · identity flex **5** · gap **24** ·
+metrics flex **7** · gap **8** · actions flex **5**. (The older 84/20/4/16/6/12/130
+this file used to carry leaves the new column nowhere to sit.) Inside the metrics
+run, the first two take `(width − 48) / 3` each and Engagement Rate takes the rest —
+that `metricsTrailingReserve` of 48 is what keeps the figures off Media Kit.
+
+The actions run is `Expanded(Media Kit)` · 8 · the buttons, so the column gets
+whatever the buttons leave: **136 canvas px at 1440**, which "Latest Data Unlocked"
+fills almost exactly. Both texts are `maxLines: 1` + ellipsis.
+
+- **Media Kit cell** — `MediaKitStatusLabel`, `compact: true`. **Locked renders
+  nothing at all** (`SizedBox.shrink()`), so an unbought creator simply has an empty
+  cell. **That only ever happens on a shortlist**: being in a *list* is what buys the
+  kit ("adding to a list unlocks the full media kit"), so every list member is
+  purchased by definition and no list row is ever blank — a blank cell in a list
+  would be a bug. Otherwise a 10px glyph · 4 · a 10px/500 title, then 2 and
+  `Data from <d MMM yyyy>` 10px/400 `#847aa4`:
+  *Latest Data Unlocked* (`mkit_unlocked`, icon `#1AAE55`, text `#D7D5DC`) ·
+  *Past Data Unlocked* (`load`, icon `#F2994A`, text `#FFDBBB`) ·
+  *Checking for latest data…* (`load`, both `#9674ff`). A kit goes stale after 15
+  days. Both glyphs are tinted `srcIn`, so each is a flat silhouette — the padlock's
+  cut-out keyhole included.
+- **Enquire** — `compact: true` in a table row, which is **a circle holding the
+  glyph alone**: `padding h12 v8` around a 12px `message_circle` gives a 36×28 box,
+  and a circular `BoxDecoration` paints to the shortest side, so a 28px circle with
+  4px of air either side. bg `#202427`, 1px `#32e889`. **The label and chevron
+  belong to `compact: false`**, which is what the creator detail's identity column
+  draws — putting the pill in a row is what used to crowd the Media Kit column off
+  it (92 canvas px against this button's 36). On a shortlist row it is gated on
+  `isMediakitUnlocked`, so it is absent until someone pays to open the creator.
+- **`⋯`** — `ProfileCardMoreActionsButton`, a **30×30** circle over `blue` `#181823`
+  with a `lavender29` `#282434` hairline, holding Material's `more_horiz` at 16 in
+  `#AE94FF`. It replaced the separate add and remove controls the rows used to
+  carry, and both list and shortlist rows have it.
+- Analyze rows instead get `AddToListButton(compact: true)` — a 30px circle, 10px
+  glyph — because they add rather than remove.
 Tier pills here use the **short** labels (`💎 Macro`), unlike the profile screens.
 Engagement quality colours: High `#32e889` · Above Average `#9edb57` ·
 Average `#f2994a` · Below Average `#ff7350` · else `#ff4b52`.
@@ -574,163 +648,226 @@ Three things make it work, and are easy to undo by accident:
 ### Beat 2 — results (built)
 
 `resultsList.ts`. Picks up with the cursor on Apply & Search: the empty state
-clears, the panel arrives as **one piece**, the list scrolls ~1.3 rows, and the
-cursor opens **Justin Joy** — the creator screens 4 and 5 profile
-(`PROFILED_HANDLE` in `data/workflowMockup.ts` ties them together).
+clears, the panel arrives as **one piece**, and the list scrolls ~1.3 rows and back.
+
+**It stops there.** Opening a creator from the results would bill the 50-credit
+unlock, and the whole point of what follows is that the story does not spend yet —
+beat 3 ticks these rows and saves them for free instead. The scroll returns to the
+top because beat 3 aims at rows near it, which a scrolled list would slide away.
 
 Unlike beat 1 this one **does** change layer, because screen 3's table is markup
 screen 1 has not got. The swap is *hidden*, not cross-faded: by the time it
 happens the panel is empty and the shell, search bar and rail are identical on
-both layers, so nothing visibly moves. That is why the rail is pinned to `0`
-first — a cross-fade of two different rail scrolls would ghost.
+both layers, so nothing visibly moves.
 
 - **The rail is not touched here.** Beat 1 already scrolled it to
   `RAIL_TIER_SCROLL`, which is where screen 3 is authored, so it sits in the same
-  place on both layers at the swap. Screens 4–5 use the same constant, so beat 3
-  inherits it with nothing to do.
-- **One reveal, no stagger.** All six direct children of the panel carry
-  `data-wf-results-part` and come in together. An earlier version staggered the
+  place on both layers at the swap.
+- **One reveal, no stagger.** Every direct child of the panel carries
+  `data-wf-results-part` and they come in together. An earlier version staggered the
   chrome and then the rows; it read as two separate animations.
-- **`RESULT_CREATORS` = the four signed-off rows, then `RESULT_PADDING`.** So
-  screen 3's opening frame is unchanged and the padding only shows once the list
-  scrolls. `CREATORS` stays at four because screen 8 renders it at the taller
-  list density and would clip. The padding rows are **invented placeholders**.
 - Row pitch is measured (`rows[1].offsetTop - rows[0].offsetTop`), never assumed
   — the canvas is authored in rem and the root font-size is fluid.
 
-### Beat 3 — creator profile (built)
+### Beat 3 — tick three, and save them for nothing (built)
 
-`creatorProfile.ts`. Answers beat 2's press on Justin Joy: the results table
-clears, the sidebar dims and blurs (the app's `FilterDisableOverlay`), the detail
-rises into the panel, and the cursor reaches the **Media Kit tab** and presses it.
-Beat 4 answers that press by switching the tab.
+`shortlistSelect.ts`. Works **in place** on screen 3, with no layer change: the
+cursor ticks the three rows in `SHORTLIST_HANDLES` one at a time, each press
+answered by its own box, then presses the bulk **Add**.
 
-Same hidden layer swap as beat 2, with one addition: screen 4 dims its whole
-sidebar through one wrapper, and screen 3 has no such wrapper, so screen 3's
-search bar and rail are dimmed **individually** to match before the swap. That
-looks the same because the two do not overlap. The swap waits for both the table
-fade and the dim to finish, or one half gets caught mid-way.
+**The credits chip does not move, and that is the beat.** Three creators are saved
+while the balance sits still, because the app bills on *opening* a creator, not on
+selecting or saving one. Card 2 ("Shortlist for Free") is held back until the dialog
+opens in beat 4, where the app states the same thing in its own words — the card and
+the helper banner then make the point together, rather than the card pre-empting it.
 
-- **The dim's values are read back off screen 4's own `[data-wf-dimmed]`**
-  wrapper, so `DimmedFilterSidebar` stays the only place they are defined.
-- **Only the opacity is tweened; the blur is set outright.** Tailwind builds
-  `filter` from a chain of custom properties, and interpolating out of that (or out
-  of `none`) is unreliable — the same trap killed a `brightness()` pulse in beat 2.
-  At `0.1rem` the blur is far too slight to see arrive anyway. Where a blur *does*
-  need to animate, give the tween two explicit matching endpoints instead:
-  beat 5 sets `blur(0px)` inline first, then tweens to the computed `blur(6px)`.
-- The rail does not move: beat 1 scrolled it to `RAIL_TIER_SCROLL` and screens 3
-  and 4 are both authored there.
+- **Analyze's `Add` is the one `BulkActionButton` that passes
+  `hideWhenEmpty: false`**, so it holds its place at 50% opacity rather than
+  collapsing. Ticking brings it up and reveals its count; it does not appear from
+  nothing. `pending` on the mockup's component is that authored half-state.
+- Ticks are driven one per press rather than all at once, so the selection reads as
+  a decision rather than something that happens to the list.
 
-### Beat 4 — media kit (built)
+### Beat 4 — the add-to dialog, on ShortList (built)
 
-`mediaKitTab.ts`. Answers beat 3's press on the tab: the underline moves across,
-the card body changes, the cursor scrolls the media kit down a little, then
-presses **add-to-list beside Enquire**. Beat 5 answers that press with the dialog.
-
-The cheapest swap in the story — screens 4 and 5 are the *same* `CreatorDetail`
-with a different `tab` prop and different slot content, so the sidebar, header and
-identity column are already identical and only the two tabs and the card body have
-to be brought into line first.
-
-- **The tabs' live and dormant styling is read off screen 5's own tabs**
-  (`borderBottomColor` + `color`), so `CreatorDetail` stays the only place those
-  colours are written down. Same trick as beat 3's dim.
-- **The scroll range is measured**: the media kit's own height less the height of
-  the box clipping it. `SCROLL_FRACTION` (0.85) is how far through it goes.
-- **That range is no longer small.** With the growth charts and the pricing card
-  in, the kit is ~1950 tall in a ~610 box, so 0.85 of it is ~1140px travelled
-  inside the beat's 2.4s — about six times the distance the fraction was chosen
-  against. The beat still works, because both numbers are measured, but the
-  pacing is worth a second look: slow the tween, or lower the fraction so it
-  settles on the pricing headline rather than deep into the factors.
-- Every scroll in the story now happens **under the cursor**, wheel-style — the
-  rail in beat 1, the results list in beat 2, the media kit here.
-
-### Beat 5 — add-to-list dialog (built)
-
-`addToListDialog.ts`. Answers beat 4's press on add-to-list: the backdrop blurs,
-the scrim dims, the card fades in. The cursor does not move — it pressed the
-button in beat 4, and a dialog opening does not move the mouse.
+`addToListDialog.ts`. Answers beat 3's press: the backdrop blurs, the scrim dims,
+the card fades in. The cursor does not move — it pressed the button in beat 3, and
+a dialog opening does not move the mouse.
 
 **Structurally the odd one out, and worth understanding before touching it.**
 Every other beat animates the *old* layer up to meet the new one and then swaps.
-This one swaps *first*, because screen 6 renders `<AnalyzedCreator tab="mediaKit" />` as its own
-blurred backdrop — so with the blur off, the scrim clear and the card hidden,
-screen 6 is byte-for-byte what screen 5 renders (verified: 41,556 identical
-characters). The dialog can then simply arrive on the new layer.
+This one swaps *first*, because the dialog layer renders the layer beneath as its
+own blurred backdrop — so with the blur off, the scrim clear and the card hidden,
+the two layers are identical and the swap is invisible.
 
-- **One value has to travel across the swap: the media kit's scroll.** The
-  backdrop is a fresh render that has no idea beat 4 scrolled it, so it would snap
-  to the top. It is read live in a `.call()`, not at build time, because beat 4
-  must have run first.
+**The story plays this beat twice**, from different screens, so it knows nothing
+about which tab it is opening: beat 10 reuses it with a `trigger` to press first.
+
+- **The backdrop is a fresh render, so state does not travel across the swap.**
+  It is authored to match instead — screen 4's backdrop is
+  `<Analyze results selected />`, already showing the three ticks beat 3 made. An
+  earlier version carried the media kit's scroll across by hand in a `.call()`;
+  authoring the state is less fragile, and nothing needs it now.
 - **The card fades without scaling.** Its centring is a percentage translate;
   GSAP would fold that into pixels to add a scale, which then goes stale on
-  resize. Screen 10's modal is opacity-only in the app regardless. If a scale is
-  ever wanted, it needs `{ x: 0, y: 0, xPercent: -50, yPercent: -50, scale }` —
-  zeroing x/y matters, or the parsed class translate is applied twice.
+  resize. If a scale is ever wanted it needs
+  `{ x: 0, y: 0, xPercent: -50, yPercent: -50, scale }` — zeroing x/y matters, or
+  the parsed class translate is applied twice.
 
-### Beat 6 — confirm, close, cross to My Lists (built)
+### Beat 5 — confirm, close, cross to ShortLists (built)
 
-`myLists.ts`. Three clicks: **Add** on the story's list row (settles to "Added"),
-the dialog's **close ✕**, then **My Lists** in the nav.
+`myLists.ts`. Three clicks: **Add** on the story's row (settles to "Added"), the
+dialog's **close ✕**, then **My Lists** in the nav.
 
-- **Closing the dialog needs no layer change.** Because screen 6 *is* screen 5
-  once its blur, scrim and card are neutralised, unwinding those three leaves the
-  story sitting on screen 6's layer looking exactly like screen 5. The nav the
-  cursor then clicks is the one inside that backdrop copy.
+**Also played twice** — here saving three creators into a shortlist, and at beat 11
+promoting one into a list. However many portraits the row has waiting under
+`data-wf-list-added`, they all drop in, staggered 0.09s so three reads as three
+creators landing rather than one block appearing.
+
+- **Closing the dialog needs no layer change.** The dialog layer *is* the layer
+  beneath once its blur, scrim and card are neutralised, so unwinding those three
+  leaves the story looking exactly like the screen it came from. The nav the cursor
+  then clicks is the one inside that backdrop copy.
 - **The Add button's two labels share one grid cell** (`col-start-1 row-start-1`)
   so it never changes width, and both carry `wf-untrimmed`. Its settled fill is
   `--color-wf-action-muted` `#6d638f`.
-- `STORY_LIST` in `data/workflowMockup.ts` names the row; screen 6 marks it with
-  `data-wf-list-target`, the same shape as `data-wf-param-target`.
+- **The story compresses one navigation step here.** In the app, My Lists always
+  opens the **Lists** tab, and you would then click across to ShortLists. The story
+  lands straight on ShortLists rather than spending a beat on a tab click — the
+  tabs are on screen with the right accents either way, so the two-drawer idea
+  still reads. It is the same kind of compression as never typing a list name.
 
-**6 → 7 is the story's first real navigation, and the first swap that cannot be
+**4 → 5 is the story's first real navigation, and the first swap that cannot be
 hidden.** The two screens share a nav bar and (once the card body is faded) an
 empty card, but the nav pill is a *different shape* in each — the active item
 carries `px16 py8` and the inactive ones carry nothing, so the whole row shifts.
 Unifying the two would space the inactive items 64px apart instead of 32 and break
 the signed-off nav, so the snap is left visible: it lands on the click that caused
-it, which is what the app does when a section rebuilds. `AppShell` gained
+it, which is what the app does when a section rebuilds. `AppShell` carries
 `[data-wf-card-body]` — a box coincident with the frame — so a section change can
 fade the card's contents without touching the nav or the card itself.
 
-### Beat 7 — open the list, pick two (built)
+### Beat 6 — open the shortlist (built)
 
-`listDetail.ts`. Answers beat 6's press on My Lists: opens the story's list card,
-which crosses to list detail with **nothing selected**, then ticks the two
-creators the compare screen shows, and presses **Compare**.
+`openShortlist.ts`. The cursor presses the shortlist card, aimed at its **name**
+rather than its portrait grid — that is where a reader's eye is.
 
-- **Screen 8's static frame is the *selected* state** — two ticks, Compare, the
+The app routes here (`shortlists/:shortlistId`), so the panel is rebuilt rather
+than transitioned and only the panel body changes; nothing slides. 5 → 6 is
+section-internal (both `AppShell active="lists"`), so there is no nav pill to snap.
+Card 2 bows out on this beat's `settled`, having covered the whole free stretch.
+
+### Beat 7 — open the creator, and pay for it (built)
+
+The panel's header carries the unlock the press just bought: `buildHeader` is title ·
+30 · `MediaKitStatusLabel(compact: false)` · 16 — the label's **wide form**, one line
+with gap 12 and the date as `Text.rich` in two tones (`Data from` `#8071B0`, the date
+itself `#B9B9EB`). It is only there once the creator is purchased, which — opened
+from a shortlist — is always; where it is absent the app puts a `Spacer()` instead.
+
+`openCreator.ts`. The cursor opens Selwyn from inside the shortlist. **This is the
+story's one unlock**: the chip ticks `2,490 → 2,440` on the press, because
+`CreatorDetail` watches `mediaKitByProfileKeyPod` as it builds, so the charge is a
+consequence of opening the panel rather than of anything inside it. The chip is
+ticked on the layer being *left*, so the swap lands on a balance already correct.
+
+**It is not the Analyze layout.** `shortlist_details.dart` swaps the shortlist's
+body for `CreatorDetail` inside the same `ListDetailShell`, so the nav stays on My
+Lists and the panel keeps the shell's centred 0.642-viewport column — there is no
+sidebar to dim, unlike opening a creator from Analyze. The header still reads
+"Analyzed Creator"; the shortlist does not override `headerTitle`.
+
+The beat ends reaching for the **Media Kit tab**, which beat 8 answers.
+
+### Beat 8 — media kit (built)
+
+`mediaKitTab.ts`. Answers beat 7's press on the tab: the underline moves across,
+the card body changes, the cursor scrolls the media kit down a little.
+
+The cheapest swap in the story — the two layers are the *same* `CreatorDetail`
+with a different `tab` prop, so only the two tabs and the card body have to be
+brought into line first.
+
+**It ends on the scroll.** What the story reaches for next is **Back**, not
+add-to-list: the creator was opened from a shortlist, and promoting them starts
+from there.
+
+- **The tabs' live and dormant styling is read off the arriving layer's own tabs**
+  (`borderBottomColor` + `color`), so `CreatorDetail` stays the only place those
+  colours are written down.
+- **The scroll range is measured**: the media kit's own height less the height of
+  the box clipping it. `SCROLL_FRACTION` (0.85) is how far through it goes.
+- **That range is not small.** With the growth charts and the pricing card in, the
+  kit is ~1950 tall in a ~610 box, so 0.85 of it is ~1140px travelled inside the
+  beat's 2.4s. The beat still works, because both numbers are measured, but the
+  pacing is worth a second look: slow the tween, or lower the fraction so it
+  settles on the pricing headline rather than deep into the factors.
+- Every scroll in the story happens **under the cursor**, wheel-style.
+
+### Beat 9 — back to the shortlist, unlocked (built)
+
+`backToShortlist.ts`. The cursor presses **Back**, and the shortlist returns with
+the unlock showing: the Media Kit cell fades in on Selwyn's row and the row ticks.
+
+**It returns to a second copy of the shortlist, not the one it left**, because two
+things have changed that no tween could fake — the Media Kit column has a filled
+cell where the row had none, and the balance is 50 lower. Both are authored into
+screen 9; the beat only reveals the cell, so the column visibly *becomes* the thing
+the 50 credits bought. The reveal is held back until the rows have settled, so it
+reads as a change to the list rather than part of the list appearing.
+
+Ticking the row is the app's own behaviour — coming back from a creator leaves them
+selected — and it sets up the promote that follows.
+
+### Beat 10 — the add-to dialog, on List (built)
+
+`addToListDialog.ts` again, this time with `trigger: "[data-wf-shortlist-add]"`, so
+the cursor presses the `+` in the shortlist's actions pill before the dialog opens.
+
+The tab is **List**, so the helper banner swaps to the unlock line. **The chip does
+not move**: Selwyn was bought in beat 7, and the dialog charges "50 credits per
+*new* unlock". Card 4 ("Outreach & Manage") comes up on this beat's start, because
+beat 9 ends on the unlock showing — so beat 10 starting *is* the promote.
+
+### Beat 11 — confirm, close, cross to Lists (built)
+
+`myLists.ts` again, with one portrait to drop rather than three. 10 → 11 is
+section-internal this time — both screens are already on My Lists — so unlike
+beat 5 there is no pill to snap.
+
+### Beat 12 — open the list, pick two (built)
+
+`listDetail.ts`. Opens the story's list card, which crosses to list detail with
+**nothing selected**, then ticks the two creators the compare screen shows, and
+presses **Compare**.
+
+- **Screen 12's static frame is the *selected* state** — two ticks, Compare, the
   counts — because that is what it was signed off as. The beat winds it back to an
   untouched list first, exactly as beat 1 winds back the filter rail. No prop is
   needed: the timeline owns the state and the harness keeps the authored frame.
-- **Which two get ticked is derived, not hardcoded**: `CREATORS.filter(c =>
-  c.checked)`, so the ticks can never drift from screen 9's two columns.
-- **`ProfileCard`'s tick is now one box in both states** (checked border matches
-  its fill so it still reads as borderless, mark always present but transparent).
+- **Which two get ticked is derived, not hardcoded**: `COMPARED_HANDLES`, so the
+  ticks can never drift from the compare screen's two columns.
+- **`ProfileCard`'s tick is one box in both states** (checked border matches its
+  fill so it still reads as borderless, mark always present but transparent).
   Total size stays 12px under `border-box` and the 10px mark still centres in the
-  10px content box, so nothing moved. Same shape as the tier radio in beat 1.
+  10px content box. Same shape as the tier radio in beat 1.
 - **Selection-dependent toolbar controls are grouped** so they can leave the flow
   whole: `[data-wf-selection="compare"]` holds the Compare pill *and* the rule
-  after it; `="remove"` holds the rule *and* Remove-from-List. Export carries **no
-  count** — it reads `Export` in every state, so it needs no hook at all.
-- 7 → 8 is section-internal (both `AppShell active="lists"`), so unlike beat 6
-  there is no nav pill to snap.
+  after it; `="remove"` holds the rule *and* Remove-from-List.
 
-### Beat 8 — compare (built)
+### Beat 13 — compare (built)
 
-`compareMode.ts`. Answers beat 7's press on Compare. Not a route in the app but a
-mode swap inside the same panel, so the panel surface, card and nav all stay put
-and only `[data-wf-panel-body]` changes — toolbar and column header collapse, the
-title becomes a centred "Compare", share hides, rows become stat columns.
+`compareMode.ts`. Not a route in the app but a mode swap inside the same panel, so
+the panel surface, card and nav all stay put and only `[data-wf-panel-body]`
+changes — toolbar and column header collapse, the title becomes a centred
+"Compare", share hides, rows become stat columns.
 
 Split to the app's **450ms** (0.22 out / 0.23 in) and **opacity-only**: that column
 is centred with a percentage translate, which GSAP would fold into pixels to add a
 slide, going stale on resize. So the duration is faithful even though the shared
 axis is not. The cursor does not move.
 
-### Beat 9 — leave compare (built)
+### Beat 14 — leave compare (built)
 
 `leaveCompare.ts`. The cursor scrolls both compare columns to the bottom, presses
 **Back** to return to the list, then presses **share** beside it.
@@ -739,70 +876,75 @@ axis is not. The cursor does not move.
   single pane, and the app scrolls the compare section as a whole and
   height-matches its cards across it. The distance is the *smaller* of the two
   ranges, so neither column can run past its own content and leave a gap.
-- 9 → 8 is beat 8's mode swap run the other way: same fade through an empty panel,
-  same 450ms. Nothing needs restoring on the list — beat 7 left it with the two
-  creators ticked and Compare showing, which is exactly the state to return to.
+- 14 → 12 is beat 13's mode swap run the other way: same fade through an empty
+  panel, same 450ms. Nothing needs restoring on the list — beat 12 left it with the
+  two creators ticked and Compare showing, which is exactly the state to return to.
 
-### Beat 10 — share modal (built)
+### Beat 15 — share modal (built)
 
-`shareModal.ts`. Answers beat 9's press on share, and closes the story.
+`shareModal.ts`. Answers beat 14's press on share.
 
-Uses beat 5's **swap-first** shape, because screen 10 embeds
-`<ListDetails blurred />` exactly the way screen 6 embeds screen 5 —
-verified: identical to screen 8's layer once the ` blur-[0.75rem]` class is
-discounted. Neutralise the blur, hide the card, and the swap is invisible.
+Uses beat 4's **swap-first** shape, because the share layer embeds
+`<ListDetails blurred />` exactly the way the dialog embeds the screen beneath it.
+Neutralise the blur, hide the card, and the swap is invisible.
 
-**It must not animate like beat 5.** That is a dialog route with a full-frame
+**It must not animate like beat 4.** That is a dialog route with a full-frame
 scrim; this is a `CenteredModalOverlay` **clipped to the host panel**, **blur only,
 no dim**, ramping `blur(0 → 12)` over **260ms linear** with opacity-only on the
 card. There is no scrim element at all — the blur lives on `[data-wf-panel-body]`
 via `ListDetailShell`'s `blurred` prop, which is why the beat reaches for the panel
 rather than an overlay.
 
-### Beat 11 — send, and round again (built)
+### Beat 16 — send, and round again (built)
 
 `restart.ts`. Types the address, presses **Send** (which settles to "Sent"),
-closes the modal, and presses **Analyze** to land back on screen 1 — where the
-master timeline loops.
+closes the modal, and presses **Analyze** to land back on screen 1, where the story
+ends as it began.
 
 - **The address is authored in the markup** (`data-wf-email-value`) and read from
-  it, so a loop cannot retype its own output. **It is therefore in the page
-  source**, which matters: `ajay@brandemic.in` is a real mailbox on a public
-  marketing page, so it is scrapeable. A neutral placeholder would avoid that.
+  it, so a replay cannot retype its own output. **It is therefore in the page
+  source**, which matters: it is a real mailbox on a public marketing page, so it
+  is scrapeable. A neutral placeholder would avoid that.
 - **It calls beat 1's `reset` before revealing screen 1.** Beat 1 hands its reset
   back alongside its timeline for exactly this — see the loop notes below.
-- Closing the modal needs no layer change, same as beat 6's dialog: screen 10 *is*
-  screen 8 once the blur and card are unwound. Blur out is **200ms** against 260ms
-  in — the app's own asymmetry.
+- Closing the modal needs no layer change, same as the dialog: the share layer *is*
+  the list-detail layer once the blur and card are unwound. Blur out is **200ms**
+  against 260ms in — the app's own asymmetry.
 - This field's caret is `inline-block`, not `block` like beat 1's, because it sits
   in inline context inside the `flex-1` text box rather than in a flex row. It has
   to be inside that box, or `flex-1` would push it to the far end of the space.
-- 10 → 1 is a section change like beat 6's: the nav pill snaps on the click.
+- 14 → 1 is a section change like beat 5's: the nav pill snaps on the click.
 
 ### The loop
 
-The master timeline runs `repeat: -1` with a 1.5s rest, and the whole thing hinges
-on one property: **every beat winds its own screen back before it plays.** That is
-why each of them opens by restoring `data-wf-active` and resetting whatever state it
-is about to change — the list scroll in beat 2, the media kit in beat 4, the ticks in
-beat 7, the compare columns in beat 9, the share form in beat 11. Add a beat that
-mutates something without resetting it and the second pass will quietly differ from
-the first.
+The master timeline is **`paused` and plays once**, ending where it began so the
+last frame is the first; the control in the middle of the canvas then offers
+**Play Again** rather than the story running on a loop. A replay still has to be
+identical to the first pass, so the whole thing hinges on one property: **every beat
+winds its own screen back before it plays.** That is why each of them opens by
+restoring `data-wf-active` and resetting whatever state it is about to change — the
+list scroll in beat 2, the ticks in beats 3 and 12, the media kit in beat 8, the
+unlock cell in beat 9, the compare columns in beat 14, the share form in beat 16.
+Add a beat that mutates something without resetting it and the second pass will
+quietly differ from the first.
 
 Three things the loop needs that a one-shot pass does not:
 
 - **Absolute scroll targets need an explicit reset.** `y: () => -range()` is a
   destination, not a delta, so on a second pass it is already satisfied and simply
-  does not move. Beat 4 had exactly this bug.
+  does not move. The media-kit beat had exactly this bug.
 - **A screen has to be reset before it is *revealed*, not before it next plays.**
-  The rail is the exception to the rule above: beat 1 owns its reset, but beat 11 is
-  what brings screen 1 back into view, and it does so one whole rest-period before
-  beat 1 runs. Resetting at beat 1's start therefore left the story arriving home to
-  a rail full of applied filters for ~1.5s. That is why `analyzeLookalike` returns
-  `{ timeline, reset }` and beat 11 calls the reset inside its own layer swap.
+  The rail is the exception to the rule above: beat 1 owns its reset, but beat 16 is
+  what brings screen 1 back into view, and it does so before beat 1 would run again.
+  Resetting at beat 1's start therefore left the story arriving home to a rail full
+  of applied filters. That is why `analyzeLookalike` returns `{ timeline, reset }`
+  and beat 16 calls the reset inside its own layer swap.
+  **Beat 9 is the same shape**: it reveals a Media Kit cell authored visible, so it
+  hides it for itself first — which also means skipping the beat leaves screen 9
+  reading correctly rather than blank.
   **Any future beat that reveals a screen someone else mutated needs the same.**
 - **The cursor must start where the last beat left it.** Beat 1 parks it on the
-  **Analyze nav item** — precisely where beat 11 presses — so the seam has no jump
+  **Analyze nav item** — precisely where beat 16 presses — so the seam has no jump
   and needs no fade. `fadeIn` is still there but only does anything on the first
   pass, when CSS has the cursor hidden. The one residual movement is ~16px, because
   the nav pill is a different width on each side and so the item's centre shifts;
@@ -864,7 +1006,7 @@ Three conventions run through them:
   duplicated: scope queries to the active screen layer, never `document`-wide.
 
 ### Transition shapes
-**The whole story is built and loops** — eleven beats over screens 1 → 10 and back.
+**The whole story is built** — sixteen beats over screens 1 → 14 and back, ~64s.
 The order it visits them is `1·2 → 3 → 4 → 5 → 6 → 7 → 8 → 9 → 8 → 10 → 1`: screen
 8 is passed through twice, because the share modal sits over the list and not over
 compare, and screen 1 is both the start and the end.
@@ -909,9 +1051,19 @@ the value: `rounded-[0.75rem]`, `rounded-[1.5rem]`, and so on.
 
 `.wf-stage` trims text boxes to cap height to match Flutter's glyph-box sizing.
 Tailwind's `truncate` adds `overflow: hidden`, which then clips descenders
-(`y`, `g`, `J`) because the box is shorter than the glyphs. Use
+(`y`, `g`, `J`, `p`) because the box is shorter than the glyphs. Use
 `whitespace-nowrap` instead — the mockup's strings are fixed, so nothing needs
 real ellipsis.
+
+**This catches anyone mirroring a Flutter `maxLines: 1` + `TextOverflow.ellipsis`,**
+which is the natural thing to reach for and exactly what `MediaKitStatusLabel` did
+until `Data from 12 Sep 2026` lost the tail of its `p`. Reproduce that intent with
+`whitespace-nowrap` and a column wide enough to hold the string.
+
+The same trim is why the app's `SizedBox` gaps sometimes need opening up here: with
+both boxes trimmed to cap height the space between two stacked lines reads tighter
+than Flutter's, so the status label's stacked form carries **4** where the app
+writes 2.
 
 ## Type — `common/styles.dart`
 

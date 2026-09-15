@@ -5,28 +5,39 @@
  * `buildAnalyzeLayout` is a single row; `buildListLayout` adds a rule and a
  * location/gender/language line underneath. The Design frames show the list
  * variant on the Analyze screen, which is wrong — hence the `variant` prop.
+ *
+ * `shortlist` is the list layout with the app's own two differences: Enquire is
+ * gated on `isMediakitUnlocked`, so it is absent until someone pays to open the
+ * creator, and the Media Kit cell beside it is empty for the same reason.
  */
 import CreatorAvatar from "./CreatorAvatar.astro";
 import Icon from "./Icon.astro";
+import MediaKitStatusLabel from "./MediaKitStatusLabel.astro";
 import PlatformIcon from "./PlatformIcon.astro";
 import ProfileCardColumns from "./ProfileCardColumns.astro";
 import VerifiedBadge from "./VerifiedBadge.astro";
-import type { Creator, EngagementLevel } from "../../../data/workflowMockup";
+import type { Creator, EngagementLevel, MediaKitState } from "../../../data/workflowMockup";
 
 interface Props {
 	creator: Creator;
-	variant?: "analyze" | "list";
+	variant?: "analyze" | "list" | "shortlist";
+	/** Omitted is the app's locked cell — nothing rendered, not a placeholder. */
+	mediaKit?: MediaKitState;
 }
 
-const { creator, variant = "analyze" } = Astro.props;
-const isList = variant === "list";
+const { creator, variant = "analyze", mediaKit } = Astro.props;
+const isShortlist = variant === "shortlist";
+/** Both saved-creator screens share `buildListLayout`; only their actions differ. */
+const isList = variant === "list" || isShortlist;
 
 /**
- * `checked` marks the pair the story compares, which is a selection inside its
- * *list* — the search results are never selected, so the analyze row always draws
- * an empty box.
+ * `checked` marks the rows the story has selected — the three it shortlists out of
+ * the results, and the pair it compares inside a list.
  */
-const ticked = isList && creator.checked;
+const ticked = creator.checked === true;
+
+/** Enquire is `showEnquireButton: isMediakitUnlocked` on a shortlist row. */
+const showEnquire = !isShortlist || (mediaKit !== undefined && mediaKit.status !== "locked");
 
 /**
  * Engagement quality colours — `InfluenzeColors`' *Er tokens. HIGH and LOW keep
@@ -71,7 +82,8 @@ const LEVEL_COLOUR: Record<EngagementLevel, string> = {
 						<CreatorAvatar size="3.75rem" handle={creator.handle} />
 					</span>
 				</div>
-				<div class="w-5 shrink-0" />
+				{/* `leadingGap` — 12, not the 20 this table used before IZ-147. */}
+				<div class="w-3 shrink-0" />
 			</>
 		)
 	}
@@ -126,26 +138,55 @@ const LEVEL_COLOUR: Record<EngagementLevel, string> = {
 				>
 			</span>
 
+			{mediaKit && <MediaKitStatusLabel slot="mediaKit" state={mediaKit} />}
+
 			<span slot="actions" class="flex items-center gap-2">
-				<span class="flex items-center rounded-[1.25rem] border border-wf-green-mid bg-mkit-tile px-3 py-2">
-					<Icon name="messageCircle" size="0.75rem" class="text-wf-green-mid" />
-					<span class="ml-1 text-[0.625rem] whitespace-nowrap text-wf-text">Enquire</span>
-					<Icon name="arrowIcon" size="0.625rem" class="ml-1 text-wf-green-dim" />
-				</span>
-				{/*
-					`AddToListButton`, whose `remove` state is the paired glyph to the analyze
-					row's add_to_list. The app passes that state no colour filter, so the
-					glyph keeps the asset's own red instead of going white.
-				*/}
-				{isList ? (
-					<span class="grid size-7.5 place-items-center rounded-full border border-[#5b2929] bg-wf-danger-bg">
-						<Icon name="removeFromList" size="0.625rem" class="text-wf-danger" />
-					</span>
-				) : (
-					<span class="grid size-7 place-items-center rounded-[1.25rem] border border-wf-menu-border bg-wf-menu">
-						<Icon name="addToList" size="0.75rem" class="text-[#bfabff]" />
-					</span>
-				)}
+				{
+					showEnquire && (
+						/*
+						 * `EnquireButton(compact: true)` — a table row gets the glyph alone, in a
+						 * circle. The label and chevron belong to the `compact: false` form, which
+						 * is what the creator detail's identity column draws. Getting this wrong
+						 * is what used to crowd the Media Kit column off the row: the pill is
+						 * 92 canvas px against this button's 36, and the column only has 136.
+						 *
+						 * `padding h12 v8` around a 12px glyph gives a 36x28 box, and a circular
+						 * `BoxDecoration` paints to the shortest side — so a 28px circle with
+						 * 4px of air either side, not a 36px one.
+						 */
+						<span class="grid h-7 w-9 shrink-0 place-items-center">
+							<span class="grid size-7 place-items-center rounded-full border border-wf-green-mid bg-mkit-tile">
+								<Icon name="messageCircle" size="0.75rem" class="text-wf-green-mid" />
+							</span>
+						</span>
+					)
+				}
+				{
+					isList ? (
+						/*
+						 * `ProfileCardMoreActionsButton` — a 30px circle over `blue` with a
+						 * lavender29 hairline, holding Material's `more_horiz` at 16. It stands
+						 * in for the separate add and remove controls the rows used to carry.
+						 */
+						<span class="grid size-7.5 place-items-center rounded-full border border-wf-chip bg-wf-surface">
+							<svg
+								class="size-4 text-wf-more-icon"
+								viewBox="0 0 24 24"
+								fill="currentColor"
+								aria-hidden="true"
+							>
+								<circle cx="6" cy="12" r="2" />
+								<circle cx="12" cy="12" r="2" />
+								<circle cx="18" cy="12" r="2" />
+							</svg>
+						</span>
+					) : (
+						/* `AddToListButton(compact: true)` — 30px circle, 10px glyph. */
+						<span class="grid size-7.5 shrink-0 place-items-center rounded-full border border-wf-menu-border bg-wf-menu">
+							<Icon name="addToList" size="0.625rem" class="text-[#bfabff]" />
+						</span>
+					)
+				}
 			</span>
 		</ProfileCardColumns>
 
@@ -154,7 +195,7 @@ const LEVEL_COLOUR: Record<EngagementLevel, string> = {
 				<>
 					<span class="my-[0.84375rem] block h-px w-full bg-wf-rule" />
 					<div class="flex">
-						<div class="flex min-w-0 flex-[4_1_0%] items-center text-[0.625rem] text-wf-meta">
+						<div class="flex min-w-0 flex-[5_1_0%] items-center text-[0.625rem] text-wf-meta">
 							<Icon name="mapPin" size="0.625rem" />
 							<span class="ml-1 whitespace-nowrap">{creator.location}</span>
 							{creator.gender && <span class="ml-4 whitespace-nowrap">{creator.gender}</span>}

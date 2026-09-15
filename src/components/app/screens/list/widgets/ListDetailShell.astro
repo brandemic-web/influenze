@@ -11,6 +11,12 @@ interface Props {
 	/** Compare mode centres the title and hides the share control. */
 	compare?: boolean;
 	/**
+	 * Shortlists have no share control at all — sharing a list is a view of unlocked
+	 * media kits, and a shortlist holds none. `shortlist_details.dart` simply never
+	 * builds the button, rather than disabling it.
+	 */
+	share?: boolean;
+	/**
 	 * Blur the panel's contents, for the share modal's `CenteredModalOverlay`.
 	 * Applied as `filter` on the content rather than `backdrop-filter` on an
 	 * overlay: the latter samples the un-transformed backdrop inside the scaled
@@ -19,7 +25,7 @@ interface Props {
 	blurred?: boolean;
 }
 
-const { title, compare = false, blurred = false } = Astro.props;
+const { title, compare = false, share = true, blurred = false } = Astro.props;
 ---
 
 <div class="absolute top-32.5 left-16.5 h-176 w-327 overflow-hidden rounded-md bg-wf-panel">
@@ -39,7 +45,7 @@ const { title, compare = false, blurred = false } = Astro.props;
 			>
 			<span class="ml-3 text-[0.875rem] font-medium whitespace-nowrap text-wf-green-mid" data-wf-back>Back</span>
 			{
-				!compare && (
+				!compare && share && (
 					<span class="ml-3 grid size-7 place-items-center rounded-sm bg-wf-violet" data-wf-share>
 						<Icon name="externalLink" size="0.875rem" class="text-white" />
 					</span>

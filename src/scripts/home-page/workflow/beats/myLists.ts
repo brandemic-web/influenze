@@ -3,12 +3,16 @@ import { token } from "../utils/dom";
 import type { Pointer } from "../utils/pointer";
 
 /**
- * Beat 6 — three clicks: Add (settles to "Added"), the dialog's ✕, then My Lists.
+ * Three clicks: Add (settles to "Added"), the dialog's ✕, then My Lists.
  *
- * Closing needs no layer change: unwinding beat 5's blur, scrim and card leaves
- * screen 6 looking exactly like screen 5. 6 → 7 is the first swap that *can't* be
- * hidden — the active nav pill is a different shape, so the row shifts. That snap
- * is deliberate; it lands on the click that caused it, like the app's own rebuild.
+ * Closing needs no layer change: unwinding the dialog beat's blur, scrim and card
+ * leaves the layer looking exactly like the one beneath. The swap into My Lists
+ * *can't* be hidden — the active nav pill is a different shape, so the row shifts.
+ * That snap is deliberate; it lands on the click that caused it, like the app's own
+ * rebuild.
+ *
+ * Played twice: once saving three creators into a shortlist, once promoting one
+ * into a list. However many portraits the row has waiting, they all drop in here.
  */
 
 export interface MyListsLayers {
@@ -18,13 +22,11 @@ export interface MyListsLayers {
 	to: HTMLElement;
 }
 function collectAdded(row: HTMLElement | null) {
-	const el = {
-		portrait: row?.querySelector<HTMLElement>("[data-wf-list-added]") ?? null,
-		countIdle: row?.querySelector<HTMLElement>('[data-wf-list-count="idle"]') ?? null,
-		countDone: row?.querySelector<HTMLElement>('[data-wf-list-count="done"]') ?? null,
-	};
+	const portraits = row ? gsap.utils.toArray<HTMLElement>(row.querySelectorAll("[data-wf-list-added]")) : [];
+	const countIdle = row?.querySelector<HTMLElement>('[data-wf-list-count="idle"]') ?? null;
+	const countDone = row?.querySelector<HTMLElement>('[data-wf-list-count="done"]') ?? null;
 
-	return Object.values(el).every(Boolean) ? (el as { [K in keyof typeof el]: NonNullable<(typeof el)[K]> }) : null;
+	return portraits.length && countIdle && countDone ? { portraits, countIdle, countDone } : null;
 }
 
 /** Every element the beat drives, or null if the markup is not what we expect. */
@@ -65,7 +67,7 @@ export function myLists(layers: MyListsLayers, pointer: Pointer) {
 		.set(el.addDone, { opacity: 0 });
 
 	if (added) {
-		tl.set(added.portrait, { opacity: 0, scale: 0.6 })
+		tl.set(added.portraits, { opacity: 0, scale: 0.6 })
 			.set(added.countIdle, { opacity: 1 })
 			.set(added.countDone, { opacity: 0 });
 	}
@@ -80,9 +82,19 @@ export function myLists(layers: MyListsLayers, pointer: Pointer) {
 		.to(el.addDone, { opacity: 1, duration: 0.22 }, "added+=0.1");
 
 	if (added) {
+		// Staggered, so three arriving reads as three creators landing rather than one
+		// block appearing. A single portrait is unaffected — the stagger has nothing
+		// to spread.
 		tl.to(
-			added.portrait,
-			{ opacity: 1, scale: 1, duration: 0.34, ease: "back.out(2)", transformOrigin: "center" },
+			added.portraits,
+			{
+				opacity: 1,
+				scale: 1,
+				duration: 0.34,
+				ease: "back.out(2)",
+				transformOrigin: "center",
+				stagger: 0.09,
+			},
 			"added+=0.12"
 		)
 			.to(added.countIdle, { opacity: 0, duration: 0.16 }, "added+=0.2")

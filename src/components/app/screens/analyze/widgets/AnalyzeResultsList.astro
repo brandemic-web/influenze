@@ -6,10 +6,26 @@
  * `data-wf-results-part` tags each block so beat 2 can stagger them in as the
  * search lands; `data-wf-results-scroll` is the column the cursor wheels.
  */
+import BulkActionButton from "../../../common/BulkActionButton.astro";
 import Icon from "../../../common/Icon.astro";
 import ProfileCard from "../../../common/ProfileCard.astro";
 import ProfileCardColumns from "../../../common/ProfileCardColumns.astro";
-import { ANALYZED_COUNT, RESULT_CREATORS, RESULT_FILTERS } from "../../../../../data/workflowMockup";
+import {
+	ANALYZED_COUNT,
+	RESULT_CREATORS,
+	RESULT_FILTERS,
+	SHORTLIST_HANDLES,
+} from "../../../../../data/workflowMockup";
+
+interface Props {
+	/** Story rows already ticked and the bulk Add live — see Analyze's `selected`. */
+	selected?: boolean;
+}
+
+const { selected = false } = Astro.props;
+
+/** Ticking is what turns the Add pill from its held 50% into a live control. */
+const shortlisted = new Set<string>(SHORTLIST_HANDLES);
 ---
 
 {/* buildHeader: fromLTRB(18, 20, 0, 20) */}
@@ -20,10 +36,21 @@ import { ANALYZED_COUNT, RESULT_CREATORS, RESULT_FILTERS } from "../../../../../
 		Total Results <span class="text-wf-green-mid">1248</span>
 	</span>
 	{/*
-		No bulk Add to List here: it is `BulkActionButton`, which collapses to
-		nothing at a count of 0 (bulk_action_button.dart), and the story never
-		selects from the results — it adds to a list from the creator's profile.
+		Analyze is the one `BulkActionButton` that passes `hideWhenEmpty: false`, so
+		it holds its place at 50% while nothing is ticked rather than collapsing. This
+		is where the shortlist story starts: ticking rows here and adding them costs
+		nothing, because nobody has been opened.
 	*/}
+	<span class="ml-auto" data-wf-results-add>
+		<BulkActionButton
+			label="Add"
+			icon="plus"
+			count={SHORTLIST_HANDLES.length}
+			iconSize="0.5rem"
+			tone="violet"
+			pending={!selected}
+		/>
+	</span>
 </div>
 
 <span class="block h-px shrink-0 bg-wf-rule" data-wf-results-part></span>
@@ -62,6 +89,8 @@ import { ANALYZED_COUNT, RESULT_CREATORS, RESULT_FILTERS } from "../../../../../
 			Engagement Rate
 			<Icon name="arrowDown" size="0.875rem" class="text-wf-table-label" />
 		</span>
+		{/* Headed even here, where every cell is empty: nothing in a fresh search is bought yet. */}
+		<span slot="mediaKit" class="text-[0.75rem] whitespace-nowrap text-wf-table-label">Media Kit</span>
 	</ProfileCardColumns>
 </div>
 
@@ -69,6 +98,10 @@ import { ANALYZED_COUNT, RESULT_CREATORS, RESULT_FILTERS } from "../../../../../
      natural height and overflows the clipped parent rather than shrinking. */}
 <div class="flex min-h-0 flex-1 flex-col overflow-hidden pt-2" data-wf-results-part>
 	<div class="flex shrink-0 flex-col gap-2" data-wf-results-scroll>
-		{RESULT_CREATORS.map((creator) => <ProfileCard creator={creator} />)}
+		{
+			RESULT_CREATORS.map((creator) => (
+				<ProfileCard creator={{ ...creator, checked: selected && shortlisted.has(creator.handle) }} />
+			))
+		}
 	</div>
 </div>

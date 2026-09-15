@@ -1,0 +1,28 @@
+---
+/**
+ * A creator opened from inside a shortlist. This is the moment the story pays: the
+ * app's `CreatorDetail` watches `mediaKitByProfileKeyPod` as it builds, so simply
+ * arriving here fires GET /mkit and spends the 50-credit unlock.
+ *
+ * It is not the Analyze layout. `shortlist_details.dart` swaps the shortlist's body
+ * for `CreatorDetail` inside the same `ListDetailShell`, so the nav stays on My
+ * Lists and the panel keeps the shell's centred 0.642-viewport column. The header
+ * still reads "Analyzed Creator" — the shortlist does not override `headerTitle`.
+ */
+import AppShell from "../../common/AppShell.astro";
+import CreatorDetail from "../analyze/widgets/CreatorDetail.astro";
+import { CREDITS } from "../../../../data/workflowMockup";
+
+interface Props {
+	tab: "about" | "mediaKit";
+}
+
+const { tab } = Astro.props;
+---
+
+<AppShell active="lists" credits={CREDITS.afterProfile}>
+	<div class="absolute top-32.5 left-16.5 h-176 w-327 overflow-hidden rounded-md bg-wf-panel">
+		{/* The shell's column, so the detail lands where the shortlist's rows were. */}
+		<CreatorDetail tab={tab} class="absolute top-10.5 left-1/2 h-165.5 w-231.25 -translate-x-1/2" />
+	</div>
+</AppShell>

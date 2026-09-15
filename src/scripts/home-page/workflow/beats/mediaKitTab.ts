@@ -2,10 +2,13 @@ import gsap from "gsap";
 import type { Pointer } from "../utils/pointer";
 
 /**
- * Beat 4 — the Media Kit tab: underline moves, body changes, the cursor scrolls
- * the kit, then presses add-to-list. Screens 4 and 5 are the same `CreatorDetail`
- * with a different `tab` prop, so only the tabs and body need bringing into line.
- * Tab colours are read off screen 5's own tabs rather than restated.
+ * The Media Kit tab: underline moves, body changes, the cursor scrolls the kit.
+ * The two layers are the same `CreatorDetail` with a different `tab` prop, so only
+ * the tabs and body need bringing into line. Tab colours are read off the arriving
+ * layer's own tabs rather than restated.
+ *
+ * It ends on the scroll. What the story reaches for next is Back, not add-to-list:
+ * the creator was opened from a shortlist, and promoting them starts from there.
  */
 
 export interface MediaKitTabLayers {
@@ -25,7 +28,6 @@ function collect({ from, to }: MediaKitTabLayers) {
 		toMediaKit: to.querySelector<HTMLElement>('[data-wf-tab="mediaKit"]'),
 		toBody: to.querySelector<HTMLElement>("[data-wf-tab-body]"),
 		mediaKit: to.querySelector<HTMLElement>("[data-wf-mediakit-scroll]"),
-		addToList: to.querySelector<HTMLElement>("[data-wf-add-to-list]"),
 	};
 
 	return Object.values(el).every(Boolean) ? (el as { [K in keyof typeof el]: NonNullable<(typeof el)[K]> }) : null;
@@ -98,12 +100,9 @@ export function mediaKitTab(layers: MediaKitTabLayers, pointer: Pointer) {
 		"+=0.1"
 	);
 
-	// Card 2 bows out here, not at the beat's end, so it is gone before the cursor
-	// reaches for add-to-list. See workflowCards.ts.
+	// The vetting card bows out here, not at the beat's end, so it is gone before
+	// the cursor sets off for Back. See workflowCards.ts.
 	tl.addLabel("scrolled");
-
-	// ── reach for add-to-list, beside Enquire ────────────────────────────────
-	tl.add(pointer.moveTo(el.addToList, { duration: 0.75 }), "+=0.25").add(pointer.press(), ">-0.05");
 
 	return tl;
 }

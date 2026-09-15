@@ -24,8 +24,16 @@ const SEARCH_COST = ANALYZED_COUNT * PER_ANALYZED;
 
 /**
  * The nav credits chip at each point the story spends. Every screen is authored
- * holding the balance it should show, and beats 1-2 tick the chip on the layer the
+ * holding the balance it should show, and the beats tick the chip on the layer the
  * spend happens on — so the following swap lands on a chip already reading right.
+ *
+ * The story spends exactly twice, and *where* is the whole argument for shortlists:
+ * `afterSearch` on Apply & Search, then `afterProfile` when the shortlist opens a
+ * creator — `CreatorDetail` watches `mediaKitByProfileKeyPod`, so opening one is
+ * what fires GET /mkit and bills the 50. Saving to a shortlist opens nobody, so it
+ * is free; and promoting an already-opened creator to a list is free too, because
+ * the dialog charges "50 credits per *new* unlock" and this one is already bought.
+ * Hence only three balances for thirteen steps.
  */
 export const CREDITS = {
 	start: CREDITS_START,
@@ -258,8 +266,65 @@ export const LIST_CREATORS: Creator[] = [PROFILED_HANDLE, "pooo.raw", "hyperfitx
 	checked: (COMPARED_HANDLES as readonly string[]).includes(handle),
 }));
 
-/** The list the story adds to — marked on screen 6, the only card on screen 7. */
+/**
+ * The app runs one set of screens for both, swapping the word and the accent —
+ * `models/list_type.dart`. Screens take this rather than a boolean so a call site
+ * reads the way the app's own does.
+ */
+export type ListType = "list" | "shortlist";
+
+/** The list the story adds to — marked on the dialog's List tab, the only card on Lists. */
 export const STORY_LIST = "Vox Pop";
+
+/** The shortlist the story saves into, straight off the Analyze results. */
+export const STORY_SHORTLIST = "Bangalore Scout";
+
+/**
+ * The three rows the story ticks in the results and bulk-adds to the shortlist.
+ * Selwyn leads because he is the one it goes on to open; the other two are chosen
+ * for *not* being in `LIST_CREATORS`, so when only Selwyn is promoted you can see
+ * the two that stayed behind.
+ */
+export const SHORTLIST_HANDLES = [PROFILED_HANDLE, "neeraj__", "boredinbengaluru"] as const;
+
+export const SHORTLIST_CREATORS: Creator[] = SHORTLIST_HANDLES.map((handle) => ({
+	...creatorByHandle(handle),
+	checked: handle === PROFILED_HANDLE,
+}));
+
+/**
+ * A row's Media Kit column. `locked` is the app's blank cell — `buildMediaKitCell`
+ * returns a `SizedBox.shrink()` rather than any placeholder, so an unbought creator
+ * shows *nothing* there. `synced` is the creator's own data version, `d MMM yyyy`.
+ */
+export type MediaKitState =
+	| { status: "locked" }
+	| { status: "latest" | "past"; synced: string };
+
+/**
+ * Media Kit states on the list rows. **No row in a list is ever blank**: being in a
+ * list is what buys the media kit — "adding to a list unlocks the full media kit" —
+ * so every member is purchased by definition and every cell has a state. Only a
+ * shortlist can show the empty cell.
+ *
+ * Selwyn is the unlock the story just paid for and Justin was bought when he joined
+ * the list, so both read Latest; Poorav's snapshot has gone stale past the app's 15
+ * days, so his reads Past. Two states across three rows, which is what the column
+ * actually looks like in use.
+ */
+export const LIST_MEDIA_KITS: Record<string, MediaKitState> = {
+	[PROFILED_HANDLE]: { status: "latest", synced: "12 Sep 2026" },
+	"pooo.raw": { status: "past", synced: "28 Jul 2026" },
+	hyperfitx: { status: "latest", synced: "9 Sep 2026" },
+};
+
+/**
+ * The same column on the shortlist. Every row starts blank — nothing here has been
+ * opened yet, which is exactly what a shortlist is — and Selwyn's label is rendered
+ * but hidden, for the beat to fade in when the story returns from his profile. It
+ * must agree with `LIST_MEDIA_KITS`: the same unlock follows him into the list.
+ */
+export const SHORTLIST_UNLOCKED = LIST_MEDIA_KITS[PROFILED_HANDLE];
 
 /**
  * The lookalike seed the story types on screens 1-2. Written only here — the typing
@@ -296,6 +361,31 @@ export const CREATOR_LISTS = [
 		preview: ["pooo.raw", "hyperfitx"],
 	},
 ] as const;
+
+/**
+ * The ShortLists tab's one card, as `CREATOR_LISTS` above: `count`/`preview` are the
+ * *dialog's* figures, the shortlist before the add. It starts empty because the
+ * story is what first fills it — which is also why the dialog's ShortList tab has no
+ * search bar, there being nothing yet to search.
+ */
+export const CREATOR_SHORTLISTS = [
+	{
+		name: STORY_SHORTLIST,
+		count: 0,
+		updated: "last updated just now",
+		preview: [] as readonly string[],
+	},
+] as const;
+
+/**
+ * Whose portraits the dialog drops into a row's grid when Add is pressed, per tab.
+ * Three into the shortlist — the results rows the story ticked — and then just the
+ * one into the list, because only the creator it actually opened gets promoted.
+ */
+export const DIALOG_ADDS = {
+	shortlist: SHORTLIST_HANDLES,
+	list: [PROFILED_HANDLE],
+} as const satisfies Record<ListType, readonly string[]>;
 
 /**
  * Media-kit tiles, growth charts and pricing for the profile and compare screens.

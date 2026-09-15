@@ -65,6 +65,28 @@
 	--color-wf-green-deep: #1aae55; /* green11 */
 	--color-wf-green-bright: #3aff98; /* green8 */
 
+	/*
+	 * ShortLists. The app accents them lavender against the Lists' green, and that
+	 * pairing is the only thing telling the two tabs apart — see `ListType.accentColor`.
+	 * The add-to dialog's tab pills reuse the platform-chip palette above
+	 * (`wf-chip-on` / `wf-chip-on-border` selected, `wf-chip` / `wf-chip-border` idle,
+	 * `wf-action-muted` for idle text); only the List tab's fill is its own.
+	 */
+	--color-wf-shortlist: #a589ff; /* lavender47 */
+	--color-wf-tab-list: #30a760; /* green21 — and its border is wf-credit-border */
+
+	/*
+	 * Media Kit column. `locked` has no colour because it has no cell: the app's
+	 * `buildMediaKitCell` shrinks to nothing for a creator nobody has bought — which
+	 * only ever happens on a shortlist, since joining a list is what buys the kit.
+	 */
+	--color-wf-mkit-latest-text: #d7d5dc; /* white4 — icon uses wf-green-deep */
+	--color-wf-mkit-past: #f2994a; /* orange1 */
+	--color-wf-mkit-past-text: #ffdbbb; /* orange5 */
+	/* The wide form's date line only — the column's own uses wf-text-muted. */
+	--color-wf-mkit-synced: #8071b0; /* lavender102 */
+	--color-wf-mkit-synced-date: #b9b9eb; /* lavender101 */
+
 	/* type */
 	--color-wf-text: #ffffff;
 	--color-wf-text-soft: #d0c2ff; /* lavender7 */
@@ -85,6 +107,13 @@
 	--color-wf-count-muted: #4d4565; /* lavender30 — the dialog title's {N} */
 	--color-wf-menu: #2f254a; /* lavender27 — the contact popover */
 	--color-wf-menu-border: #463575; /* lavender53 */
+	--color-wf-more-icon: #ae94ff; /* lavender98 — the row's ⋯ trigger, over wf-surface */
+	--color-wf-io-pill: #343461; /* lavender86 — Import / Export, and the actions pill */
+	--color-wf-io-pill-on: #4a4a82; /* lavender100 — that pill's border once it is live */
+	--color-wf-select-pill: #2c2c49; /* lavender50 — the same pill with nothing selected */
+	--color-wf-select-icon: #b8a2ff; /* lavender64 */
+	--color-wf-bulk-count: #c5b3ff; /* lavender97 — the count beside Analyze's bulk Add */
+	--color-wf-bulk-count-soft: #8070b2; /* lavender36 — the same count on Add to list */
 	--color-wf-menu-icon: #8878b8; /* lavender54 */
 	--color-wf-violet-soft: #8e6aff; /* lavender2 */
 	--color-wf-green-dim: #3e9761; /* green12 */

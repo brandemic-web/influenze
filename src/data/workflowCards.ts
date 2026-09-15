@@ -47,37 +47,47 @@ export const WORKFLOW_CARDS: WorkflowCard[] = [
 	},
 	{
 		step: 2,
-		title: "Vet & Get Insights",
-		body: "Audience and Creator insights, content performance and growth metrics in real time.",
-		// Waits for the profile to finish rising — see beat 3's `settled` — so the
-		// card follows the panel rather than arriving with it. Runs until the media
-		// kit has been scrolled, before the cursor reaches for add-to-list.
-		show: { beat: 3, at: "settled", offset: 0.25 },
-		hide: { beat: 4, at: "scrolled" },
+		title: "Shortlist for Free",
+		body: "Park anyone worth a second look in a shortlist. Nothing is charged until you open a profile.",
+		// Held back until the dialog is open, where the app states the same thing in
+		// its own words ("Free quick save…") — the card and the banner then make the
+		// point together. Runs until the saved shortlist opens.
+		show: { beat: 4, at: "open" },
+		hide: { beat: 6, at: "settled" },
 	},
 	{
 		step: 3,
-		title: "Outreach & Manage",
-		body: "Save to campaign-specific lists, assign ownership, and import or export in bulk via CSVs.",
-		// Beat 4 ends on the press, so beat 5 starting *is* add-to-list being
-		// clicked. Runs until beat 7 crosses into the list's own screen.
-		show: { beat: 5, at: "start" },
-		hide: { beat: 7, at: "swap" },
+		title: "Vet & Get Insights",
+		body: "Audience and Creator insights, content performance and growth metrics in real time.",
+		// Waits for the profile to finish rising — see beat 7's `settled` — so the
+		// card follows the panel rather than arriving with it. Runs until the media
+		// kit has been scrolled, before the cursor reaches for Back.
+		show: { beat: 7, at: "settled", offset: 0.25 },
+		hide: { beat: 8, at: "scrolled" },
 	},
 	{
 		step: 4,
-		title: "Compare Influencers",
-		body: "Live performance and audience metrics along with side-by-side creator comparisons in one view.",
-		// Arrives with the compare swap that the Compare press triggers and holds for
-		// the whole read-down in beat 9, clearing as the cursor sets off for Back.
-		show: { beat: 8, at: "end" },
-		hide: { beat: 9, at: "toBack" },
+		title: "Outreach & Manage",
+		body: "Promote the ones you want into campaign lists, assign ownership, and import or export in bulk via CSVs.",
+		// Beat 9 ends on the unlock showing, so beat 10 starting *is* the promote
+		// being pressed. Runs until beat 12 crosses into the list's own screen.
+		show: { beat: 10, at: "start" },
+		hide: { beat: 12, at: "swap" },
 	},
 	{
 		step: 5,
+		title: "Compare Influencers",
+		body: "Live performance and audience metrics along with side-by-side creator comparisons in one view.",
+		// Arrives with the compare swap that the Compare press triggers and holds for
+		// the whole read-down in beat 14, clearing as the cursor sets off for Back.
+		show: { beat: 13, at: "end" },
+		hide: { beat: 14, at: "toBack" },
+	},
+	{
+		step: 6,
 		title: "Share Lists",
 		body: "Easily share information through view-access links for clients, brands, teams, or stakeholders.",
-		show: { beat: 10, at: "end" },
+		show: { beat: 15, at: "end" },
 		dwell: 4.5,
 	},
 ];
