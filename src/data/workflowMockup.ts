@@ -567,13 +567,28 @@ export const EXPORT_SELECTED = ["Username", "Profile URL", "Full Name", "Followe
 export const EXPORT_ADDS = ["Audience Interest", "Language"] as const;
 
 /**
+ * The day the story happens on, and every date the mockup states against it.
+ * Held together so they cannot drift: the share link's expiry read `7 Aug` for a
+ * good while after the media kits had moved into September.
+ */
+export const STORY_DATE = {
+	/** The export job's stamp — `IoNotificationButton`'s `d MMMM HH:mm`. */
+	exportedAt: "16 September 17:24",
+	/**
+	 * The share picker's default, `d MMM` of **today + 7** — `ShareModal`'s
+	 * `DateTime.now().add(const Duration(days: 7))`. 16 Sep → 23 Sep.
+	 */
+	shareExpiry: "23 Sep",
+} as const;
+
+/**
  * The finished job the header popover opens with — `IoNotificationButton`
  * auto-opens on completion with that job expanded. `rows` is the selection the
  * export ran over, so it has to be the pair the list screen ticked.
  */
 export const EXPORT_JOB = {
 	title: STORY_LIST,
-	at: "16 September 17:24",
+	at: STORY_DATE.exportedAt,
 	rows: COMPARED_HANDLES.length,
 } as const;
 

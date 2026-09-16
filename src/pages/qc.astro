@@ -26,8 +26,14 @@ import WorkflowCard from "../components/app/story/WorkflowCard.astro";
 import { WORKFLOW_CARDS } from "../data/workflowCards";
 import "../styles/global.css";
 
-/** Dev-only: the site is server-rendered, so production just 404s. */
-if (!import.meta.env.DEV) {
+/**
+ * Not for the live site. The sheet carries internal notes and Dart paths, so
+ * `influenze.ai` 404s it — but `astro dev` and the `*.workers.dev` URL a branch
+ * deploy gets are both places only we look, and a QC pass is easier to share as a
+ * link than as a checkout. Server-rendered, so this runs per request.
+ */
+const PRODUCTION_HOSTS = new Set(["influenze.ai", "www.influenze.ai"]);
+if (!import.meta.env.DEV && PRODUCTION_HOSTS.has(Astro.url.hostname)) {
 	return new Response("Not found", { status: 404 });
 }
 
