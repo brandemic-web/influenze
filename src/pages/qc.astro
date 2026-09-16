@@ -38,8 +38,25 @@ if (!import.meta.env.DEV) {
  * `card` is the explainer that plays over this screen. It cannot be derived: a card
  * addresses a *beat*, and a beat knows which layers it moves between, not which one
  * the card ends up sitting over — so the pairing is stated here and nowhere else.
+ *
+ * Typed rather than `as const`: under `as const` every row is its own literal type,
+ * so `card` exists on the seven that carry one and on none of the rest, and reading
+ * it off the union is an error.
  */
-const STEPS = [
+interface QcStep {
+	/** The hero's `data-wf-screen`, not this list's index — 2 is a keyframe, not a layer. */
+	step: number;
+	/** `WORKFLOW_CARDS[card - 1]`, for the screens a card plays over. */
+	card?: number;
+	title: string;
+	/** How the hero builds it, so the sheet can be read against `WorkflowMockup.astro`. */
+	markup: string;
+	/** The Dart file it reproduces. */
+	app: string;
+	note: string;
+}
+
+const STEPS: QcStep[] = [
 	{ step: 1, card: 1, title: "Analyze — empty", markup: "<Analyze />", app: "analyze/analyze.dart", note: "Beat 1 builds the search inside this layer; the dropdown-open frame is a keyframe, not a screen." },
 	{ step: 3, title: "Analyze — results", markup: "<Analyze results />", app: "analyze/widgets/analyze_results_list.dart", note: "Poorav carries a Media Kit cell and a live Enquire — he is already purchased. Everyone else is blank and disabled." },
 	{ step: 4, card: 2, title: "Add-to dialog — ShortList tab", markup: '<AddToListDialog tab="shortlist" count={3} />', app: "analyze/widgets/add_to_list_dialog.dart", note: "Backdrop is <Analyze results selected />, so the three ticks match the layer beneath. Banner hugs its own text." },
@@ -54,7 +71,7 @@ const STEPS = [
 	{ step: 13, card: 6, title: "Export dialog", markup: "<ExportDialog picked />", app: "list/widgets/export_dialog.dart", note: "Authored in its end state — both story columns ticked. Available scrolls; the Selected pane has no search above it, so its panel is the taller of the two." },
 	{ step: 14, title: "List detail — exported", markup: "<ListDetails exported />", app: "common/widgets/io_notification_button.dart", note: "The finished job, in the header popover that opens itself when an export lands. Not a toast — it is the notification button's own panel." },
 	{ step: 15, card: 7, title: "Share modal", markup: "<ShareModal />", app: "share_management/…, over <ListDetails blurred />", note: "Clipped to the host panel, blur only, no dim scrim." },
-] as const;
+];
 
 /** The hero's own step numbers, so this sheet can say when it has fallen behind. */
 const heroSteps = [...mockupSource.matchAll(/<StoryStep\s+step=\{(\d+)\}/g)].map((m) => Number(m[1]));
