@@ -6,6 +6,7 @@
 import Analyze from "./screens/analyze/Analyze.astro";
 import AddToListDialog from "./screens/analyze/AddToListDialog.astro";
 import Lists from "./screens/list/Lists.astro";
+import ExportDialog from "./screens/list/ExportDialog.astro";
 import ListDetails from "./screens/list/ListDetails.astro";
 import ShortlistCreator from "./screens/list/ShortlistCreator.astro";
 import ShortlistDetails from "./screens/list/ShortlistDetails.astro";
@@ -65,7 +66,13 @@ const { class: className = "" } = Astro.props;
 		<StoryStep step={10}><Lists /></StoryStep>
 		<StoryStep step={11}><ListDetails /></StoryStep>
 		<StoryStep step={12}><ListDetails compare /></StoryStep>
-		<StoryStep step={13}><ShareModal /></StoryStep>
+		<StoryStep step={13}>
+			<ExportDialog>
+				<ListDetails blurred slot="backdrop" />
+			</ExportDialog>
+		</StoryStep>
+		<StoryStep step={14}><ListDetails exported /></StoryStep>
+		<StoryStep step={15}><ShareModal /></StoryStep>
 
 		<WorkflowPointer />
 	</div>

@@ -4,6 +4,7 @@ import { addToListDialog } from "./beats/addToListDialog";
 import { analyzeLookalike } from "./beats/analyzeLookalike";
 import { compareMode } from "./beats/compareMode";
 import { leaveCompare } from "./beats/leaveCompare";
+import { exportFlow } from "./beats/exportFlow";
 import { listDetail } from "./beats/listDetail";
 import { mediaKitTab } from "./beats/mediaKitTab";
 import { myLists } from "./beats/myLists";
@@ -54,7 +55,9 @@ function initWorkflow(mockup: HTMLElement) {
 		lists: layer(10),
 		list: layer(11),
 		compare: layer(12),
-		share: layer(13),
+		exportDialog: layer(13),
+		exported: layer(14),
+		share: layer(15),
 	};
 	if (!Object.values(found).every(Boolean)) return;
 	const screen = found as { [K in keyof typeof found]: HTMLElement };
@@ -108,7 +111,10 @@ function initWorkflow(mockup: HTMLElement) {
 		listDetail({ from: screen.lists, to: screen.list }, pointer),
 		compareMode({ from: screen.list, to: screen.compare }),
 		leaveCompare({ from: screen.compare, to: screen.list }, pointer),
-		shareModal({ from: screen.list, to: screen.share }),
+		// Export runs on the selection compare just used, and hands the story to
+		// Share still standing on the list — so Share's `from` is the finished frame.
+		exportFlow({ from: screen.list, dialog: screen.exportDialog, done: screen.exported }, pointer),
+		shareModal({ from: screen.exported, to: screen.share }),
 		restart({ from: screen.share, to: screen.analyze, reset: analyze?.reset }, pointer),
 	];
 	// Record where each beat lands before adding any card — cards are timed off

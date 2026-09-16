@@ -23,15 +23,17 @@ interface Props {
 	compare?: boolean;
 	/** Set by the share modal, which blurs this screen behind its card. */
 	blurred?: boolean;
+	/** Opens the header's export popover — the frame beat 15 lands on. */
+	exported?: boolean;
 }
 
-const { compare = false, blurred = false } = Astro.props;
+const { compare = false, blurred = false, exported = false } = Astro.props;
 
 /** Every member of a list is purchased by definition, the story's unlock included. */
 const mediaKits = mediaKitsFor(true);
 ---
 
-<AppShell active="lists" credits={CREDITS.afterProfile}>
+<AppShell active="lists" credits={CREDITS.afterProfile} exported={exported}>
 	{
 		compare ? (
 			<ListDetailShell title="Compare" compare>
@@ -65,7 +67,7 @@ const mediaKits = mediaKitsFor(true);
 
 					{/* Export leads, then Import — the order the app builds them in. */}
 					<span class="ml-auto flex items-center">
-						<ToolbarAction label="Export" icon="export" count={2} />
+						<ToolbarAction label="Export" icon="export" count={2} data-wf-export />
 						<ToolbarAction label="Import" icon="import" class="ml-3" />
 					</span>
 				</div>

@@ -19,7 +19,7 @@ interface Props {
 	class?: string;
 }
 
-const { label, icon, count = 0, class: className = "" } = Astro.props;
+const { label, icon, count = 0, class: className = "", ...rest } = Astro.props;
 ---
 
 <span
@@ -27,6 +27,7 @@ const { label, icon, count = 0, class: className = "" } = Astro.props;
 		"flex items-center gap-1 rounded-[0.25rem] bg-wf-io-pill p-2.5 text-[0.75rem] whitespace-nowrap text-wf-text",
 		className,
 	]}
+	{...rest}
 >
 	<Icon name={icon} size="0.75rem" class="text-wf-shortlist" />
 	{label}

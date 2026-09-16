@@ -509,6 +509,75 @@ export const MEDIA_KIT_STATS = {
 } as const;
 
 /**
+ * The export dialog's column picker — `list/widgets/export_dialog.dart` for
+ * Instagram, which is the only platform the story uses.
+ *
+ * The app builds the Available list as mandatory columns first, then everything
+ * else **sorted by label**, groups included — so this is one alphabetical run, not
+ * a hand-ordered one. `group` rows are collapsible parents over child columns and
+ * `count` rows hide a 1–5 picker behind the same chevron; the story opens neither,
+ * so only the chevron is reproduced.
+ */
+export interface ExportColumn {
+	label: string;
+	/** Always exported: ticked, dimmed and not clickable. */
+	mandatory?: boolean;
+	/** Draws the chevron — a collapsible group or a count picker. */
+	expandable?: boolean;
+}
+
+export const EXPORT_MANDATORY: readonly ExportColumn[] = [
+	{ label: "Username", mandatory: true },
+	{ label: "Profile URL", mandatory: true },
+	{ label: "Full Name", mandatory: true },
+];
+
+export const EXPORT_OPTIONAL: readonly ExportColumn[] = [
+	{ label: "Audience % (Female)" },
+	{ label: "Audience % (Male)" },
+	{ label: "Audience Age and Gender Split" },
+	{ label: "Audience Interest" },
+	{ label: "Average Reel Views" },
+	{ label: "Avg Likes" },
+	{ label: "Bio" },
+	{ label: "Contact Details", expandable: true },
+	{ label: "Creator Age Group" },
+	{ label: "Creator City" },
+	{ label: "Creator Country" },
+	{ label: "Creator State" },
+	{ label: "Credibility Score", expandable: true },
+	{ label: "Engagement Rate" },
+	{ label: "Followers" },
+	{ label: "Gender" },
+	{ label: "Language" },
+	{ label: "Pricing", expandable: true },
+	{ label: "Top Cities (Audience)", expandable: true },
+	{ label: "Top Countries (Audience)", expandable: true },
+	{ label: "Verified" },
+];
+
+/**
+ * Ticked the moment the dialog opens — `_defaultSelectedForPlatform`. The three
+ * mandatory columns plus the two metrics, and `_selectedOrder` keeps them in this
+ * order, which is why the Selected pane reads the same way.
+ */
+export const EXPORT_SELECTED = ["Username", "Profile URL", "Full Name", "Followers", "Engagement Rate"] as const;
+
+/** The two the story ticks, in the order it ticks them — appended to Selected. */
+export const EXPORT_ADDS = ["Audience Interest", "Language"] as const;
+
+/**
+ * The finished job the header popover opens with — `IoNotificationButton`
+ * auto-opens on completion with that job expanded. `rows` is the selection the
+ * export ran over, so it has to be the pair the list screen ticked.
+ */
+export const EXPORT_JOB = {
+	title: STORY_LIST,
+	at: "16 September 17:24",
+	rows: COMPARED_HANDLES.length,
+} as const;
+
+/**
  * The pricing card's currency and driving factors. Shared, not per creator: the app
  * picks factor sentences by band, and every creator the story shows lands in the
  * same bands. Order is the app's `factorOrder`.

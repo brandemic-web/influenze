@@ -86,9 +86,18 @@ export const WORKFLOW_CARDS: WorkflowCard[] = [
 	},
 	{
 		step: 6,
+		title: "Export in Bulk",
+		body: "Pick exactly the columns you need — audience, pricing, contact details — and take them as a CSV or XLSX.",
+		// Cleared on the dialog closing, not on the export landing: the card and the
+		// header popover share a resting place, and they must never be up together.
+		show: { beat: 14, at: "open" },
+		hide: { beat: 14, at: "close" },
+	},
+	{
+		step: 7,
 		title: "Share Lists",
 		body: "Easily share information through view-access links for clients, brands, teams, or stakeholders.",
-		show: { beat: 14, at: "end" },
+		show: { beat: 15, at: "end" },
 		dwell: 4.5,
 	},
 ];

@@ -115,6 +115,12 @@
 	--color-wf-io-pill: #343461; /* lavender86 — Import / Export, and the actions pill */
 	--color-wf-io-pill-on: #4a4a82; /* lavender100 — that pill's border once it is live */
 	--color-wf-select-pill: #2c2c49; /* lavender50 — the same pill with nothing selected */
+	/* Export's mandatory columns — ticked but not yours to untick. */
+	--color-wf-locked: #6d638f; /* lavender18 */
+	--color-wf-locked-tick: #d5caee; /* lavender22 */
+	--color-wf-format-on: #50349e; /* lavender13 — the live .csv / .xlsx chip */
+	--color-wf-format-on-border: #6d55ba; /* lavender91 */
+	--color-wf-note-close: #3a3a46; /* the io popover's dismiss disc, out of x.svg */
 	--color-wf-select-icon: #b8a2ff; /* lavender64 */
 	/* `backLabelText` — the same lavender64, but a different job, so it reads at the call site. */
 	--color-wf-back: #b8a2ff;

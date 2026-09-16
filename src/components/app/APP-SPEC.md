@@ -534,6 +534,55 @@ pills, and only one of them comes and goes:
   (`px8 py3`, bg `#2c263d`, radius 6, 1px `#ff9e49`, 9px/500 `#ff9e49`) at
   `top:-28 left:14`. Not reproduced — the story never selects more than two.
 
+### Export — `list/widgets/export_dialog.dart`
+
+Card **741x523**, radius 24, `lavender45` under a `lavender24` hairline, presented
+like the add-to dialog (blur 6 under `black/8`) — so the backdrop is a slot here
+too. Header 72 tall, `Export` 22/400 centred, cross 14 at `top17 right19`; a
+`lavender11` hairline above and below the body.
+
+Body `fromLTRB(36, 24, 36, 20)`, two equal columns 12 apart. Both panes are
+`title · 12 · …`, but only the left one has a search field, so **the right pane's
+panel is the taller of the two** — they do not line up, and that is the app.
+Panels are `lavender40`, radius 6, 1px `lavender24`, padding 12. Every row in
+either pane is `px12 py10` with a 4 gap, radius 6, and fills `lavender89` on hover.
+
+- **Available** — search field `lavender89` radius 6 `px12 py8`, hint
+  `Search columns` 14/400 `lavender46`. Then `Select / Unselect All` (12px box,
+  **dashed**: filled `lavender15` with `minus.svg`, since some of the list is
+  always selected and all of it never is) · `Divider(lavender24, height 8)` ·
+  the three mandatory columns, ticked and dimmed to `lavender18` / `lavender22`
+  and not clickable · `Divider(height 10)` · **everything else sorted by label**,
+  groups and count-pickers included, each with a 16 chevron. Five rows fit; the
+  run scrolls.
+- **Selected** — `_selectedOrder`: the defaults in order, then anything ticked
+  appended. `drag_dots` 16 · 4 · label · a 16 cross, which mandatory columns do
+  not get. Seven rows fit exactly.
+- **Footer** `fromLTRB(36, 16, 36, 32)`, halves equal. `File Format` 12/400 · 6 ·
+  `.csv` / `.xlsx` chips `px12 py8` radius 6 — live is `lavender13` under
+  `lavender91`, idle `lavender89` with `lavender28` text. `Download` is an
+  `ElevatedButton` **52 tall**, radius 10, `lavender25`, label 16/600 · 8 ·
+  `download.svg` 16.
+
+**Do not use `truncate` on a row label.** The stage trims text to cap height and
+an alphabetic baseline, so a descender hangs below the box and `overflow: hidden`
+cuts it — `Language` loses its tail. Every label fits the pane at 12px, so
+`whitespace-nowrap` is both correct and enough.
+
+### The export popover — `common/widgets/io_notification_button.dart`
+
+**Not a toast.** The header's notification button holds the last five jobs, and a
+job finishing auto-opens the popover with that job expanded — which is the only
+state the mockup draws. Width **300**, radius 16, `popupMenuBg` under
+`popupMenuBorder`, 8 below the button and right-aligned with the nav group.
+
+Card `px24 py22`: `circle_check` 12 · 4 · `Exported` — both `green20` `#3fbd71`,
+and the glyph is **authored that colour and passed no filter**, so it is the one
+place the icon keeps its own ink · 8 · the list name 16/400 with a 12 dismiss
+disc (`#3a3a46` under a white cross) · 6 · `d MMMM HH:mm` 10/400 `lavender28` ·
+12 · the count chip `px10 py6`, radius 6, `green2` under `green1`, holding
+`circle_check` 12 white · 8 · `2 Rows` 10/500 `brandGreen` · 4 · `exported` white.
+
 Toolbar right — **Export** then **Import**, in that order, 12 apart. `IoPillButton`,
 which **does** have a background now: `padding 10`, radius 4 on `lavender86`
 `#343461`, icon 12 `#a589ff` · 4 · label 12px/400 white. (It gained that fill when
@@ -917,6 +966,49 @@ presses **Compare**.
   is left for the inline bits that genuinely change the row's width — now just
   Export's count, which must be `display` rather than opacity or the button would
   reserve space it does not have.
+
+### Beat 15 — export the pair (built)
+
+`exportFlow.ts`. Presses `Export 2`, picks two columns, downloads, and lands on
+the finished job in the header popover.
+
+- **It runs on beat 11's selection, which is why it sits here.** Export reads
+  `Export 2` because two rows are still ticked from compare, so the dialog opens
+  over a decision the story has already shown.
+- **It presses its own control**, unlike the add-to dialog: `leaveCompare` used to
+  end by reaching for Share, and that reach moved here — this beat is what hands
+  the story to the share modal now.
+- **It is the only beat that closes a dialog.** Every other one leaves by the
+  screen changing underneath it, so this is the one place the open has to be run
+  backwards: card out, scrim out, blur back to zero, then the swap.
+- **The two columns are thirteen rows apart** in the app's alphabetical run and
+  never share a screenful, so the list scrolls to each. The distance is measured
+  at play time off `offsetTop`, not authored — adding a column to the data moves
+  every row below it and this still lands.
+- **The popover and the explainer cards share a resting place**, so card 6 hides
+  on `close` rather than on `exported`. The popover then holds long enough to be
+  read and is **dismissed before** the cursor sets off for Share — it covers the
+  panel header, Share included, so pressing underneath it hides the one thing the
+  viewer is meant to watch. Clicking away is what closes it in the app too.
+- **`.csv` is never pressed.** It is already the live chip, and pressing a control
+  that is on reads as a misfire rather than as a choice.
+- **A scroll must finish before the cursor sets off after it.** `pointer.moveTo`
+  resolves its target when the tween starts and then glides to that fixed point,
+  so a cursor launched at a row mid-scroll lands where the row was — which is
+  exactly how this beat first shipped, with the hand two rows below its own tick.
+- **And the cursor reaches the list before the list moves.** A wheel scroll happens
+  under the pointer; the first column has to be walked into the panel from the
+  toolbar, the second is already standing on the row it just ticked.
+- **A tick lands on the press, not after it.** `pointer.press` dips for 0.096s and
+  runs 0.24s all in, so a checkbox hung off the end of it answers a quarter of a
+  second late — which reads as lag, and did.
+- **The hover fills as the cursor lands**, not on the way in. Lighting a row up
+  early separates it from the tick that follows, and the pair then reads as two
+  clicks rather than one.
+- **Never wind a fill back to plain `transparent`.** GSAP interpolates it as
+  `rgba(0, 0, 0, a)`, so a 12px box greys before it goes violet — the same two-click
+  illusion from the other direction. Wind back to the target colour at zero alpha
+  (`clearFill`) and it only ever fades.
 
 ### Beat 12 — compare (built)
 
