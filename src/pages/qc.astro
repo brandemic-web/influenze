@@ -1,0 +1,350 @@
+---
+/**
+ * QC sheet for the hero workflow mockup — **dev only**, never served in production.
+ *
+ * Every story screen laid out down one page at **1:1 app pixels** (1440x900, root
+ * pinned to 16px) so each can be put beside the running Flutter app and compared
+ * without the animation moving anything. Screens render directly rather than
+ * through `StoryStep`, which is what keeps them all visible at once.
+ *
+ * **This list must track `components/app/WorkflowMockup.astro`.** It cannot be
+ * derived from it — the two dialogs take their backdrop through a slot, which no
+ * data table can express — so instead the hero's own source is read at build time
+ * and the step numbers compared; a mismatch shows as a banner at the top rather
+ * than as a QC sheet that quietly reviews the wrong thing.
+ */
+import mockupSource from "../components/app/WorkflowMockup.astro?raw";
+import Analyze from "../components/app/screens/analyze/Analyze.astro";
+import AddToListDialog from "../components/app/screens/analyze/AddToListDialog.astro";
+import Lists from "../components/app/screens/list/Lists.astro";
+import ListDetails from "../components/app/screens/list/ListDetails.astro";
+import ShortlistCreator from "../components/app/screens/list/ShortlistCreator.astro";
+import ShortlistDetails from "../components/app/screens/list/ShortlistDetails.astro";
+import ShareModal from "../components/app/screens/share-management/ShareModal.astro";
+import "../styles/global.css";
+
+/** Dev-only: the site is server-rendered, so production just 404s. */
+if (!import.meta.env.DEV) {
+	return new Response("Not found", { status: 404 });
+}
+
+/**
+ * What each screen is, and what to hold it against. `app` names the Dart file the
+ * screen reproduces, so a QC pass has somewhere to look when something disagrees.
+ */
+const STEPS = [
+	{ step: 1, title: "Analyze — empty", markup: "<Analyze />", app: "analyze/analyze.dart", note: "Beat 1 builds the search inside this layer; the dropdown-open frame is a keyframe, not a screen." },
+	{ step: 3, title: "Analyze — results", markup: "<Analyze results />", app: "analyze/widgets/analyze_results_list.dart", note: "Poorav carries a Media Kit cell and a live Enquire — he is already purchased. Everyone else is blank and disabled." },
+	{ step: 4, title: "Add-to dialog — ShortList tab", markup: '<AddToListDialog tab="shortlist" count={3} />', app: "analyze/widgets/add_to_list_dialog.dart", note: "Backdrop is <Analyze results selected />, so the three ticks match the layer beneath. Banner hugs its own text." },
+	{ step: 5, title: "My Lists — ShortLists tab", markup: '<Lists type="shortlist" />', app: "list/lists.dart + widgets/my_lists_tabs_header.dart", note: "Lavender indicator; the card is the shortlist just created." },
+	{ step: 6, title: "ShortList detail", markup: "<ShortlistDetails />", app: "list/shortlist_details.dart", note: "No Compare, no Share, Quick Export. Every Media Kit cell blank and no Enquire — nothing here is bought." },
+	{ step: 7, title: "Creator — About", markup: '<ShortlistCreator tab="about" />', app: "analyze/widgets/creator_detail.dart", note: "Opened from the shortlist, so the nav stays on My Lists. Header carries the unlock this screen paid for." },
+	{ step: 8, title: "Creator — Media Kit", markup: '<ShortlistCreator tab="mediaKit" />', app: "analyze/widgets/media_kit/detail.dart", note: "Same panel, different tab. The beat scrolls this; here it sits at the top." },
+	{ step: 9, title: "Add-to dialog — List tab", markup: '<AddToListDialog tab="list" count={1} />', app: "analyze/widgets/add_to_list_dialog.dart", note: "Opened from the creator's own panel. Banner swaps to the unlock line." },
+	{ step: 10, title: "My Lists — Lists tab", markup: "<Lists />", app: "list/lists.dart", note: "Green indicator. Same screen as step 5 with the type swapped." },
+	{ step: 11, title: "List detail", markup: "<ListDetails />", app: "list/list_details.dart", note: "Authored in its selected state — the beat winds it back and re-ticks on camera. No Media Kit cell is ever blank here." },
+	{ step: 12, title: "List detail — Compare", markup: "<ListDetails compare />", app: "list/widgets/list_compare_section.dart", note: "A mode of the same panel, not a route: toolbar and column header collapse, title centres, share hides." },
+	{ step: 13, title: "Share modal", markup: "<ShareModal />", app: "share_management/…, over <ListDetails blurred />", note: "Clipped to the host panel, blur only, no dim scrim." },
+] as const;
+
+/** The hero's own step numbers, so this sheet can say when it has fallen behind. */
+const heroSteps = [...mockupSource.matchAll(/<StoryStep\s+step=\{(\d+)\}/g)].map((m) => Number(m[1]));
+const qcSteps = STEPS.map((s) => s.step);
+const drifted =
+	heroSteps.length !== qcSteps.length || heroSteps.some((step, i) => step !== qcSteps[i]);
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="robots" content="noindex, nofollow" />
+		<title>Workflow QC — {STEPS.length} screens</title>
+	</head>
+	<body>
+		<header class="qc-head">
+			<div>
+				<h1>Workflow mockup — QC sheet</h1>
+				<p>
+					{STEPS.length} screens at 1:1 app pixels (1440&times;900). Story order, top to bottom.
+				</p>
+			</div>
+			<label class="qc-zoom">
+				Zoom
+				<select id="qc-zoom">
+					<option value="1">100% — 1:1, compare pixel for pixel</option>
+					<option value="0.75">75%</option>
+					<option value="0.5" selected>50% — fits most screens</option>
+					<option value="0.33">33%</option>
+				</select>
+			</label>
+		</header>
+
+		{
+			drifted && (
+				<p class="qc-drift">
+					<b>This sheet is out of date.</b> The hero renders steps {heroSteps.join(", ")}; this
+					page lists {qcSteps.join(", ")}. Bring <code>src/pages/qc.astro</code> back in line with
+					<code>WorkflowMockup.astro</code> before trusting anything below.
+				</p>
+			)
+		}
+
+		<nav class="qc-nav">
+			{STEPS.map((s) => <a href={`#s${s.step}`}>{s.step}. {s.title}</a>)}
+		</nav>
+
+		<main>
+			{
+				STEPS.map((s) => (
+					<section class="qc-block" id={`s${s.step}`}>
+						<div class="qc-label">
+							<span class="qc-step">{s.step}</span>
+							<div>
+								<h2>{s.title}</h2>
+								<p class="qc-meta">
+									<code>{s.markup}</code> <span class="qc-sep">·</span> app: <code>{s.app}</code>
+								</p>
+								<p class="qc-note">{s.note}</p>
+							</div>
+						</div>
+
+						{/*
+							`.wf-stage` carries the cap-trim the whole mockup depends on, so each
+							canvas has to be one — not just a box the screen sits in.
+						*/}
+						<div class="qc-frame">
+							<div class="wf-stage qc-stage">
+								{s.step === 1 && <Analyze />}
+								{s.step === 3 && <Analyze results />}
+								{s.step === 4 && (
+									<AddToListDialog tab="shortlist" count={3}>
+										<Analyze results selected slot="backdrop" />
+									</AddToListDialog>
+								)}
+								{s.step === 5 && <Lists type="shortlist" />}
+								{s.step === 6 && <ShortlistDetails />}
+								{s.step === 7 && <ShortlistCreator tab="about" />}
+								{s.step === 8 && <ShortlistCreator tab="mediaKit" />}
+								{s.step === 9 && (
+									<AddToListDialog tab="list" count={1}>
+										<ShortlistCreator tab="mediaKit" slot="backdrop" />
+									</AddToListDialog>
+								)}
+								{s.step === 10 && <Lists />}
+								{s.step === 11 && <ListDetails />}
+								{s.step === 12 && <ListDetails compare />}
+								{s.step === 13 && <ShareModal />}
+							</div>
+						</div>
+					</section>
+				))
+			}
+		</main>
+
+		<script is:inline>
+			// Zoom lives in one custom property; the frame reserves the scaled size so
+			// the page keeps its scroll height. Remembered per browser, since a QC pass
+			// is a lot of reloading.
+			const select = document.getElementById("qc-zoom");
+			const apply = (value) => document.documentElement.style.setProperty("--qc-zoom", value);
+			const saved = localStorage.getItem("qc-zoom");
+			if (saved) {
+				select.value = saved;
+			}
+			apply(select.value);
+			select.addEventListener("change", () => {
+				apply(select.value);
+				localStorage.setItem("qc-zoom", select.value);
+			});
+		</script>
+
+		<style is:global>
+			/*
+			 * 1:1 means 1rem = 16px, so the site's fluid root (100vw / 108 above lg) has
+			 * to be pinned here — otherwise the canvas is 1440 *design* px at whatever
+			 * the window makes of them, and nothing lines up with the app.
+			 */
+			html {
+				font-size: 16px !important;
+				background: #0b0b12;
+				color-scheme: dark;
+			}
+
+			body {
+				margin: 0;
+				background: #0b0b12;
+				color: #e7e5ee;
+				font-family:
+					ui-sans-serif,
+					system-ui,
+					-apple-system,
+					"Segoe UI",
+					sans-serif;
+			}
+
+			.qc-head {
+				position: sticky;
+				top: 0;
+				z-index: 10;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 2rem;
+				padding: 1rem 1.5rem;
+				background: rgba(11, 11, 18, 0.92);
+				backdrop-filter: blur(8px);
+				border-bottom: 1px solid #23233a;
+			}
+
+			.qc-head h1 {
+				margin: 0;
+				font-size: 1rem;
+				font-weight: 600;
+			}
+
+			.qc-head p {
+				margin: 0.25rem 0 0;
+				font-size: 0.8125rem;
+				color: #8f8ba8;
+			}
+
+			.qc-zoom {
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+				font-size: 0.8125rem;
+				color: #8f8ba8;
+				white-space: nowrap;
+			}
+
+			.qc-zoom select {
+				padding: 0.35rem 0.5rem;
+				border: 1px solid #33334f;
+				border-radius: 0.375rem;
+				background: #16162a;
+				color: #e7e5ee;
+				font: inherit;
+			}
+
+			.qc-drift {
+				margin: 0;
+				padding: 0.85rem 1.5rem;
+				background: #3d2222;
+				border-bottom: 1px solid #5b2929;
+				color: #ffd9d9;
+				font-size: 0.8125rem;
+				line-height: 1.5;
+			}
+
+			.qc-nav {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.5rem;
+				padding: 1rem 1.5rem;
+				border-bottom: 1px solid #23233a;
+			}
+
+			.qc-nav a {
+				padding: 0.3rem 0.6rem;
+				border: 1px solid #2c2c47;
+				border-radius: 999px;
+				background: #14142a;
+				color: #b9b4d0;
+				font-size: 0.75rem;
+				text-decoration: none;
+			}
+
+			.qc-nav a:hover {
+				border-color: #6443cc;
+				color: #fff;
+			}
+
+			.qc-block {
+				padding: 2rem 1.5rem 0;
+				border-bottom: 1px solid #1c1c2e;
+				/* Anchors land below the sticky header. */
+				scroll-margin-top: 5rem;
+			}
+
+			.qc-label {
+				display: flex;
+				align-items: flex-start;
+				gap: 0.85rem;
+				margin-bottom: 1rem;
+				max-width: 70rem;
+			}
+
+			.qc-step {
+				display: grid;
+				place-items: center;
+				flex: none;
+				width: 1.75rem;
+				height: 1.75rem;
+				border-radius: 999px;
+				background: #6443cc;
+				color: #fff;
+				font-size: 0.8125rem;
+				font-weight: 600;
+			}
+
+			.qc-label h2 {
+				margin: 0;
+				font-size: 0.9375rem;
+				font-weight: 600;
+			}
+
+			.qc-meta {
+				margin: 0.3rem 0 0;
+				font-size: 0.75rem;
+				color: #8f8ba8;
+			}
+
+			.qc-meta code {
+				padding: 0.1rem 0.3rem;
+				border-radius: 0.25rem;
+				background: #1a1a30;
+				color: #c9c3e4;
+			}
+
+			.qc-sep {
+				opacity: 0.5;
+			}
+
+			.qc-note {
+				margin: 0.4rem 0 0;
+				max-width: 60rem;
+				font-size: 0.75rem;
+				line-height: 1.5;
+				color: #7d7a95;
+			}
+
+			/*
+			 * The frame reserves the *scaled* size so the page scrolls correctly, and the
+			 * canvas inside is always the true 1440x900 — zoom only ever scales what is
+			 * painted, never what is measured.
+			 */
+			.qc-frame {
+				width: calc(1440px * var(--qc-zoom, 0.5));
+				height: calc(900px * var(--qc-zoom, 0.5));
+				margin-bottom: 2rem;
+				overflow: hidden;
+				border-radius: calc(1.75rem * var(--qc-zoom, 0.5));
+				outline: 1px solid #23233a;
+			}
+
+			/*
+			 * `.wf-stage` is absolutely positioned and pre-scaled for the hero; here it is
+			 * in flow at its true size, and the zoom rides on top of it.
+			 */
+			.qc-stage {
+				position: relative !important;
+				scale: 1 !important;
+				transform: scale(var(--qc-zoom, 0.5));
+				transform-origin: top left;
+				overflow: hidden;
+				background: var(--color-wf-page);
+			}
+		</style>
+	</body>
+</html>

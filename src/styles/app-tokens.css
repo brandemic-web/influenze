@@ -19,7 +19,11 @@
 	--color-wf-rail-rule: #564d71; /* lavender8 */
 	--color-wf-section-rule: #252525; /* grey6 */
 	--color-wf-rule: #383869; /* lavender11 — panel + card rules */
-	--color-wf-surface: #181823; /* blue / listCardBg */
+	--color-wf-surface: #181823; /* lavender45 — blue / listCardBg */
+	--color-wf-surface-border: #2c2c3d; /* lavender21 */
+	/* A ticked ProfileCard — the fill lifts and the border takes the tick's own violet. */
+	--color-wf-surface-on: #272741; /* lavender75 */
+	--color-wf-surface-on-border: #b8a2ff; /* lavender64 — same as wf-select-icon */
 
 	/* nav */
 	--color-wf-user-pill: #1b3e2c; /* green2 */
@@ -72,7 +76,7 @@
 	 * (`wf-chip-on` / `wf-chip-on-border` selected, `wf-chip` / `wf-chip-border` idle,
 	 * `wf-action-muted` for idle text); only the List tab's fill is its own.
 	 */
-	--color-wf-shortlist: #a589ff; /* lavender47 */
+	--color-wf-shortlist: #a589ff; /* lavender47 — also the Import/Export and Share glyphs */
 	--color-wf-tab-list: #30a760; /* green21 — and its border is wf-credit-border */
 
 	/*
@@ -112,6 +116,9 @@
 	--color-wf-io-pill-on: #4a4a82; /* lavender100 — that pill's border once it is live */
 	--color-wf-select-pill: #2c2c49; /* lavender50 — the same pill with nothing selected */
 	--color-wf-select-icon: #b8a2ff; /* lavender64 */
+	/* `backLabelText` — the same lavender64, but a different job, so it reads at the call site. */
+	--color-wf-back: #b8a2ff;
+	--color-wf-enquire-off: #5c507f; /* lavender73 — Enquire's glyph when it is disabled */
 	--color-wf-bulk-count: #c5b3ff; /* lavender97 — the count beside Analyze's bulk Add */
 	--color-wf-bulk-count-soft: #8070b2; /* lavender36 — the same count on Add to list */
 	--color-wf-menu-icon: #8878b8; /* lavender54 */

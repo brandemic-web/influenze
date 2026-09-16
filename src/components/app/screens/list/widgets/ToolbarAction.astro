@@ -4,6 +4,9 @@
  * `padding 10`, radius 4 on lavender86, a 12px glyph tinted lavender47, gap 4, then
  * a 12/400 white label. It gained that fill after this mockup was first drawn, when
  * import and export grew into real dialogs rather than bare links.
+ *
+ * Export alone carries a count — how many are ticked — so it comes and goes with
+ * the selection the way the pills beside it do.
  */
 import Icon from "../../../common/Icon.astro";
 import type { WorkflowIconName } from "../../../../../data/workflowIcons";
@@ -11,10 +14,12 @@ import type { WorkflowIconName } from "../../../../../data/workflowIcons";
 interface Props {
 	label: string;
 	icon: WorkflowIconName;
+	/** `selectedProfileIds.length`, dropped entirely at 0 rather than drawn as a zero. */
+	count?: number;
 	class?: string;
 }
 
-const { label, icon, class: className = "" } = Astro.props;
+const { label, icon, count = 0, class: className = "" } = Astro.props;
 ---
 
 <span
@@ -25,4 +30,5 @@ const { label, icon, class: className = "" } = Astro.props;
 >
 	<Icon name={icon} size="0.75rem" class="text-wf-shortlist" />
 	{label}
+	{count > 0 && <span class="text-wf-meta" data-wf-selection>{count}</span>}
 </span>

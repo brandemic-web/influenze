@@ -28,6 +28,7 @@ function collect({ from, to }: MediaKitTabLayers) {
 		toMediaKit: to.querySelector<HTMLElement>('[data-wf-tab="mediaKit"]'),
 		toBody: to.querySelector<HTMLElement>("[data-wf-tab-body]"),
 		mediaKit: to.querySelector<HTMLElement>("[data-wf-mediakit-scroll]"),
+		addToList: to.querySelector<HTMLElement>("[data-wf-add-to-list]"),
 	};
 
 	return Object.values(el).every(Boolean) ? (el as { [K in keyof typeof el]: NonNullable<(typeof el)[K]> }) : null;
@@ -101,8 +102,11 @@ export function mediaKitTab(layers: MediaKitTabLayers, pointer: Pointer) {
 	);
 
 	// The vetting card bows out here, not at the beat's end, so it is gone before
-	// the cursor sets off for Back. See workflowCards.ts.
+	// the cursor reaches for add-to-list. See workflowCards.ts.
 	tl.addLabel("scrolled");
+
+	// ── reach for add-to-list, beside Enquire ────────────────────────────────
+	tl.add(pointer.moveTo(el.addToList, { duration: 0.75 }), "+=0.25").add(pointer.press(), ">-0.05");
 
 	return tl;
 }

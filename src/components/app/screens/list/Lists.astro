@@ -61,9 +61,9 @@ const tileStyle = "border-radius:32%";
 			<MyListsTabsHeader active={type} />
 
 			<div class="mt-5 flex items-center">
-				{/* `width * 0.21 - 7` = 295 at 1440, and a 14px leading glyph. */}
+				{/* `width * 0.21 - 7` = 295 at 1440; radius 6, `padding h24 v16`, 14px glyph. */}
 				<div
-					class="flex h-16.25 shrink-0 items-center gap-1.5 rounded-md bg-wf-search px-6"
+					class="flex h-[3.0625rem] shrink-0 items-center gap-1.5 rounded-[0.375rem] bg-wf-search px-6"
 					style="width:18.4625rem"
 				>
 					<Icon name="search" size="0.875rem" class="shrink-0 text-wf-text-muted" />
@@ -74,7 +74,8 @@ const tileStyle = "border-radius:32%";
 					</span>
 				</div>
 
-				<div class="ml-4.25 flex h-14 w-18 shrink-0 items-center justify-center gap-1 rounded-md bg-wf-search p-2">
+				{/* `PlatformDropdown`: `padding 5`, radius 6; tile 40 radius 8, gap 4, chevron 12. */}
+				<div class="ml-4.25 flex shrink-0 items-center gap-1 rounded-[0.375rem] bg-wf-search p-[0.3125rem]">
 					<PlatformIcon platform="instagram" tile="2.5rem" glyph="1.5rem" radius="0.5rem" />
 					<Icon name="arrowIcon" size="0.75rem" class="text-wf-text-soft" />
 				</div>

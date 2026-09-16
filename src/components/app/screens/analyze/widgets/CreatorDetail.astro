@@ -16,7 +16,7 @@ import {
 	PRICING,
 	PROFILED_ABOUT,
 	PROFILED_HANDLE,
-	SHORTLIST_UNLOCKED,
+	STORY_UNLOCK,
 	creatorByHandle,
 } from "../../../../../data/workflowMockup";
 
@@ -63,11 +63,13 @@ const demographics = [
 			absent the app puts a `Spacer()` here instead, which is what `ml-auto` on
 			Back does either way.
 		*/}
-		<MediaKitStatusLabel state={SHORTLIST_UNLOCKED} compact={false} class="ml-7.5 min-w-0 flex-1" />
-		<span class="ml-4 shrink-0 text-[0.875rem] font-medium whitespace-nowrap text-wf-green-mid" data-wf-back>Back</span>
-		<span class="ml-4.5 grid size-7 place-items-center rounded-sm bg-wf-violet">
-			<Icon name="externalLink" size="0.875rem" class="text-white" />
+		<MediaKitStatusLabel state={STORY_UNLOCK} compact={false} class="ml-7.5 min-w-0 flex-1" />
+		{/* Same pair as the list shell, in the app's order: Share · 16 · Back. */}
+		<span class="ml-4 flex shrink-0 items-center gap-1">
+			<Icon name="share" size="0.875rem" class="text-wf-shortlist" />
+			<span class="text-[0.75rem] whitespace-nowrap text-wf-text">Share</span>
 		</span>
+		<span class="ml-4 shrink-0 text-[0.875rem] font-medium whitespace-nowrap text-wf-back" data-wf-back>Back</span>
 	</header>
 
 	<span class="block h-px shrink-0 bg-wf-rule"></span>
@@ -99,11 +101,16 @@ const demographics = [
 					<span class="ml-1.5 text-[0.625rem] whitespace-nowrap text-wf-text">Enquire</span>
 					<Icon name="arrowIcon" size="0.75rem" class="ml-1 text-wf-green-dim" />
 				</span>
+				{/*
+					`AddToListButton(state: add)` non-compact — 34px circle, **plus.svg at 12 in
+					white**, on `lavender27` with a `lavender53` hairline. `add_to_list` is the
+					`added` state's glyph, not this one.
+				*/}
 				<span
-						class="ml-2.5 grid size-8.5 place-items-center rounded-full border border-wf-menu-border bg-wf-menu"
-						data-wf-add-to-list
-					>
-					<Icon name="addToList" size="0.75rem" class="text-wf-violet-soft" />
+					class="ml-2.5 grid size-8.5 place-items-center rounded-full border border-wf-menu-border bg-wf-menu"
+					data-wf-add-to-list
+				>
+					<Icon name="plus" size="0.75rem" class="text-white" />
 				</span>
 			</div>
 		</div>

@@ -55,7 +55,8 @@ export function shortlistSelect(layers: ShortlistSelectLayers, pointer: Pointer)
 	// Wind the beat back first, so it is replayable from anywhere. The authored
 	// state is every box empty and the button held at the app's disabled 50%.
 	tl.call(() => {
-		for (const { box, mark } of el.rows) {
+		for (const { row, box, mark } of el.rows) {
+			gsap.set(row, { backgroundColor: token("surface"), borderColor: token("surface-border") });
 			gsap.set(box, { backgroundColor: "transparent", borderColor: token("table-label") });
 			gsap.set(mark, { opacity: 0 });
 		}
@@ -66,11 +67,13 @@ export function shortlistSelect(layers: ShortlistSelectLayers, pointer: Pointer)
 	// ── tick the three ───────────────────────────────────────────────────────
 	// One at a time, each press answered by its own box, so the selection reads as
 	// a decision rather than a batch that happens to the list.
-	el.rows.forEach(({ box, mark }, i) => {
+	el.rows.forEach(({ row, box, mark }, i) => {
 		tl.add(pointer.moveTo(box, { duration: i === 0 ? 0.6 : 0.42 }), i === 0 ? "+=0.2" : "+=0.12")
 			.add(pointer.press())
 			.addLabel(`ticked${i}`)
 			.to(box, { backgroundColor: token("violet-bright"), borderColor: token("violet-bright"), duration: 0.2 }, `ticked${i}`)
+			// The card answers the tick too — `isSelected` is one decoration, not two.
+			.to(row, { backgroundColor: token("surface-on"), borderColor: token("surface-on-border"), duration: 0.2 }, `ticked${i}`)
 			.to(mark, { opacity: 1, duration: 0.18 }, `ticked${i}+=0.06`);
 
 		// The button wakes on the first tick and the count follows it up each time.

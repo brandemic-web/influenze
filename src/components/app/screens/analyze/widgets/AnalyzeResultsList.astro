@@ -12,6 +12,7 @@ import ProfileCard from "../../../common/ProfileCard.astro";
 import ProfileCardColumns from "../../../common/ProfileCardColumns.astro";
 import {
 	ANALYZED_COUNT,
+	PURCHASED_MEDIA_KITS,
 	RESULT_CREATORS,
 	RESULT_FILTERS,
 	SHORTLIST_HANDLES,
@@ -26,6 +27,7 @@ const { selected = false } = Astro.props;
 
 /** Ticking is what turns the Add pill from its held 50% into a live control. */
 const shortlisted = new Set<string>(SHORTLIST_HANDLES);
+
 ---
 
 {/* buildHeader: fromLTRB(18, 20, 0, 20) */}
@@ -89,7 +91,12 @@ const shortlisted = new Set<string>(SHORTLIST_HANDLES);
 			Engagement Rate
 			<Icon name="arrowDown" size="0.875rem" class="text-wf-table-label" />
 		</span>
-		{/* Headed even here, where every cell is empty: nothing in a fresh search is bought yet. */}
+		{/*
+			Headed here too, and not always empty: Analyze reads the same account-wide
+			`purchasedMediakitsPod` the list screens do, so a creator bought earlier shows
+			their state in a fresh search as well. Poorav is the story's case — he is a
+			standing member of the list, so he was paid for long before this search ran.
+		*/}
 		<span slot="mediaKit" class="text-[0.75rem] whitespace-nowrap text-wf-table-label">Media Kit</span>
 	</ProfileCardColumns>
 </div>
@@ -100,7 +107,10 @@ const shortlisted = new Set<string>(SHORTLIST_HANDLES);
 	<div class="flex shrink-0 flex-col gap-2" data-wf-results-scroll>
 		{
 			RESULT_CREATORS.map((creator) => (
-				<ProfileCard creator={{ ...creator, checked: selected && shortlisted.has(creator.handle) }} />
+				<ProfileCard
+					creator={{ ...creator, checked: selected && shortlisted.has(creator.handle) }}
+					mediaKit={PURCHASED_MEDIA_KITS[creator.handle]}
+				/>
 			))
 		}
 	</div>

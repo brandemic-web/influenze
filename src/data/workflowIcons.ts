@@ -59,7 +59,9 @@ const ICON_FILES = {
 	share: "share.svg",
 	thumbsUp: "thumbs_up.svg",
 	userRoundCheck: "user_round_check.svg",
+	walkthrough: "walkthrough.svg",
 	userRoundCog: "user_round_cog.svg",
+	users: "users.svg",
 	usersRound: "users_round.svg",
 } as const;
 

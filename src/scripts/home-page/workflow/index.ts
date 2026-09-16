@@ -2,7 +2,6 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { addToListDialog } from "./beats/addToListDialog";
 import { analyzeLookalike } from "./beats/analyzeLookalike";
-import { backToShortlist } from "./beats/backToShortlist";
 import { compareMode } from "./beats/compareMode";
 import { leaveCompare } from "./beats/leaveCompare";
 import { listDetail } from "./beats/listDetail";
@@ -22,7 +21,7 @@ import { LANDSCAPE_CLOSE, LANDSCAPE_OPEN } from "../../landscape-viewer";
 gsap.registerPlugin(ScrollTrigger);
 
 /**
- * Composes the hero mockup's sixteen beats into one timeline. A beat returns null
+ * Composes the hero mockup's fifteen beats into one timeline. A beat returns null
  * when its markup is missing and is skipped; nothing here is load-bearing for
  * layout, so a failure leaves the hero static.
  *
@@ -40,9 +39,8 @@ function initWorkflow(mockup: HTMLElement) {
 	// The layers beats move between, by story step. 2 is skipped: beat 1 builds the
 	// search inside step 1 rather than cutting to a filled-in copy of it.
 	//
-	// The shortlist is three layers, not one, because the story visits it twice at
-	// states no tween could fake: `shortlist` before the unlock, `shortlistDone`
-	// after it, with a filled Media Kit cell and 50 fewer credits.
+	// The shortlist is visited once, on the way in: the story promotes the creator
+	// from the panel it opened them in, so it never walks back to the list of rows.
 	const layer = (step: number) => mockup.querySelector<HTMLElement>(`[data-wf-screen="${step}"]`);
 	const found = {
 		analyze: layer(1),
@@ -52,12 +50,11 @@ function initWorkflow(mockup: HTMLElement) {
 		shortlist: layer(6),
 		profile: layer(7),
 		kit: layer(8),
-		shortlistDone: layer(9),
-		listAdd: layer(10),
-		lists: layer(11),
-		list: layer(12),
-		compare: layer(13),
-		share: layer(14),
+		listAdd: layer(9),
+		lists: layer(10),
+		list: layer(11),
+		compare: layer(12),
+		share: layer(13),
 	};
 	if (!Object.values(found).every(Boolean)) return;
 	const screen = found as { [K in keyof typeof found]: HTMLElement };
@@ -100,16 +97,13 @@ function initWorkflow(mockup: HTMLElement) {
 		analyze?.timeline,
 		resultsList({ from: screen.analyze, to: screen.results }, pointer),
 		shortlistSelect({ screen: screen.results }, pointer),
-		addToListDialog({ from: screen.results, to: screen.shortlistAdd }, pointer),
+		addToListDialog({ from: screen.results, to: screen.shortlistAdd }),
 		myLists({ from: screen.shortlistAdd, to: screen.shortlists }, pointer),
 		openShortlist({ from: screen.shortlists, to: screen.shortlist }, pointer),
 		openCreator({ from: screen.shortlist, to: screen.profile }, pointer),
 		mediaKitTab({ from: screen.profile, to: screen.kit }, pointer),
-		backToShortlist({ from: screen.kit, to: screen.shortlistDone }, pointer),
-		// Opened from the shortlist's own actions pill, so this one presses its way in.
-		addToListDialog({ from: screen.shortlistDone, to: screen.listAdd }, pointer, {
-			trigger: "[data-wf-shortlist-add]",
-		}),
+		// Promoted straight from the panel, which is where the app puts the control.
+		addToListDialog({ from: screen.kit, to: screen.listAdd }),
 		myLists({ from: screen.listAdd, to: screen.lists }, pointer),
 		listDetail({ from: screen.lists, to: screen.list }, pointer),
 		compareMode({ from: screen.list, to: screen.compare }),

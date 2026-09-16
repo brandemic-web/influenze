@@ -95,9 +95,9 @@ const tabLook = (active: boolean, shortlist: boolean) =>
 
 	<span class="mt-4 block h-px w-full bg-[#433b5c]"></span>
 
-	{/* `SizedBox(16)`, then the picker's own search — `ListPickerSearchBar`, px24 py12. */}
+	{/* `SizedBox(16)`, then the picker's own search — `ListPickerSearchBar`, radius 6, `px24 py12`. */}
 	<div class="mt-4 px-6 pb-4">
-		<div class="flex items-center gap-1.5 rounded-md bg-wf-search px-6 py-3">
+		<div class="flex items-center gap-1.5 rounded-[0.375rem] bg-wf-search px-6 py-3">
 			<Icon name="search" size="0.875rem" class="shrink-0 text-wf-text-muted" />
 			<span class="text-[0.75rem] font-medium whitespace-nowrap">
 				<span class="text-wf-text-muted">Search&nbsp;&nbsp;</span><span
@@ -227,12 +227,30 @@ const tabLook = (active: boolean, shortlist: boolean) =>
 
 	<span class="mt-4 block h-px w-full bg-[#463c60]"></span>
 
+	{/*
+		`ListPickerCreateButton` — radius 24, `padding v12 h16` under Material's 64x36
+		minimum, glyph at height 8, gap 4, `buttonText` 10/500 white.
+
+		**It changes with the tab, not just in its label**: a list is `green21`
+		`#30A760` carrying `add_to_list.svg`, a shortlist is `lavender25` `#653EE1`
+		carrying `plus.svg`. Both glyphs are white — `add_to_list.svg` is authored white
+		and the app passes it no colour filter at all.
+	*/}
 	<span class="mt-3.5 mb-8 flex justify-center">
 		<span
-			class="flex h-9 min-w-16 items-center gap-1 rounded-[1.5rem] bg-wf-action px-4 text-[0.625rem] font-medium text-wf-text"
+			class:list={[
+				"flex h-9 min-w-16 items-center gap-1 rounded-[1.5rem] px-4 text-[0.625rem] font-medium text-wf-text",
+				isShortlist ? "bg-wf-violet" : "bg-wf-tab-list",
+			]}
 			data-wf-create-list
 		>
-			<Icon name="addToList" size="0.625rem" />
+			{
+				isShortlist ? (
+					<Icon name="plus" size="0.5rem" class="text-white" />
+				) : (
+					<Icon name="addToList" size="0.625rem" class="text-white" />
+				)
+			}
 			Create New {word}
 		</span>
 	</span>

@@ -69,25 +69,26 @@ export const WORKFLOW_CARDS: WorkflowCard[] = [
 		step: 4,
 		title: "Outreach & Manage",
 		body: "Promote the ones you want into campaign lists, assign ownership, and import or export in bulk via CSVs.",
-		// Beat 9 ends on the unlock showing, so beat 10 starting *is* the promote
-		// being pressed. Runs until beat 12 crosses into the list's own screen.
-		show: { beat: 10, at: "start" },
-		hide: { beat: 12, at: "swap" },
+		// Beat 8 ends on the press, so beat 9 opening *is* the promote — the card and
+		// the dialog's unlock banner then arrive together, as card 2 does with the
+		// shortlist's. Runs until beat 11 crosses into the list's own screen.
+		show: { beat: 9, at: "open" },
+		hide: { beat: 11, at: "swap" },
 	},
 	{
 		step: 5,
 		title: "Compare Influencers",
 		body: "Live performance and audience metrics along with side-by-side creator comparisons in one view.",
 		// Arrives with the compare swap that the Compare press triggers and holds for
-		// the whole read-down in beat 14, clearing as the cursor sets off for Back.
-		show: { beat: 13, at: "end" },
-		hide: { beat: 14, at: "toBack" },
+		// the whole read-down in beat 13, clearing as the cursor sets off for Back.
+		show: { beat: 12, at: "end" },
+		hide: { beat: 13, at: "toBack" },
 	},
 	{
 		step: 6,
 		title: "Share Lists",
 		body: "Easily share information through view-access links for clients, brands, teams, or stakeholders.",
-		show: { beat: 15, at: "end" },
+		show: { beat: 14, at: "end" },
 		dwell: 4.5,
 	},
 ];

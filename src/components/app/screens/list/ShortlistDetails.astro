@@ -16,38 +16,29 @@ import ProfileCardColumns from "../../common/ProfileCardColumns.astro";
 import ListDetailShell from "./widgets/ListDetailShell.astro";
 import ToolbarAction from "./widgets/ToolbarAction.astro";
 import {
+	CONTACTABLE,
 	CREDITS,
-	PROFILED_HANDLE,
+	PURCHASED_MEDIA_KITS,
 	SHORTLIST_CREATORS,
-	SHORTLIST_UNLOCKED,
 	STORY_SHORTLIST,
 } from "../../../../data/workflowMockup";
 
-interface Props {
-	/**
-	 * After the story has opened Selwyn and come back: his Media Kit cell is filled
-	 * and the row is ticked, ready for the promote. Before it, the whole column is
-	 * blank — nobody here has been paid for.
-	 */
-	unlocked?: boolean;
-}
-
-const { unlocked = false } = Astro.props;
-
 /**
- * The balance each state is authored holding. The spend happens on the *open*
- * between them, so the shortlist is the one screen the story visits twice at two
- * different balances — and the promote that follows costs nothing.
+ * The story passes through here once, on the way in — it promotes the creator from
+ * the panel it opens them in, so it never comes back to this list of rows. That is
+ * why the screen has no unlocked variant and no selection: nothing here is bought
+ * yet, which is the shortlist's whole point and the one place the blank Media Kit
+ * cell can appear.
  */
-const credits = unlocked ? CREDITS.afterProfile : CREDITS.afterSearch;
+const mediaKits = PURCHASED_MEDIA_KITS;
 ---
 
-<AppShell active="lists" credits={credits}>
-	<ListDetailShell title={STORY_SHORTLIST} share={false}>
+<AppShell active="lists" credits={CREDITS.afterSearch}>
+	<ListDetailShell title={STORY_SHORTLIST} typeLabel="ShortList" typeAccent="text-wf-shortlist" share={false}>
 		{/* Toolbar: search, then the actions pill, then Quick Export / Import. */}
 		<div class="mt-8 flex shrink-0 items-center">
 			<div class="w-[19.8rem] shrink-0 pl-7">
-				<div class="flex items-center gap-1.5 rounded-md bg-wf-search px-4 py-2.5 text-[0.875rem] font-medium">
+				<div class="flex h-[3.0625rem] items-center gap-1.5 rounded-[0.375rem] bg-wf-search px-6 text-[0.875rem] font-medium">
 					<Icon name="search" size="0.875rem" class="shrink-0 text-wf-text-muted" />
 					<span class="whitespace-nowrap"
 						><span class="text-wf-text-muted">Search&nbsp;</span><span class="text-wf-shortlist">Creators</span></span
@@ -57,17 +48,11 @@ const credits = unlocked ? CREDITS.afterProfile : CREDITS.afterSearch;
 
 			{/*
 				`ActionsPill` — `py5 px6`, radius 999. It carries the live fill and border
-				only once something is ticked, so it starts on lavender50 and the beat
-				lights it as the selection lands.
+				only once something is ticked, and the story never selects here, so it
+				stays in its idle `lavender50` state throughout.
 			*/}
-			<span
-				class:list={[
-					"ml-2 flex shrink-0 items-center rounded-full border px-1.5 py-1.25",
-					unlocked ? "border-wf-io-pill-on bg-wf-io-pill" : "border-transparent bg-wf-select-pill",
-				]}
-				data-wf-actions-pill
-			>
-				<span class="grid size-7 place-items-center rounded-full" data-wf-shortlist-add>
+			<span class="ml-2 flex shrink-0 items-center rounded-full border border-transparent bg-wf-select-pill px-1.5 py-1.25">
+				<span class="grid size-7 place-items-center rounded-full">
 					<Icon name="plus" size="0.75rem" class="text-wf-select-icon" />
 				</span>
 				<span class="w-0.5 shrink-0"></span>
@@ -106,15 +91,13 @@ const credits = unlocked ? CREDITS.afterProfile : CREDITS.afterSearch;
 						<div class="min-w-0 flex-1">
 							{/*
 								Locked is the absence of a cell, not a hidden one — `buildMediaKitCell`
-								shrinks to nothing. So before the unlock every row here genuinely has
-								no Media Kit column, and after it exactly one does. `backToShortlist`
-								hides that cell for itself and fades it in, so skipping the beat still
-								leaves this screen reading correctly.
+								shrinks to nothing — so every row here genuinely has no Media Kit column.
 							*/}
 							<ProfileCard
-								creator={{ ...creator, checked: unlocked && creator.handle === PROFILED_HANDLE }}
+								creator={creator}
 								variant="shortlist"
-								mediaKit={unlocked && creator.handle === PROFILED_HANDLE ? SHORTLIST_UNLOCKED : undefined}
+								mediaKit={mediaKits[creator.handle]}
+								enquireEnabled={CONTACTABLE.has(creator.handle)}
 							/>
 						</div>
 					</div>
