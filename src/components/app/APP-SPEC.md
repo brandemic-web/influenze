@@ -16,10 +16,12 @@ names, so a name grepped here is findable there and vice versa.
 ```
 components/app/                 everything that reproduces the product
   APP-SPEC.md                   this file
-  WorkflowMockup.astro          the hero's twelve story steps, stacked as layers
+  WorkflowMockup.astro          the hero's fourteen story steps, stacked as layers
 
   common/                       ← lib/common/widgets — primitives, shared by both
     Icon.astro                    every glyph, read from the app's own SVGs
+    SelectionActionBar.astro      the list toolbar's two pills, with …IconButton
+    IoNotificationCard.astro      the header's finished-export popover
     CreatorAvatar · PlatformIcon · VerifiedBadge · ProfileCard · AppShell · …
 
   screens/                      ← lib/src/screens — whole screens at 1:1 app pixels
@@ -33,10 +35,11 @@ components/app/                 everything that reproduces the product
       Lists.astro                   steps 5 and 10 (`type`)
       ShortlistDetails.astro        step 6 — visited once, on the way in
       ShortlistCreator.astro        steps 7 and 8 — CreatorDetail in the lists shell
-      ListDetails.astro             steps 11 and 12 (`compare`)
+      ListDetails.astro             steps 11, 12 (`compare`) and 14 (`exported`)
+      ExportDialog.astro            step 13 — the column picker, over step 11
       widgets/
     share-management/             ← lib/src/screens/share_management
-      ShareModal.astro              step 10
+      ShareModal.astro              step 15
 
   elements/                     single app widgets, standalone, at marketing sizes
     named after the widget they reproduce — see the map below
@@ -71,7 +74,7 @@ beats and `data/workflowCards.ts` address layers by.
 
 | | `screens/` | `elements/` |
 |---|---|---|
-| Purpose | the hero's nine-step story | standalone cards for the CreatorsAI collage |
+| Purpose | the hero's fourteen-step story | standalone cards for the CreatorsAI collage |
 | Sizing | 1:1 app pixels on a fixed 1440x900 canvas | each at its own size, several with a `scale` prop |
 | Fidelity | pixel-exact; the app wins every disagreement | app colour, type and proportion, composed for marketing |
 
@@ -967,7 +970,32 @@ presses **Compare**.
   Export's count, which must be `display` rather than opacity or the button would
   reserve space it does not have.
 
-### Beat 15 — export the pair (built)
+### Beat 12 — compare (built)
+
+`compareMode.ts`. Not a route in the app but a mode swap inside the same panel, so
+the panel surface, card and nav all stay put and only `[data-wf-panel-body]`
+changes — toolbar and column header collapse, the title becomes a centred
+"Compare", share hides, rows become stat columns.
+
+Split to the app's **450ms** (0.22 out / 0.23 in) and **opacity-only**: that column
+is centred with a percentage translate, which GSAP would fold into pixels to add a
+slide, going stale on resize. So the duration is faithful even though the shared
+axis is not. The cursor does not move.
+
+### Beat 13 — leave compare (built)
+
+`leaveCompare.ts`. The cursor scrolls both compare columns to the bottom, presses
+**Back** to return to the list, then presses **share** beside it.
+
+- **The two columns scroll together, by one shared distance** — they read as a
+  single pane, and the app scrolls the compare section as a whole and
+  height-matches its cards across it. The distance is the *smaller* of the two
+  ranges, so neither column can run past its own content and leave a gap.
+- 12 → 11 is beat 12's mode swap run the other way: same fade through an empty
+  panel, same 450ms. Nothing needs restoring on the list — beat 11 left it with the
+  two creators ticked and Compare showing, which is exactly the state to return to.
+
+### Beat 14 — export the pair (built)
 
 `exportFlow.ts`. Presses `Export 2`, picks two columns, downloads, and lands on
 the finished job in the header popover.
@@ -1010,34 +1038,9 @@ the finished job in the header popover.
   illusion from the other direction. Wind back to the target colour at zero alpha
   (`clearFill`) and it only ever fades.
 
-### Beat 12 — compare (built)
+### Beat 15 — share modal (built)
 
-`compareMode.ts`. Not a route in the app but a mode swap inside the same panel, so
-the panel surface, card and nav all stay put and only `[data-wf-panel-body]`
-changes — toolbar and column header collapse, the title becomes a centred
-"Compare", share hides, rows become stat columns.
-
-Split to the app's **450ms** (0.22 out / 0.23 in) and **opacity-only**: that column
-is centred with a percentage translate, which GSAP would fold into pixels to add a
-slide, going stale on resize. So the duration is faithful even though the shared
-axis is not. The cursor does not move.
-
-### Beat 13 — leave compare (built)
-
-`leaveCompare.ts`. The cursor scrolls both compare columns to the bottom, presses
-**Back** to return to the list, then presses **share** beside it.
-
-- **The two columns scroll together, by one shared distance** — they read as a
-  single pane, and the app scrolls the compare section as a whole and
-  height-matches its cards across it. The distance is the *smaller* of the two
-  ranges, so neither column can run past its own content and leave a gap.
-- 13 → 11 is beat 12's mode swap run the other way: same fade through an empty
-  panel, same 450ms. Nothing needs restoring on the list — beat 11 left it with the
-  two creators ticked and Compare showing, which is exactly the state to return to.
-
-### Beat 14 — share modal (built)
-
-`shareModal.ts`. Answers beat 13's press on share.
+`shareModal.ts`. Answers beat 14's press on share.
 
 Uses beat 4's **swap-first** shape, because the share layer embeds
 `<ListDetails blurred />` exactly the way the dialog embeds the screen beneath it.
@@ -1050,7 +1053,7 @@ card. There is no scrim element at all — the blur lives on `[data-wf-panel-bod
 via `ListDetailShell`'s `blurred` prop, which is why the beat reaches for the panel
 rather than an overlay.
 
-### Beat 15 — send, and round again (built)
+### Beat 16 — send, and round again (built)
 
 `restart.ts`. Types the address, presses **Send** (which settles to "Sent"),
 closes the modal, and presses **Analyze** to land back on screen 1, where the story
@@ -1068,7 +1071,7 @@ ends as it began.
 - This field's caret is `inline-block`, not `block` like beat 1's, because it sits
   in inline context inside the `flex-1` text box rather than in a flex row. It has
   to be inside that box, or `flex-1` would push it to the far end of the space.
-- 13 → 1 is a section change like beat 5's: the nav pill snaps on the click.
+- 15 → 1 is a section change like beat 5's: the nav pill snaps on the click.
 
 ### The loop
 
@@ -1141,13 +1144,11 @@ Three conventions run through them:
 | Attribute | On | Purpose |
 | --- | --- | --- |
 | `data-workflow` | `.wf-mockup` | root handle for the timeline |
-| `data-wf-screen="1..10"` | each screen layer | the ten steps, all stacked and absolutely positioned |
+| `data-wf-screen="1..15"` | each screen layer | the fourteen steps, all stacked and absolutely positioned (2 is a keyframe, not a layer) |
 | `data-wf-active` | one screen layer | the visible step. `app-tokens.css` hides every layer **without** it via `opacity: 0; visibility: hidden` — GSAP must either take over both properties or the CSS will fight the tween |
 | `data-wf-rail` | filter rail wrapper | the rail as a whole |
 | `data-wf-rail-scroll` | rail's inner column | scrolled with `transform: translateY(-{scroll}rem)`; steps 1–2 sit at `0`, step 3 at `36.4375` |
 | `data-wf-rail-thumb` | rail scrollbar | offset is `scroll × 0.27` |
-| `data-wf-avatar` | every portrait | swap target for real images |
-| `data-wf-logo` | platform tiles | now real icons; kept as a handle |
 
 ### Constraints
 - **Do not animate `transform` on `.wf-stage`.** It already carries the
@@ -1158,8 +1159,9 @@ Three conventions run through them:
   duplicated: scope queries to the active screen layer, never `document`-wide.
 
 ### Transition shapes
-**The whole story is built** — fifteen beats over screens 1 → 13 and back, ~62s.
-The order it visits them is `1·2 → 3 → 4 → 5 → 6 → 7 → 8 → 9 → 8 → 10 → 1`: screen
+**The whole story is built** — sixteen beats over screens 1 → 15 and back, ~76s.
+The order it visits them is
+`1·2 → 3 → 4 → 5 → 6 → 7 → 8 → 9 → 10 → 11 → 12 → 11 → 13 → 14 → 15 → 1`: screen
 8 is passed through twice, because the share modal sits over the list and not over
 compare, and screen 1 is both the start and the end.
 

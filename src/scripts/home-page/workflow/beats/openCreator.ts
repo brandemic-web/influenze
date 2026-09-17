@@ -1,6 +1,6 @@
 import gsap from "gsap";
 import { CREDITS, PROFILED_HANDLE } from "../../../../data/workflowMockup";
-import { spendCredits } from "../utils/credits";
+import { setCredits, spendCredits } from "../utils/credits";
 import type { Pointer } from "../utils/pointer";
 
 /**
@@ -41,10 +41,14 @@ export function openCreator(layers: OpenCreatorLayers, pointer: Pointer) {
 
 	const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
 
-	// Wind the layers back first, so the beat is replayable from anywhere.
+	// Wind the layers back first, so the beat is replayable from anywhere. The chip
+	// goes with them: this beat is the one that spends, and it spends on the layer it
+	// is leaving, so a replay would otherwise reveal the shortlist already 50 down
+	// and only correct itself when the press runs the countdown again.
 	tl.call(() => {
 		layers.to.removeAttribute("data-wf-active");
 		layers.from.setAttribute("data-wf-active", "");
+		setCredits(layers.from, CREDITS.afterSearch);
 	});
 
 	// ── open the creator, and pay for it ─────────────────────────────────────

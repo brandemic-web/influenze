@@ -7,8 +7,9 @@ import type { Pointer } from "../utils/pointer";
  * the tabs and body need bringing into line. Tab colours are read off the arriving
  * layer's own tabs rather than restated.
  *
- * It ends on the scroll. What the story reaches for next is Back, not add-to-list:
- * the creator was opened from a shortlist, and promoting them starts from there.
+ * It ends by reaching for **add-to-list, beside Enquire** — the control the app puts
+ * on the creator's own panel. That is why the story never walks back to the shortlist
+ * to promote someone; beat 9 answers this press with the dialog.
  */
 
 export interface MediaKitTabLayers {

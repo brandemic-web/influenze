@@ -1,12 +1,12 @@
 import gsap from "gsap";
 import { COMPARED_HANDLES } from "../../../../data/workflowMockup";
-import { token } from "../utils/dom";
+import { clearFill, token } from "../utils/dom";
 import type { Pointer } from "../utils/pointer";
 
 /**
- * Beat 7 — open the list, tick the two creators the compare screen shows, press
+ * Beat 11 — open the list, tick the two creators the compare screen shows, press
  * Compare. Screen 8's static frame is the *selected* state, so this winds it back
- * to an untouched list first (same as beat 1 with the filter rail). 7 → 8 is
+ * to an untouched list first (same as beat 1 with the filter rail). 11 → 12 is
  * section-internal, so unlike beat 6 there is no nav pill to snap.
  */
 
@@ -105,10 +105,10 @@ export function listDetail(layers: ListDetailLayers, pointer: Pointer) {
 		layers.from.setAttribute("data-wf-active", "");
 	})
 		.set(el.allCards, { backgroundColor: token("surface"), borderColor: token("surface-border") })
-		.set(el.allBoxes, { borderColor: token("table-label"), backgroundColor: "transparent" })
+		.set(el.allBoxes, { borderColor: token("table-label"), backgroundColor: clearFill(token("violet-bright")) })
 		.set(el.allMarks, { opacity: 0 })
 		.set(el.selection, { display: "none" })
-		.set(el.pill, { backgroundColor: token("select-pill"), borderColor: "transparent" })
+		.set(el.pill, { backgroundColor: token("select-pill"), borderColor: clearFill(token("io-pill-on")) })
 		.set(el.actions, { opacity: 0.5 })
 		.set(el.selected, { display: "none" });
 

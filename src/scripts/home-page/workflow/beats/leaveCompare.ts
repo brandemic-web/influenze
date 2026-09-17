@@ -2,7 +2,7 @@ import gsap from "gsap";
 import type { Pointer } from "../utils/pointer";
 
 /**
- * Beat 9 — read the comparison down and press Back. 9 → 8 is beat 8's
+ * Beat 13 — read the comparison down and press Back. 12 → 11 is beat 12's
  * swap run the other way, at the same 450ms; the list needs no restoring.
  *
  * It used to reach for Share on the way out. Export now sits between the two, so

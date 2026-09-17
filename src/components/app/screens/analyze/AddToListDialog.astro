@@ -76,7 +76,6 @@ const tabLook = (active: boolean, shortlist: boolean) =>
 				"flex items-center gap-1.5 rounded-[0.25rem] border px-5 py-2.5 text-[0.875rem] whitespace-nowrap",
 				tabLook(isShortlist, true),
 			]}
-			data-wf-dialog-tab="shortlist"
 		>
 			<Icon name="hourglass" size="0.75rem" />
 			ShortList
@@ -86,7 +85,6 @@ const tabLook = (active: boolean, shortlist: boolean) =>
 				"flex items-center gap-1.5 rounded-[0.25rem] border px-5 py-2.5 text-[0.875rem] whitespace-nowrap",
 				tabLook(!isShortlist, false),
 			]}
-			data-wf-dialog-tab="list"
 		>
 			<Icon name="list" size="0.75rem" />
 			List
@@ -120,7 +118,6 @@ const tabLook = (active: boolean, shortlist: boolean) =>
 	<div class="flex justify-center px-6">
 		<p
 			class="rounded-[1.25rem] border border-wf-tab-list bg-wf-tab-list/20 px-3 py-2 text-center text-[0.625rem] leading-[1.6] text-wf-green-bright"
-			data-wf-dialog-banner
 		>
 			{
 				isShortlist ? (
@@ -242,7 +239,6 @@ const tabLook = (active: boolean, shortlist: boolean) =>
 				"flex h-9 min-w-16 items-center gap-1 rounded-[1.5rem] px-4 text-[0.625rem] font-medium text-wf-text",
 				isShortlist ? "bg-wf-violet" : "bg-wf-tab-list",
 			]}
-			data-wf-create-list
 		>
 			{
 				isShortlist ? (

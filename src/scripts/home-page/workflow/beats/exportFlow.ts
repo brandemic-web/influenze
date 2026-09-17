@@ -1,10 +1,10 @@
 import gsap from "gsap";
 import { EXPORT_ADDS } from "../../../../data/workflowMockup";
-import { token } from "../utils/dom";
+import { clearFill, token } from "../utils/dom";
 import type { Pointer } from "../utils/pointer";
 
 /**
- * Beat 15 — export the two creators the compare screen just held.
+ * Beat 14 — export the two creators the compare screen just held.
  *
  * It runs on the selection beat 11 made, which is the whole reason it sits here:
  * the toolbar's Export already reads `Export 2`, so the dialog opens over a
@@ -82,6 +82,13 @@ export function exportFlow(layers: ExportFlowLayers, pointer: Pointer) {
 	 * How far to scroll for a row to sit in the middle of the clipped run. Measured
 	 * at play time, not authored: the list is a real flow, so a column added to the
 	 * data moves every row below it and this still lands.
+	 *
+	 * `row.offsetTop` is relative to the run, **not** to the dialog card: the run
+	 * carries a transform the moment the wind-back sets `y`, and a transformed
+	 * element becomes the `offsetParent` of everything inside it. Measure this on an
+	 * idle page — before any beat has run — and the card answers instead, which reads
+	 * like ~190px of header and padding wrongly baked into the distance. It is not;
+	 * subtracting the run's own offset here scrolls almost nowhere.
 	 */
 	const scrollFor = (row: HTMLElement) => {
 		const view = el.view;
@@ -93,17 +100,6 @@ export function exportFlow(layers: ExportFlowLayers, pointer: Pointer) {
 
 	const blurred = getComputedStyle(el.backdrop).filter;
 	const CLEAR = "blur(0px)";
-
-	/**
-	 * The tick's own fill at zero alpha. Winding a box back to a plain `transparent`
-	 * makes GSAP interpolate through `rgba(0, 0, 0, a)` on the way in, so a 12px box
-	 * greys before it goes violet — which reads as a first click that did something
-	 * else. Starting from the same hue means it only ever fades.
-	 */
-	const clearFill = (hex: string) => {
-		const n = Number.parseInt(hex.slice(1), 16);
-		return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, 0)`;
-	};
 
 	const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
 

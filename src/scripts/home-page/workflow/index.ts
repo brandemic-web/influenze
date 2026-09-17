@@ -92,7 +92,7 @@ function initWorkflow(mockup: HTMLElement) {
 	let userPaused = false;
 	const toggle = mockup.querySelector<HTMLButtonElement>("[data-wf-play-toggle]");
 
-	// Beat 1 hands back its rail reset too: beat 11 reveals screen 1 at the loop
+	// Beat 1 hands back its rail reset too: beat 16 reveals screen 1 at the loop
 	// point and has to wind it back before it comes into view.
 	const analyze = analyzeLookalike(screen.analyze, pointer);
 

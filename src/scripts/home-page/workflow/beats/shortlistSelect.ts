@@ -1,6 +1,6 @@
 import gsap from "gsap";
 import { SHORTLIST_HANDLES } from "../../../../data/workflowMockup";
-import { token } from "../utils/dom";
+import { clearFill, token } from "../utils/dom";
 import type { Pointer } from "../utils/pointer";
 
 /**
@@ -57,7 +57,7 @@ export function shortlistSelect(layers: ShortlistSelectLayers, pointer: Pointer)
 	tl.call(() => {
 		for (const { row, box, mark } of el.rows) {
 			gsap.set(row, { backgroundColor: token("surface"), borderColor: token("surface-border") });
-			gsap.set(box, { backgroundColor: "transparent", borderColor: token("table-label") });
+			gsap.set(box, { backgroundColor: clearFill(token("violet-bright")), borderColor: token("table-label") });
 			gsap.set(mark, { opacity: 0 });
 		}
 	})

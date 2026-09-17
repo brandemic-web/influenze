@@ -393,9 +393,10 @@ export const CREATOR_LISTS = [
 
 /**
  * The ShortLists tab's one card, as `CREATOR_LISTS` above: `count`/`preview` are the
- * *dialog's* figures, the shortlist before the add. It starts empty because the
- * story is what first fills it — which is also why the dialog's ShortList tab has no
- * search bar, there being nothing yet to search.
+ * *dialog's* figures, the shortlist before the add. It starts empty because the story
+ * is what first fills it — the shortlist exists, it just has nobody in it yet, which
+ * is why the picker still draws its search bar (`if (hasAnyList)` gates that on a
+ * list existing, not on the tab or on the list having members).
  */
 export const CREATOR_SHORTLISTS = [
 	{

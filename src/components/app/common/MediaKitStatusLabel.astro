@@ -40,7 +40,6 @@ const look = state.status === "locked" ? null : { ...LOOK[state.status], synced:
 	look && (
 		<span
 			class:list={[compact ? "flex min-w-0 flex-col items-start" : "flex min-w-0 items-center", className]}
-			data-wf-mkit={state.status}
 		>
 			<span class="flex min-w-0 items-center gap-1">
 				<Icon name={look.icon} size="0.625rem" class={`shrink-0 ${look.tint}`} />
