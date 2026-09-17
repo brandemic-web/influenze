@@ -96,7 +96,7 @@ export const WORKFLOW_CARDS: WorkflowCard[] = [
 	{
 		step: 7,
 		title: "Share Lists",
-		body: "Easily share information through view-access links for clients, brands, teams, or stakeholders.",
+		body: "Easily share your curated lists through a view only link.",
 		show: { beat: 15, at: "end" },
 		dwell: 4.5,
 	},
