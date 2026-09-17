@@ -29,13 +29,11 @@ const { active } = Astro.props;
 			data-wf-tab="shortlist"
 		>
 			ShortLists
-			{
-				active === "shortlist" && (
-					<span
-						class="absolute -bottom-[1.3125rem] left-0 -right-5 h-0.5 rounded-[0.0625rem] bg-wf-shortlist"
-					/>
-				)
-			}
+			{/* Both indicators are drawn; the live tab is what decides which one paints. */}
+			<span
+				class="absolute -bottom-[1.3125rem] left-0 -right-5 h-0.5 rounded-[0.0625rem] bg-wf-shortlist"
+				data-wf-lists-pane="shortlist"
+			/>
 		</span>
 
 		<span
@@ -46,13 +44,10 @@ const { active } = Astro.props;
 			data-wf-tab="list"
 		>
 			Lists
-			{
-				active === "list" && (
-					<span
-						class="absolute -bottom-[1.3125rem] -left-6 -right-6 h-0.5 rounded-[0.0625rem] bg-wf-green-bright"
-					/>
-				)
-			}
+			<span
+				class="absolute -bottom-[1.3125rem] -left-6 -right-6 h-0.5 rounded-[0.0625rem] bg-wf-green-bright"
+				data-wf-lists-pane="list"
+			/>
 		</span>
 	</div>
 

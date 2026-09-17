@@ -1,4 +1,5 @@
 import gsap from "gsap";
+import type { ListType } from "../../../../data/workflowMockup";
 import { token } from "../utils/dom";
 import type { Pointer } from "../utils/pointer";
 
@@ -20,6 +21,11 @@ export interface MyListsLayers {
 	from: HTMLElement;
 	/** The My Lists layer. */
 	to: HTMLElement;
+	/**
+	 * Cross to this tab once there. The nav link always lands on Lists, so the
+	 * shortlist stop asks for it and the list stop does not.
+	 */
+	switchTo?: ListType;
 }
 function collectAdded(row: HTMLElement | null) {
 	const portraits = row ? gsap.utils.toArray<HTMLElement>(row.querySelectorAll("[data-wf-list-added]")) : [];
@@ -45,6 +51,9 @@ function collect({ from, to }: MyListsLayers) {
 		navLists: from.querySelector<HTMLElement>('[data-wf-nav="lists"]'),
 		fromBody: from.querySelector<HTMLElement>("[data-wf-card-body]"),
 		toBody: to.querySelector<HTMLElement>("[data-wf-card-body]"),
+		tabs: to.querySelector<HTMLElement>("[data-wf-lists-tabs]"),
+		shortlistTab: to.querySelector<HTMLElement>('[data-wf-tab="shortlist"]'),
+		listTab: to.querySelector<HTMLElement>('[data-wf-tab="list"]'),
 	};
 
 	return Object.values(el).every(Boolean) ? (el as { [K in keyof typeof el]: NonNullable<(typeof el)[K]> }) : null;
@@ -131,6 +140,24 @@ export function myLists(layers: MyListsLayers, pointer: Pointer) {
 		// Leave the layer we came from as we found it, so a replay starts clean.
 		.set(el.fromBody, { opacity: 1 }, "swap")
 		.from(el.toBody, { opacity: 0, duration: 0.4, immediateRender: false }, "swap");
+
+	// ── cross to the other tab ───────────────────────────────────────────────
+	// Only the labels animate; the grids are swapped by the attribute, which is
+	// what `app-tokens.css` keys their `display` off.
+	const { switchTo } = layers;
+	if (switchTo) {
+		const live = switchTo === "shortlist" ? el.shortlistTab : el.listTab;
+		const leaving = switchTo === "shortlist" ? el.listTab : el.shortlistTab;
+
+		tl.set([live, leaving], { clearProps: "color" })
+			.add(pointer.moveTo(live, { duration: 0.7 }), "+=0.5")
+			.addLabel("tab", "+=0.1")
+			.add(pointer.press(), "tab")
+			.set(el.tabs, { attr: { "data-wf-lists-tabs": switchTo } }, "tab+=0.1")
+			.to(live, { color: token("text"), duration: 0.22 }, "tab+=0.1")
+			.to(leaving, { color: "rgba(255, 255, 255, 0.3)", duration: 0.22 }, "tab+=0.1")
+			.addLabel("switched");
+	}
 
 	return tl;
 }

@@ -29,10 +29,10 @@ components/app/                 everything that reproduces the product
       Analyze.astro                 steps 1 and 3 (`results`, `selected`)
       AnalyzedCreator.astro         the Analyze-hosted creator panel — unused by the
                                     story since it opens creators from the shortlist
-      AddToListDialog.astro         steps 4 and 9 (`tab`)
+      AddToListDialog.astro         steps 4 and 9 (`tab`, `adds`) — both panes, one layer
       widgets/  filters/  media-kit/
     list/                         ← lib/src/screens/list
-      Lists.astro                   steps 5 and 10 (`type`)
+      Lists.astro                   steps 5 and 10 (`type`, `target`) — both panes, one layer
       ShortlistDetails.astro        step 6 — visited once, on the way in
       ShortlistCreator.astro        steps 7 and 8 — CreatorDetail in the lists shell
       ListDetails.astro             steps 11, 12 (`compare`) and 14 (`exported`)
@@ -817,8 +817,17 @@ This one swaps *first*, because the dialog layer renders the layer beneath as it
 own blurred backdrop — so with the blur off, the scrim clear and the card hidden,
 the two layers are identical and the swap is invisible.
 
-**The story plays this beat twice**, from different screens, so it knows nothing
-about which tab it is opening: beat 10 reuses it with a `trigger` to press first.
+**The story plays this beat twice**, from different screens. **The app always opens
+the dialog on List** (`selectedTab = ListType.list`), so both plays do, and the
+shortlist save passes `switchTo` to cross over: the cursor presses the ShortList
+pill, the pills recolour and the panes swap in place.
+
+**Both tabs live in the one layer**, keyed off `data-wf-dialog-tabs` on the card
+with `data-wf-dialog-pane` on each half — the same `display` lever the filter rail
+uses. A second layer would mean a second `<Analyze results selected />` behind it,
+which is the heaviest thing the mockup draws. Only the pane named by `adds` carries
+`data-wf-list-target` and the waiting portraits; two of those and beat 5 would take
+whichever row the DOM handed it first.
 
 - **The backdrop is a fresh render, so state does not travel across the swap.**
   It is authored to match instead — screen 4's backdrop is
@@ -840,6 +849,18 @@ dialog's **close ✕**, then **My Lists** in the nav.
 promoting one into a list. However many portraits the row has waiting under
 `data-wf-list-added`, they all drop in, staggered 0.09s so three reads as three
 creators landing rather than one block appearing.
+
+**The nav link always lands on Lists** (`NavTab.lists` routes to `AppRoutes.lists`),
+so this stop passes `switchTo` to cross to ShortLists the same way the dialog does,
+through `data-wf-lists-tabs` and `data-wf-lists-pane`.
+
+**The Lists tab is therefore passed through twice, at two different moments**, and
+everything dated has to follow `target` rather than the tab: the credits chip
+(2,490 before the unlock, 2,440 after), the card's portraits (Vox Pop is Poorav and
+Justin on the way out, Selwyn joins them on the way back) and its age — the card
+the story has just added to reads `JUST_UPDATED`, every other keeps its authored
+one. Reading `LIST_CREATORS` for the grid put Selwyn in it before the story had
+added him.
 
 - **Closing the dialog needs no layer change.** The dialog layer *is* the layer
   beneath once its blur, scrim and card are neutralised, so unwinding those three

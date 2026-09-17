@@ -91,6 +91,7 @@ function initWorkflow(mockup: HTMLElement) {
 	let ended = false;
 	let userPaused = false;
 	const toggle = mockup.querySelector<HTMLButtonElement>("[data-wf-play-toggle]");
+	(window as any).__wf = () => ({ master, beats, beatStart, beatEnd });
 
 	// Beat 1 hands back its rail reset too: beat 16 reveals screen 1 at the loop
 	// point and has to wind it back before it comes into view.
@@ -100,8 +101,10 @@ function initWorkflow(mockup: HTMLElement) {
 		analyze?.timeline,
 		resultsList({ from: screen.analyze, to: screen.results }, pointer),
 		shortlistSelect({ screen: screen.results }, pointer),
-		addToListDialog({ from: screen.results, to: screen.shortlistAdd }),
-		myLists({ from: screen.shortlistAdd, to: screen.shortlists }, pointer),
+		// Opens on List like the app, then crosses to ShortList for the free save.
+		addToListDialog({ from: screen.results, to: screen.shortlistAdd, switchTo: "shortlist" }, pointer),
+		// The nav link lands on Lists, so this stop crosses to ShortLists itself.
+		myLists({ from: screen.shortlistAdd, to: screen.shortlists, switchTo: "shortlist" }, pointer),
 		openShortlist({ from: screen.shortlists, to: screen.shortlist }, pointer),
 		openCreator({ from: screen.shortlist, to: screen.profile }, pointer),
 		mediaKitTab({ from: screen.profile, to: screen.kit }, pointer),

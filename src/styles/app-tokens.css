@@ -247,6 +247,19 @@
 	display: none;
 }
 
+/*
+ * The add-to dialog's two tabs, and My Lists'. Both panes render so the story can
+ * click across in place — a second layer would mean a second copy of the Analyze
+ * screen behind the dialog, which is the heaviest thing the mockup draws.
+ * `display` is the lever, as with the rail above.
+ */
+[data-wf-dialog-tabs="list"] [data-wf-dialog-pane="shortlist"],
+[data-wf-dialog-tabs="shortlist"] [data-wf-dialog-pane="list"],
+[data-wf-lists-tabs="list"] [data-wf-lists-pane="shortlist"],
+[data-wf-lists-tabs="shortlist"] [data-wf-lists-pane="list"] {
+	display: none;
+}
+
 /* Everything that only exists once the Lookalike filter carries a value. */
 [data-wf-rail]:not([data-wf-filled]) :is([data-wf-handle-value], [data-wf-location-chips], [data-wf-sort="lookalike"]),
 [data-wf-rail][data-wf-filled] :is([data-wf-handle-hint], [data-wf-sort="followers"]) {

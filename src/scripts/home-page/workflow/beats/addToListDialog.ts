@@ -1,4 +1,7 @@
 import gsap from "gsap";
+import type { ListType } from "../../../../data/workflowMockup";
+import { token } from "../utils/dom";
+import type { Pointer } from "../utils/pointer";
 
 /**
  * The add-to dialog opening. Swap-first, unlike every other beat: the dialog layer
@@ -7,9 +10,12 @@ import gsap from "gsap";
  * invisible.
  *
  * The story plays this twice — over the results for the free shortlist save, and
- * over the creator's own panel for the promote into a list — so the beat knows
- * nothing about which tab it is opening. Both times the previous beat has already
- * pressed the control, and a dialog opening does not move the mouse.
+ * over the creator's own panel for the promote into a list. Both times the previous
+ * beat has already pressed the control, and a dialog opening does not move the mouse.
+ *
+ * **The app always opens it on List**, so both plays do. `switchTo` is what the
+ * shortlist save needs: the cursor crosses to the other tab and the panes swap in
+ * place, which is a `setState` in the app and so is not worth a second layer here.
  *
  * The backdrop copy is a fresh render, so anything an earlier beat changed on the
  * live layer has to reach it somehow. Authored state is preferred (see Analyze's
@@ -22,6 +28,8 @@ export interface AddToListLayers {
 	from: HTMLElement;
 	/** The dialog layer. */
 	to: HTMLElement;
+	/** Cross to this tab once open. Omitted leaves it on the one the app opens. */
+	switchTo?: ListType;
 }
 
 /** Every element the beat drives, or null if the dialog markup is not there. */
@@ -30,6 +38,8 @@ function collect({ from, to }: AddToListLayers) {
 		backdrop: to.querySelector<HTMLElement>("[data-wf-modal-backdrop]"),
 		scrim: to.querySelector<HTMLElement>("[data-wf-modal-scrim]"),
 		card: to.querySelector<HTMLElement>("[data-wf-modal-card]"),
+		shortlistTab: to.querySelector<HTMLElement>('[data-wf-dialog-tab="shortlist"]'),
+		listTab: to.querySelector<HTMLElement>('[data-wf-dialog-tab="list"]'),
 	};
 	if (!Object.values(el).every(Boolean)) return null;
 
@@ -43,7 +53,7 @@ function collect({ from, to }: AddToListLayers) {
 	};
 }
 
-export function addToListDialog(layers: AddToListLayers) {
+export function addToListDialog(layers: AddToListLayers, pointer?: Pointer) {
 	const el = collect(layers);
 	if (!el) return null;
 
@@ -85,6 +95,30 @@ export function addToListDialog(layers: AddToListLayers) {
 		.to(el.backdrop, { filter: blurred, duration: 0.26, ease: "none" }, "open")
 		.to(el.scrim, { opacity: 1, duration: 0.26 }, "open")
 		.to(el.card, { opacity: 1, duration: 0.32 }, "open+=0.08");
+
+	// ── cross to the other tab ───────────────────────────────────────────────
+	// The pills are the only thing that animates: the panes are swapped by the
+	// attribute, since `display` is what `app-tokens.css` keys them off.
+	const { switchTo } = layers;
+	if (switchTo && pointer) {
+		const live = switchTo === "shortlist" ? el.shortlistTab : el.listTab;
+		const leaving = switchTo === "shortlist" ? el.listTab : el.shortlistTab;
+		const onFill = switchTo === "shortlist" ? token("chip-on") : token("tab-list");
+		const onBorder = switchTo === "shortlist" ? token("chip-on-border") : token("credit-border");
+
+		tl.set([live, leaving], { clearProps: "backgroundColor,borderColor,color" })
+			.add(pointer.moveTo(live, { duration: 0.65 }), "+=0.45")
+			.addLabel("tab", "+=0.1")
+			.add(pointer.press(), "tab")
+			.set(el.card, { attr: { "data-wf-dialog-tabs": switchTo } }, "tab+=0.1")
+			.to(live, { backgroundColor: onFill, borderColor: onBorder, color: token("text"), duration: 0.22 }, "tab+=0.1")
+			.to(
+				leaving,
+				{ backgroundColor: token("chip"), borderColor: token("chip-border"), color: token("action-muted"), duration: 0.22 },
+				"tab+=0.1"
+			)
+			.addLabel("switched");
+	}
 
 	return tl;
 }

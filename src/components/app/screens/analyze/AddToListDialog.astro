@@ -25,25 +25,45 @@ import {
 } from "../../../../data/workflowMockup";
 
 interface Props {
-	/** Which tab is live. The app opens on List; the story clicks across to ShortList. */
+	/**
+	 * Which tab is live when it opens. **The app always opens on List**
+	 * (`selectedTab = ListType.list`), so this defaults there and the story clicks
+	 * across when it wants the other one.
+	 */
 	tab?: ListType;
+	/**
+	 * Which tab the story adds into. Both panes are rendered so the click has
+	 * somewhere to go, but only this one carries the add hooks — otherwise
+	 * `myLists` would find two `[data-wf-list-target]`s and take the wrong row.
+	 */
+	adds?: ListType;
 	/** The `{N}` beside the title — how many rows were ticked. */
 	count?: number;
 }
 
-const { tab = "list", count = 1 } = Astro.props;
-const isShortlist = tab === "shortlist";
+const { tab = "list", adds: destination = tab, count = 1 } = Astro.props;
 
-const rows = isShortlist ? CREATOR_SHORTLISTS : CREATOR_LISTS;
-const storyName = isShortlist ? STORY_SHORTLIST : STORY_LIST;
-const word = isShortlist ? "ShortList" : "List";
+/** Everything that differs between the two panes, resolved per pane rather than once. */
+const PANES = (["shortlist", "list"] as const).map((pane) => {
+	const shortlist = pane === "shortlist";
+	return {
+		pane,
+		shortlist,
+		word: shortlist ? "ShortList" : "List",
+		rows: shortlist ? CREATOR_SHORTLISTS : CREATOR_LISTS,
+		storyName: shortlist ? STORY_SHORTLIST : STORY_LIST,
+		/** Only the destination pane has portraits waiting to drop in. */
+		adds: pane === destination ? DIALOG_ADDS[pane] : [],
+		live: pane === destination,
+	};
+});
 
 /**
- * The portraits Add drops in, rendered hidden for `myLists` to reveal. They take
- * the slots straight after the row's existing preview, so the grid fills left to
- * right exactly as the app's does.
+ * The portraits Add drops in — held on `PANES[].adds`, rendered hidden for
+ * `myLists` to reveal. They take the slots straight after the row's existing
+ * preview, so the grid fills left to right exactly as the app's does.
  */
-const adds = DIALOG_ADDS[tab];
+const isShortlist = tab === "shortlist";
 
 /** Tab pills reuse the platform chips' palette; only List's live fill is its own. */
 const tabLook = (active: boolean, shortlist: boolean) =>
@@ -54,7 +74,7 @@ const tabLook = (active: boolean, shortlist: boolean) =>
 		: "bg-wf-chip border-wf-chip-border text-wf-action-muted";
 ---
 
-<CenteredModalOverlay width="30rem">
+<CenteredModalOverlay width="30rem" data-wf-dialog-tabs={tab}>
 	<slot name="backdrop" slot="backdrop" />
 
 	<span class="flex justify-end pt-4 pr-4">
@@ -76,6 +96,7 @@ const tabLook = (active: boolean, shortlist: boolean) =>
 				"flex items-center gap-1.5 rounded-[0.25rem] border px-5 py-2.5 text-[0.875rem] whitespace-nowrap",
 				tabLook(isShortlist, true),
 			]}
+			data-wf-dialog-tab="shortlist"
 		>
 			<Icon name="hourglass" size="0.75rem" />
 			ShortList
@@ -85,6 +106,7 @@ const tabLook = (active: boolean, shortlist: boolean) =>
 				"flex items-center gap-1.5 rounded-[0.25rem] border px-5 py-2.5 text-[0.875rem] whitespace-nowrap",
 				tabLook(!isShortlist, false),
 			]}
+			data-wf-dialog-tab="list"
 		>
 			<Icon name="list" size="0.75rem" />
 			List
@@ -98,10 +120,14 @@ const tabLook = (active: boolean, shortlist: boolean) =>
 		<div class="flex items-center gap-1.5 rounded-[0.375rem] bg-wf-search px-6 py-3">
 			<Icon name="search" size="0.875rem" class="shrink-0 text-wf-text-muted" />
 			<span class="text-[0.75rem] font-medium whitespace-nowrap">
-				<span class="text-wf-text-muted">Search&nbsp;&nbsp;</span><span
-					class={isShortlist ? "text-wf-shortlist" : "text-wf-green-bright"}
-					>{isShortlist ? "ShortLists" : "Lists"}</span
-				>
+				<span class="text-wf-text-muted">Search&nbsp;&nbsp;</span>{PANES.map((p) => (
+					<span
+						class={p.shortlist ? "text-wf-shortlist" : "text-wf-green-bright"}
+						data-wf-dialog-pane={p.pane}
+					>
+						{p.word}s
+					</span>
+				))}
 			</span>
 		</div>
 	</div>
@@ -116,11 +142,12 @@ const tabLook = (active: boolean, shortlist: boolean) =>
 		a floor on how wide it may grow, not the width itself.
 	*/}
 	<div class="flex justify-center px-6">
-		<p
-			class="rounded-[1.25rem] border border-wf-tab-list bg-wf-tab-list/20 px-3 py-2 text-center text-[0.625rem] leading-[1.6] text-wf-green-bright"
-		>
-			{
-				isShortlist ? (
+		{PANES.map((p) => (
+			<p
+				class="rounded-[1.25rem] border border-wf-tab-list bg-wf-tab-list/20 px-3 py-2 text-center text-[0.625rem] leading-[1.6] text-wf-green-bright"
+				data-wf-dialog-pane={p.pane}
+			>
+				{p.shortlist ? (
 					<>
 						Free quick save. Add to a list when you need
 						<br />
@@ -132,17 +159,20 @@ const tabLook = (active: boolean, shortlist: boolean) =>
 						<br />
 						analytics export and share. 50 credits per new unlock.
 					</>
-				)
-			}
-		</p>
+				)}
+			</p>
+		))}
 	</div>
 
 	{/* List region: `maxHeight 220` — a max, so one row shrinks to fit and a third is clipped. */}
 	<div class="mt-4 max-h-55 overflow-hidden px-6 pb-2">
-		<div class="flex flex-col gap-2">
+		{PANES.map((p) => (
+		<div class="flex flex-col gap-2" data-wf-dialog-pane={p.pane}>
 			{
-				rows.map((row) => {
-					const target = row.name === storyName;
+				p.rows.map((row) => {
+					// Only the destination pane wires the add: two targets and `myLists`
+					// would take whichever the DOM happened to hand it first.
+					const target = p.live && row.name === p.storyName;
 					return (
 						<div
 							class="flex items-center rounded-[1rem] border border-wf-dialog-border bg-wf-list-row px-3 py-2.5"
@@ -157,7 +187,7 @@ const tabLook = (active: boolean, shortlist: boolean) =>
 							*/}
 							<span class="grid size-15 shrink-0 grid-cols-2 content-start">
 								{[0, 1, 2, 3].map((slot) => {
-									const incoming = target ? adds[slot - row.preview.length] : undefined;
+									const incoming = target ? p.adds[slot - row.preview.length] : undefined;
 									if (row.preview[slot]) {
 										return (
 											<CreatorAvatar
@@ -197,7 +227,7 @@ const tabLook = (active: boolean, shortlist: boolean) =>
 											class="wf-untrimmed col-start-1 row-start-1 opacity-0"
 											data-wf-list-count="done"
 										>
-											{row.count + adds.length} Creators
+											{row.count + p.adds.length} Creators
 										</span>
 									</span>
 								) : (
@@ -220,6 +250,7 @@ const tabLook = (active: boolean, shortlist: boolean) =>
 				})
 			}
 		</div>
+		))}
 	</div>
 
 	<span class="mt-4 block h-px w-full bg-[#463c60]"></span>
@@ -234,20 +265,21 @@ const tabLook = (active: boolean, shortlist: boolean) =>
 		and the app passes it no colour filter at all.
 	*/}
 	<span class="mt-3.5 mb-8 flex justify-center">
-		<span
-			class:list={[
-				"flex h-9 min-w-16 items-center gap-1 rounded-[1.5rem] px-4 text-[0.625rem] font-medium text-wf-text",
-				isShortlist ? "bg-wf-violet" : "bg-wf-tab-list",
-			]}
-		>
-			{
-				isShortlist ? (
+		{PANES.map((p) => (
+			<span
+				class:list={[
+					"flex h-9 min-w-16 items-center gap-1 rounded-[1.5rem] px-4 text-[0.625rem] font-medium text-wf-text",
+					p.shortlist ? "bg-wf-violet" : "bg-wf-tab-list",
+				]}
+				data-wf-dialog-pane={p.pane}
+			>
+				{p.shortlist ? (
 					<Icon name="plus" size="0.5rem" class="text-white" />
 				) : (
 					<Icon name="addToList" size="0.625rem" class="text-white" />
-				)
-			}
-			Create New {word}
-		</span>
+				)}
+				Create New {p.word}
+			</span>
+		))}
 	</span>
 </CenteredModalOverlay>

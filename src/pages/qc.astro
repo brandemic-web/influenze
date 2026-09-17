@@ -65,12 +65,12 @@ interface QcStep {
 const STEPS: QcStep[] = [
 	{ step: 1, card: 1, title: "Analyze — empty", markup: "<Analyze />", app: "analyze/analyze.dart", note: "Beat 1 builds the search inside this layer; the dropdown-open frame is a keyframe, not a screen." },
 	{ step: 3, title: "Analyze — results", markup: "<Analyze results />", app: "analyze/widgets/analyze_results_list.dart", note: "Poorav carries a Media Kit cell and a live Enquire — he is already purchased. Everyone else is blank and disabled." },
-	{ step: 4, card: 2, title: "Add-to dialog — ShortList tab", markup: '<AddToListDialog tab="shortlist" count={3} />', app: "analyze/widgets/add_to_list_dialog.dart", note: "Backdrop is <Analyze results selected />, so the three ticks match the layer beneath. Banner hugs its own text." },
-	{ step: 5, title: "My Lists — ShortLists tab", markup: '<Lists type="shortlist" />', app: "list/lists.dart + widgets/my_lists_tabs_header.dart", note: "Lavender indicator; the card is the shortlist just created." },
+	{ step: 4, card: 2, title: "Add-to dialog — ShortList tab", markup: '<AddToListDialog tab="shortlist" count={3} adds="shortlist" />', app: "analyze/widgets/add_to_list_dialog.dart", note: "The state the story lands on. The hero opens this on List, the app's own default, and beat 4 clicks across — both panes live in the one layer. Backdrop is <Analyze results selected />, so the three ticks match the layer beneath." },
+	{ step: 5, title: "My Lists — ShortLists tab", markup: '<Lists type="shortlist" target="shortlist" />', app: "list/lists.dart + widgets/my_lists_tabs_header.dart", note: "Lavender indicator; the card is the shortlist just created. The hero arrives on Lists — where the nav link lands — and beat 5 clicks across; both panes live in the one layer." },
 	{ step: 6, title: "ShortList detail", markup: "<ShortlistDetails />", app: "list/shortlist_details.dart", note: "No Compare, no Share, Quick Export. Every Media Kit cell blank and no Enquire — nothing here is bought." },
 	{ step: 7, card: 3, title: "Creator — About", markup: '<ShortlistCreator tab="about" />', app: "analyze/widgets/creator_detail.dart", note: "Opened from the shortlist, so the nav stays on My Lists. Header carries the unlock this screen paid for." },
 	{ step: 8, title: "Creator — Media Kit", markup: '<ShortlistCreator tab="mediaKit" />', app: "analyze/widgets/media_kit/detail.dart", note: "Same panel, different tab. The beat scrolls this; here it sits at the top." },
-	{ step: 9, card: 4, title: "Add-to dialog — List tab", markup: '<AddToListDialog tab="list" count={1} />', app: "analyze/widgets/add_to_list_dialog.dart", note: "Opened from the creator's own panel. Banner swaps to the unlock line." },
+	{ step: 9, card: 4, title: "Add-to dialog — List tab", markup: '<AddToListDialog count={1} />', app: "analyze/widgets/add_to_list_dialog.dart", note: "Opened from the creator's own panel. Banner swaps to the unlock line." },
 	{ step: 10, title: "My Lists — Lists tab", markup: "<Lists />", app: "list/lists.dart", note: "Green indicator. Same screen as step 5 with the type swapped." },
 	{ step: 11, title: "List detail", markup: "<ListDetails />", app: "list/list_details.dart", note: "Authored in its selected state — the beat winds it back and re-ticks on camera. No Media Kit cell is ever blank here." },
 	{ step: 12, card: 5, title: "List detail — Compare", markup: "<ListDetails compare />", app: "list/widgets/list_compare_section.dart", note: "A mode of the same panel, not a route: toolbar and column header collapse, title centres, share hides." },
@@ -151,16 +151,16 @@ const drifted =
 								{s.step === 1 && <Analyze />}
 								{s.step === 3 && <Analyze results />}
 								{s.step === 4 && (
-									<AddToListDialog tab="shortlist" count={3}>
+									<AddToListDialog tab="shortlist" count={3} adds="shortlist">
 										<Analyze results selected slot="backdrop" />
 									</AddToListDialog>
 								)}
-								{s.step === 5 && <Lists type="shortlist" />}
+								{s.step === 5 && <Lists type="shortlist" target="shortlist" />}
 								{s.step === 6 && <ShortlistDetails />}
 								{s.step === 7 && <ShortlistCreator tab="about" />}
 								{s.step === 8 && <ShortlistCreator tab="mediaKit" />}
 								{s.step === 9 && (
-									<AddToListDialog tab="list" count={1}>
+									<AddToListDialog count={1}>
 										<ShortlistCreator tab="mediaKit" slot="backdrop" />
 									</AddToListDialog>
 								)}

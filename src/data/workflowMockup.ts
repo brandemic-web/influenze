@@ -382,6 +382,13 @@ export const RESULT_FILTERS = [
  * list before the add. Screen 7 counts `LIST_CREATORS` instead, so the two never
  * have to be kept in step. `preview` is whose portraits fill a card's tiles.
  */
+/**
+ * What a card reads once the story has just added to it. The authored `updated` is
+ * how a card looks when the story has *not* touched it — Vox Pop sits at 2m while
+ * the shortlist is being filled, and only reads this on the way back.
+ */
+export const JUST_UPDATED = "last updated just now";
+
 export const CREATOR_LISTS = [
 	{
 		name: STORY_LIST,

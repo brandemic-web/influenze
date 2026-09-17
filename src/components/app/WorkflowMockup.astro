@@ -50,16 +50,16 @@ const { class: className = "" } = Astro.props;
 		<StoryStep step={1} active><Analyze /></StoryStep>
 		<StoryStep step={3}><Analyze results /></StoryStep>
 		<StoryStep step={4}>
-			<AddToListDialog tab="shortlist" count={3}>
+			<AddToListDialog count={3} adds="shortlist">
 				<Analyze results selected slot="backdrop" />
 			</AddToListDialog>
 		</StoryStep>
-		<StoryStep step={5}><Lists type="shortlist" /></StoryStep>
+		<StoryStep step={5}><Lists target="shortlist" /></StoryStep>
 		<StoryStep step={6}><ShortlistDetails /></StoryStep>
 		<StoryStep step={7}><ShortlistCreator tab="about" /></StoryStep>
 		<StoryStep step={8}><ShortlistCreator tab="mediaKit" /></StoryStep>
 		<StoryStep step={9}>
-			<AddToListDialog tab="list" count={1}>
+			<AddToListDialog count={1}>
 				<ShortlistCreator tab="mediaKit" slot="backdrop" />
 			</AddToListDialog>
 		</StoryStep>
