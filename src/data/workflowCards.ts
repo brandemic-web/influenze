@@ -86,8 +86,8 @@ export const WORKFLOW_CARDS: WorkflowCard[] = [
 	},
 	{
 		step: 6,
-		title: "Export in Bulk",
-		body: "Pick exactly the columns you need — audience, pricing, contact details — and take them as a CSV or XLSX.",
+		title: "Bulk export and import",
+		body: "Easily export all your media kit data to CSV or Excel, and import existing lists the same way.",
 		// Cleared on the dialog closing, not on the export landing: the card and the
 		// header popover share a resting place, and they must never be up together.
 		show: { beat: 14, at: "open" },
