@@ -2,8 +2,12 @@ import gsap from "gsap";
 import type { Pointer } from "../utils/pointer";
 
 /**
- * Beat 9 — read the comparison down, press Back, reach for share. 9 → 8 is beat 8's
+ * Beat 13 — read the comparison down and press Back. 12 → 11 is beat 12's
  * swap run the other way, at the same 450ms; the list needs no restoring.
+ *
+ * It used to reach for Share on the way out. Export now sits between the two, so
+ * the hand-off moved with it: this beat lands back on the list and stops, and the
+ * export beat is what presses Share once its own work is done.
  *
  * Both columns scroll together by one shared distance — the app treats the compare
  * section as a single pane. That distance is the *smaller* of the two ranges, so
@@ -36,9 +40,8 @@ function collect({ from, to }: LeaveCompareLayers) {
 		back: from.querySelector<HTMLElement>("[data-wf-back]"),
 		fromBody: from.querySelector<HTMLElement>("[data-wf-panel-body]"),
 		toBody: to.querySelector<HTMLElement>("[data-wf-panel-body]"),
-		share: to.querySelector<HTMLElement>("[data-wf-share]"),
 	};
-	if (!el.back || !el.fromBody || !el.toBody || !el.share || !columns.length) return null;
+	if (!el.back || !el.fromBody || !el.toBody || !columns.length) return null;
 
 	return { ...(el as { [K in keyof typeof el]: NonNullable<(typeof el)[K]> }), columns };
 }
@@ -93,9 +96,6 @@ export function leaveCompare(layers: LeaveCompareLayers, pointer: Pointer) {
 		// Leave the layer we came from as we found it, so a replay starts clean.
 		.set(el.fromBody, { opacity: 1 }, "swap")
 		.from(el.toBody, { opacity: 0, duration: 0.23, immediateRender: false }, "swap");
-
-	// ── reach for share ──────────────────────────────────────────────────────
-	tl.add(pointer.moveTo(el.share, { duration: 0.65 }), "+=0.3").add(pointer.press(), ">-0.05");
 
 	return tl;
 }

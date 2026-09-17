@@ -1,0 +1,30 @@
+---
+/**
+ * One action inside the selection pill — `SelectionActionIconButton` in
+ * `common/widgets/selection_action_bar.dart`: a 28px circle, transparent until
+ * hovered, with the glyph at whatever size its call site asks for.
+ */
+import Icon from "./Icon.astro";
+import type { WorkflowIconName } from "../../../data/workflowIcons";
+
+interface Props {
+	icon: WorkflowIconName;
+	/** Glyph size in rem — compare and refresh are 16, add 12, remove 14. */
+	size?: string;
+	/** `danger` is the remove action, the one glyph that is not `lavender64`. */
+	tone?: "lavender" | "danger";
+	class?: string;
+}
+
+const {
+	icon,
+	size = "0.875rem",
+	tone = "lavender",
+	class: className = "",
+	...rest
+} = Astro.props;
+---
+
+<span class:list={["grid size-7 shrink-0 place-items-center rounded-full", className]} {...rest}>
+	<Icon name={icon} size={size} class={tone === "danger" ? "text-wf-danger" : "text-wf-select-icon"} />
+</span>

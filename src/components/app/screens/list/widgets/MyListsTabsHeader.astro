@@ -1,0 +1,56 @@
+---
+/**
+ * ShortLists / Lists switcher — `list/widgets/my_lists_tabs_header.dart`. Labels
+ * 24/300, active white against inactive white-30%, 48 apart, then 20 of air and a
+ * 2px-tall strip holding the 1px rule with the accent indicator over it.
+ *
+ * The app measures each label with a `TextPainter` to size the indicator; here the
+ * same geometry falls out of anchoring each indicator to its own label. ShortLists
+ * gets `textWidth + 20` from the label's left edge, so it overhangs only to the
+ * right; Lists gets `textWidth + 48` centred, so it overhangs 24 either side. The
+ * accent is the only thing distinguishing the two tabs — `ListType.accentColor`.
+ */
+import type { ListType } from "../../../../../data/workflowMockup";
+
+interface Props {
+	active: ListType;
+}
+
+const { active } = Astro.props;
+---
+
+<div class="flex shrink-0 flex-col">
+	<div class="flex items-end gap-12">
+		<span
+			class:list={[
+				"relative text-md font-light whitespace-nowrap",
+				active === "shortlist" ? "text-wf-text" : "text-white/30",
+			]}
+			data-wf-tab="shortlist"
+		>
+			ShortLists
+			{/* Both indicators are drawn; the live tab is what decides which one paints. */}
+			<span
+				class="absolute -bottom-[1.3125rem] left-0 -right-5 h-0.5 rounded-[0.0625rem] bg-wf-shortlist"
+				data-wf-lists-pane="shortlist"
+			/>
+		</span>
+
+		<span
+			class:list={[
+				"relative text-md font-light whitespace-nowrap",
+				active === "list" ? "text-wf-text" : "text-white/30",
+			]}
+			data-wf-tab="list"
+		>
+			Lists
+			<span
+				class="absolute -bottom-[1.3125rem] -left-6 -right-6 h-0.5 rounded-[0.0625rem] bg-wf-green-bright"
+				data-wf-lists-pane="list"
+			/>
+		</span>
+	</div>
+
+	{/* `labelToDividerGap`, then the 1px rule the 2px indicator sits on. */}
+	<span class="mt-5 block h-px w-full bg-wf-rule"></span>
+</div>

@@ -3,12 +3,15 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { addToListDialog } from "./beats/addToListDialog";
 import { analyzeLookalike } from "./beats/analyzeLookalike";
 import { compareMode } from "./beats/compareMode";
-import { creatorProfile } from "./beats/creatorProfile";
 import { leaveCompare } from "./beats/leaveCompare";
+import { exportFlow } from "./beats/exportFlow";
 import { listDetail } from "./beats/listDetail";
 import { mediaKitTab } from "./beats/mediaKitTab";
 import { myLists } from "./beats/myLists";
+import { openCreator } from "./beats/openCreator";
+import { openShortlist } from "./beats/openShortlist";
 import { shareModal } from "./beats/shareModal";
+import { shortlistSelect } from "./beats/shortlistSelect";
 import { createPointer } from "./utils/pointer";
 import { restart } from "./beats/restart";
 import { resultsList } from "./beats/resultsList";
@@ -19,9 +22,9 @@ import { LANDSCAPE_CLOSE, LANDSCAPE_OPEN } from "../../landscape-viewer";
 gsap.registerPlugin(ScrollTrigger);
 
 /**
- * Composes the hero mockup's eleven beats into one looping timeline. A beat
- * returns null when its markup is missing and is skipped; nothing here is
- * load-bearing for layout, so a failure leaves the hero static.
+ * Composes the hero mockup's fifteen beats into one timeline. A beat returns null
+ * when its markup is missing and is skipped; nothing here is load-bearing for
+ * layout, so a failure leaves the hero static.
  *
  * Beat order, cast and per-beat reasoning: components/app/APP-SPEC.md.
  */
@@ -36,23 +39,31 @@ function initWorkflow(mockup: HTMLElement) {
 
 	// The layers beats move between, by story step. 2 is skipped: beat 1 builds the
 	// search inside step 1 rather than cutting to a filled-in copy of it.
+	//
+	// The shortlist is visited once, on the way in: the story promotes the creator
+	// from the panel it opened them in, so it never walks back to the list of rows.
 	const layer = (step: number) => mockup.querySelector<HTMLElement>(`[data-wf-screen="${step}"]`);
 	const found = {
 		analyze: layer(1),
 		results: layer(3),
-		profile: layer(4),
-		kit: layer(5),
-		dialog: layer(6),
-		lists: layer(7),
-		list: layer(8),
-		compare: layer(9),
-		share: layer(10),
+		shortlistAdd: layer(4),
+		shortlists: layer(5),
+		shortlist: layer(6),
+		profile: layer(7),
+		kit: layer(8),
+		listAdd: layer(9),
+		lists: layer(10),
+		list: layer(11),
+		compare: layer(12),
+		exportDialog: layer(13),
+		exported: layer(14),
+		share: layer(15),
 	};
 	if (!Object.values(found).every(Boolean)) return;
 	const screen = found as { [K in keyof typeof found]: HTMLElement };
 
-	// Reduced motion gets one static frame. Screen 3 (results) says more about the
-	// product than screen 1's empty search, and the loop has no natural last frame.
+	// Reduced motion gets one static frame. The results say more about the product
+	// than screen 1's empty search, and the story has no natural last frame.
 	if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
 		screen.analyze.removeAttribute("data-wf-active");
 		screen.results.setAttribute("data-wf-active", "");
@@ -80,22 +91,33 @@ function initWorkflow(mockup: HTMLElement) {
 	let ended = false;
 	let userPaused = false;
 	const toggle = mockup.querySelector<HTMLButtonElement>("[data-wf-play-toggle]");
+	(window as any).__wf = () => ({ master, beats, beatStart, beatEnd });
 
-	// Beat 1 hands back its rail reset too: beat 11 reveals screen 1 at the loop
+	// Beat 1 hands back its rail reset too: beat 16 reveals screen 1 at the loop
 	// point and has to wind it back before it comes into view.
 	const analyze = analyzeLookalike(screen.analyze, pointer);
 
 	const beats = [
 		analyze?.timeline,
 		resultsList({ from: screen.analyze, to: screen.results }, pointer),
-		creatorProfile({ from: screen.results, to: screen.profile }, pointer),
+		shortlistSelect({ screen: screen.results }, pointer),
+		// Opens on List like the app, then crosses to ShortList for the free save.
+		addToListDialog({ from: screen.results, to: screen.shortlistAdd, switchTo: "shortlist" }, pointer),
+		// The nav link lands on Lists, so this stop crosses to ShortLists itself.
+		myLists({ from: screen.shortlistAdd, to: screen.shortlists, switchTo: "shortlist" }, pointer),
+		openShortlist({ from: screen.shortlists, to: screen.shortlist }, pointer),
+		openCreator({ from: screen.shortlist, to: screen.profile }, pointer),
 		mediaKitTab({ from: screen.profile, to: screen.kit }, pointer),
-		addToListDialog({ from: screen.kit, to: screen.dialog }),
-		myLists({ from: screen.dialog, to: screen.lists }, pointer),
+		// Promoted straight from the panel, which is where the app puts the control.
+		addToListDialog({ from: screen.kit, to: screen.listAdd }),
+		myLists({ from: screen.listAdd, to: screen.lists }, pointer),
 		listDetail({ from: screen.lists, to: screen.list }, pointer),
 		compareMode({ from: screen.list, to: screen.compare }),
 		leaveCompare({ from: screen.compare, to: screen.list }, pointer),
-		shareModal({ from: screen.list, to: screen.share }),
+		// Export runs on the selection compare just used, and hands the story to
+		// Share still standing on the list — so Share's `from` is the finished frame.
+		exportFlow({ from: screen.list, dialog: screen.exportDialog, done: screen.exported }, pointer),
+		shareModal({ from: screen.exported, to: screen.share }),
 		restart({ from: screen.share, to: screen.analyze, reset: analyze?.reset }, pointer),
 	];
 	// Record where each beat lands before adding any card — cards are timed off
@@ -179,8 +201,8 @@ function initWorkflow(mockup: HTMLElement) {
 	//
 	// The active layer must be set by hand: screen swaps are `tl.call()` callbacks,
 	// which don't fire on a backwards seek. Beat 1 works in place and never claims
-	// screen 1 — beat 11 normally hands it over — so without this the old screen
-	// stays frozen until the story reaches its first swap. Inner state needs nothing;
+	// screen 1 — the restart beat normally hands it over — so without this the old
+	// screen stays frozen until the story reaches its first swap. Inner state needs nothing;
 	// each beat resets what it touches as the story arrives.
 	function restartStory() {
 		ended = false;

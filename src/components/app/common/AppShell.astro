@@ -9,18 +9,23 @@
  * 90rem x 56.25rem frame, matching how the app's 50px content padding lands.
  */
 import AppNavBar from "./AppNavBar.astro";
+import IoNotificationCard from "./IoNotificationCard.astro";
 
 interface Props {
 	active?: "analyze" | "lists" | "roster";
 	showCredits?: boolean;
 	credits?: number;
+	/** Opens the header's io popover on the finished export — see beat 15. */
+	exported?: boolean;
 }
 
-const { active = "analyze", showCredits = true, credits } = Astro.props;
+const { active = "analyze", showCredits = true, credits, exported = false } = Astro.props;
 ---
 
 <div class="absolute inset-0 bg-wf-page">
 	<AppNavBar active={active} showCredits={showCredits} credits={credits} />
+
+	{exported && <IoNotificationCard />}
 
 	<div class="absolute top-20 left-4 h-201 w-352 rounded-[2rem] bg-wf-card"></div>
 

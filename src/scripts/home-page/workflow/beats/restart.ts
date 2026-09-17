@@ -4,10 +4,10 @@ import { swapInline } from "../utils/dom";
 import type { Pointer } from "../utils/pointer";
 
 /**
- * Beat 11 — type the address, Send (settles to "Sent"), close, then Analyze to land
+ * Beat 16 — type the address, Send (settles to "Sent"), close, then Analyze to land
  * back on screen 1 where the timeline loops. It must hand the mockup over in a state
  * beat 1 can start from — hence `reset`, and the cursor parked on the Analyze item.
- * 10 → 1 is a section change like beat 6's, so the nav pill snaps on the click.
+ * 15 → 1 is a section change like beat 6's, so the nav pill snaps on the click.
  */
 
 export interface RestartLayers {

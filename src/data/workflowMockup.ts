@@ -24,8 +24,16 @@ const SEARCH_COST = ANALYZED_COUNT * PER_ANALYZED;
 
 /**
  * The nav credits chip at each point the story spends. Every screen is authored
- * holding the balance it should show, and beats 1-2 tick the chip on the layer the
+ * holding the balance it should show, and the beats tick the chip on the layer the
  * spend happens on — so the following swap lands on a chip already reading right.
+ *
+ * The story spends exactly twice, and *where* is the whole argument for shortlists:
+ * `afterSearch` on Apply & Search, then `afterProfile` when the shortlist opens a
+ * creator — `CreatorDetail` watches `mediaKitByProfileKeyPod`, so opening one is
+ * what fires GET /mkit and bills the 50. Saving to a shortlist opens nobody, so it
+ * is free; and promoting an already-opened creator to a list is free too, because
+ * the dialog charges "50 credits per *new* unlock" and this one is already bought.
+ * Hence only three balances for thirteen steps.
  */
 export const CREDITS = {
 	start: CREDITS_START,
@@ -99,9 +107,9 @@ export const RESULT_CREATORS: Creator[] = [
 		name: "Selwyn D'souza",
 		handle: "sellydsouzaaa",
 		tierLabel: "💎 Macro",
-		followers: "190.4K",
-		avgLikes: "9.0K",
-		engagement: "4.73%",
+		followers: "188.0K",
+		avgLikes: "10.6K",
+		engagement: "5.62%",
 		engagementLevel: "HIGH",
 		location: "Bangalore, India",
 		gender: "Male",
@@ -112,9 +120,9 @@ export const RESULT_CREATORS: Creator[] = [
 		name: "Neeraj Choudhary",
 		handle: "neeraj__",
 		tierLabel: "💎 Macro",
-		followers: "193.6K",
-		avgLikes: "9.5K",
-		engagement: "4.89%",
+		followers: "189.8K",
+		avgLikes: "4.9K",
+		engagement: "2.56%",
 		engagementLevel: "HIGH",
 		location: "India",
 		gender: "Male",
@@ -123,12 +131,12 @@ export const RESULT_CREATORS: Creator[] = [
 	},
 	{
 		name: "Poorav",
-		handle: "pooo.raw",
+		handle: "pooravw",
 		tierLabel: "💎 Macro",
-		followers: "282.4K",
-		avgLikes: "7.4K",
-		engagement: "2.62%",
-		engagementLevel: "HIGH",
+		followers: "273.9K",
+		avgLikes: "4.1K",
+		engagement: "1.50%",
+		engagementLevel: "AVERAGE",
 		location: "Bangalore, India",
 		gender: "Male",
 		language: "EN",
@@ -138,23 +146,24 @@ export const RESULT_CREATORS: Creator[] = [
 		name: "AevyTV",
 		handle: "aevytvdaily",
 		tierLabel: "💎 Macro",
-		followers: "396.4K",
-		avgLikes: "4.7K",
-		engagement: "1.19%",
-		engagementLevel: "AVERAGE",
+		followers: "533.3K",
+		avgLikes: "10.7K",
+		engagement: "2.01%",
+		engagementLevel: "ABOVE AVERAGE",
 		location: "India",
 		language: "EN",
 		verified: true,
 	},
 	{
-		name: "everythingbengaluru",
-		handle: "boredinbengaluru",
+		name: "Shreyas N Rao",
+		handle: "bengaluru_nakshe",
 		tierLabel: "💎 Macro",
-		followers: "191.6K",
-		avgLikes: "3.6K",
-		engagement: "1.88%",
+		followers: "321.2K",
+		avgLikes: "5.1K",
+		engagement: "1.59%",
 		engagementLevel: "ABOVE AVERAGE",
 		location: "Bangalore, India",
+		gender: "Male",
 		language: "EN",
 		verified: true,
 	},
@@ -246,20 +255,105 @@ export function creatorByHandle(handle: string): Creator {
  * The two rows the story compares, in screen 9's column order. Exactly the
  * `LIST_CREATORS` screen 8 paints as already ticked.
  */
-export const COMPARED_HANDLES = [PROFILED_HANDLE, "pooo.raw"] as const;
+export const COMPARED_HANDLES = [PROFILED_HANDLE, "pooravw"] as const;
 
 /**
  * The story list's members, and so screen 8's rows. Poorav and Justin are standing
  * members (what the dialog shows on screen 6); Selwyn is the one the story adds, and
  * leads because screens 8-9 are about the creator just profiled.
  */
-export const LIST_CREATORS: Creator[] = [PROFILED_HANDLE, "pooo.raw", "hyperfitx"].map((handle) => ({
+export const LIST_CREATORS: Creator[] = [PROFILED_HANDLE, "pooravw", "hyperfitx"].map((handle) => ({
 	...creatorByHandle(handle),
 	checked: (COMPARED_HANDLES as readonly string[]).includes(handle),
 }));
 
-/** The list the story adds to — marked on screen 6, the only card on screen 7. */
+/**
+ * The app runs one set of screens for both, swapping the word and the accent —
+ * `models/list_type.dart`. Screens take this rather than a boolean so a call site
+ * reads the way the app's own does.
+ */
+export type ListType = "list" | "shortlist";
+
+/** The list the story adds to — marked on the dialog's List tab, the only card on Lists. */
 export const STORY_LIST = "Vox Pop";
+
+/** The shortlist the story saves into, straight off the Analyze results. */
+export const STORY_SHORTLIST = "Bangalore Scout";
+
+/**
+ * The three rows the story ticks in the results and bulk-adds to the shortlist.
+ * Selwyn leads because he is the one it goes on to open; the other two are chosen
+ * for *not* being in `LIST_CREATORS`, so when only Selwyn is promoted you can see
+ * the two that stayed behind.
+ */
+export const SHORTLIST_HANDLES = [PROFILED_HANDLE, "neeraj__", "bengaluru_nakshe"] as const;
+
+/**
+ * Nothing here is ticked: the story opens Selwyn from these rows and promotes him
+ * from his own panel, so it never comes back to select anybody. An earlier cut did,
+ * and this was where its selection was authored.
+ */
+export const SHORTLIST_CREATORS: Creator[] = SHORTLIST_HANDLES.map(creatorByHandle);
+
+/**
+ * A row's Media Kit column. `locked` is the app's blank cell — `buildMediaKitCell`
+ * returns a `SizedBox.shrink()` rather than any placeholder, so an unbought creator
+ * shows *nothing* there. `synced` is the creator's own data version, `d MMM yyyy`.
+ */
+export type MediaKitState =
+	| { status: "locked" }
+	| { status: "latest" | "past"; synced: string };
+
+/**
+ * What the account already owns when the story opens — the mockup's stand-in for
+ * `purchasedMediakitsPod`.
+ *
+ * **One map for the whole app, not one per screen.** A kit is bought per *profile*,
+ * so wherever that creator turns up — the Analyze results, a shortlist, a list — the
+ * same cell shows; Analyze and the list screens both read that one pod. Poorav and
+ * Justin are standing members of the story's list, and being in a list is what buys
+ * the kit, so both were already paid for long before the story starts.
+ *
+ * Poorav's values are the app's own, read off a live Analyze row. Justin never
+ * appears in a search here, so his are ours — and he carries the stale one, which is
+ * what keeps the column's second state on screen now that Poorav's snapshot is
+ * fresh. A kit goes stale after 15 days.
+ */
+export const PURCHASED_MEDIA_KITS: Record<string, MediaKitState> = {
+	pooravw: { status: "latest", synced: "6 Sep 2026" },
+	hyperfitx: { status: "past", synced: "20 Aug 2026" },
+};
+
+/**
+ * Who has reach-out details, and so a live Enquire button — `enquireReadyPod`, which
+ * is `hasReachOut(contactDetails)` and **not** the same question as "is the media kit
+ * bought".
+ *
+ * Analyze rows never render it at all: `showEnquireButton: reachOutFilterOn`, and the
+ * story applies no Reach Out filter. Poorav is only ever in the list, so list detail
+ * is the one screen his live button shows up on — the shortlist holds a different
+ * three, and his locked contact chip on Analyze is a separate question from this one.
+ */
+export const CONTACTABLE = new Set<string>([PROFILED_HANDLE, "pooravw"]);
+
+/**
+ * The one kit the story itself buys, when the shortlist opens Selwyn. Held apart
+ * from `PURCHASED_MEDIA_KITS` because the story has a before and an after: every
+ * screen up to that press must show him blank, and every screen after it must show
+ * this — which is what makes the 50 credits legible.
+ */
+export const STORY_UNLOCK: MediaKitState = { status: "latest", synced: "12 Sep 2026" };
+
+/**
+ * The account's kits as a screen sees them. `unlocked` folds in the story's own
+ * purchase, so a screen asks the question the app asks — "has this profile been
+ * bought?" — rather than restating an answer per screen.
+ *
+ * A **list** row is never blank: joining a list is what buys the kit, so every member
+ * is purchased by definition. Only a shortlist can show the empty cell.
+ */
+export const mediaKitsFor = (unlocked = false): Record<string, MediaKitState> =>
+	unlocked ? { ...PURCHASED_MEDIA_KITS, [PROFILED_HANDLE]: STORY_UNLOCK } : PURCHASED_MEDIA_KITS;
 
 /**
  * The lookalike seed the story types on screens 1-2. Written only here — the typing
@@ -288,14 +382,47 @@ export const RESULT_FILTERS = [
  * list before the add. Screen 7 counts `LIST_CREATORS` instead, so the two never
  * have to be kept in step. `preview` is whose portraits fill a card's tiles.
  */
+/**
+ * What a card reads once the story has just added to it. The authored `updated` is
+ * how a card looks when the story has *not* touched it — Vox Pop sits at 2m while
+ * the shortlist is being filled, and only reads this on the way back.
+ */
+export const JUST_UPDATED = "last updated just now";
+
 export const CREATOR_LISTS = [
 	{
 		name: STORY_LIST,
 		count: 2,
 		updated: "last updated 2m ago",
-		preview: ["pooo.raw", "hyperfitx"],
+		preview: ["pooravw", "hyperfitx"],
 	},
 ] as const;
+
+/**
+ * The ShortLists tab's one card, as `CREATOR_LISTS` above: `count`/`preview` are the
+ * *dialog's* figures, the shortlist before the add. It starts empty because the story
+ * is what first fills it — the shortlist exists, it just has nobody in it yet, which
+ * is why the picker still draws its search bar (`if (hasAnyList)` gates that on a
+ * list existing, not on the tab or on the list having members).
+ */
+export const CREATOR_SHORTLISTS = [
+	{
+		name: STORY_SHORTLIST,
+		count: 0,
+		updated: "last updated just now",
+		preview: [] as readonly string[],
+	},
+] as const;
+
+/**
+ * Whose portraits the dialog drops into a row's grid when Add is pressed, per tab.
+ * Three into the shortlist — the results rows the story ticked — and then just the
+ * one into the list, because only the creator it actually opened gets promoted.
+ */
+export const DIALOG_ADDS = {
+	shortlist: SHORTLIST_HANDLES,
+	list: [PROFILED_HANDLE],
+} as const satisfies Record<ListType, readonly string[]>;
 
 /**
  * Media-kit tiles, growth charts and pricing for the profile and compare screens.
@@ -310,36 +437,36 @@ export const CREATOR_LISTS = [
  */
 export const MEDIA_KIT_STATS = {
 	selwyn: {
-		engagement: "4.73%",
+		engagement: "5.62%",
 		tier: "💎 Macro Influencer",
 		headline: "Macro Influencer (100k - 1M followers)",
-		followers: "190K",
+		followers: "188K",
 		posts: "2.1K",
 		reelViews: "137K",
-		likes: "9.01K",
+		likes: "10.6K",
 		comments: "66",
 		level: "high",
-		// 4.73 against a 1.01 median: 0.5x1.01 to 1.5x4.73.
-		axis: ["0.5", "7.1"],
-		marker: 64,
-		median: 8,
+		// 5.62 against a 1.01 median: 0.5x1.01 to 1.5x5.62.
+		axis: ["0.5", "8.4"],
+		marker: 65,
+		median: 6,
 		followerGrowth: [
-			{ month: "feb", value: 178_500 },
-			{ month: "mar", value: 180_700 },
-			{ month: "apr", value: 186_000 },
-			{ month: "may", value: 189_200 },
-			{ month: "jun", value: 192_700 },
-			{ month: "jul", value: 192_100 },
-			{ month: "aug", value: 190_373 },
+			{ month: "mar", value: 178_500 },
+			{ month: "apr", value: 180_700 },
+			{ month: "may", value: 186_000 },
+			{ month: "jun", value: 189_200 },
+			{ month: "jul", value: 190_400 },
+			{ month: "aug", value: 189_100 },
+			{ month: "sep", value: 188_037 },
 		],
 		likesGrowth: [
-			{ month: "feb", value: 3_460 },
-			{ month: "mar", value: 5_300 },
-			{ month: "apr", value: 10_500 },
-			{ month: "may", value: 17_500 },
-			{ month: "jun", value: 22_950 },
-			{ month: "jul", value: 13_500 },
-			{ month: "aug", value: 9_010 },
+			{ month: "mar", value: 3_460 },
+			{ month: "apr", value: 5_300 },
+			{ month: "may", value: 10_500 },
+			{ month: "jun", value: 17_500 },
+			{ month: "jul", value: 22_950 },
+			{ month: "aug", value: 13_500 },
+			{ month: "sep", value: 10_600 },
 		],
 		priceBars: [
 			{ label: "per reel", min: 965, max: 1_400 },
@@ -349,44 +476,128 @@ export const MEDIA_KIT_STATS = {
 		],
 	},
 	poorav: {
-		engagement: "2.62%",
+		engagement: "1.50%",
 		tier: "💎 Macro Influencer",
 		headline: "Macro Influencer (100k - 1M followers)",
-		followers: "282K",
-		posts: "395",
-		reelViews: "123K",
-		likes: "7.4K",
-		comments: "18",
-		level: "high",
-		// 2.62 against the same median, so the axis stops short of Selwyn's.
-		axis: ["0.5", "3.9"],
-		marker: 62,
-		median: 15,
+		followers: "274K",
+		posts: "433",
+		reelViews: "83.3K",
+		likes: "4.12K",
+		comments: "12",
+		level: "average",
+		// 1.50 against the same median: 0.5x1.01 to 1.5x1.50, so 2.25 rounds to 2.3.
+		axis: ["0.5", "2.3"],
+		marker: 57,
+		median: 29,
 		followerGrowth: [
-			{ month: "feb", value: 277_800 },
-			{ month: "mar", value: 279_900 },
-			{ month: "apr", value: 285_000 },
-			{ month: "may", value: 287_000 },
-			{ month: "jun", value: 285_300 },
-			{ month: "jul", value: 283_600 },
-			{ month: "aug", value: 282_150 },
+			{ month: "mar", value: 279_400 },
+			{ month: "apr", value: 285_100 },
+			{ month: "may", value: 286_300 },
+			{ month: "jun", value: 284_300 },
+			{ month: "jul", value: 281_100 },
+			{ month: "aug", value: 276_500 },
+			{ month: "sep", value: 273_900 },
 		],
 		likesGrowth: [
-			{ month: "feb", value: 9_300 },
-			{ month: "mar", value: 9_350 },
-			{ month: "apr", value: 9_400 },
-			{ month: "may", value: 9_920 },
-			{ month: "jun", value: 7_900 },
-			{ month: "jul", value: 6_820 },
-			{ month: "aug", value: 7_400 },
+			{ month: "mar", value: 9_280 },
+			{ month: "apr", value: 9_240 },
+			{ month: "may", value: 9_900 },
+			{ month: "jun", value: 7_990 },
+			{ month: "jul", value: 6_870 },
+			{ month: "aug", value: 4_660 },
+			{ month: "sep", value: 4_120 },
 		],
 		priceBars: [
 			{ label: "per reel", min: 1_300, max: 1_900 },
-			{ label: "per story", min: 740, max: 1_100 },
+			{ label: "per story", min: 743, max: 1_100 },
 			{ label: "per post", min: 1_100, max: 1_600 },
-			{ label: "per carousel", min: 1_200, max: 1_700 },
+			{ label: "per carousel", min: 1_200, max: 1_800 },
 		],
 	},
+} as const;
+
+/**
+ * The export dialog's column picker — `list/widgets/export_dialog.dart` for
+ * Instagram, which is the only platform the story uses.
+ *
+ * The app builds the Available list as mandatory columns first, then everything
+ * else **sorted by label**, groups included — so this is one alphabetical run, not
+ * a hand-ordered one. `group` rows are collapsible parents over child columns and
+ * `count` rows hide a 1–5 picker behind the same chevron; the story opens neither,
+ * so only the chevron is reproduced.
+ */
+export interface ExportColumn {
+	label: string;
+	/** Always exported: ticked, dimmed and not clickable. */
+	mandatory?: boolean;
+	/** Draws the chevron — a collapsible group or a count picker. */
+	expandable?: boolean;
+}
+
+export const EXPORT_MANDATORY: readonly ExportColumn[] = [
+	{ label: "Username", mandatory: true },
+	{ label: "Profile URL", mandatory: true },
+	{ label: "Full Name", mandatory: true },
+];
+
+export const EXPORT_OPTIONAL: readonly ExportColumn[] = [
+	{ label: "Audience % (Female)" },
+	{ label: "Audience % (Male)" },
+	{ label: "Audience Age and Gender Split" },
+	{ label: "Audience Interest" },
+	{ label: "Average Reel Views" },
+	{ label: "Avg Likes" },
+	{ label: "Bio" },
+	{ label: "Contact Details", expandable: true },
+	{ label: "Creator Age Group" },
+	{ label: "Creator City" },
+	{ label: "Creator Country" },
+	{ label: "Creator State" },
+	{ label: "Credibility Score", expandable: true },
+	{ label: "Engagement Rate" },
+	{ label: "Followers" },
+	{ label: "Gender" },
+	{ label: "Language" },
+	{ label: "Pricing", expandable: true },
+	{ label: "Top Cities (Audience)", expandable: true },
+	{ label: "Top Countries (Audience)", expandable: true },
+	{ label: "Verified" },
+];
+
+/**
+ * Ticked the moment the dialog opens — `_defaultSelectedForPlatform`. The three
+ * mandatory columns plus the two metrics, and `_selectedOrder` keeps them in this
+ * order, which is why the Selected pane reads the same way.
+ */
+export const EXPORT_SELECTED = ["Username", "Profile URL", "Full Name", "Followers", "Engagement Rate"] as const;
+
+/** The two the story ticks, in the order it ticks them — appended to Selected. */
+export const EXPORT_ADDS = ["Audience Interest", "Language"] as const;
+
+/**
+ * The day the story happens on, and every date the mockup states against it.
+ * Held together so they cannot drift: the share link's expiry read `7 Aug` for a
+ * good while after the media kits had moved into September.
+ */
+export const STORY_DATE = {
+	/** The export job's stamp — `IoNotificationButton`'s `d MMMM HH:mm`. */
+	exportedAt: "16 September 17:24",
+	/**
+	 * The share picker's default, `d MMM` of **today + 7** — `ShareModal`'s
+	 * `DateTime.now().add(const Duration(days: 7))`. 16 Sep → 23 Sep.
+	 */
+	shareExpiry: "23 Sep",
+} as const;
+
+/**
+ * The finished job the header popover opens with — `IoNotificationButton`
+ * auto-opens on completion with that job expanded. `rows` is the selection the
+ * export ran over, so it has to be the pair the list screen ticked.
+ */
+export const EXPORT_JOB = {
+	title: STORY_LIST,
+	at: STORY_DATE.exportedAt,
+	rows: COMPARED_HANDLES.length,
 } as const;
 
 /**
@@ -406,7 +617,7 @@ export const PRICING = {
 
 /** The About tab's profile block, kept beside the row so their figures can't drift. */
 export const PROFILED_ABOUT = {
-	followersInFull: "190,373",
+	followersInFull: "188,037",
 	topGender: { value: "Male", share: "50.4%" },
 	topCountry: { value: "India", share: "90.3%" },
 	bio: "humour based on your pain\nrepped by @circuitmgmt\n\u{1F4E7} - selly@circuitmgmt.com",

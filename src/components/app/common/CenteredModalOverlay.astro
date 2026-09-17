@@ -6,13 +6,15 @@
  */
 interface Props {
 	width: string;
+	/** Fixed-height dialogs only — the add-to dialog is content-driven. */
+	height?: string;
 	/** Card fill, radius and border differ between the dialogs. */
 	background?: string;
 	radius?: string;
 	border?: string;
 }
 
-const { width, background = "#181823", radius = "1.5rem", border = "#3b3b62" } = Astro.props;
+const { width, height, background = "#181823", radius = "1.5rem", border = "#3b3b62", ...rest } = Astro.props;
 ---
 
 {/*
@@ -27,8 +29,9 @@ const { width, background = "#181823", radius = "1.5rem", border = "#3b3b62" } =
 
 <div
 	class="absolute top-1/2 left-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col"
-	style={`width:${width};background:${background};border-radius:${radius};border:1px solid ${border}`}
+	style={`width:${width};${height ? `height:${height};` : ""}background:${background};border-radius:${radius};border:1px solid ${border}`}
 	data-wf-modal-card
+	{...rest}
 >
 	<slot />
 </div>

@@ -1,0 +1,67 @@
+---
+/**
+ * Media Kit freshness — `common/widgets/media_kit_status_label.dart`.
+ *
+ * Renders nothing when locked, which is the app's own behaviour rather than a
+ * shortcut: a creator nobody has unlocked gets `SizedBox.shrink()`, so the column
+ * is simply empty next to them. That blank is what makes the paid rows legible.
+ *
+ * Two forms. `compact` stacks title over date and is the table column; the wide
+ * form runs them on one line with the date's own two-tone styling, and is what the
+ * creator detail's header carries beside its title.
+ */
+import Icon from "./Icon.astro";
+import type { MediaKitState } from "../../../data/workflowMockup";
+
+interface Props {
+	state: MediaKitState;
+	/** False gives the header's single-line form — the app's `compact: false`. */
+	compact?: boolean;
+	class?: string;
+}
+
+const { state, compact = true, class: className = "" } = Astro.props;
+
+/**
+ * The app tints both glyphs with `srcIn`, so each is a flat silhouette — the
+ * padlock's cut-out keyhole included. `load` is the same arrow-cycle glyph the
+ * refresh control uses.
+ */
+const LOOK = {
+	latest: { icon: "mkitUnlocked", tint: "text-wf-green-deep", title: "Latest Data Unlocked", text: "text-wf-mkit-latest-text" },
+	past: { icon: "load", tint: "text-wf-mkit-past", title: "Past Data Unlocked", text: "text-wf-mkit-past-text" },
+} as const;
+
+/* Read together so the narrowing survives into the template. */
+const look = state.status === "locked" ? null : { ...LOOK[state.status], synced: state.synced };
+---
+
+{
+	look && (
+		<span
+			class:list={[compact ? "flex min-w-0 flex-col items-start" : "flex min-w-0 items-center", className]}
+		>
+			<span class="flex min-w-0 items-center gap-1">
+				<Icon name={look.icon} size="0.625rem" class={`shrink-0 ${look.tint}`} />
+				<span class={`text-[0.625rem] font-medium whitespace-nowrap ${look.text}`}>{look.title}</span>
+			</span>
+
+			{
+				compact ? (
+					/*
+					 * The app's `SizedBox(height: 2)`, opened to 4: the stage trims both boxes
+					 * to cap height, which takes the visual gap back below what Flutter shows.
+					 */
+					<span class="mt-1 text-[0.625rem] whitespace-nowrap text-wf-text-muted">
+						Data from {look.synced}
+					</span>
+				) : (
+					/* One line, gap 12, and the date is `Text.rich`: label then value, two tones. */
+					<span class="ml-3 text-[0.625rem] font-medium whitespace-nowrap text-wf-mkit-synced">
+						Data from <span class="text-wf-mkit-synced-date">{look.synced}</span>
+					</span>
+				)
+			}
+		</span>
+	)
+}

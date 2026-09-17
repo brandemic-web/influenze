@@ -11,11 +11,9 @@
 interface Props {
 	/** Stop index 0–5, where 0 is the "all ranges" position. */
 	stop?: number;
-	/** Stop the story's drag pulls away from. Defaults to the authored one. */
-	from?: number;
 }
 
-const { stop = 3, from = stop } = Astro.props;
+const { stop = 3 } = Astro.props;
 
 /**
  * Stop offsets as a percentage of the usable travel. The app reserves a 5px gap
@@ -38,7 +36,6 @@ const litFrom = stop - 1;
 	data-wf-slider
 	data-wf-slider-stops={stops.join(",")}
 	data-wf-slider-stop={stop}
-	data-wf-slider-from={from}
 	style={`--wf-slider-at:${at / 100}`}
 >
 	<div class="relative h-4 w-full">

@@ -1,12 +1,16 @@
 import gsap from "gsap";
-import { CREDITS, PROFILED_HANDLE } from "../../../../data/workflowMockup";
-import { setCredits, spendCredits } from "../utils/credits";
+import { CREDITS } from "../../../../data/workflowMockup";
+import { setCredits } from "../utils/credits";
 import type { Pointer } from "../utils/pointer";
 
 /**
- * Beat 2 — the search runs and the ranked results arrive, then the cursor opens
- * the profiled creator. The 1 → 3 layer swap is hidden, not cross-faded: the panel
- * is empty and the shell, search bar and rail match on both sides.
+ * Beat 2 — the search runs and the ranked results arrive, and the cursor reads down
+ * them. The 1 → 3 layer swap is hidden, not cross-faded: the panel is empty and the
+ * shell, search bar and rail match on both sides.
+ *
+ * It stops at the scroll. Opening a creator from here would bill the 50-credit
+ * unlock, and the whole point of what follows is that the story does not do that
+ * yet — `shortlistSelect` ticks these rows and saves them for free instead.
  */
 
 export interface ResultsListLayers {
@@ -26,10 +30,9 @@ function collect({ from, to }: ResultsListLayers) {
 		/** Every direct child of the panel — they reveal together, as one piece. */
 		parts: to.querySelectorAll<HTMLElement>("[data-wf-results-part]"),
 		scroller,
-		profiled: to.querySelector<HTMLElement>(`[data-wf-creator="${PROFILED_HANDLE}"]`),
 	};
 
-	if (!el.empty || !el.scroller || !el.profiled || !el.parts.length || rows.length < 2) {
+	if (!el.empty || !el.scroller || !el.parts.length || rows.length < 2) {
 		return null;
 	}
 	return { ...(el as { [K in keyof typeof el]: NonNullable<(typeof el)[K]> }), rows };
@@ -67,18 +70,12 @@ export function resultsList(layers: ResultsListLayers, pointer: Pointer) {
 	tl.from(el.parts, { opacity: 0, y: 8, duration: 0.45, immediateRender: false });
 
 	// ── a look down the results, and back ────────────────────────────────────
-	// Wheel-style scroll under a parked cursor. It returns to the top first: the
-	// press below aims at a row, which a scrolled list would slide out from under it.
+	// Wheel-style scroll under a parked cursor. It returns to the top because the
+	// next beat ticks rows near it, which a scrolled list would slide out from under.
 	tl.add(pointer.moveTo(el.scroller, { at: { x: 0.5, y: 0.35 }, duration: 0.55 }), "+=0.2")
 		.to(el.scroller, { y: () => -rowPitch() * 1.3, duration: 0.9, ease: "power2.inOut" }, "+=0.1")
+		.addLabel("read")
 		.to(el.scroller, { y: 0, duration: 0.7, ease: "power2.inOut" }, "+=0.4");
-
-	// ── open the profiled creator ────────────────────────────────────────────
-	// Aimed at the name, not the row centre (metrics). The press is the only
-	// feedback — the app has no row hover state, and beat 3 answers the click.
-	tl.add(pointer.moveTo(el.profiled, { at: { x: 0.3 }, duration: 0.6 }), "+=0.1")
-		.add(pointer.press(), ">-0.05")
-		.call(spendCredits(layers.to, CREDITS.afterSearch, CREDITS.afterProfile));
 
 	return tl;
 }

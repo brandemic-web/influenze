@@ -16,9 +16,15 @@ import { CREDITS, RAIL_TIER_SCROLL } from "../../../../data/workflowMockup";
 interface Props {
 	/** The search has run: ranked results, and the rail filled and scrolled to the tiers. */
 	results?: boolean;
+	/**
+	 * The three rows the story shortlists are ticked and the bulk Add is live. Only
+	 * used for the add-to dialog's backdrop copy, which has to match the layer it is
+	 * standing in for after `shortlistSelect` has ticked them there.
+	 */
+	selected?: boolean;
 }
 
-const { results = false } = Astro.props;
+const { results = false, selected = false } = Astro.props;
 ---
 
 <AppShell active="analyze" credits={results ? CREDITS.afterSearch : CREDITS.start}>
@@ -27,7 +33,7 @@ const { results = false } = Astro.props;
 	{
 		results ? (
 			<AnalyzeResultsPanel class="flex flex-col px-6 py-5">
-				<AnalyzeResultsList />
+				<AnalyzeResultsList selected={selected} />
 			</AnalyzeResultsPanel>
 		) : (
 			<AnalyzeResultsPanel>

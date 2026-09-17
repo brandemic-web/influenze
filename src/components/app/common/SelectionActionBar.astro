@@ -1,0 +1,46 @@
+---
+/**
+ * The list and shortlist toolbars' selection UI — `SelectionActionBar` in
+ * `common/widgets/selection_action_bar.dart`. Two pills, and only one of them
+ * comes and goes: the actions pill is always on screen and merely lights up
+ * with the selection (`lavender86` under a `lavender100` border, against
+ * `lavender50` and no border before it), while the count pill is absent until
+ * something is ticked. Its `selectionSlotWidth` 120 is reserved either way, so
+ * the actions pill never moves when the count arrives.
+ */
+import Icon from "./Icon.astro";
+
+interface Props {
+	/** Rendered inside the count pill, which the app hides at 0. */
+	count: number;
+	class?: string;
+}
+
+const { count, class: className = "" } = Astro.props;
+---
+
+<span class:list={["flex items-center", className]}>
+	<span class="w-2 shrink-0"></span>
+
+	{/* ActionsPill — `padding v5 h6`, radius 999; the actions are the slot. */}
+	<span
+		class="flex shrink-0 items-center rounded-full border border-wf-io-pill-on bg-wf-io-pill px-1.5 py-[0.3125rem]"
+		data-wf-actions-pill
+	>
+		<slot />
+	</span>
+
+	<span class="flex w-30 shrink-0 justify-end">
+		{/*
+			SelectionPill — `padding v12 h10` with a trailing 6, so the right side
+			reads 16. `cross.svg` is drawn at its own 14 and nudged `top1 left4`.
+		*/}
+		<span
+			class="flex items-center rounded-full bg-wf-select-pill py-3 pr-4 pl-2.5 text-[0.75rem] whitespace-nowrap text-wf-meta"
+			data-wf-selected-pill
+		>
+			<Icon name="cross" size="0.875rem" class="mt-px ml-1 text-wf-meta" />
+			<span class="ml-1">{count} Selected</span>
+		</span>
+	</span>
+</span>

@@ -2,10 +2,14 @@ import gsap from "gsap";
 import type { Pointer } from "../utils/pointer";
 
 /**
- * Beat 4 — the Media Kit tab: underline moves, body changes, the cursor scrolls
- * the kit, then presses add-to-list. Screens 4 and 5 are the same `CreatorDetail`
- * with a different `tab` prop, so only the tabs and body need bringing into line.
- * Tab colours are read off screen 5's own tabs rather than restated.
+ * The Media Kit tab: underline moves, body changes, the cursor scrolls the kit.
+ * The two layers are the same `CreatorDetail` with a different `tab` prop, so only
+ * the tabs and body need bringing into line. Tab colours are read off the arriving
+ * layer's own tabs rather than restated.
+ *
+ * It ends by reaching for **add-to-list, beside Enquire** — the control the app puts
+ * on the creator's own panel. That is why the story never walks back to the shortlist
+ * to promote someone; beat 9 answers this press with the dialog.
  */
 
 export interface MediaKitTabLayers {
@@ -98,8 +102,8 @@ export function mediaKitTab(layers: MediaKitTabLayers, pointer: Pointer) {
 		"+=0.1"
 	);
 
-	// Card 2 bows out here, not at the beat's end, so it is gone before the cursor
-	// reaches for add-to-list. See workflowCards.ts.
+	// The vetting card bows out here, not at the beat's end, so it is gone before
+	// the cursor reaches for add-to-list. See workflowCards.ts.
 	tl.addLabel("scrolled");
 
 	// ── reach for add-to-list, beside Enquire ────────────────────────────────

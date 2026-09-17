@@ -19,7 +19,11 @@
 	--color-wf-rail-rule: #564d71; /* lavender8 */
 	--color-wf-section-rule: #252525; /* grey6 */
 	--color-wf-rule: #383869; /* lavender11 — panel + card rules */
-	--color-wf-surface: #181823; /* blue / listCardBg */
+	--color-wf-surface: #181823; /* lavender45 — blue / listCardBg */
+	--color-wf-surface-border: #2c2c3d; /* lavender21 */
+	/* A ticked ProfileCard — the fill lifts and the border takes the tick's own violet. */
+	--color-wf-surface-on: #272741; /* lavender75 */
+	--color-wf-surface-on-border: #b8a2ff; /* lavender64 — same as wf-select-icon */
 
 	/* nav */
 	--color-wf-user-pill: #1b3e2c; /* green2 */
@@ -65,11 +69,32 @@
 	--color-wf-green-deep: #1aae55; /* green11 */
 	--color-wf-green-bright: #3aff98; /* green8 */
 
+	/*
+	 * ShortLists. The app accents them lavender against the Lists' green, and that
+	 * pairing is the only thing telling the two tabs apart — see `ListType.accentColor`.
+	 * The add-to dialog's tab pills reuse the platform-chip palette above
+	 * (`wf-chip-on` / `wf-chip-on-border` selected, `wf-chip` / `wf-chip-border` idle,
+	 * `wf-action-muted` for idle text); only the List tab's fill is its own.
+	 */
+	--color-wf-shortlist: #a589ff; /* lavender47 — also the Import/Export and Share glyphs */
+	--color-wf-tab-list: #30a760; /* green21 — and its border is wf-credit-border */
+
+	/*
+	 * Media Kit column. `locked` has no colour because it has no cell: the app's
+	 * `buildMediaKitCell` shrinks to nothing for a creator nobody has bought — which
+	 * only ever happens on a shortlist, since joining a list is what buys the kit.
+	 */
+	--color-wf-mkit-latest-text: #d7d5dc; /* white4 — icon uses wf-green-deep */
+	--color-wf-mkit-past: #f2994a; /* orange1 */
+	--color-wf-mkit-past-text: #ffdbbb; /* orange5 */
+	/* The wide form's date line only — the column's own uses wf-text-muted. */
+	--color-wf-mkit-synced: #8071b0; /* lavender102 */
+	--color-wf-mkit-synced-date: #b9b9eb; /* lavender101 */
+
 	/* type */
 	--color-wf-text: #ffffff;
 	--color-wf-text-soft: #d0c2ff; /* lavender7 */
 	--color-wf-text-muted: #847aa4; /* lavender46 */
-	--color-wf-text-dim: #9fa1ff; /* lavender19 */
 	--color-wf-text-value: #c0acff; /* lavender44 */
 	--color-wf-text-quiet: #beb8d0; /* lavender71 */
 	--color-wf-table-label: #7474c7; /* lavender1 — column headers */
@@ -85,6 +110,22 @@
 	--color-wf-count-muted: #4d4565; /* lavender30 — the dialog title's {N} */
 	--color-wf-menu: #2f254a; /* lavender27 — the contact popover */
 	--color-wf-menu-border: #463575; /* lavender53 */
+	--color-wf-more-icon: #ae94ff; /* lavender98 — the row's ⋯ trigger, over wf-surface */
+	--color-wf-io-pill: #343461; /* lavender86 — Import / Export, and the actions pill */
+	--color-wf-io-pill-on: #4a4a82; /* lavender100 — that pill's border once it is live */
+	--color-wf-select-pill: #2c2c49; /* lavender50 — the same pill with nothing selected */
+	/* Export's mandatory columns — ticked but not yours to untick. */
+	--color-wf-locked: #6d638f; /* lavender18 */
+	--color-wf-locked-tick: #d5caee; /* lavender22 */
+	--color-wf-format-on: #50349e; /* lavender13 — the live .csv / .xlsx chip */
+	--color-wf-format-on-border: #6d55ba; /* lavender91 */
+	--color-wf-note-close: #3a3a46; /* the io popover's dismiss disc, out of x.svg */
+	--color-wf-select-icon: #b8a2ff; /* lavender64 */
+	/* `backLabelText` — the same lavender64, but a different job, so it reads at the call site. */
+	--color-wf-back: #b8a2ff;
+	--color-wf-enquire-off: #5c507f; /* lavender73 — Enquire's glyph when it is disabled */
+	--color-wf-bulk-count: #c5b3ff; /* lavender97 — the count beside Analyze's bulk Add */
+	--color-wf-bulk-count-soft: #8070b2; /* lavender36 — the same count on Add to list */
 	--color-wf-menu-icon: #8878b8; /* lavender54 */
 	--color-wf-violet-soft: #8e6aff; /* lavender2 */
 	--color-wf-green-dim: #3e9761; /* green12 */
@@ -203,6 +244,19 @@
 [data-wf-param="none"] :is([data-wf-param-sheet], [data-wf-param-panel]),
 [data-wf-param="open"] [data-wf-param-panel],
 [data-wf-param="lookalike"] [data-wf-param-sheet] {
+	display: none;
+}
+
+/*
+ * The add-to dialog's two tabs, and My Lists'. Both panes render so the story can
+ * click across in place — a second layer would mean a second copy of the Analyze
+ * screen behind the dialog, which is the heaviest thing the mockup draws.
+ * `display` is the lever, as with the rail above.
+ */
+[data-wf-dialog-tabs="list"] [data-wf-dialog-pane="shortlist"],
+[data-wf-dialog-tabs="shortlist"] [data-wf-dialog-pane="list"],
+[data-wf-lists-tabs="list"] [data-wf-lists-pane="shortlist"],
+[data-wf-lists-tabs="shortlist"] [data-wf-lists-pane="list"] {
 	display: none;
 }
 

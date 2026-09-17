@@ -4,10 +4,12 @@
  * so GSAP can animate them as a narrative. See APP-SPEC.md for the full walkthrough.
  */
 import Analyze from "./screens/analyze/Analyze.astro";
-import AnalyzedCreator from "./screens/analyze/AnalyzedCreator.astro";
 import AddToListDialog from "./screens/analyze/AddToListDialog.astro";
 import Lists from "./screens/list/Lists.astro";
+import ExportDialog from "./screens/list/ExportDialog.astro";
 import ListDetails from "./screens/list/ListDetails.astro";
+import ShortlistCreator from "./screens/list/ShortlistCreator.astro";
+import ShortlistDetails from "./screens/list/ShortlistDetails.astro";
 import ShareModal from "./screens/share-management/ShareModal.astro";
 import StoryStep from "./story/StoryStep.astro";
 import WorkflowPointer from "./story/WorkflowPointer.astro";
@@ -35,16 +37,42 @@ const { class: className = "" } = Astro.props;
 		data-canvas
 		aria-hidden="true"
 	>
-		{/* Step numbers here are the only source; step 2 is skipped on purpose (beat 1 animates step 1 into that state). */}
+		{/*
+			Step numbers here are the only source; step 2 is skipped on purpose (beat 1
+			animates step 1 into that state).
+
+			The order is the app's funnel, and the credits chip carries the argument:
+			search costs, shortlisting is free, opening costs, and promoting an
+			already-opened creator is free again. The promote happens **from the
+			creator's own panel**, where the app puts the control — the story never
+			walks back to the shortlist to select them again.
+		*/}
 		<StoryStep step={1} active><Analyze /></StoryStep>
 		<StoryStep step={3}><Analyze results /></StoryStep>
-		<StoryStep step={4}><AnalyzedCreator tab="about" /></StoryStep>
-		<StoryStep step={5}><AnalyzedCreator tab="mediaKit" /></StoryStep>
-		<StoryStep step={6}><AddToListDialog /></StoryStep>
-		<StoryStep step={7}><Lists /></StoryStep>
-		<StoryStep step={8}><ListDetails /></StoryStep>
-		<StoryStep step={9}><ListDetails compare /></StoryStep>
-		<StoryStep step={10}><ShareModal /></StoryStep>
+		<StoryStep step={4}>
+			<AddToListDialog count={3} adds="shortlist">
+				<Analyze results selected slot="backdrop" />
+			</AddToListDialog>
+		</StoryStep>
+		<StoryStep step={5}><Lists target="shortlist" /></StoryStep>
+		<StoryStep step={6}><ShortlistDetails /></StoryStep>
+		<StoryStep step={7}><ShortlistCreator tab="about" /></StoryStep>
+		<StoryStep step={8}><ShortlistCreator tab="mediaKit" /></StoryStep>
+		<StoryStep step={9}>
+			<AddToListDialog count={1}>
+				<ShortlistCreator tab="mediaKit" slot="backdrop" />
+			</AddToListDialog>
+		</StoryStep>
+		<StoryStep step={10}><Lists /></StoryStep>
+		<StoryStep step={11}><ListDetails /></StoryStep>
+		<StoryStep step={12}><ListDetails compare /></StoryStep>
+		<StoryStep step={13}>
+			<ExportDialog>
+				<ListDetails blurred slot="backdrop" />
+			</ExportDialog>
+		</StoryStep>
+		<StoryStep step={14}><ListDetails exported /></StoryStep>
+		<StoryStep step={15}><ShareModal /></StoryStep>
 
 		<WorkflowPointer />
 	</div>

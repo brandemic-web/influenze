@@ -9,20 +9,29 @@ import CreatorAvatar from "../../../common/CreatorAvatar.astro";
 import Icon from "../../../common/Icon.astro";
 import PlatformIcon from "../../../common/PlatformIcon.astro";
 import MediaKitDetail from "./media-kit/MediaKitDetail.astro";
+import MediaKitStatusLabel from "../../../common/MediaKitStatusLabel.astro";
 import {
 	MACRO_BENCHMARK,
 	MEDIA_KIT_STATS,
 	PRICING,
 	PROFILED_ABOUT,
 	PROFILED_HANDLE,
+	STORY_UNLOCK,
 	creatorByHandle,
 } from "../../../../../data/workflowMockup";
 
 interface Props {
 	tab: "about" | "mediaKit";
+	/**
+	 * Where the panel sits. It has two hosts in the app — the Analyze results panel
+	 * and, opened from a shortlist, the My Lists shell's centred column — and it
+	 * keeps the same header either way: `headerTitle` defaults to "Analyzed Creator"
+	 * and `shortlist_details.dart` does not override it.
+	 */
+	class?: string;
 }
 
-const { tab } = Astro.props;
+const { tab, class: className = "absolute top-37.5 left-116.5 h-166 w-221" } = Astro.props;
 
 const creator = creatorByHandle(PROFILED_HANDLE);
 const stats = MEDIA_KIT_STATS.selwyn;
@@ -44,13 +53,23 @@ const demographics = [
 ];
 ---
 
-<div class="absolute top-37.5 left-116.5 flex h-166 w-221 flex-col" data-wf-detail>
+<div class:list={["flex flex-col", className]} data-wf-detail>
 	<header class="flex shrink-0 items-center pt-5 pb-5 pl-4.5">
-		<h3 class="text-md whitespace-nowrap text-wf-text">Analyzed Creator</h3>
-		<span class="ml-auto text-[0.875rem] font-medium whitespace-nowrap text-wf-green-mid">Back</span>
-		<span class="ml-4.5 grid size-7 place-items-center rounded-sm bg-wf-violet">
-			<Icon name="externalLink" size="0.875rem" class="text-white" />
+		<h3 class="shrink-0 text-md whitespace-nowrap text-wf-text">Analyzed Creator</h3>
+		{/*
+			`buildHeader`: title · 30 · `Flexible(MediaKitStatusLabel(compact: false))` ·
+			16. The label is what the story just paid for, so it is only here once the
+			creator is unlocked — which, opened from a shortlist, is always. When it is
+			absent the app puts a `Spacer()` here instead, which is what `ml-auto` on
+			Back does either way.
+		*/}
+		<MediaKitStatusLabel state={STORY_UNLOCK} compact={false} class="ml-7.5 min-w-0 flex-1" />
+		{/* Same pair as the list shell, in the app's order: Share · 16 · Back. */}
+		<span class="ml-4 flex shrink-0 items-center gap-1">
+			<Icon name="share" size="0.875rem" class="text-wf-shortlist" />
+			<span class="text-[0.75rem] whitespace-nowrap text-wf-text">Share</span>
 		</span>
+		<span class="ml-4 shrink-0 text-[0.875rem] font-medium whitespace-nowrap text-wf-back" data-wf-back>Back</span>
 	</header>
 
 	<span class="block h-px shrink-0 bg-wf-rule"></span>
@@ -82,11 +101,16 @@ const demographics = [
 					<span class="ml-1.5 text-[0.625rem] whitespace-nowrap text-wf-text">Enquire</span>
 					<Icon name="arrowIcon" size="0.75rem" class="ml-1 text-wf-green-dim" />
 				</span>
+				{/*
+					`AddToListButton(state: add)` non-compact — 34px circle, **plus.svg at 12 in
+					white**, on `lavender27` with a `lavender53` hairline. `add_to_list` is the
+					`added` state's glyph, not this one.
+				*/}
 				<span
-						class="ml-2.5 grid size-8.5 place-items-center rounded-full border border-wf-menu-border bg-wf-menu"
-						data-wf-add-to-list
-					>
-					<Icon name="addToList" size="0.75rem" class="text-wf-violet-soft" />
+					class="ml-2.5 grid size-8.5 place-items-center rounded-full border border-wf-menu-border bg-wf-menu"
+					data-wf-add-to-list
+				>
+					<Icon name="plus" size="0.75rem" class="text-white" />
 				</span>
 			</div>
 		</div>

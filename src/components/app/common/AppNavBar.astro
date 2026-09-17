@@ -16,10 +16,16 @@ interface Props {
 
 const { active = "analyze", showCredits = true, credits = CREDITS.start } = Astro.props;
 
+/**
+ * `AppConstants.rosterEnabled` is false, so the app takes `buildComingSoonNavLink`
+ * for Roster: the disabled link style under a further `Opacity(0.45)`, with a
+ * "Coming soon" tooltip that needs a hover the mockup never gets. The screen it
+ * would open is built and routed — it just is not switched on.
+ */
 const navItems = [
 	{ id: "analyze", label: "Analyze" },
 	{ id: "lists", label: "My Lists" },
-	{ id: "roster", label: "Roster" },
+	{ id: "roster", label: "Roster", comingSoon: true },
 ] as const;
 ---
 
@@ -36,7 +42,11 @@ const navItems = [
 	<nav class="absolute top-1/2 left-1/2 flex -translate-x-[calc(50%+0.625rem)] -translate-y-1/2 items-center gap-8">
 		{
 			navItems.map((item) =>
-				item.id === active ? (
+				"comingSoon" in item ? (
+					<span class="text-[0.875rem] text-white/50 opacity-45" data-wf-nav={item.id}>
+						{item.label}
+					</span>
+				) : item.id === active ? (
 					<span
 						class="rounded-[1.25rem] bg-white/10 px-4 py-2 text-[0.875rem] font-medium text-wf-text"
 						data-wf-nav={item.id}
