@@ -1,6 +1,6 @@
 ---
 /**
- * Results surface before a search has run.
+ * Results surface before a search has run — `analyze/widgets/analyze_empty_state.dart`.
  */
 import Icon from "../../../common/Icon.astro";
 
@@ -22,11 +22,15 @@ const options = [
 ---
 
 <div class="absolute inset-0 flex flex-col items-center justify-center" data-wf-empty>
-	{/* `emptyStateTitle` at the call site's own 24 — the app's copyWith */}
-	<p class="text-md text-wf-text">Start your search</p>
+	{/*
+		`emptyStateTitle` at the call site's own 24 — the app's copyWith. The platform
+		is interpolated (`Start your $platform Search`), so it tracks the rail's
+		selection; Instagram is what the story has picked.
+	*/}
+	<p class="text-md text-wf-text">Start your Instagram Search</p>
 	{/* `emptyStateSubtitleSecondary` — 12/400 on lavender17 */}
 	<p class="mt-3 text-center text-[0.75rem] leading-normal text-[#bfabff]">
-		A few common ways to begin, Use the sidebar to refine the results more
+		A few common ways to begin, use the sidebar to refine the results more
 	</p>
 
 	<div class="mt-12 flex items-start justify-center gap-4">
@@ -44,4 +48,17 @@ const options = [
 			))
 		}
 	</div>
+
+	{/*
+		`WalkthroughLink` — `SizedBox(24)`, then a 14px glyph, gap 4, and a 12/400
+		`green8` label underlined in the same green. It opens the product demo video,
+		and is gated on `demoVideoUrlProvider` having a URL, so it is remote-config'd
+		rather than always present.
+	*/}
+	<span class="mt-6 flex items-center gap-1">
+		<Icon name="walkthrough" size="0.875rem" class="text-wf-green-bright" />
+		<span class="text-[0.75rem] whitespace-nowrap text-wf-green-bright underline decoration-wf-green-bright">
+			Take a walkthrough of all the features!
+		</span>
+	</span>
 </div>

@@ -1,0 +1,162 @@
+---
+/**
+ * The list's export dialog — `list/widgets/export_dialog.dart`.
+ *
+ * Two panes over one `741x523` card: every column the platform offers on the
+ * left, the ones that will be written — in order — on the right. The three
+ * mandatory columns are ticked and dimmed rather than hidden, so it reads as
+ * locked instead of missing.
+ *
+ * Presented like the add-to dialog (blur 6 under `black/8`), so the backdrop is
+ * a slot here too rather than a second copy of the screen underneath.
+ */
+import CenteredModalOverlay from "../../common/CenteredModalOverlay.astro";
+import Icon from "../../common/Icon.astro";
+import { EXPORT_ADDS, EXPORT_MANDATORY, EXPORT_OPTIONAL, EXPORT_SELECTED } from "../../../../data/workflowMockup";
+
+interface Props {
+	/** Renders the end state — both story columns ticked and in Selected. */
+	picked?: boolean;
+}
+
+const { picked = false } = Astro.props;
+
+const added = picked ? EXPORT_ADDS : [];
+const selected = [...EXPORT_SELECTED, ...added];
+const isOn = (label: string) => (selected as readonly string[]).includes(label);
+
+/** `_rowHPad 12`, `_rowGap 4`, rows `py10` — one padding for every row in both panes. */
+const rowClass = "flex shrink-0 items-center gap-1 rounded-[0.375rem] px-3 py-2.5";
+/** `_panel` — `lavender40` under a `lavender24` hairline, radius 6, padding 12. */
+const panelClass = "flex min-h-0 flex-1 flex-col rounded-[0.375rem] border border-wf-dialog-border bg-wf-panel p-3";
+const paneTitleClass = "block text-[0.75rem] text-wf-text";
+---
+
+<CenteredModalOverlay width="46.3125rem" height="32.6875rem">
+	<slot name="backdrop" slot="backdrop" />
+
+	{/* Header 72 tall, title centred, cross at `top17 right19`. */}
+	<div class="relative flex h-18 shrink-0 items-center justify-center">
+		<span class="text-[1.375rem] text-wf-text">Export</span>
+		<span class="absolute top-4.25 right-4.75 flex">
+			<Icon name="cross" size="0.875rem" class="text-wf-text-muted" />
+		</span>
+	</div>
+	<span class="block h-px shrink-0 bg-wf-rule"></span>
+
+	<div class="flex min-h-0 flex-1 gap-3 px-9 pt-6 pb-5">
+		{/* Available — title · 12 · search · 8 · panel. */}
+		<div class="flex min-h-0 flex-1 flex-col">
+			<span class={paneTitleClass}>Available Columns</span>
+			<div class="mt-3 flex shrink-0 items-center gap-2 rounded-[0.375rem] bg-wf-list-row px-3 py-2">
+				<Icon name="search" size="0.875rem" class="text-wf-text-muted" />
+				<span class="text-[0.875rem] whitespace-nowrap text-wf-text-muted">Search columns</span>
+			</div>
+
+			<div class={`mt-2 ${panelClass}`}>
+				{/*
+					Select / Unselect All is dashed, not ticked: some of the list is
+					selected, never all of it — `partlySelected` fills the box and swaps
+					the tick for a minus.
+				*/}
+				<span class="flex shrink-0 items-center gap-1 px-3 py-1">
+					<span class="grid size-3 shrink-0 place-items-center rounded-[0.125rem] border-[0.083rem] border-wf-violet-bright bg-wf-violet-bright">
+						<Icon name="minus" size="0.5rem" class="mt-px text-white" />
+					</span>
+					<span class="ml-1 text-[0.75rem] whitespace-nowrap text-wf-select-icon">Select / Unselect All</span>
+				</span>
+				<span class="my-[0.21875rem] block h-px shrink-0 bg-wf-dialog-border"></span>
+
+				{/* Clipped, with the run inside translated — beat 15 drives it to each column it ticks. */}
+				<div class="min-h-0 flex-1 overflow-hidden">
+					<div data-wf-export-scroll>
+					{
+						EXPORT_MANDATORY.map((column) => (
+							<span class={rowClass}>
+								<span class="grid size-3 shrink-0 place-items-center rounded-[0.125rem] border-[0.083rem] border-wf-locked bg-wf-locked">
+									<Icon name="check" size="0.5rem" class="mt-px text-wf-locked-tick" />
+								</span>
+								<span class="ml-1 flex-1 whitespace-nowrap text-[0.75rem] text-wf-text-muted">{column.label}</span>
+							</span>
+						))
+					}
+					<span class="mx-3 my-[0.28125rem] block h-px bg-wf-dialog-border"></span>
+					{
+						EXPORT_OPTIONAL.map((column) => (
+							<span class={rowClass} data-wf-export-row={column.label}>
+								<span
+									class:list={[
+										"grid size-3 shrink-0 place-items-center rounded-[0.125rem] border-[0.083rem]",
+										isOn(column.label)
+											? "border-wf-violet-bright bg-wf-violet-bright"
+											: "border-wf-control-border",
+									]}
+									data-wf-export-check
+								>
+									<Icon
+										name="check"
+										size="0.5rem"
+										class={isOn(column.label) ? "mt-px text-white" : "mt-px text-white opacity-0"}
+									/>
+								</span>
+								<span class="ml-1 flex-1 whitespace-nowrap text-[0.75rem] text-wf-text">{column.label}</span>
+								{column.expandable && <Icon name="chevron" size="1rem" class="text-wf-text-muted" />}
+							</span>
+						))
+					}
+				</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="flex min-h-0 flex-1 flex-col">
+			{/* No search field on this side, so its panel is the taller of the two. */}
+			<span class={paneTitleClass}>Selected Columns</span>
+			<div class={`mt-3 ${panelClass} overflow-hidden`}>
+				{
+					[...EXPORT_SELECTED, ...EXPORT_ADDS].map((label) => {
+						const mandatory = EXPORT_MANDATORY.some((column) => column.label === label);
+						const pending = (EXPORT_ADDS as readonly string[]).includes(label) && !picked;
+						return (
+							<span
+								class:list={[rowClass, pending && "hidden"]}
+								data-wf-export-picked={label}
+							>
+								<Icon name="dragDots" size="1rem" class="text-wf-text-muted" />
+								<span class="ml-1 flex-1 whitespace-nowrap text-[0.75rem] text-wf-text">{label}</span>
+								{/* Mandatory columns are always written, so they have no remove. */}
+								{!mandatory && <Icon name="cross" size="1rem" class="text-wf-text-muted" />}
+							</span>
+						);
+					})
+				}
+			</div>
+		</div>
+	</div>
+
+	<span class="block h-px shrink-0 bg-wf-rule"></span>
+
+	{/* Footer `fromLTRB(36, 16, 36, 32)`, the two halves equal width. */}
+	<div class="flex shrink-0 items-end gap-3 px-9 pt-4 pb-8">
+		<div class="flex-1">
+			<span class="block text-[0.75rem] text-wf-text">File Format</span>
+			<span class="mt-1.5 flex items-center gap-2">
+				<span
+					class="rounded-[0.375rem] border border-wf-format-on-border bg-wf-format-on px-3 pt-2 pb-2.5 text-[0.875rem] text-wf-text">.csv</span
+				>
+				<span
+					class="rounded-[0.375rem] border border-transparent bg-wf-list-row px-3 pt-2 pb-2.5 text-[0.875rem] text-wf-meta">.xlsx</span
+				>
+			</span>
+		</div>
+
+		{/* `ElevatedButton` — 52 tall, radius 10, lavender25. */}
+		<span
+			class="flex h-13 flex-1 items-center justify-center gap-2 rounded-[0.625rem] bg-wf-violet text-[1rem] font-semibold whitespace-nowrap text-wf-text"
+			data-wf-export-download
+		>
+			Download
+			<Icon name="download" size="1rem" class="text-white" />
+		</span>
+	</div>
+</CenteredModalOverlay>

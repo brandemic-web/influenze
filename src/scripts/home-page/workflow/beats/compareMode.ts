@@ -1,7 +1,7 @@
 import gsap from "gsap";
 
 /**
- * Beat 8 — compare mode. Not a route in the app but a mode swap inside the same
+ * Beat 12 — compare mode. Not a route in the app but a mode swap inside the same
  * panel, so only `[data-wf-panel-body]` changes: one fade through an empty panel,
  * split to the app's 450ms. Opacity-only — the column is centred with a percentage
  * translate that GSAP would fold into pixels to add a slide, going stale on resize.

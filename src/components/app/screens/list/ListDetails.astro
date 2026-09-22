@@ -8,62 +8,67 @@
  * centres and the share control hides, and `ListCompareSection` takes the body.
  */
 import AppShell from "../../common/AppShell.astro";
-import BulkActionButton from "../../common/BulkActionButton.astro";
 import Icon from "../../common/Icon.astro";
 import ProfileCard from "../../common/ProfileCard.astro";
 import ProfileCardColumns from "../../common/ProfileCardColumns.astro";
+import SelectionActionBar from "../../common/SelectionActionBar.astro";
+import SelectionActionIconButton from "../../common/SelectionActionIconButton.astro";
 import ListCompareSection from "./widgets/ListCompareSection.astro";
 import ListDetailShell from "./widgets/ListDetailShell.astro";
 import ToolbarAction from "./widgets/ToolbarAction.astro";
-import { CREDITS, LIST_CREATORS, STORY_LIST } from "../../../../data/workflowMockup";
+import { CONTACTABLE, CREDITS, LIST_CREATORS, STORY_LIST, mediaKitsFor } from "../../../../data/workflowMockup";
 
 interface Props {
 	/** Compare mode: the two-column comparison in place of the creator list. */
 	compare?: boolean;
 	/** Set by the share modal, which blurs this screen behind its card. */
 	blurred?: boolean;
+	/** Opens the header's export popover — the frame beat 15 lands on. */
+	exported?: boolean;
 }
 
-const { compare = false, blurred = false } = Astro.props;
+const { compare = false, blurred = false, exported = false } = Astro.props;
+
+/** Every member of a list is purchased by definition, the story's unlock included. */
+const mediaKits = mediaKitsFor(true);
 ---
 
-<AppShell active="lists" credits={CREDITS.afterProfile}>
+<AppShell active="lists" credits={CREDITS.afterProfile} exported={exported}>
 	{
 		compare ? (
 			<ListDetailShell title="Compare" compare>
 				<ListCompareSection />
 			</ListDetailShell>
 		) : (
-			<ListDetailShell title={STORY_LIST} blurred={blurred}>
-				{/* Toolbar: search is 22vw wide, inset 28, and carries no leading icon. */}
+			<ListDetailShell title={STORY_LIST} typeLabel="List" blurred={blurred}>
+				{/* Toolbar: search is 22vw wide, inset 28, with a 14px leading glyph. */}
 				<div class="mt-8 flex shrink-0 items-center">
 					<div class="w-[19.8rem] shrink-0 pl-7">
-						<div class="flex items-center rounded-md bg-wf-search px-4 py-2.5 text-[0.875rem] font-medium">
-							<span class="text-wf-text-muted">Search&nbsp;</span><span class="text-[#a589ff]">Creators</span>
-						</div>
+						<div class="flex h-[3.0625rem] items-center gap-1.5 rounded-[0.375rem] bg-wf-search px-6 text-[0.875rem] font-medium">
+						<Icon name="search" size="0.875rem" class="shrink-0 text-wf-text-muted" />
+						<span class="whitespace-nowrap"
+							><span class="text-wf-text-muted">Search&nbsp;</span><span class="text-wf-green-bright">Creators</span></span
+						>
+					</div>
 					</div>
 
+					{/*
+						`ListDetailSelectionBar` — Compare, Refresh media kits, Add to, Remove,
+						all four inside one pill. They used to be text links strung along the
+						toolbar; the pill is what replaced them, and it is always on screen,
+						greyed rather than absent before anything is ticked.
+					*/}
+					<SelectionActionBar count={2} class="ml-6">
+						<SelectionActionIconButton icon="users" size="1rem" data-wf-compare />
+						<SelectionActionIconButton icon="load" size="1rem" />
+						<SelectionActionIconButton icon="plus" size="0.75rem" class="ml-0.5" />
+						<SelectionActionIconButton icon="removeCreator" tone="danger" class="ml-0.5" />
+					</SelectionActionBar>
+
+					{/* Export leads, then Import — the order the app builds them in. */}
 					<span class="ml-auto flex items-center">
-						{/* Compare needs 2+ selected, and the rule after it belongs to the same group. */}
-						<span class="flex items-center" data-wf-selection="compare">
-							<span
-								class="flex h-9 min-w-16 items-center justify-center gap-2 px-2 text-[0.75rem] font-medium whitespace-nowrap"
-								data-wf-compare
-							>
-								<span class="text-wf-violet-soft">Compare</span>
-								<span class="text-[#5d4e8e]">(2)</span>
-							</span>
-							<span class="ml-3 block h-4.5 w-px bg-wf-text-muted"></span>
-						</span>
-
+						<ToolbarAction label="Export" icon="export" count={2} data-wf-export />
 						<ToolbarAction label="Import" icon="import" class="ml-3" />
-						<ToolbarAction label="Export" icon="export" class="ml-3" />
-
-						{/* Removing needs a selection, and so does its leading rule. */}
-						<span class="flex items-center" data-wf-selection="remove">
-							<span class="ml-3 block h-4.5 w-px bg-wf-text-muted"></span>
-							<BulkActionButton label="Remove from List" icon="removeFromList" count={2} iconSize="0.625rem" class="ml-3" />
-						</span>
 					</span>
 				</div>
 
@@ -78,6 +83,7 @@ const { compare = false, blurred = false } = Astro.props;
 						<span slot="followers" class="text-[0.75rem] whitespace-nowrap text-wf-table-label">Followers</span>
 						<span slot="likes" class="text-[0.75rem] whitespace-nowrap text-wf-table-label">Avg. Likes</span>
 						<span slot="engagement" class="text-[0.75rem] whitespace-nowrap text-wf-table-label">Engagement Rate</span>
+						<span slot="mediaKit" class="text-[0.75rem] whitespace-nowrap text-wf-table-label">Media Kit</span>
 					</ProfileCardColumns>
 				</div>
 
@@ -87,7 +93,12 @@ const { compare = false, blurred = false } = Astro.props;
 							<div class="flex shrink-0 items-center">
 								<Icon name="dragDots" size="1rem" class="mr-3 shrink-0 text-[#51466f]" />
 								<div class="min-w-0 flex-1">
-									<ProfileCard creator={creator} variant="list" />
+									<ProfileCard
+										creator={creator}
+										variant="list"
+										mediaKit={mediaKits[creator.handle]}
+										enquireEnabled={CONTACTABLE.has(creator.handle)}
+									/>
 								</div>
 							</div>
 						))

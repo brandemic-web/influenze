@@ -8,6 +8,21 @@ export function token(name: string) {
 }
 
 /**
+ * A colour at zero alpha, for the *start* of a fade-in.
+ *
+ * GSAP reads a plain `transparent` as `rgba(0, 0, 0, 0)`, so a box winding back to
+ * it greys on the way to its real colour rather than simply fading in — visible
+ * enough on a 12px checkbox to read as a first click that did something else.
+ * Winding back to the target's own hue means the tween only ever moves alpha.
+ */
+export function clearFill(colour: string) {
+	const hex = colour.trim();
+	if (!hex.startsWith("#")) return hex;
+	const n = Number.parseInt(hex.length === 4 ? hex.slice(1).replace(/./g, "$&$&") : hex.slice(1), 16);
+	return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, 0)`;
+}
+
+/**
  * Trade one inline hook for another. Sequential, not a crossfade: the pairs are
  * mutually exclusive, and holding both would briefly widen the row.
  */

@@ -1,9 +1,13 @@
 ---
 /**
  * The column skeleton shared by the results header and every creator card, from the
- * app's `ProfileCard` constants: leading 84 · gap 20 · identity flex 4 · gap 16 ·
- * metrics flex 6 · gap 12 · actions 130. The spacers mirror Flutter's `SizedBox`es so
- * the flex maths — and the column alignment — comes out identical.
+ * app's `ProfileCard` constants: leading 84 · gap 12 · identity flex 5 · gap 24 ·
+ * metrics flex 7 · gap 8 · actions flex 5. The spacers mirror Flutter's `SizedBox`es
+ * so the flex maths — and the column alignment — comes out identical.
+ *
+ * These are not the proportions this file was first written against. IZ-147 added
+ * the Media Kit column and rebalanced the table in the same change, so the two go
+ * together: the old flexes leave the column nowhere to sit.
  */
 interface Props {
 	/** Header rows sit tighter than cards. */
@@ -22,17 +26,27 @@ const { class: className = "", withLeading = true } = Astro.props;
 				<div class="w-21 shrink-0">
 					<slot name="leading" />
 				</div>
-				<div class="w-5 shrink-0" />
+				<div class="w-3 shrink-0" />
 			</>
 		)
 	}
-	<div class="min-w-0 flex-[4_1_0%]"><slot name="identity" /></div>
-	<div class="w-4 shrink-0"></div>
-	<div class="flex min-w-0 flex-[6_1_0%] items-center">
-		<div class="w-[calc((100%-0.75rem)/3)] shrink-0"><slot name="followers" /></div>
-		<div class="w-[calc((100%-0.75rem)/3)] shrink-0"><slot name="likes" /></div>
+	<div class="min-w-0 flex-[5_1_0%]"><slot name="identity" /></div>
+	<div class="w-6 shrink-0"></div>
+	{/*
+		`alignedMetricColumns`: the first two metrics take a fixed
+		`(width - metricsTrailingReserve) / 3` each and Engagement Rate takes the rest,
+		so that 48px of air is what keeps the metrics off the Media Kit column.
+	*/}
+	<div class="flex min-w-0 flex-[7_1_0%] items-center">
+		<div class="w-[calc((100%-3rem)/3)] shrink-0"><slot name="followers" /></div>
+		<div class="w-[calc((100%-3rem)/3)] shrink-0"><slot name="likes" /></div>
 		<div class="min-w-0 flex-1"><slot name="engagement" /></div>
 	</div>
-	<div class="w-3 shrink-0"></div>
-	<div class="flex w-32.5 shrink-0 justify-end"><slot name="actions" /></div>
+	<div class="w-2 shrink-0"></div>
+	{/* `buildActionsSlot`: Media Kit takes the slack, the buttons sit at its end. */}
+	<div class="flex min-w-0 flex-[5_1_0%] items-center">
+		<div class="min-w-0 flex-1"><slot name="mediaKit" /></div>
+		<div class="w-2 shrink-0"></div>
+		<div class="flex shrink-0 items-center"><slot name="actions" /></div>
+	</div>
 </div>

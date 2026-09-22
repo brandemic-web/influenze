@@ -2,7 +2,7 @@ import gsap from "gsap";
 import { CREDITS, RAIL_TIER_SCROLL } from "../../../../data/workflowMockup";
 import { typeText } from "../../../gsap/typeText";
 import { setCredits, spendCredits } from "../utils/credits";
-import { swapInline, token } from "../utils/dom";
+import { clearFill, swapInline, token } from "../utils/dom";
 import type { Pointer } from "../utils/pointer";
 
 /**
@@ -129,7 +129,7 @@ export function analyzeLookalike(screen: HTMLElement, pointer: Pointer) {
 		gsap.set(el.trigger, { backgroundColor: token("select") });
 		gsap.set(el.chevron, { rotation: 0 });
 		gsap.set(el.label, { opacity: 1, color: dimmedLabel });
-		gsap.set(el.option, { backgroundColor: "transparent" });
+		gsap.set(el.option, { backgroundColor: clearFill(token("select-active")) });
 		gsap.set([el.handleCaret, el.locationCaret], { display: "none" });
 		gsap.set(el.handleHint, { display: "inline", opacity: 1 });
 		gsap.set(el.handleValue, { display: "none" });
@@ -139,8 +139,8 @@ export function analyzeLookalike(screen: HTMLElement, pointer: Pointer) {
 		gsap.set([el.sortReset, el.locationReset], { opacity: 0 });
 		gsap.set(el.apply, { scale: 1 });
 		gsap.set(el.railScroll, { y: 0 });
-		gsap.set(el.tier, { backgroundColor: "transparent" });
-		gsap.set(el.tierDot, { borderColor: token("control-border"), backgroundColor: "transparent" });
+		gsap.set(el.tier, { backgroundColor: clearFill(token("chip-row-on")) });
+		gsap.set(el.tierDot, { borderColor: token("control-border"), backgroundColor: clearFill(token("violet-bright")) });
 		gsap.set(el.tierPip, { display: "none", opacity: 0 });
 		gsap.set(el.tierRange, { color: token("text-value") });
 		// The tier reads out its own minimum; "all ranges" shares that grid cell and

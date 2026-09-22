@@ -1,20 +1,81 @@
 ---
 /**
- * The add-to-list dialog, over the creator's media kit.
+ * The add-to dialog — `analyze/widgets/add_to_list_dialog.dart`.
  *
- * The app as it ships, so the design's ShortLists/Lists switcher is deliberately
- * not here. The backdrop is the frame the dialog is opened from, embedded rather
- * than duplicated, so the two can never drift apart.
+ * Its two tabs are the product's whole economy in one control. A ShortList saves
+ * without opening anybody, so it is free; a List unlocks media kits, so it bills 50
+ * for each creator not already bought. The helper banner under the tabs says so in
+ * the app's own words, and those two sentences are the only place the app explains
+ * the difference — hence reproducing them verbatim rather than paraphrasing.
+ *
+ * The story opens this twice, from different screens, so the backdrop is a slot:
+ * whatever it was opened over is embedded rather than duplicated, and the two can
+ * never drift apart.
  */
 import CenteredModalOverlay from "../../common/CenteredModalOverlay.astro";
 import CreatorAvatar from "../../common/CreatorAvatar.astro";
 import Icon from "../../common/Icon.astro";
-import AnalyzedCreator from "./AnalyzedCreator.astro";
-import { CREATOR_LISTS, PROFILED_HANDLE, STORY_LIST } from "../../../../data/workflowMockup";
+import {
+	CREATOR_LISTS,
+	CREATOR_SHORTLISTS,
+	DIALOG_ADDS,
+	STORY_LIST,
+	STORY_SHORTLIST,
+	type ListType,
+} from "../../../../data/workflowMockup";
+
+interface Props {
+	/**
+	 * Which tab is live when it opens. **The app always opens on List**
+	 * (`selectedTab = ListType.list`), so this defaults there and the story clicks
+	 * across when it wants the other one.
+	 */
+	tab?: ListType;
+	/**
+	 * Which tab the story adds into. Both panes are rendered so the click has
+	 * somewhere to go, but only this one carries the add hooks — otherwise
+	 * `myLists` would find two `[data-wf-list-target]`s and take the wrong row.
+	 */
+	adds?: ListType;
+	/** The `{N}` beside the title — how many rows were ticked. */
+	count?: number;
+}
+
+const { tab = "list", adds: destination = tab, count = 1 } = Astro.props;
+
+/** Everything that differs between the two panes, resolved per pane rather than once. */
+const PANES = (["shortlist", "list"] as const).map((pane) => {
+	const shortlist = pane === "shortlist";
+	return {
+		pane,
+		shortlist,
+		word: shortlist ? "ShortList" : "List",
+		rows: shortlist ? CREATOR_SHORTLISTS : CREATOR_LISTS,
+		storyName: shortlist ? STORY_SHORTLIST : STORY_LIST,
+		/** Only the destination pane has portraits waiting to drop in. */
+		adds: pane === destination ? DIALOG_ADDS[pane] : [],
+		live: pane === destination,
+	};
+});
+
+/**
+ * The portraits Add drops in — held on `PANES[].adds`, rendered hidden for
+ * `myLists` to reveal. They take the slots straight after the row's existing
+ * preview, so the grid fills left to right exactly as the app's does.
+ */
+const isShortlist = tab === "shortlist";
+
+/** Tab pills reuse the platform chips' palette; only List's live fill is its own. */
+const tabLook = (active: boolean, shortlist: boolean) =>
+	active
+		? shortlist
+			? "bg-wf-chip-on border-wf-chip-on-border text-wf-text"
+			: "bg-wf-tab-list border-wf-credit-border text-wf-text"
+		: "bg-wf-chip border-wf-chip-border text-wf-action-muted";
 ---
 
-<CenteredModalOverlay width="30rem">
-	<AnalyzedCreator tab="mediaKit" slot="backdrop" />
+<CenteredModalOverlay width="30rem" data-wf-dialog-tabs={tab}>
+	<slot name="backdrop" slot="backdrop" />
 
 	<span class="flex justify-end pt-4 pr-4">
 		<span class="flex" data-wf-modal-close>
@@ -22,24 +83,96 @@ import { CREATOR_LISTS, PROFILED_HANDLE, STORY_LIST } from "../../../../data/wor
 		</span>
 	</span>
 
+	{/* The title is bare `Add` now — the destination is what the tabs are for. */}
 	<span class="flex items-center justify-center gap-2 text-[1.375rem] whitespace-nowrap">
-		<span class="text-wf-text">Add to List</span>
-		{/* The braces are literal in the app's string. */}
-		<span class="text-wf-count-muted">{"{1}"}</span>
+		<span class="text-wf-text">Add</span>
+		<span class="text-wf-count-muted">{count}</span>
 	</span>
 
-	{/*
-		The app's `SizedBox(height: 16)` sits between the title and the list region —
-		see the `mt-4` below. Nothing in between: the ShortLists/Lists switcher is a
-		future feature that only exists in the Figma frame.
-	*/}
+	{/* `SizedBox(16)` · tab switcher · `SizedBox(16)` · `Divider(lavender33)`. */}
+	<div class="mt-4 flex items-center justify-center gap-2">
+		<span
+			class:list={[
+				"flex items-center gap-1.5 rounded-[0.25rem] border px-5 py-2.5 text-[0.875rem] whitespace-nowrap",
+				tabLook(isShortlist, true),
+			]}
+			data-wf-dialog-tab="shortlist"
+		>
+			<Icon name="hourglass" size="0.75rem" />
+			ShortList
+		</span>
+		<span
+			class:list={[
+				"flex items-center gap-1.5 rounded-[0.25rem] border px-5 py-2.5 text-[0.875rem] whitespace-nowrap",
+				tabLook(!isShortlist, false),
+			]}
+			data-wf-dialog-tab="list"
+		>
+			<Icon name="list" size="0.75rem" />
+			List
+		</span>
+	</div>
 
-	{/* List region: maxHeight 220, so a third row is only partly visible. */}
-	<div class="mt-4 h-55 overflow-hidden px-6 pb-2">
-		<div class="flex flex-col gap-2">
+	<span class="mt-4 block h-px w-full bg-[#433b5c]"></span>
+
+	{/* `SizedBox(16)`, then the picker's own search — `ListPickerSearchBar`, radius 6, `px24 py12`. */}
+	<div class="mt-4 px-6 pb-4">
+		<div class="flex items-center gap-1.5 rounded-[0.375rem] bg-wf-search px-6 py-3">
+			<Icon name="search" size="0.875rem" class="shrink-0 text-wf-text-muted" />
+			<span class="text-[0.75rem] font-medium whitespace-nowrap">
+				<span class="text-wf-text-muted">Search&nbsp;&nbsp;</span>{PANES.map((p) => (
+					<span
+						class={p.shortlist ? "text-wf-shortlist" : "text-wf-green-bright"}
+						data-wf-dialog-pane={p.pane}
+					>
+						{p.word}s
+					</span>
+				))}
+			</span>
+		</div>
+	</div>
+
+	{/*
+		`buildTabHelperBanner` — the app's copy exactly, line breaks included. This is
+		the one place the product states what a shortlist is for.
+
+		`Center(child: Container(margin: h24, padding: h12 v8))`: the pill **hugs its
+		own text** rather than filling the dialog, so it is as wide as its longest
+		authored line and the two tabs give it two different widths. The 24 margin is
+		a floor on how wide it may grow, not the width itself.
+	*/}
+	<div class="flex justify-center px-6">
+		{PANES.map((p) => (
+			<p
+				class="rounded-[1.25rem] border border-wf-tab-list bg-wf-tab-list/20 px-3 py-2 text-center text-[0.625rem] leading-[1.6] text-wf-green-bright"
+				data-wf-dialog-pane={p.pane}
+			>
+				{p.shortlist ? (
+					<>
+						Free quick save. Add to a list when you need
+						<br />
+						compare, analytics export and share.
+					</>
+				) : (
+					<>
+						Adding to a list unlocks the full media kit for compare,
+						<br />
+						analytics export and share. 50 credits per new unlock.
+					</>
+				)}
+			</p>
+		))}
+	</div>
+
+	{/* List region: `maxHeight 220` — a max, so one row shrinks to fit and a third is clipped. */}
+	<div class="mt-4 max-h-55 overflow-hidden px-6 pb-2">
+		{PANES.map((p) => (
+		<div class="flex flex-col gap-2" data-wf-dialog-pane={p.pane}>
 			{
-				CREATOR_LISTS.map((list) => {
-					const target = list.name === STORY_LIST;
+				p.rows.map((row) => {
+					// Only the destination pane wires the add: two targets and `myLists`
+					// would take whichever the DOM happened to hand it first.
+					const target = p.live && row.name === p.storyName;
 					return (
 						<div
 							class="flex items-center rounded-[1rem] border border-wf-dialog-border bg-wf-list-row px-3 py-2.5"
@@ -53,39 +186,52 @@ import { CREATOR_LISTS, PROFILED_HANDLE, STORY_LIST } from "../../../../data/wor
 								uses here.
 							*/}
 							<span class="grid size-15 shrink-0 grid-cols-2 content-start">
-								{[0, 1, 2, 3].map((slot) =>
-									list.preview[slot] ? (
-										<CreatorAvatar
-											size="1.625rem"
-											radius="0.4375rem"
-											handle={list.preview[slot]}
-											class="m-0.5 block"
-										/>
-									) : target && slot === list.preview.length ? (
-										<span class="relative m-0.5 block size-6.5">
-											<span class="absolute inset-0 rounded-[0.4375rem] bg-wf-surface" />
-											<span class="absolute inset-0 opacity-0" data-wf-list-added>
-												<CreatorAvatar size="1.625rem" radius="0.4375rem" handle={PROFILED_HANDLE} class="block" />
+								{[0, 1, 2, 3].map((slot) => {
+									const incoming = target ? p.adds[slot - row.preview.length] : undefined;
+									if (row.preview[slot]) {
+										return (
+											<CreatorAvatar
+												size="1.625rem"
+												radius="0.4375rem"
+												handle={row.preview[slot]}
+												class="m-0.5 block"
+											/>
+										);
+									}
+									if (incoming) {
+										return (
+											<span class="relative m-0.5 block size-6.5">
+												<span class="absolute inset-0 rounded-[0.4375rem] bg-wf-surface" />
+												<span class="absolute inset-0 opacity-0" data-wf-list-added>
+													<CreatorAvatar
+														size="1.625rem"
+														radius="0.4375rem"
+														handle={incoming}
+														class="block"
+													/>
+												</span>
 											</span>
-										</span>
-									) : (
-										<span class="m-0.5 block size-6.5 rounded-[0.4375rem] bg-wf-surface" />
-									)
-								)}
+										);
+									}
+									return <span class="m-0.5 block size-6.5 rounded-[0.4375rem] bg-wf-surface" />;
+								})}
 							</span>
 							<span class="ml-3 flex min-w-0 flex-1 flex-col">
-								<span class="mb-3 text-[0.875rem] whitespace-nowrap text-wf-text">{list.name}</span>
+								<span class="mb-3 text-[0.875rem] whitespace-nowrap text-wf-text">{row.name}</span>
 								{target ? (
 									<span class="grid text-[0.625rem] whitespace-nowrap text-wf-meta">
 										<span class="wf-untrimmed col-start-1 row-start-1" data-wf-list-count="idle">
-											{list.count} Creators
+											{row.count} Creators
 										</span>
-										<span class="wf-untrimmed col-start-1 row-start-1 opacity-0" data-wf-list-count="done">
-											{list.count + 1} Creators
+										<span
+											class="wf-untrimmed col-start-1 row-start-1 opacity-0"
+											data-wf-list-count="done"
+										>
+											{row.count + p.adds.length} Creators
 										</span>
 									</span>
 								) : (
-									<span class="text-[0.625rem] whitespace-nowrap text-wf-meta">{list.count} Creators</span>
+									<span class="text-[0.625rem] whitespace-nowrap text-wf-meta">{row.count} Creators</span>
 								)}
 							</span>
 							<span
@@ -104,14 +250,36 @@ import { CREATOR_LISTS, PROFILED_HANDLE, STORY_LIST } from "../../../../data/wor
 				})
 			}
 		</div>
+		))}
 	</div>
 
 	<span class="mt-4 block h-px w-full bg-[#463c60]"></span>
 
+	{/*
+		`ListPickerCreateButton` — radius 24, `padding v12 h16` under Material's 64x36
+		minimum, glyph at height 8, gap 4, `buttonText` 10/500 white.
+
+		**It changes with the tab, not just in its label**: a list is `green21`
+		`#30A760` carrying `add_to_list.svg`, a shortlist is `lavender25` `#653EE1`
+		carrying `plus.svg`. Both glyphs are white — `add_to_list.svg` is authored white
+		and the app passes it no colour filter at all.
+	*/}
 	<span class="mt-3.5 mb-8 flex justify-center">
-		<span class="flex h-9 min-w-16 items-center gap-1 rounded-[1.5rem] bg-wf-action px-4 text-[0.625rem] font-medium text-wf-text">
-			<Icon name="addToList" size="0.625rem" />
-			Create New List
-		</span>
+		{PANES.map((p) => (
+			<span
+				class:list={[
+					"flex h-9 min-w-16 items-center gap-1 rounded-[1.5rem] px-4 text-[0.625rem] font-medium text-wf-text",
+					p.shortlist ? "bg-wf-violet" : "bg-wf-tab-list",
+				]}
+				data-wf-dialog-pane={p.pane}
+			>
+				{p.shortlist ? (
+					<Icon name="plus" size="0.5rem" class="text-white" />
+				) : (
+					<Icon name="addToList" size="0.625rem" class="text-white" />
+				)}
+				Create New {p.word}
+			</span>
+		))}
 	</span>
 </CenteredModalOverlay>

@@ -12,6 +12,7 @@ User-agent: Bingbot
 Allow: /
 Disallow: /studio
 Disallow: /api/
+Disallow: /qc
 
 # AI search and assistants. These cite the site and send real visitors, so they
 # get the same access as Google. Note Applebot is here but Applebot-Extended is
@@ -34,6 +35,7 @@ User-agent: YouBot
 Allow: /
 Disallow: /studio
 Disallow: /api/
+Disallow: /qc
 
 # Training crawlers — this content is not licensed for model training.
 # Cloudflare's AI Crawl Control enforces this at the edge (per-crawler blocks,
@@ -59,6 +61,7 @@ User-agent: *
 Allow: /
 Disallow: /studio
 Disallow: /api/
+Disallow: /qc
 
 Sitemap: https://influenze.ai/sitemap-index.xml
 `;

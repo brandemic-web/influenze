@@ -1,7 +1,7 @@
 import gsap from "gsap";
 
 /**
- * Beat 10 — the share modal. Beat 5's swap-first shape: screen 10 embeds
+ * Beat 15 — the share modal. Beat 5's swap-first shape: screen 10 embeds
  * `<ListDetails blurred />` the way screen 6 embeds screen 5.
  *
  * It must *not* animate like beat 5. That is a dialog route with a full-frame scrim;
