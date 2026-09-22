@@ -19,15 +19,19 @@ export interface ScriptsDoc {
 	footer?: string;
 }
 
-// No explicit projection needed: `scripts` is a plain object (nothing to
-// dereference), so the default `*[...][0]` projection already includes it.
-export const siteSettingsQuery = groq`*[_type == "siteSettings"][0]`;
+// `sitemapFile` is a file reference, so it needs an explicit `asset->`
+// dereference to resolve to a URL — everything else comes through via `...`.
+export const siteSettingsQuery = groq`*[_type == "siteSettings"][0]{
+	...,
+	"sitemapFileUrl": sitemapFile.asset->url,
+}`;
 
 /** Only the fields components currently consume are typed. */
 export interface SiteSettingsDoc {
 	scripts?: ScriptsDoc;
 	llmsTxt?: string;
 	robotsTxt?: string;
+	sitemapFileUrl?: string;
 }
 
 export async function getSiteSettings(perspectiveCookie?: string) {

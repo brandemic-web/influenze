@@ -5,7 +5,7 @@ import ComparisonTable from "../components/common/ComparisonTable.astro";
 import UseCasesSplit from "../components/pricing/UseCasesSplit.astro";
 import { getPricingPage } from "../sanity/lib/queries";
 import { getPerspectiveCookie } from "../lib/draft-mode";
-import { parseCustomSchema } from "../sanity/lib/customSchema";
+import { parseStructuredDataOverride } from "../sanity/lib/customSchema";
 
 const { data: page } = await getPricingPage(getPerspectiveCookie(Astro.cookies));
 ---
@@ -15,7 +15,7 @@ const { data: page } = await getPricingPage(getPerspectiveCookie(Astro.cookies))
 	description={page?.seo?.description || "Built for teams that demand accuracy. Transparent, credit-based plans that cater to you."}
 	noindex={page?.seo?.noindex ?? false}
 	canonicalUrl={page?.seo?.canonicalUrl}
-	schema={parseCustomSchema(page?.seo?.customSchema)}
+	structuredDataOverride={parseStructuredDataOverride(page?.seo?.customSchema)}
 	scripts={page?.scripts}
 	ctaButtonLabel="Sign Up"
 >

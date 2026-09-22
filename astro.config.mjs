@@ -23,9 +23,8 @@ export default defineConfig({
   // see loadQuery.ts's useCdn logic.
   output: "server",
 
-  redirects: {
-      "/sitemap.xml": { status: 301, destination: "/sitemap-index.xml" },
-  },
+  // /sitemap.xml is now a route (src/pages/sitemap.xml.ts): it checks Site
+  // Settings for a custom upload before falling back to the auto-generated one.
 
   integrations: [sitemap(), sanity({
       projectId: env.PUBLIC_SANITY_PROJECT_ID,

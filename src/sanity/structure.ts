@@ -6,7 +6,7 @@ import type { StructureResolver } from "sanity/structure";
  * singleton page (home, features, …) gets one line here as it's added.
  */
 const SINGLETONS = [
-	{ id: "siteSettings", title: "Site Settings" },
+	{ id: "siteSettings", title: "Site Setting" },
 	{ id: "homePage", title: "Home Page" },
 	{ id: "pricingPage", title: "Pricing Page" },
 	{ id: "featuresPage", title: "Features Page" },

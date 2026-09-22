@@ -1,70 +1,29 @@
 import { defineField, defineType } from "sanity";
 
 /**
- * Singleton — one document holds site-wide identity, default SEO, and the
- * outbound URLs currently hardcoded in src/data/site.ts. The Studio's
- * structure builder pins this to a single non-deletable entry.
+ * Singleton — site-wide defaults (OG image, global scripts, crawler files,
+ * sitemap override). Pinned to one entry by the Studio's structure builder.
  */
 export default defineType({
 	name: "siteSettings",
-	title: "Site Settings",
+	title: "Site Setting",
 	type: "document",
 	fieldsets: [
-		{
-			name: "identity",
-			title: "Site identity & default SEO",
-			options: { columns: 1 },
-		},
-		{
-			name: "links",
-			title: "Outbound links",
-			options: { columns: 2 },
-		},
 		{
 			name: "crawlers",
 			title: "AI & Search",
 		},
+		{
+			name: "sitemap",
+			title: "Sitemap",
+		},
 	],
 	fields: [
-		defineField({
-			name: "name",
-			title: "Site name",
-			type: "string",
-			description: 'Used as og:site_name and the Organization schema name, e.g. "influenze.ai".',
-			fieldset: "identity",
-		}),
-		defineField({
-			name: "defaultTitle",
-			title: "Default page title",
-			type: "string",
-			description: "Used on any page that doesn't set its own SEO title.",
-			fieldset: "identity",
-		}),
-		defineField({
-			name: "defaultDescription",
-			title: "Default meta description",
-			type: "text",
-			rows: 3,
-			fieldset: "identity",
-		}),
 		defineField({
 			name: "defaultOgImage",
 			title: "Default social share image",
 			type: "image",
 			options: { hotspot: true },
-			fieldset: "identity",
-		}),
-		defineField({
-			name: "signupUrl",
-			title: "Sign up URL",
-			type: "url",
-			fieldset: "links",
-		}),
-		defineField({
-			name: "loginUrl",
-			title: "Login URL",
-			type: "url",
-			fieldset: "links",
 		}),
 		defineField({
 			name: "scripts",
@@ -163,8 +122,17 @@ Disallow: /qc
 Sitemap: https://influenze.ai/sitemap-index.xml
 `,
 		}),
+		defineField({
+			name: "sitemapFile",
+			title: "Custom sitemap.xml",
+			type: "file",
+			fieldset: "sitemap",
+			options: { accept: ".xml" },
+			description:
+				"Served at influenze.ai/sitemap.xml. Upload a sitemap to override the automatically generated one. Leave blank to keep serving the auto-generated sitemap (built from every page Astro renders).",
+		}),
 	],
 	preview: {
-		prepare: () => ({ title: "Site Settings" }),
+		prepare: () => ({ title: "Site Setting" }),
 	},
 });

@@ -1,15 +1,14 @@
 /**
- * Parses the raw JSON-LD text from a page's seo.customSchema field. The
- * Studio field validates it's a JSON array before publish, but a draft or a
- * stale cached response could still carry something malformed — falls back
- * to an empty array rather than breaking the page render.
+ * Parses seo.customSchema into a full JSON-LD document (see Layout.astro's
+ * structuredDataOverride). Returns undefined on missing/invalid input, which
+ * falls back to the auto-generated structured data.
  */
-export function parseCustomSchema(raw?: string): Record<string, unknown>[] {
-	if (!raw) return [];
+export function parseStructuredDataOverride(raw?: string): Record<string, unknown> | undefined {
+	if (!raw) return undefined;
 	try {
 		const parsed = JSON.parse(raw);
-		return Array.isArray(parsed) ? parsed : [];
+		return typeof parsed === "object" && parsed !== null && !Array.isArray(parsed) ? parsed : undefined;
 	} catch {
-		return [];
+		return undefined;
 	}
 }

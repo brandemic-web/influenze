@@ -25,12 +25,10 @@ interface Props {
 	noindex?: boolean;
 	/** ISO 8601 date for the page's WebPage node. Used by the legal routes. */
 	dateModified?: string;
-	/**
-	 * Extra JSON-LD nodes for this page, merged into the site-wide `@graph`.
-	 * The homepage passes its FAQ and product nodes; other pages pass their
-	 * parsed seo.customSchema (see sanity/lib/customSchema.ts).
-	 */
+	/** Extra JSON-LD nodes merged into the site-wide `@graph`. Ignored if `structuredDataOverride` is set. */
 	schema?: Record<string, unknown>[];
+	/** A full JSON-LD document that replaces all auto-generated structured data, verbatim — Sanity's seo.customSchema. */
+	structuredDataOverride?: Record<string, unknown>;
 	/** Overrides the auto-computed canonical URL — Sanity's seo.canonicalUrl. */
 	canonicalUrl?: string;
 	/**
@@ -49,6 +47,7 @@ const {
 	noindex = false,
 	dateModified,
 	schema = [],
+	structuredDataOverride,
 	canonicalUrl,
 	scripts,
 } = Astro.props;
@@ -183,7 +182,7 @@ const inlineFooterScripts = [settings?.scripts?.footer, scripts?.footer].filter(
 			type="font/woff2"
 			crossorigin
 		/>
-		<script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
+		<script type="application/ld+json" is:inline set:html={JSON.stringify(structuredDataOverride ?? structuredData)} />
 		{inlineHeaderScripts.map((s) => <Fragment set:html={s} />)}
 	</head>
 	<body class="min-h-screen overflow-x-clip antialiased">

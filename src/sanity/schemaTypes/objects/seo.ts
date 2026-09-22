@@ -48,13 +48,14 @@ export default defineType({
 			type: "text",
 			rows: 6,
 			description:
-				"A raw JSON array of extra schema.org nodes for this page, merged into the site's JSON-LD graph. Must be valid JSON — e.g. [{ \"@type\": \"Product\", ... }].",
+				"A complete JSON-LD document — e.g. { \"@context\": \"https://schema.org\", \"@graph\": [...] } — that REPLACES the automatically generated structured data on this page entirely (Organization, WebSite, WebPage and any page-specific nodes are not included alongside it). Leave blank to keep the auto-generated schema.",
 			validation: (Rule) =>
 				Rule.custom((value) => {
 					if (!value) return true;
 					try {
 						const parsed = JSON.parse(value);
-						return Array.isArray(parsed) || "Must be a JSON array, e.g. [{ ... }].";
+						return (typeof parsed === "object" && parsed !== null && !Array.isArray(parsed)) ||
+							"Must be a JSON object, e.g. { \"@context\": \"https://schema.org\", \"@graph\": [...] }.";
 					} catch {
 						return "Not valid JSON.";
 					}

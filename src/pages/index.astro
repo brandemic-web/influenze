@@ -15,11 +15,11 @@ import { FAQS } from "../data/faqs";
 import { SITE } from "../data/site";
 import { getHomePage } from "../sanity/lib/queries";
 import { getPerspectiveCookie } from "../lib/draft-mode";
-import { parseCustomSchema } from "../sanity/lib/customSchema";
+import { parseStructuredDataOverride } from "../sanity/lib/customSchema";
 
 const { data: page } = await getHomePage(getPerspectiveCookie(Astro.cookies));
 
-// Built from the same FAQS the page renders, so the JSON-LD can never drift from
+// Built from the same FAQS the page renders so the JSON-LD can't drift from
 // the visible answers — Google's condition for FAQ rich results.
 const schema = [
 	{
@@ -37,7 +37,6 @@ const schema = [
 			acceptedAnswer: { "@type": "Answer", text: faq.answer },
 		})),
 	},
-	...parseCustomSchema(page?.seo?.customSchema),
 ];
 ---
 
@@ -47,6 +46,7 @@ const schema = [
 	noindex={page?.seo?.noindex ?? false}
 	canonicalUrl={page?.seo?.canonicalUrl}
 	schema={schema}
+	structuredDataOverride={parseStructuredDataOverride(page?.seo?.customSchema)}
 	scripts={page?.scripts}
 >
 	<main class="xl:overflow-x-clip">
