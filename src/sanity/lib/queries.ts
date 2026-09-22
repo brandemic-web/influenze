@@ -26,6 +26,8 @@ export const siteSettingsQuery = groq`*[_type == "siteSettings"][0]`;
 /** Only the fields components currently consume are typed. */
 export interface SiteSettingsDoc {
 	scripts?: ScriptsDoc;
+	llmsTxt?: string;
+	robotsTxt?: string;
 }
 
 export async function getSiteSettings(perspectiveCookie?: string) {
