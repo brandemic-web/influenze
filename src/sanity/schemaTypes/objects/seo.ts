@@ -36,5 +36,30 @@ export default defineType({
 			type: "boolean",
 			initialValue: false,
 		}),
+		defineField({
+			name: "canonicalUrl",
+			title: "Canonical URL",
+			type: "url",
+			description: "Overrides the auto-generated canonical URL. Leave blank to use this page's own URL.",
+		}),
+		defineField({
+			name: "customSchema",
+			title: "Custom structured data (JSON-LD)",
+			type: "text",
+			rows: 6,
+			description:
+				"A complete JSON-LD document — e.g. { \"@context\": \"https://schema.org\", \"@graph\": [...] } — that REPLACES the automatically generated structured data on this page entirely (Organization, WebSite, WebPage and any page-specific nodes are not included alongside it). Leave blank to keep the auto-generated schema.",
+			validation: (Rule) =>
+				Rule.custom((value) => {
+					if (!value) return true;
+					try {
+						const parsed = JSON.parse(value);
+						return (typeof parsed === "object" && parsed !== null && !Array.isArray(parsed)) ||
+							"Must be a JSON object, e.g. { \"@context\": \"https://schema.org\", \"@graph\": [...] }.";
+					} catch {
+						return "Not valid JSON.";
+					}
+				}),
+		}),
 	],
 });

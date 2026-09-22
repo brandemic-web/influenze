@@ -25,6 +25,12 @@ export default defineType({
 	],
 	fields: [
 		defineField({ name: "seo", title: "SEO", type: "seo" }),
+		defineField({
+			name: "scripts",
+			title: "Page scripts",
+			description: "Injected after the site-wide global scripts, only on this page.",
+			type: "customScripts",
+		}),
 
 		defineField({
 			name: "hero",
