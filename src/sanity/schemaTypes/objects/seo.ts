@@ -44,5 +44,24 @@ export default defineType({
 			description:
 				"Overrides the canonical URL this page reports to search engines. Leave this blank almost always — it defaults to the page's own address. Only set it when this content is a duplicate/syndicated copy that should point search engines at another URL instead.",
 		}),
+		defineField({
+			name: "customSchema",
+			title: "Custom structured data (JSON-LD)",
+			type: "text",
+			rows: 6,
+			description:
+				"A complete JSON-LD document — e.g. { \"@context\": \"https://schema.org\", \"@graph\": [...] } — that REPLACES the automatically generated structured data on this page entirely (Organization, WebSite, WebPage and any page-specific nodes are not included alongside it). Leave blank to keep the auto-generated schema.",
+			validation: (Rule) =>
+				Rule.custom((value) => {
+					if (!value) return true;
+					try {
+						const parsed = JSON.parse(value);
+						return (typeof parsed === "object" && parsed !== null && !Array.isArray(parsed)) ||
+							"Must be a JSON object, e.g. { \"@context\": \"https://schema.org\", \"@graph\": [...] }.";
+					} catch {
+						return "Not valid JSON.";
+					}
+				}),
+		}),
 	],
 });

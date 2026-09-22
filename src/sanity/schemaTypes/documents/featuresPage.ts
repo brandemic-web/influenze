@@ -19,10 +19,10 @@ export default defineType({
 	fields: [
 		defineField({ name: "seo", title: "SEO", type: "seo" }),
 		defineField({
-			name: "customCode",
-			title: "Custom Code",
-			type: "customCode",
-			description: "Header/footer code for this page only, in addition to the site-wide code in Site Settings.",
+			name: "scripts",
+			title: "Page scripts",
+			description: "Injected after the site-wide global scripts, only on this page.",
+			type: "customScripts",
 		}),
 		defineField({
 			name: "hero",

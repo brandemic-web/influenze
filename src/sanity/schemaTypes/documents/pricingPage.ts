@@ -11,18 +11,25 @@ export default defineType({
 	name: "pricingPage",
 	title: "Pricing Page",
 	type: "document",
+	groups: [
+		{ name: "heading", title: "Heading & Slider" },
+		{ name: "tiers", title: "Pricing Tiers" },
+		{ name: "planDetails", title: "Plan Features & Credits" },
+		{ name: "useCases", title: "Use Cases" },
+	],
 	fields: [
 		defineField({ name: "seo", title: "SEO", type: "seo" }),
 		defineField({
-			name: "customCode",
-			title: "Custom Code",
-			type: "customCode",
-			description: "Header/footer code for this page only, in addition to the site-wide code in Site Settings.",
+			name: "scripts",
+			title: "Page scripts",
+			description: "Injected after the site-wide global scripts, only on this page.",
+			type: "customScripts",
 		}),
 		defineField({
 			name: "heading",
 			title: "Heading",
 			type: "object",
+			group: "heading",
 			fields: [
 				defineField({ name: "lead", title: "Lead text", type: "string" }),
 				defineField({ name: "accent", title: "Accent text", type: "string" }),
@@ -33,6 +40,7 @@ export default defineType({
 			name: "sliderRange",
 			title: "Slider range (₹)",
 			type: "object",
+			group: "heading",
 			fields: [
 				defineField({ name: "min", title: "Minimum monthly spend", type: "number" }),
 				defineField({ name: "max", title: "Maximum monthly spend", type: "number" }),
@@ -40,6 +48,7 @@ export default defineType({
 		}),
 		defineField({
 			name: "tiers",
+			group: "tiers",
 			title: "Pricing tiers",
 			type: "array",
 			validation: (Rule) => Rule.min(2),
@@ -84,11 +93,13 @@ export default defineType({
 			name: "annualBonusPct",
 			title: "Annual billing bonus (%)",
 			type: "number",
+			group: "tiers",
 		}),
 		defineField({
 			name: "customPlan",
 			title: "Custom plan (quote panel) copy",
 			type: "object",
+			group: "tiers",
 			fields: [
 				defineField({ name: "priceLabel", title: "Price label", type: "string" }),
 				defineField({ name: "priceSuffix", title: "Price suffix", type: "string" }),
@@ -104,17 +115,20 @@ export default defineType({
 			name: "priceNote",
 			title: "Price note (e.g. \"Billed monthly + Taxes\")",
 			type: "string",
+			group: "tiers",
 		}),
 		defineField({
 			name: "planFeatures",
 			title: "Included in every plan",
 			type: "array",
+			group: "planDetails",
 			of: [{ type: "string" }],
 		}),
 		defineField({
 			name: "creditCosts",
 			title: "How credits work",
 			type: "array",
+			group: "planDetails",
 			of: [
 				{
 					type: "object",
@@ -134,6 +148,7 @@ export default defineType({
 			title: "Use cases (Brands / Agencies split)",
 			description: "The 'Use cases for brands and agencies' block below the pricing panel.",
 			type: "array",
+			group: "useCases",
 			of: [
 				{
 					type: "object",

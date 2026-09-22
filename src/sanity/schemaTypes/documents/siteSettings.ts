@@ -1,43 +1,22 @@
 import { defineField, defineType } from "sanity";
 
 /**
- * Singleton — one document holds site-wide identity, default SEO, and the
- * outbound URLs currently hardcoded in src/data/site.ts. The Studio's
- * structure builder pins this to a single non-deletable entry.
+ * Singleton — site-wide defaults: default OG image, global scripts,
+ * navigation, footer, AI/search crawler files, and the sitemap override.
+ * Pinned to one entry by the Studio's structure builder.
  */
 export default defineType({
 	name: "siteSettings",
-	title: "Site Settings",
+	title: "Site Setting",
 	type: "document",
 	groups: [
 		{ name: "general", title: "General", default: true },
 		{ name: "navigation", title: "Navigation" },
 		{ name: "footer", title: "Footer" },
-		{ name: "redirects", title: "Redirects" },
 		{ name: "crawlers", title: "AI & Search" },
+		{ name: "sitemap", title: "Sitemap" },
 	],
 	fields: [
-		defineField({
-			name: "name",
-			title: "Site name",
-			type: "string",
-			group: "general",
-			description: 'Used as og:site_name and the Organization schema name, e.g. "influenze.ai".',
-		}),
-		defineField({
-			name: "defaultTitle",
-			title: "Default page title",
-			type: "string",
-			group: "general",
-			description: "Used on any page that doesn't set its own SEO title.",
-		}),
-		defineField({
-			name: "defaultDescription",
-			title: "Default meta description",
-			type: "text",
-			rows: 3,
-			group: "general",
-		}),
 		defineField({
 			name: "defaultOgImage",
 			title: "Default social share image",
@@ -46,23 +25,11 @@ export default defineType({
 			group: "general",
 		}),
 		defineField({
-			name: "signupUrl",
-			title: "Sign up URL",
-			type: "url",
+			name: "scripts",
+			title: "Global scripts",
+			description: "Injected into every page, before any per-page scripts.",
+			type: "customScripts",
 			group: "general",
-		}),
-		defineField({
-			name: "loginUrl",
-			title: "Login URL",
-			type: "url",
-			group: "general",
-		}),
-		defineField({
-			name: "customCode",
-			title: "Custom Code",
-			type: "customCode",
-			group: "general",
-			description: "Site-wide header/footer code, injected on every page in addition to any page-specific code below it.",
 		}),
 		defineField({
 			name: "navItems",
@@ -116,52 +83,6 @@ export default defineType({
 			],
 		}),
 		defineField({
-			name: "redirects",
-			title: "Redirects",
-			type: "array",
-			group: "redirects",
-			description: "Redirect a URL to a new destination — takes effect immediately, no deploy needed.",
-			of: [
-				{
-					type: "object",
-					name: "redirectRule",
-					fields: [
-						defineField({
-							name: "source",
-							title: "From path",
-							type: "string",
-							description: 'The path visitors currently hit, e.g. "/old-page". Must start with "/".',
-							validation: (Rule) =>
-								Rule.required().custom((value) =>
-									!value || value.startsWith("/") ? true : 'Must start with "/"',
-								),
-						}),
-						defineField({
-							name: "destination",
-							title: "Redirect to",
-							type: "string",
-							description: 'An internal path like "/new-page", or a full URL.',
-							validation: (Rule) => Rule.required(),
-						}),
-						defineField({
-							name: "permanent",
-							title: "Permanent (301)",
-							type: "boolean",
-							initialValue: true,
-							description: "On = 301, permanent — search engines transfer ranking to the new URL. Off = 302, temporary.",
-						}),
-					],
-					preview: {
-						select: { source: "source", destination: "destination", permanent: "permanent" },
-						prepare: ({ source, destination, permanent }) => ({
-							title: `${source} → ${destination}`,
-							subtitle: permanent === false ? "302 temporary" : "301 permanent",
-						}),
-					},
-				},
-			],
-		}),
-		defineField({
 			name: "llmsTxt",
 			title: "llms.txt",
 			type: "text",
@@ -192,13 +113,14 @@ influenze.ai is a creator discovery and campaign platform: targeted search and f
 			rows: 20,
 			group: "crawlers",
 			description:
-				"Served at influenze.ai/robots.txt. Leave blank to serve the built-in default (blocks AI training crawlers, allows search + AI-assistant crawlers, disallows /studio and /api/).",
+				"Served at influenze.ai/robots.txt. Leave blank to serve the built-in default (blocks AI training crawlers, allows search + AI-assistant crawlers, disallows /studio, /api/ and /qc).",
 			initialValue: `# Traditional search indexing.
 User-agent: Googlebot
 User-agent: Bingbot
 Allow: /
 Disallow: /studio
 Disallow: /api/
+Disallow: /qc
 
 # AI search and assistants. These cite the site and send real visitors, so they
 # get the same access as Google. Note Applebot is here but Applebot-Extended is
@@ -221,6 +143,7 @@ User-agent: YouBot
 Allow: /
 Disallow: /studio
 Disallow: /api/
+Disallow: /qc
 
 # Training crawlers — this content is not licensed for model training.
 # Cloudflare's AI Crawl Control enforces this at the edge (per-crawler blocks,
@@ -246,12 +169,22 @@ User-agent: *
 Allow: /
 Disallow: /studio
 Disallow: /api/
+Disallow: /qc
 
 Sitemap: https://influenze.ai/sitemap-index.xml
 `,
 		}),
+		defineField({
+			name: "sitemapFile",
+			title: "Custom sitemap.xml",
+			type: "file",
+			group: "sitemap",
+			options: { accept: ".xml" },
+			description:
+				"Served at influenze.ai/sitemap.xml. Upload a sitemap to override the automatically generated one. Leave blank to keep serving the auto-generated sitemap (built from every page Astro renders).",
+		}),
 	],
 	preview: {
-		prepare: () => ({ title: "Site Settings" }),
+		prepare: () => ({ title: "Site Setting" }),
 	},
 });

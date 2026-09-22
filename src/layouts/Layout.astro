@@ -17,10 +17,6 @@ import logoSource from "../assets/images/common/logos_and_icons/influenze_wordma
 // what turns this on — no env flag to flip.
 const draftMode = isDraftMode(Astro.cookies);
 
-// Every page goes through this for the site-wide Custom Code fields and the
-// default title/description/OG image fallback — see Site Settings in Studio.
-const { data: siteSettings } = await getSiteSettings(getPerspectiveCookie(Astro.cookies));
-
 interface Props {
 	title?: string;
 	description?: string;
@@ -36,22 +32,23 @@ interface Props {
 	ogType?: "website" | "article";
 	/** Absolute image URL. Falls back to Site Settings' default, then the static og-card.jpg. */
 	ogImage?: string;
-	/** Overrides the auto-computed canonical URL — see the page's own SEO > Canonical URL override. */
-	canonicalUrl?: string;
-	/** This page's own Custom Code > Header code, rendered in addition to the site-wide one above it. */
-	pageHeaderCode?: string;
-	/** This page's own Custom Code > Footer code, rendered in addition to the site-wide one above it. */
-	pageFooterCode?: string;
-	/**
-	 * Extra JSON-LD nodes for this page, merged into the site-wide `@graph`.
-	 * The homepage passes its FAQ and the product itself; see pages/index.astro.
-	 */
+	/** Extra JSON-LD nodes merged into the site-wide `@graph`. Ignored if `structuredDataOverride` is set. */
 	schema?: Record<string, unknown>[];
+	/** A full JSON-LD document that replaces all auto-generated structured data, verbatim — Sanity's seo.customSchema. */
+	structuredDataOverride?: Record<string, unknown>;
+	/** Overrides the auto-computed canonical URL — Sanity's seo.canonicalUrl. */
+	canonicalUrl?: string;
+	/**
+	 * This page's own header/footer scripts — Sanity's page.scripts. Merged
+	 * after the site-wide ones, which Layout fetches itself from
+	 * siteSettings, so every page gets the global scripts for free.
+	 */
+	scripts?: { header?: string; footer?: string };
 }
 
 const {
-	title = siteSettings?.defaultTitle || SITE.title,
-	description = siteSettings?.defaultDescription || SITE.description,
+	title = SITE.title,
+	description = SITE.description,
 	ctaButtonLabel,
 	hideCta = false,
 	noindex = false,
@@ -59,15 +56,24 @@ const {
 	datePublished,
 	ogType = "website",
 	ogImage: ogImageProp,
-	canonicalUrl,
-	pageHeaderCode,
-	pageFooterCode,
 	schema = [],
+	structuredDataOverride,
+	canonicalUrl,
+	scripts,
 } = Astro.props;
 
 const site = Astro.site ?? new URL(Astro.url.origin);
 const path = Astro.url.pathname.endsWith("/") ? Astro.url.pathname : `${Astro.url.pathname}/`;
 const canonical = canonicalUrl ? new URL(canonicalUrl, site) : new URL(path, site);
+
+// Independent of each other, so they run concurrently rather than adding
+// their latencies — the logo render doesn't need Sanity's response or vice versa.
+const [orgLogo, { data: settings }] = await Promise.all([
+	// Google wants a raster logo it can crop to a square, so this points at
+	// the wordmark PNG rather than the nav SVG.
+	getImage({ src: logoSource, width: 600, format: "png" }),
+	getSiteSettings(getPerspectiveCookie(Astro.cookies)),
+]);
 
 // Deliberately a plain static file as the last-resort fallback rather than
 // `getImage()`. Under SSR, getImage emits a runtime `/_image?href=...&w=...`
@@ -81,15 +87,8 @@ const canonical = canonicalUrl ? new URL(canonicalUrl, site) : new URL(path, sit
 //   sharp(master).resize(1200, 630).jpeg({ quality: 90, mozjpeg: true })
 const ogImage =
 	ogImageProp ||
-	(siteSettings?.defaultOgImage ? urlFor(siteSettings.defaultOgImage).width(1200).height(630).url() : undefined) ||
+	(settings?.defaultOgImage ? urlFor(settings.defaultOgImage).width(1200).height(630).url() : undefined) ||
 	new URL("/og-card.jpg", site).href;
-
-const siteWideHeaderCode = siteSettings?.customCode?.headerCode;
-const siteWideFooterCode = siteSettings?.customCode?.footerCode;
-
-// Google wants a raster logo it can crop to a square, so this points at the
-// wordmark PNG rather than the nav SVG.
-const orgLogo = await getImage({ src: logoSource, width: 600, format: "png" });
 
 const organizationId = new URL("/#organization", site).href;
 const structuredData = {
@@ -124,6 +123,13 @@ const structuredData = {
 		...schema,
 	],
 };
+
+const inlineHeaderScripts = [settings?.scripts?.header, scripts?.header].filter(
+	(s): s is string => Boolean(s),
+);
+const inlineFooterScripts = [settings?.scripts?.footer, scripts?.footer].filter(
+	(s): s is string => Boolean(s),
+);
 ---
 
 <!doctype html>
@@ -191,12 +197,8 @@ const structuredData = {
 			type="font/woff2"
 			crossorigin
 		/>
-		<script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
-		{/* Site Settings > Custom Code, then this page's own Custom Code — both
-		    additive, never a replacement for the other. Content-team-authored,
-		    so this is a deliberate raw-HTML injection point, not user input. */}
-		{siteWideHeaderCode && <Fragment set:html={siteWideHeaderCode} />}
-		{pageHeaderCode && <Fragment set:html={pageHeaderCode} />}
+		<script type="application/ld+json" is:inline set:html={JSON.stringify(structuredDataOverride ?? structuredData)} />
+		{inlineHeaderScripts.map((s) => <Fragment set:html={s} />)}
 	</head>
 	<body class="min-h-screen overflow-x-clip antialiased">
 		<!-- Google Tag Manager (noscript) -->
@@ -212,8 +214,6 @@ const structuredData = {
 		<slot />
 		{!hideCta && <CtaBand buttonLabel={ctaButtonLabel} />}
 		<Footer />
-		{siteWideFooterCode && <Fragment set:html={siteWideFooterCode} />}
-		{pageFooterCode && <Fragment set:html={pageFooterCode} />}
 		{
 			draftMode && (
 				<>
@@ -222,5 +222,6 @@ const structuredData = {
 				</>
 			)
 		}
+		{inlineFooterScripts.map((s) => <Fragment set:html={s} />)}
 	</body>
 </html>

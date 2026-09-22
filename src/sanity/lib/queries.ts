@@ -3,8 +3,8 @@ import { loadQuery } from "./loadQuery";
 import type { Image } from "sanity";
 import type { PortableTextBlock } from "@portabletext/types";
 
-const SEO_PROJECTION = groq`seo { title, description, ogImage, noindex, canonicalUrl }`;
-const CUSTOM_CODE_PROJECTION = groq`customCode { headerCode, footerCode }`;
+const SEO_PROJECTION = groq`seo { title, description, ogImage, noindex, canonicalUrl, customSchema }`;
+const SCRIPTS_PROJECTION = groq`scripts { header, footer }`;
 
 export interface SeoDoc {
 	title?: string;
@@ -12,44 +12,51 @@ export interface SeoDoc {
 	ogImage?: Image;
 	noindex?: boolean;
 	canonicalUrl?: string;
+	customSchema?: string;
 }
 
-export interface CustomCodeDoc {
-	headerCode?: string;
-	footerCode?: string;
+export interface ScriptsDoc {
+	header?: string;
+	footer?: string;
 }
 
-export const siteSettingsQuery = groq`*[_type == "siteSettings"][0]`;
-
-export interface RedirectRuleDoc {
-	source: string;
-	destination: string;
-	permanent?: boolean;
-}
+// `sitemapFile` is a file reference, so it needs an explicit `asset->`
+// dereference to resolve to a URL — everything else comes through via `...`.
+export const siteSettingsQuery = groq`*[_type == "siteSettings"][0]{
+	...,
+	"sitemapFileUrl": sitemapFile.asset->url,
+}`;
 
 /** Only the fields components currently consume are typed. */
 export interface SiteSettingsDoc {
-	name?: string;
-	defaultTitle?: string;
-	defaultDescription?: string;
 	defaultOgImage?: Image;
-	signupUrl?: string;
-	loginUrl?: string;
-	customCode?: CustomCodeDoc;
+	scripts?: ScriptsDoc;
 	navItems?: NavItemDoc[];
 	footerColumns?: FooterColumnDoc[];
-	redirects?: RedirectRuleDoc[];
 	llmsTxt?: string;
 	robotsTxt?: string;
+	sitemapFileUrl?: string;
 }
 
 export async function getSiteSettings(perspectiveCookie?: string) {
 	return loadQuery<SiteSettingsDoc | null>({ query: siteSettingsQuery, perspectiveCookie });
 }
 
+export const redirectsQuery = groq`*[_type == "redirect" && enabled == true]{ source, destination, permanent }`;
+
+export interface RedirectDoc {
+	source: string;
+	destination: string;
+	permanent?: boolean;
+}
+
+export async function getRedirects() {
+	return loadQuery<RedirectDoc[]>({ query: redirectsQuery });
+}
+
 export const pricingPageQuery = groq`*[_type == "pricingPage"][0]{
 	${SEO_PROJECTION},
-	${CUSTOM_CODE_PROJECTION},
+	${SCRIPTS_PROJECTION},
 	heading,
 	sliderRange,
 	tiers,
@@ -64,7 +71,7 @@ export const pricingPageQuery = groq`*[_type == "pricingPage"][0]{
 /** Only the fields components currently consume are typed. */
 export interface PricingPageDoc {
 	seo?: SeoDoc;
-	customCode?: CustomCodeDoc;
+	scripts?: ScriptsDoc;
 	useCasesSplit?: { title?: string; points?: string[] }[];
 }
 
@@ -74,7 +81,7 @@ export async function getPricingPage(perspectiveCookie?: string) {
 
 export const homePageQuery = groq`*[_type == "homePage"][0]{
 	${SEO_PROJECTION},
-	${CUSTOM_CODE_PROJECTION},
+	${SCRIPTS_PROJECTION},
 	hero,
 	creatorCollage,
 	whyInfluenze,
@@ -103,7 +110,7 @@ export const homePageQuery = groq`*[_type == "homePage"][0]{
  * come through but as `unknown` until they're wired up the same way. */
 export interface HomePageDoc {
 	seo?: SeoDoc;
-	customCode?: CustomCodeDoc;
+	scripts?: ScriptsDoc;
 	hero?: {
 		heading?: string;
 		words?: string[];
@@ -189,7 +196,7 @@ export async function getHomePage(perspectiveCookie?: string) {
 
 export const featuresPageQuery = groq`*[_type == "featuresPage"][0]{
 	${SEO_PROJECTION},
-	${CUSTOM_CODE_PROJECTION},
+	${SCRIPTS_PROJECTION},
 	hero,
 	featureBlocksHeading,
 	featureBlocks,
@@ -198,7 +205,6 @@ export const featuresPageQuery = groq`*[_type == "featuresPage"][0]{
 
 /** Only the fields components currently consume are typed. */
 export interface FeaturesPageDoc {
-	customCode?: CustomCodeDoc;
 	hero?: {
 		heading?: string;
 		subcopy?: { lead?: string; highlight?: string; trail?: string };
@@ -210,6 +216,7 @@ export interface FeaturesPageDoc {
 		heading?: { top?: string; bottom?: string };
 	};
 	seo?: SeoDoc;
+	scripts?: ScriptsDoc;
 }
 
 export async function getFeaturesPage(perspectiveCookie?: string) {

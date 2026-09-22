@@ -6,6 +6,7 @@ import FeatureBlockHeading from "../components/features/FeatureBlockHeading.astr
 import { getFeaturesPage } from "../sanity/lib/queries";
 import { getPerspectiveCookie } from "../lib/draft-mode";
 import { urlFor } from "../sanity/lib/image";
+import { parseStructuredDataOverride } from "../sanity/lib/customSchema";
 
 const { data: features } = await getFeaturesPage(getPerspectiveCookie(Astro.cookies));
 const ogImage = features?.seo?.ogImage ? urlFor(features.seo.ogImage).width(1200).height(630).url() : undefined;
@@ -17,8 +18,8 @@ const ogImage = features?.seo?.ogImage ? urlFor(features.seo.ogImage).width(1200
 	noindex={features?.seo?.noindex ?? false}
 	ogImage={ogImage}
 	canonicalUrl={features?.seo?.canonicalUrl}
-	pageHeaderCode={features?.customCode?.headerCode}
-	pageFooterCode={features?.customCode?.footerCode}
+	structuredDataOverride={parseStructuredDataOverride(features?.seo?.customSchema)}
+	scripts={features?.scripts}
 >
 	<main>
 		<FeaturesHero />
