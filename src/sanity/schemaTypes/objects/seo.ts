@@ -36,5 +36,29 @@ export default defineType({
 			type: "boolean",
 			initialValue: false,
 		}),
+		defineField({
+			name: "canonicalUrl",
+			title: "Canonical URL",
+			type: "url",
+			description: "Overrides the auto-generated canonical URL. Leave blank to use this page's own URL.",
+		}),
+		defineField({
+			name: "customSchema",
+			title: "Custom structured data (JSON-LD)",
+			type: "text",
+			rows: 6,
+			description:
+				"A raw JSON array of extra schema.org nodes for this page, merged into the site's JSON-LD graph. Must be valid JSON — e.g. [{ \"@type\": \"Product\", ... }].",
+			validation: (Rule) =>
+				Rule.custom((value) => {
+					if (!value) return true;
+					try {
+						const parsed = JSON.parse(value);
+						return Array.isArray(parsed) || "Must be a JSON array, e.g. [{ ... }].";
+					} catch {
+						return "Not valid JSON.";
+					}
+				}),
+		}),
 	],
 });

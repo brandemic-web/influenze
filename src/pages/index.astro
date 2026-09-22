@@ -13,6 +13,11 @@ import ComparisonTable from "../components/common/ComparisonTable.astro";
 import Faq from "../components/home/Faq.astro";
 import { FAQS } from "../data/faqs";
 import { SITE } from "../data/site";
+import { getHomePage } from "../sanity/lib/queries";
+import { getPerspectiveCookie } from "../lib/draft-mode";
+import { parseCustomSchema } from "../sanity/lib/customSchema";
+
+const { data: page } = await getHomePage(getPerspectiveCookie(Astro.cookies));
 
 // Built from the same FAQS the page renders, so the JSON-LD can never drift from
 // the visible answers — Google's condition for FAQ rich results.
@@ -32,10 +37,18 @@ const schema = [
 			acceptedAnswer: { "@type": "Answer", text: faq.answer },
 		})),
 	},
+	...parseCustomSchema(page?.seo?.customSchema),
 ];
 ---
 
-<Layout schema={schema}>
+<Layout
+	title={page?.seo?.title || SITE.title}
+	description={page?.seo?.description || SITE.description}
+	noindex={page?.seo?.noindex ?? false}
+	canonicalUrl={page?.seo?.canonicalUrl}
+	schema={schema}
+	scripts={page?.scripts}
+>
 	<main class="xl:overflow-x-clip">
 		<HomeHero />
 		<CreatorCollage />

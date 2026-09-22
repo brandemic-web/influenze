@@ -5,6 +5,7 @@ import CreatorShowcase from "../components/features/CreatorShowcase.astro";
 import FeatureBlockHeading from "../components/features/FeatureBlockHeading.astro";
 import { getFeaturesPage } from "../sanity/lib/queries";
 import { getPerspectiveCookie } from "../lib/draft-mode";
+import { parseCustomSchema } from "../sanity/lib/customSchema";
 
 const { data: features } = await getFeaturesPage(getPerspectiveCookie(Astro.cookies));
 ---
@@ -13,6 +14,9 @@ const { data: features } = await getFeaturesPage(getPerspectiveCookie(Astro.cook
 	title={features?.seo?.title || "Features — Influenze.ai"}
 	description={features?.seo?.description || "A product that caters to you: targeted discovery, creator analytics, contact unlocks, comparisons, shortlists, sharing and reusable creator pools."}
 	noindex={features?.seo?.noindex ?? false}
+	canonicalUrl={features?.seo?.canonicalUrl}
+	schema={parseCustomSchema(features?.seo?.customSchema)}
+	scripts={features?.scripts}
 >
 	<main>
 		<FeaturesHero />
