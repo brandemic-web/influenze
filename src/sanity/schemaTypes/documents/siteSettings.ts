@@ -1,22 +1,20 @@
 import { defineField, defineType } from "sanity";
 
 /**
- * Singleton — site-wide defaults (OG image, global scripts, crawler files,
- * sitemap override). Pinned to one entry by the Studio's structure builder.
+ * Singleton — site-wide defaults: default OG image, global scripts,
+ * navigation, footer, AI/search crawler files, and the sitemap override.
+ * Pinned to one entry by the Studio's structure builder.
  */
 export default defineType({
 	name: "siteSettings",
 	title: "Site Setting",
 	type: "document",
-	fieldsets: [
-		{
-			name: "crawlers",
-			title: "AI & Search",
-		},
-		{
-			name: "sitemap",
-			title: "Sitemap",
-		},
+	groups: [
+		{ name: "general", title: "General", default: true },
+		{ name: "navigation", title: "Navigation" },
+		{ name: "footer", title: "Footer" },
+		{ name: "crawlers", title: "AI & Search" },
+		{ name: "sitemap", title: "Sitemap" },
 	],
 	fields: [
 		defineField({
@@ -24,19 +22,72 @@ export default defineType({
 			title: "Default social share image",
 			type: "image",
 			options: { hotspot: true },
+			group: "general",
 		}),
 		defineField({
 			name: "scripts",
 			title: "Global scripts",
 			description: "Injected into every page, before any per-page scripts.",
 			type: "customScripts",
+			group: "general",
+		}),
+		defineField({
+			name: "navItems",
+			title: "Nav items",
+			type: "array",
+			group: "navigation",
+			of: [{ type: "navItem" }],
+			description:
+				"The header nav, shown left to right in this order. Pre-filled with the site's current links — edit, reorder, hide, or add to change what visitors see without a deploy.",
+			initialValue: [
+				{ _key: "features", label: "Features", href: "/features" },
+				{ _key: "pricing", label: "Pricing", href: "/pricing" },
+				{ _key: "blog", label: "Blog", href: "/blog" },
+				{
+					_key: "link-in-bio",
+					label: "Link-in Bio",
+					href: "https://www.dotme.in/",
+					badge: "DotMe",
+					newTab: true,
+				},
+			],
+		}),
+		defineField({
+			name: "footerColumns",
+			title: "Footer columns",
+			type: "array",
+			group: "footer",
+			of: [{ type: "footerColumn" }],
+			description:
+				"The footer's link columns, shown left to right (wraps on mobile). Pre-filled with the site's current links — edit, reorder, hide, or add to change what visitors see without a deploy.",
+			initialValue: [
+				{
+					_key: "quick-links",
+					title: "Quick Links",
+					links: [
+						{ _key: "pricing", label: "Pricing", href: "/pricing" },
+						{ _key: "features", label: "Features", href: "/features" },
+						{ _key: "blog", label: "Blog", href: "/blog" },
+						{ _key: "dotme", label: "DotMe", href: "https://www.dotme.in/", newTab: true },
+						{ _key: "contact", label: "Contact Us", href: "mailto:info@dotme.in" },
+					],
+				},
+				{
+					_key: "legal",
+					title: "Legal",
+					links: [
+						{ _key: "terms", label: "Terms of Service", href: "/terms" },
+						{ _key: "privacy", label: "Privacy Policy", href: "/privacy" },
+					],
+				},
+			],
 		}),
 		defineField({
 			name: "llmsTxt",
 			title: "llms.txt",
 			type: "text",
 			rows: 16,
-			fieldset: "crawlers",
+			group: "crawlers",
 			description:
 				"Served at influenze.ai/llms.txt — a plain-text/Markdown summary of the site for AI assistants and crawlers (ChatGPT, Claude, Perplexity, etc.) to read, so they cite the right pages. Written in the llms.txt convention: an H1 title, a one-line summary, then links to the key pages. Leave blank to serve the built-in default.",
 			initialValue: `# influenze.ai
@@ -50,6 +101,7 @@ influenze.ai is a creator discovery and campaign platform: targeted search and f
 - [Home](https://influenze.ai/): overview of the platform
 - [Features](https://influenze.ai/features): discovery, analytics, contact unlocks, comparisons, shortlists
 - [Pricing](https://influenze.ai/pricing): credit-based plans and what's included
+- [Blog](https://influenze.ai/blog): research, benchmarks and product notes on creator discovery, audience measurement and campaign design
 - [Terms of Service](https://influenze.ai/terms)
 - [Privacy Policy](https://influenze.ai/privacy)
 `,
@@ -59,7 +111,7 @@ influenze.ai is a creator discovery and campaign platform: targeted search and f
 			title: "robots.txt",
 			type: "text",
 			rows: 20,
-			fieldset: "crawlers",
+			group: "crawlers",
 			description:
 				"Served at influenze.ai/robots.txt. Leave blank to serve the built-in default (blocks AI training crawlers, allows search + AI-assistant crawlers, disallows /studio, /api/ and /qc).",
 			initialValue: `# Traditional search indexing.
@@ -126,7 +178,7 @@ Sitemap: https://influenze.ai/sitemap-index.xml
 			name: "sitemapFile",
 			title: "Custom sitemap.xml",
 			type: "file",
-			fieldset: "sitemap",
+			group: "sitemap",
 			options: { accept: ".xml" },
 			description:
 				"Served at influenze.ai/sitemap.xml. Upload a sitemap to override the automatically generated one. Leave blank to keep serving the auto-generated sitemap (built from every page Astro renders).",

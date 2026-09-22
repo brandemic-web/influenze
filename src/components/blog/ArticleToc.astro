@@ -1,0 +1,112 @@
+---
+/**
+ * Article contents box: fixed-height scrolling list on desktop, a fixed
+ * bottom bar below `lg` that expands upward. `data-toc` / `data-toc-link`
+ * are read by scripts/toc.ts to light the heading currently on screen.
+ */
+import type { ArticleHeading } from "../../lib/article-headings";
+
+interface Props {
+	headings: ArticleHeading[];
+}
+
+const { headings } = Astro.props;
+
+// A step larger than the legal routes' rail — this carries full heading sentences.
+const linkClass =
+	"block border-l border-white/10 py-2 pl-5 text-[0.9375rem] leading-6 text-white/45 transition-colors hover:border-brand-primary hover:text-white data-active:border-brand-primary data-active:text-brand-primary lg:text-[1.0625rem] lg:leading-7";
+
+// h3s indent under the h2 they belong to.
+const indent = (level: 2 | 3) => (level === 3 ? "pl-10" : "");
+---
+
+{
+	headings.length > 1 && (
+		<>
+			{/* Mobile/tablet: a fixed bar pinned to the bottom, list expands upward via flex-col-reverse. */}
+			<details class="group fixed inset-x-0 bottom-0 z-40 flex flex-col-reverse border-t border-white/10 bg-surface-dark shadow-[0_-8px_24px_rgba(0,0,0,0.35)] lg:hidden">
+				<summary class="flex cursor-pointer list-none items-center justify-between gap-4 p-5 [&::-webkit-details-marker]:hidden">
+					<span class="text-[1rem] font-semibold text-white">Contents</span>
+					<svg
+						class="h-1.5 w-3 shrink-0 rotate-180 text-white transition-transform group-open:rotate-0"
+						viewBox="0 0 12 6"
+						fill="none"
+						aria-hidden="true"
+					>
+						<path d="M1 1l5 4 5-4" stroke="currentColor" stroke-width="1.5" />
+					</svg>
+				</summary>
+				<nav aria-label="Article contents" class="max-h-[60vh] overflow-y-auto border-b border-white/10 px-5 pt-4 pb-5" data-toc>
+					<ol class="flex flex-col">
+						{headings.map((heading) => (
+							<li>
+								<a
+									href={`#${heading.id}`}
+									class:list={[linkClass, indent(heading.level)]}
+									data-toc-link={heading.id}
+								>
+									{heading.text}
+								</a>
+							</li>
+						))}
+					</ol>
+				</nav>
+			</details>
+
+			{/* Desktop: a long outline scrolls inside the box rather than growing it. */}
+			<div class="hidden rounded-md border border-white/15 bg-[rgba(246,246,244,0.1)] px-5 py-7 shadow-[0_8px_32px_rgba(0,0,0,0.18),inset_0_1px_0_rgba(255,255,255,0.18)] backdrop-blur-md backdrop-saturate-150 p-5 lg:block lg:p-6">
+				<h2 class="mb-5 text-[0.875rem] tracking-[0.14em] uppercase text-white/40 lg:text-[1rem]">
+					Contents
+				</h2>
+				<nav aria-label="Article contents" class="toc-rail h-72 overflow-y-auto pr-2" data-toc>
+					<ol class="flex flex-col">
+						{headings.map((heading) => (
+							<li>
+								<a
+									href={`#${heading.id}`}
+									class:list={[linkClass, indent(heading.level)]}
+									data-toc-link={heading.id}
+								>
+									{heading.text}
+								</a>
+							</li>
+						))}
+					</ol>
+				</nav>
+			</div>
+		</>
+	)
+}
+
+<style>
+	/* Thin, faint scrollbar for a near-black column. px, not rem: shouldn't grow with the 1728 grid. */
+	.toc-rail {
+		scrollbar-width: thin; /* Firefox */
+		scrollbar-color: rgb(255 255 255 / 0.14) transparent;
+	}
+
+	.toc-rail::-webkit-scrollbar {
+		width: 4px;
+	}
+
+	.toc-rail::-webkit-scrollbar-track {
+		background: transparent;
+	}
+
+	.toc-rail::-webkit-scrollbar-thumb {
+		background: rgb(255 255 255 / 0.14);
+		border-radius: 9999px;
+	}
+
+	.toc-rail:hover {
+		scrollbar-color: rgb(255 255 255 / 0.3) transparent;
+	}
+
+	.toc-rail:hover::-webkit-scrollbar-thumb {
+		background: rgb(255 255 255 / 0.3);
+	}
+</style>
+
+<script>
+	import "../../scripts/toc";
+</script>

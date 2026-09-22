@@ -5,15 +5,18 @@ import ComparisonTable from "../components/common/ComparisonTable.astro";
 import UseCasesSplit from "../components/pricing/UseCasesSplit.astro";
 import { getPricingPage } from "../sanity/lib/queries";
 import { getPerspectiveCookie } from "../lib/draft-mode";
+import { urlFor } from "../sanity/lib/image";
 import { parseStructuredDataOverride } from "../sanity/lib/customSchema";
 
 const { data: page } = await getPricingPage(getPerspectiveCookie(Astro.cookies));
+const ogImage = page?.seo?.ogImage ? urlFor(page.seo.ogImage).width(1200).height(630).url() : undefined;
 ---
 
 <Layout
 	title={page?.seo?.title || "Pricing — Influenze.ai"}
 	description={page?.seo?.description || "Built for teams that demand accuracy. Transparent, credit-based plans that cater to you."}
 	noindex={page?.seo?.noindex ?? false}
+	ogImage={ogImage}
 	canonicalUrl={page?.seo?.canonicalUrl}
 	structuredDataOverride={parseStructuredDataOverride(page?.seo?.customSchema)}
 	scripts={page?.scripts}

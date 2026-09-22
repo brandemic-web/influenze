@@ -1,0 +1,96 @@
+---
+/**
+ * Article header: gradient stage, copy/cover at 70/30, stacks below `lg`.
+ * Not SectionHeading — it forces `capitalize`/`text-center`, which mangles
+ * a sentence-case headline.
+ */
+import BlogImage from "./BlogImage.astro";
+import AuthorByline from "./AuthorByline.astro";
+import type { PostDoc } from "../../sanity/lib/queries";
+
+interface Props {
+	post: PostDoc;
+	readMinutes: number;
+}
+
+const { post, readMinutes } = Astro.props;
+---
+
+<section
+	class="relative overflow-hidden bg-[radial-gradient(160%_100%_at_50%_-20%,#7B4DFF_0%,#5A2FD8_30%,#2A1655_58%,#010101_100%)] pt-26 pb-6 lg:flex lg:h-screen lg:items-center lg:justify-items-stretch lg:pt-50 lg:pb-20"
+	aria-label="Article header"
+>
+	{/* Same envelope as the FAQ section and article body, for shared edges. */}
+	<div class="mx-auto px-6 lg:w-full lg:px-14">
+		{
+			/* Glass card recipe from UseCasesSplit.astro — a clean edge over the gradient. */
+		}
+		<div
+			class="rounded-md border border-white/15 bg-[rgba(246,246,244,0.1)] px-5 py-7 shadow-[0_8px_32px_rgba(0,0,0,0.18),inset_0_1px_0_rgba(255,255,255,0.18)] backdrop-blur-md backdrop-saturate-150 lg:px-14 lg:py-13"
+		>
+			<div
+				class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between lg:gap-16"
+			>
+				{
+					/* 70 — the copy. Contents on mobile so the byline can order after the cover; a real box again at `lg`. */
+				}
+				<div
+					class="contents lg:flex lg:w-full lg:max-w-196.5 lg:flex-col"
+				>
+					<div class="order-1 lg:order-0">
+						<ul class="mt-6 flex flex-wrap gap-2 lg:mt-0">
+							{
+								post.categories.map((category) => (
+									<li class="rounded-[100px] border border-white/10 bg-surface-card px-3 py-1.5 text-[0.6875rem] text-white lg:text-[0.75rem]">
+										{category}
+									</li>
+								))
+							}
+						</ul>
+						<div class="mt-8">
+						<AuthorByline
+							author={post.author}
+							publishedAt={post.publishedAt}
+							readMinutes={readMinutes}
+							metaOnly
+						/>
+					</div>
+
+						<h1
+							class="mt-4 text-3xl leading-[1.15] text-white lg:mt-8 lg:text-[3rem]"
+						>
+							{post.title}
+						</h1>
+
+						<p
+							class="mt-4 max-w-185 text-[1rem] leading-6.5 text-[#CECECE]/70 lg:mt-8 lg:text-[1rem]"
+						>
+							{post.excerpt}
+						</p>
+					</div>
+
+					<div class="order-3 lg:mt-8 lg:order-0">
+						<AuthorByline
+							author={post.author}
+							publishedAt={post.publishedAt}
+							readMinutes={readMinutes}
+							hideMeta
+						/>
+					</div>
+				</div>
+
+				{
+					/* Cover: square on desktop (bigger, per the reference layout), 16:9 when stacked. mt-5 restores the text-to-cover gap the tighter container gap took from it. */
+				}
+				<BlogImage
+					src={post.cover}
+					alt={post.coverAlt ?? ""}
+					widths={[500, 1000, 1600]}
+					sizes="(min-width: 1024px) 37.5rem, 92vw"
+					class="order-2 mt-5 aspect-video w-full rounded-md object-cover lg:order-0 lg:mt-0 lg:w-200 lg:h-120 lg:shrink-0"
+					loading="eager"
+				/>
+			</div>
+		</div>
+	</div>
+</section>

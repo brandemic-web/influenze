@@ -1,0 +1,38 @@
+---
+/**
+ * Article's right-hand rail: contents, CTA, then share links — sticky as
+ * one unit on desktop. Below `lg` the TOC becomes its own fixed bottom bar
+ * (see ArticleToc.astro) and drops out of this flow; share and CTA join
+ * the page's normal reading order via order-* (share early, CTA last).
+ */
+import ArticleToc from "./ArticleToc.astro";
+import ArticleShare from "./ArticleShare.astro";
+import Button from "../common/Button.astro";
+import { APP_URL } from "../../data/site";
+import type { ArticleHeading } from "../../lib/article-headings";
+
+interface Props {
+	headings: ArticleHeading[];
+	url: string;
+	title: string;
+	class?: string;
+}
+
+const { headings, url, title, class: className = "" } = Astro.props;
+---
+
+<div class:list={["contents lg:flex lg:flex-col lg:gap-6 lg:sticky lg:top-32", className]}>
+	<ArticleToc headings={headings} />
+
+	<div class="order-4 rounded-md border border-white/15 bg-[rgba(246,246,244,0.1)] px-5 py-7 shadow-[0_8px_32px_rgba(0,0,0,0.18),inset_0_1px_0_rgba(255,255,255,0.18)] backdrop-blur-md backdrop-saturate-150 p-5 text-center lg:order-0 lg:p-6">
+		<p class="text-[0.875rem] text-white/70 lg:text-[0.9375rem]">
+			Ready to find your next creator?
+		</p>
+		{/* Same label as the header's own CTA, for one voice across the site. */}
+		<Button href={APP_URL} newTab class="mt-4 w-full justify-center">Free Trail</Button>
+	</div>
+
+	<div class="order-1 lg:order-0">
+		<ArticleShare url={url} title={title} />
+	</div>
+</div>

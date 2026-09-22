@@ -1,0 +1,26 @@
+---
+/**
+ * One brand mark, rendered as-is: same rounded clip and size for every icon.
+ * Plain `<img>`, not `<Image>` — Astro's image service rejects SVGs (see CLAUDE.md).
+ */
+import type { ImageMetadata } from "astro";
+
+interface Props {
+	src: ImageMetadata;
+	/** Defaults to h-6 w-6; pass a full replacement to size differently. */
+	class?: string;
+}
+
+const { src, class: className = "h-6 w-6 " } = Astro.props;
+---
+
+<span
+	class:list={[
+		"inline-flex shrink-0 items-center justify-center overflow-hidden rounded-[0.375rem] ",
+		className,
+	]}
+>
+	{/* Decorative: every button that uses this also carries a visible text
+	    label or aria-label naming the platform, so no alt text here. */}
+	<img src={src.src} alt="" class="h-full w-full object-contain" />
+</span>

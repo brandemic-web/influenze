@@ -17,6 +17,7 @@ influenze.ai is a creator discovery and campaign platform: targeted search and f
 - [Home](https://influenze.ai/): overview of the platform
 - [Features](https://influenze.ai/features): discovery, analytics, contact unlocks, comparisons, shortlists
 - [Pricing](https://influenze.ai/pricing): credit-based plans and what's included
+- [Blog](https://influenze.ai/blog): research, benchmarks and product notes on creator discovery, audience measurement and campaign design
 - [Terms of Service](https://influenze.ai/terms)
 - [Privacy Policy](https://influenze.ai/privacy)
 `;

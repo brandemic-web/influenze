@@ -1,6 +1,7 @@
 import groq from "groq";
 import { loadQuery } from "./loadQuery";
 import type { Image } from "sanity";
+import type { PortableTextBlock } from "@portabletext/types";
 
 const SEO_PROJECTION = groq`seo { title, description, ogImage, noindex, canonicalUrl, customSchema }`;
 const SCRIPTS_PROJECTION = groq`scripts { header, footer }`;
@@ -28,7 +29,10 @@ export const siteSettingsQuery = groq`*[_type == "siteSettings"][0]{
 
 /** Only the fields components currently consume are typed. */
 export interface SiteSettingsDoc {
+	defaultOgImage?: Image;
 	scripts?: ScriptsDoc;
+	navItems?: NavItemDoc[];
+	footerColumns?: FooterColumnDoc[];
 	llmsTxt?: string;
 	robotsTxt?: string;
 	sitemapFileUrl?: string;
@@ -217,4 +221,126 @@ export interface FeaturesPageDoc {
 
 export async function getFeaturesPage(perspectiveCookie?: string) {
 	return loadQuery<FeaturesPageDoc | null>({ query: featuresPageQuery, perspectiveCookie });
+}
+
+export interface LinkItemDoc {
+	label?: string;
+	href?: string;
+	newTab?: boolean;
+	hidden?: boolean;
+}
+
+export interface NavItemDoc extends LinkItemDoc {
+	badge?: string;
+	dropdown?: LinkItemDoc[];
+}
+
+export interface FooterColumnDoc {
+	title?: string;
+	hidden?: boolean;
+	links?: LinkItemDoc[];
+}
+
+export interface AuthorDoc {
+	name: string;
+	role?: string;
+	avatar: Image;
+}
+
+export interface QnaItemDoc {
+	question: string;
+	answer: string;
+}
+
+export const postQuery = groq`*[_type == "post" && slug.current == $slug][0]{
+	title,
+	"slug": slug.current,
+	excerpt,
+	cover,
+	"coverAlt": cover.alt,
+	publishedAt,
+	readTimeOverride,
+	featured,
+	"categories": categories[]->title,
+	"categoryIds": categories[]->_id,
+	author->{ name, role, avatar },
+	body[]{
+		...,
+		_type == "articleCta" => { _type, _key, heading, subcopy, buttonLabel, buttonHref },
+		_type == "articleImage" => { _type, _key, image, alt, caption },
+	},
+	qna[visible != false]{ question, answer },
+}`;
+
+export interface PostDoc {
+	title: string;
+	slug: string;
+	excerpt: string;
+	cover: Image;
+	coverAlt?: string;
+	publishedAt: string;
+	readTimeOverride?: number;
+	featured?: boolean;
+	categories: string[];
+	categoryIds: string[];
+	author: AuthorDoc;
+	body: PortableTextBlock[];
+	qna: QnaItemDoc[];
+}
+
+export async function getPost(slug: string, perspectiveCookie?: string) {
+	return loadQuery<PostDoc | null>({ query: postQuery, params: { slug }, perspectiveCookie });
+}
+
+export const relatedPostsQuery = groq`*[
+	_type == "post"
+	&& slug.current != $slug
+	&& count((categories[]->_id)[@ in $categoryIds]) > 0
+] | order(publishedAt desc) [0...3] {
+	title,
+	"slug": slug.current,
+	excerpt,
+	cover,
+	"coverAlt": cover.alt,
+	publishedAt,
+	readTimeOverride,
+	"categories": categories[]->title,
+	author->{ name, role, avatar },
+	body,
+}`;
+
+export type RelatedPostDoc = Omit<PostDoc, "categoryIds" | "qna" | "featured">;
+
+export async function getRelatedPosts(slug: string, categoryIds: string[], perspectiveCookie?: string) {
+	return loadQuery<RelatedPostDoc[]>({
+		query: relatedPostsQuery,
+		params: { slug, categoryIds },
+		perspectiveCookie,
+	});
+}
+
+export const allPostsQuery = groq`*[_type == "post"] | order(featured desc, publishedAt desc){
+	title,
+	"slug": slug.current,
+	excerpt,
+	cover,
+	"coverAlt": cover.alt,
+	publishedAt,
+	readTimeOverride,
+	featured,
+	"categories": categories[]->title,
+	author->{ name, role, avatar },
+	body,
+}`;
+
+export type PostListItemDoc = Omit<PostDoc, "categoryIds" | "qna">;
+
+export async function getAllPosts(perspectiveCookie?: string) {
+	return loadQuery<PostListItemDoc[]>({ query: allPostsQuery, perspectiveCookie });
+}
+
+export const categoriesQuery = groq`*[_type == "category"] | order(title asc){ title }`;
+
+export async function getCategories(perspectiveCookie?: string) {
+	return loadQuery<{ title: string }[]>({ query: categoriesQuery, perspectiveCookie });
 }

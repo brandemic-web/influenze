@@ -1,0 +1,23 @@
+---
+/**
+ * Brand mark for one AI platform button in ArticleAiSummary.astro. Real logos
+ * from src/assets/icons/common/, not hand-drawn approximations.
+ */
+import PlatformBadge from "./PlatformBadge.astro";
+import chatgpt from "../../assets/icons/common/chatgpt_icon.svg";
+import perplexity from "../../assets/icons/common/perplexity_svg.svg";
+import claude from "../../assets/icons/common/claude_svg.svg";
+import gemini from "../../assets/icons/common/gemini_svg.svg";
+import grok from "../../assets/icons/common/Grok_svg.svg";
+
+interface Props {
+	platform: "chatgpt" | "perplexity" | "claude" | "gemini" | "grok";
+	class?: string;
+}
+
+const { platform, class: className } = Astro.props;
+
+const ICONS = { chatgpt, perplexity, claude, gemini, grok };
+---
+
+<PlatformBadge src={ICONS[platform]} class={className} />

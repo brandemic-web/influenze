@@ -1,7 +1,14 @@
 ---
-import { NAV_ITEMS } from "../../data/nav";
+import type { NavItem } from "../../data/nav";
 import { APP_URL } from "../../data/site";
 import Button from "./Button.astro";
+
+// Passed down from Header.astro so both share one Sanity fetch and can never
+// show a different nav from each other.
+interface Props {
+	navItems: NavItem[];
+}
+const { navItems: NAV_ITEMS } = Astro.props;
 
 // Matches Header.astro — current page gets the brand green.
 const currentPath = Astro.url.pathname.replace(/\/+$/, "") || "/";

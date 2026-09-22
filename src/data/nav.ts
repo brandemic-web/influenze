@@ -15,6 +15,7 @@ export interface NavItem extends NavLink {
 export const NAV_ITEMS: NavItem[] = [
 	{ label: "Features", href: "/features" },
 	{ label: "Pricing", href: "/pricing" },
+	{ label: "Blog", href: "/blog" },
 	// "Resources" is hidden for now — its dropdown links have no destinations yet.
 	// Restore this entry once those pages exist.
 	// {
