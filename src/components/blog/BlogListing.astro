@@ -1,0 +1,98 @@
+---
+/**
+ * The filtered grid under the featured card. The category rail is left-aligned
+ * and scrolls sideways on narrow screens rather than wrapping into a block.
+ *
+ * Every post renders here, the featured one included — filtering to its
+ * category shows that card again rather than an empty grid, which is why the
+ * listing deliberately does not subtract the featured post.
+ *
+ * Wired through `data-*` hooks; keep these in step with scripts/blog-page/blogFilter.ts:
+ *   data-blog-listing   root the script scans for
+ *   data-blog-filter    a category chip (data-category = id, or "all")
+ *   data-blog-card      one post card (data-category = its category id)
+ *   data-blog-grid      the grid, hidden when nothing matches
+ *   data-blog-empty     the empty state, shown in its place
+ *
+ * Without JS every card is visible and "All" reads as selected, which is the
+ * same thing the unfiltered view shows.
+ */
+import BlogCard from "./BlogCard.astro";
+import type { BlogCategoryChip, BlogEntry, BlogIndexCopy } from "../../lib/blog-source";
+import { BLOG_ALL_ID, BLOG_ALL_LABEL } from "../../data/blog";
+
+interface Props {
+	posts: BlogEntry[];
+	/** The filter rail, in order — from Sanity, or the local seed list. */
+	categories: BlogCategoryChip[];
+	copy: BlogIndexCopy;
+}
+
+const { posts, categories, copy } = Astro.props;
+
+const chips = [{ id: BLOG_ALL_ID, label: BLOG_ALL_LABEL }, ...categories];
+---
+
+<section
+	class="bg-background-primary pt-4 pb-20 lg:pt-6 lg:pb-32"
+	aria-labelledby="blog-listing-heading"
+	data-blog-listing
+>
+	<div class="mx-auto max-w-410.75 px-4 sm:px-6 lg:px-25">
+		<h2 id="blog-listing-heading" class="text-xl leading-[1.2] text-white lg:text-5xl">
+			{copy.listingHeading}
+		</h2>
+
+		{/*
+			Category rail. A full-bleed negative margin below `sm` so the row can
+			scroll to the screen edge instead of being clipped by the page gutter;
+			the padding puts the first chip back on the gutter line.
+		*/}
+		<div
+			class="-mx-4 mt-6 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:mx-0 sm:px-0 lg:mt-8 [&::-webkit-scrollbar]:hidden"
+			role="group"
+			aria-label="Filter articles by category"
+		>
+			<div class="flex w-max items-center gap-2 lg:gap-3">
+				{
+					chips.map((chip, i) => (
+						<button
+							type="button"
+							aria-pressed={i === 0 ? "true" : "false"}
+							class="shrink-0 cursor-pointer rounded-full border border-white/12 bg-white/[0.03] px-4 py-2.5 text-[0.75rem] leading-none whitespace-nowrap text-white/60 transition-colors duration-300 hover:border-brand-primary/40 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary aria-pressed:border-brand-primary aria-pressed:bg-button-primary aria-pressed:text-button-text lg:px-5.5 lg:py-3 lg:text-[0.875rem]"
+							data-blog-filter
+							data-category={chip.id}
+						>
+							{chip.label}
+						</button>
+					))
+				}
+			</div>
+		</div>
+
+		<div
+			class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:mt-12 lg:grid-cols-3 lg:gap-7"
+			data-blog-grid
+		>
+			{posts.map((post) => <BlogCard post={post} />)}
+		</div>
+
+		{/* Swapped in for the grid when a category has nothing in it yet. */}
+		<div
+			class="mt-8 rounded-[1.25rem] border border-white/10 bg-white/[0.03] px-6 py-14 text-center lg:mt-12 lg:py-20"
+			data-blog-empty
+			hidden
+		>
+			<p class="text-[1.125rem] text-white lg:text-[1.5rem]">{copy.emptyTitle}</p>
+			<p class="mx-auto mt-3 max-w-110 text-[0.875rem] leading-[1.6] text-white/50 lg:text-[1rem]">
+				{copy.emptyBody}
+			</p>
+		</div>
+	</div>
+</section>
+
+<script>
+	import { initBlogFilter } from "../../scripts/blog-page/blogFilter";
+
+	initBlogFilter();
+</script>

@@ -1,0 +1,71 @@
+---
+/**
+ * The blog's inline CTA — one treatment, used everywhere, fed the one set of
+ * words in data/blog-cta.ts. There is deliberately no second variant: a post
+ * repeats the same offer rather than escalating through different-looking boxes.
+ */
+import Button from "../common/Button.astro";
+import type { BlogCta } from "../../data/blog";
+
+interface Props {
+	cta: BlogCta;
+}
+
+const { cta } = Astro.props;
+const { heading, body, label, href, newTab = false } = cta;
+---
+
+<div
+	class="glass-rim relative my-10 rounded-[1.25rem] border border-transparent bg-[#0a071885] px-5 py-8 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.14),0_24px_70px_-12px_rgba(0,0,0,0.55)] backdrop-blur-md backdrop-saturate-150 sm:px-8 lg:my-16 lg:px-12 lg:py-11"
+	data-reveal
+>
+	<div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between lg:gap-12">
+		<div class="min-w-0">
+			{heading && (
+				<p class="text-[1.125rem] leading-[1.25] font-semibold text-white lg:text-[1.625rem]">
+					{heading}
+				</p>
+			)}
+			{body && (
+				<p class="mt-2.5 max-w-160 text-[0.875rem] leading-[1.6] text-white/55 lg:mt-3 lg:text-[1rem]">
+					{body}
+				</p>
+			)}
+		</div>
+		<Button href={href} newTab={newTab} class="shrink-0 max-lg:w-full">
+			{label}
+		</Button>
+	</div>
+</div>
+
+<style>
+	/* Same masked rim as the hero and the pricing panel; needs `border-transparent`. */
+	.glass-rim {
+		position: relative;
+	}
+
+	.glass-rim::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		padding: 1px;
+		border-radius: inherit;
+		background: linear-gradient(
+			135deg,
+			rgba(255, 255, 255, 0.55) 0%,
+			rgba(255, 255, 255, 0.3) 25%,
+			rgba(255, 255, 255, 0.2) 50%,
+			rgba(255, 255, 255, 0.3) 75%,
+			rgba(255, 255, 255, 0.45) 100%
+		);
+		-webkit-mask:
+			linear-gradient(#000 0 0) content-box,
+			linear-gradient(#000 0 0);
+		-webkit-mask-composite: xor;
+		mask:
+			linear-gradient(#000 0 0) content-box,
+			linear-gradient(#000 0 0);
+		mask-composite: exclude;
+		pointer-events: none;
+	}
+</style>

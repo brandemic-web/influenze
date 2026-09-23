@@ -1,0 +1,63 @@
+---
+/**
+ * One image element for either source: a file imported through astro:assets, or
+ * a Sanity CDN URL. The two need different markup — Astro generates its own
+ * srcset for a local asset, while a Sanity URL is resized with query params —
+ * so the branch lives here rather than in all three cards.
+ *
+ * `fit=crop` gives the requested box exactly; the hotspot set in the Studio is
+ * not applied, so a Sanity hero crops from the centre.
+ */
+import { Image } from "astro:assets";
+import type { BlogHeroImage } from "../../lib/blog-source";
+
+interface Props {
+	image: BlogHeroImage;
+	/** Widths to offer the browser. The largest doubles as the fallback `src`. */
+	widths: number[];
+	sizes: string;
+	/** The rendered aspect ratio, so a Sanity crop matches the local one. */
+	ratio: { width: number; height: number };
+	class?: string;
+	loading?: "eager" | "lazy";
+}
+
+const { image, widths, sizes, ratio, class: className = "", loading = "lazy" } = Astro.props;
+
+const heightFor = (width: number) => Math.round((width * ratio.height) / ratio.width);
+
+// `auto=format` lets the CDN serve WebP/AVIF to browsers that take it.
+const remoteUrl = (width: number) =>
+	image.kind === "remote"
+		? `${image.url}?w=${width}&h=${heightFor(width)}&fit=crop&auto=format`
+		: "";
+
+const largest = widths.at(-1) ?? 784;
+---
+
+{
+	image.kind === "local" ? (
+		<Image
+			src={image.src}
+			alt={image.alt}
+			widths={widths}
+			sizes={sizes}
+			class={className}
+			loading={loading}
+		/>
+	) : (
+		image.url && (
+			<img
+				src={remoteUrl(largest)}
+				srcset={widths.map((width) => `${remoteUrl(width)} ${width}w`).join(", ")}
+				sizes={sizes}
+				alt={image.alt}
+				width={largest}
+				height={heightFor(largest)}
+				class={className}
+				loading={loading}
+				decoding={loading === "eager" ? "sync" : "async"}
+			/>
+		)
+	)
+}

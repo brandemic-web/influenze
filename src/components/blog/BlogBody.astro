@@ -1,0 +1,176 @@
+---
+/**
+ * A post's body, from either source. A Sanity post is Portable Text and goes
+ * straight to PortableText.astro; a seed post in src/data/blog-posts/ is a typed
+ * block list, and the branches below are its renderer — one per block type, so
+ * the body can carry real components between runs of prose.
+ *
+ * Both paths land on the same `.blog-prose` styles, so the two read identically.
+ * `heading` blocks own the ids the contents rail targets; `scroll-mt-32` keeps an
+ * anchored heading clear of the fixed header.
+ */
+import type { BlogBlock } from "../../data/blog";
+import type { BlogBody } from "../../lib/blog-source";
+import BlogCta from "./BlogCta.astro";
+import PortableText from "./PortableText.astro";
+
+interface Props {
+	body: BlogBody;
+}
+
+const { body } = Astro.props;
+const blocks: BlogBlock[] = body.kind === "blocks" ? body.blocks : [];
+
+const proseP =
+	"mt-5 text-[0.9375rem] leading-[1.8] text-[#CECECE]/70 lg:mt-6 lg:text-[1.0625rem] lg:leading-[1.9]";
+---
+
+{body.kind === "portable" && <PortableText blocks={body.blocks} />}
+
+<div class="blog-prose">
+	{
+		blocks.map((block) => {
+			switch (block.type) {
+				case "heading":
+					return (
+						<h2
+							id={block.id}
+							class="mt-14 scroll-mt-32 text-xl leading-[1.15] text-white first:mt-0 lg:mt-20 lg:text-6xl"
+						>
+							{block.text}
+						</h2>
+					);
+
+				case "subheading":
+					return (
+						<h3 class="mt-9 text-[1.125rem] leading-[1.3] font-semibold text-white lg:mt-12 lg:text-[1.5rem]">
+							{block.text}
+						</h3>
+					);
+
+				case "paragraph":
+					// Authored in data/blog-posts/*.ts, so the inline tags are ours.
+					return <p class={proseP} set:html={block.html} />;
+
+				case "list":
+					return block.ordered ? (
+						<ol class="mt-5 flex list-none flex-col gap-3 lg:mt-7 lg:gap-4">
+							{block.items.map((item, i) => (
+								<li class="flex gap-3 text-[0.9375rem] leading-[1.75] text-[#CECECE]/70 lg:gap-4 lg:text-[1.0625rem]">
+									<span class="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-purple-ink/50 text-[0.75rem] leading-none font-semibold text-white tabular-nums lg:h-7 lg:w-7 lg:text-[0.8125rem]">
+										{i + 1}
+									</span>
+									<span>{item}</span>
+								</li>
+							))}
+						</ol>
+					) : (
+						<ul class="mt-5 flex list-none flex-col gap-3 lg:mt-7 lg:gap-3.5">
+							{block.items.map((item) => (
+								<li class="flex gap-3 text-[0.9375rem] leading-[1.75] text-[#CECECE]/70 lg:gap-4 lg:text-[1.0625rem]">
+									<span
+										class="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-primary"
+										aria-hidden="true"
+									/>
+									<span>{item}</span>
+								</li>
+							))}
+						</ul>
+					);
+
+				case "quote":
+					return (
+						<figure class="my-9 border-l-2 border-brand-primary pl-5 lg:my-14 lg:pl-8">
+							<blockquote class="text-[1.0625rem] leading-[1.6] text-white lg:text-[1.5rem] lg:leading-[1.5]">
+								{block.text}
+							</blockquote>
+							<figcaption class="mt-3 text-[0.8125rem] leading-[1.4] text-white/40 lg:mt-4 lg:text-[0.9375rem]">
+								{block.attribution}
+							</figcaption>
+						</figure>
+					);
+
+				case "callout":
+					return (
+						<aside class="my-8 rounded-md border border-white/12 bg-surface-card px-5 py-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] lg:my-12 lg:px-9 lg:py-8">
+							<p class="text-[0.9375rem] leading-[1.3] font-semibold text-white lg:text-[1.125rem]">
+								{block.title}
+							</p>
+							<p class="mt-2.5 text-[0.875rem] leading-[1.75] text-white/55 lg:mt-3 lg:text-[1rem]">
+								{block.body}
+							</p>
+						</aside>
+					);
+
+				case "table":
+					return (
+						<figure class="my-8 lg:my-14">
+							{/* The table keeps its own scroller so the page never scrolls sideways. */}
+							<div class="overflow-x-auto rounded-md border border-white/12 bg-surface-card">
+								<table class="w-full min-w-140 border-collapse text-left">
+									<thead>
+										<tr>
+											{block.columns.map((column) => (
+												<th
+													scope="col"
+													class="border-b border-white/12 px-4 py-3.5 text-[0.75rem] tracking-[0.1em] uppercase text-white/45 lg:px-6 lg:py-4 lg:text-[0.8125rem]"
+												>
+													{column}
+												</th>
+											))}
+										</tr>
+									</thead>
+									<tbody>
+										{block.rows.map((row) => (
+											<tr class="border-b border-white/8 last:border-b-0">
+												{row.map((cell, i) => (
+													<td
+														class:list={[
+															"px-4 py-3.5 text-[0.8125rem] leading-[1.5] lg:px-6 lg:py-4.5 lg:text-[0.9375rem]",
+															i === 0 ? "font-semibold text-white" : "text-[#CECECE]/70",
+														]}
+													>
+														{cell}
+													</td>
+												))}
+											</tr>
+										))}
+									</tbody>
+								</table>
+							</div>
+							{block.caption && (
+								<figcaption class="mt-3 text-[0.75rem] leading-[1.5] text-white/35 lg:text-[0.8125rem]">
+									{block.caption}
+								</figcaption>
+							)}
+						</figure>
+					);
+
+				case "cta":
+					return <BlogCta cta={block.cta} />;
+			}
+		})
+	}
+</div>
+
+<style>
+	/* Links written inline in the copy — set:html bypasses Tailwind, so they are
+	   styled here rather than per-paragraph. */
+	.blog-prose :global(a) {
+		color: var(--color-brand-primary);
+		text-underline-offset: 4px;
+	}
+
+	.blog-prose :global(a:hover) {
+		text-decoration: underline;
+	}
+
+	.blog-prose :global(strong) {
+		color: #fff;
+		font-weight: var(--font-weight-semibold);
+	}
+
+	.blog-prose :global(em) {
+		color: rgb(255 255 255 / 0.85);
+	}
+</style>

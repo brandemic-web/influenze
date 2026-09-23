@@ -1,0 +1,107 @@
+---
+/**
+ * A single post. lib/blog-source.ts resolves the slug against Sanity first and
+ * the seed files only while Sanity has no posts at all, so a slug that is not a
+ * post anywhere 404s rather than rendering an empty shell.
+ */
+import Layout from "../../layouts/Layout.astro";
+import BlogHero from "../../components/blog/BlogHero.astro";
+import BlogToc from "../../components/blog/BlogToc.astro";
+import BlogBody from "../../components/blog/BlogBody.astro";
+import BlogFaq from "../../components/blog/BlogFaq.astro";
+import { formatPublished } from "../../data/blog";
+import { BLOG_CTA } from "../../data/blog-cta";
+import { getBlogEntry } from "../../lib/blog-source";
+import { getPerspectiveCookie } from "../../lib/draft-mode";
+import { parseStructuredDataOverride } from "../../sanity/lib/customSchema";
+
+const post = await getBlogEntry(Astro.params.slug, getPerspectiveCookie(Astro.cookies));
+if (!post) return Astro.rewrite("/404");
+
+const published = formatPublished(post.publishedIso);
+
+// Built from the same content the page renders, so the JSON-LD can't drift. The
+// FAQ node is dropped entirely when a post has no questions.
+const schema = [
+	{
+		"@type": "BlogPosting",
+		headline: post.title,
+		description: post.excerpt,
+		datePublished: post.publishedIso,
+		author: { "@type": "Person", name: post.author.name },
+		articleSection: post.category.label,
+	},
+	...(post.faq.items.length
+		? [
+				{
+					"@type": "FAQPage",
+					mainEntity: post.faq.items.map((faq) => ({
+						"@type": "Question",
+						name: faq.question,
+						acceptedAnswer: { "@type": "Answer", text: faq.answer },
+					})),
+				},
+			]
+		: []),
+];
+---
+
+<Layout
+	title={`${post.metaTitle ?? post.title} — Influenze.ai`}
+	description={post.seo?.description || post.excerpt}
+	noindex={post.noindex}
+	canonicalUrl={post.seo?.canonicalUrl}
+	structuredDataOverride={parseStructuredDataOverride(post.seo?.customSchema)}
+	scripts={post.scripts}
+	schema={schema}
+>
+	<main class="bg-background-primary">
+		<BlogHero
+			category={post.category.label}
+			title={post.title}
+			excerpt={post.excerpt}
+			author={post.author}
+			readMinutes={post.readMinutes}
+			publishedIso={post.publishedIso}
+			published={published}
+			hero={post.hero}
+		/>
+
+		<div
+			class="mx-auto flex max-w-410.75 flex-col px-6 pt-10 pb-20 lg:flex-row lg:gap-20 lg:px-25 lg:pt-16 lg:pb-32"
+		>
+			{/* The rail's standing CTA is the same one the body repeats. */}
+			<BlogToc sections={post.sections} label={`${post.title} contents`} cta={BLOG_CTA} />
+
+			<div class="min-w-0 flex-1">
+				<BlogBody body={post.body} />
+			</div>
+		</div>
+
+		{
+			post.faq.items.length > 0 && (
+				/* `page` so the FAQ's gutters match the hero and the body above it. */
+				<BlogFaq
+					heading={post.faq.heading}
+					subcopy={post.faq.subcopy}
+					faqs={post.faq.items}
+					align="page"
+				/>
+			)
+		}
+	</main>
+</Layout>
+
+<style>
+	/* Anchor jumps from the contents rail; `scroll-mt-32` on each heading keeps
+	   the target clear of the fixed header. */
+	:global(html) {
+		scroll-behavior: smooth;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		:global(html) {
+			scroll-behavior: auto;
+		}
+	}
+</style>
