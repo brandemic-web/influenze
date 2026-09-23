@@ -1,0 +1,156 @@
+---
+/**
+ * Contents rail for a post: a glass card listing the sections, with a second
+ * glass card under it holding the standing CTA. Both sit inside one sticky
+ * column so they travel together as the body scrolls past.
+ *
+ * Below `lg` the same links render as a collapsed `<details>` above the copy,
+ * so there is only ever one list to keep in step with the body.
+ *
+ * `data-legal-toc` / `data-toc-link` are the hooks scripts/legal-toc.ts reads to
+ * mark the section currently on screen — the rail behaves identically here, so
+ * the script is reused rather than copied. Without JS the list still navigates.
+ */
+import Button from "../common/Button.astro";
+import type { BlogCta } from "../../data/blog";
+
+interface Props {
+	sections: { id: string; text: string }[];
+	label: string;
+	/** The blog's one CTA — see data/blog-cta.ts. */
+	cta: BlogCta;
+}
+
+const { sections, label, cta } = Astro.props;
+
+// Flex rather than a plain block so a title that wraps hangs under itself
+// rather than under its number.
+const linkClass =
+	"flex gap-2 border-l border-white/10 py-1.5 pl-4 text-[0.8125rem] leading-5 text-white/45 transition-colors hover:border-brand-primary hover:text-white data-active:border-brand-primary data-active:text-brand-primary lg:text-[0.875rem]";
+
+const cardClass =
+	"glass-rim relative rounded-[1.25rem] border border-transparent bg-[#0a071885] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.14),inset_0_-1px_0_0_rgba(255,255,255,0.04),0_24px_70px_-12px_rgba(0,0,0,0.55)] backdrop-blur-md backdrop-saturate-150";
+---
+
+{/* Mobile / tablet: collapsed by default so the copy starts near the top. */}
+<details class={`group mb-10 ${cardClass} lg:hidden`}>
+	<summary
+		class="flex cursor-pointer list-none items-center justify-between gap-4 p-5 [&::-webkit-details-marker]:hidden"
+	>
+		<span class="text-[0.875rem] font-semibold text-white">Contents</span>
+		<svg
+			class="h-1.5 w-3 shrink-0 text-white transition-transform group-open:rotate-180"
+			viewBox="0 0 12 6"
+			fill="none"
+			aria-hidden="true"
+		>
+			<path d="M1 1l5 4 5-4" stroke="currentColor" stroke-width="1.5"></path>
+		</svg>
+	</summary>
+	<nav aria-label={label} class="px-5 pb-5">
+		<ol class="flex flex-col">
+			{
+				sections.map((section, i) => (
+					<li>
+						<a href={`#${section.id}`} class={linkClass}>
+							<span class="w-4 shrink-0 tabular-nums text-white/30">{i + 1}.</span>
+							<span>{section.text}</span>
+						</a>
+					</li>
+				))
+			}
+		</ol>
+	</nav>
+</details>
+
+{/* Desktop: sticky column. Top offset clears the fixed header. */}
+<div class="sticky top-32 hidden h-fit shrink-0 lg:block lg:w-78">
+	<nav aria-label={label} class={`${cardClass} p-6`} data-legal-toc>
+		<h2 class="mb-4 text-[0.75rem] tracking-[0.14em] uppercase text-white/40">On this page</h2>
+		<ol class="toc-rail flex max-h-[calc(100vh-32rem)] flex-col overflow-y-auto pr-1">
+			{
+				sections.map((section, i) => (
+					<li>
+						<a href={`#${section.id}`} class={linkClass} data-toc-link={section.id}>
+							<span class="w-4 shrink-0 tabular-nums text-white/30">{i + 1}.</span>
+							<span>{section.text}</span>
+						</a>
+					</li>
+				))
+			}
+		</ol>
+	</nav>
+
+	<div class={`${cardClass} mt-5 p-6`}>
+		<p class="text-[1rem] leading-[1.3] font-semibold text-white">{cta.heading}</p>
+		<p class="mt-2 text-[0.8125rem] leading-[1.6] text-white/55">{cta.body}</p>
+		<Button href={cta.href} newTab={cta.newTab} class="mt-5 w-full">{cta.label}</Button>
+	</div>
+</div>
+
+<style>
+	/* Same masked rim as the hero and the pricing panel; needs `border-transparent`. */
+	.glass-rim {
+		position: relative;
+	}
+
+	.glass-rim::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		padding: 1px;
+		border-radius: inherit;
+		background: linear-gradient(
+			135deg,
+			rgba(255, 255, 255, 0.55) 0%,
+			rgba(255, 255, 255, 0.3) 25%,
+			rgba(255, 255, 255, 0.2) 50%,
+			rgba(255, 255, 255, 0.3) 75%,
+			rgba(255, 255, 255, 0.45) 100%
+		);
+		-webkit-mask:
+			linear-gradient(#000 0 0) content-box,
+			linear-gradient(#000 0 0);
+		-webkit-mask-composite: xor;
+		mask:
+			linear-gradient(#000 0 0) content-box,
+			linear-gradient(#000 0 0);
+		mask-composite: exclude;
+		pointer-events: none;
+	}
+
+	/*
+	 * The list scrolls independently once it outgrows the card, so it needs a
+	 * visible bar — the platform default is a light-mode widget on a near-black
+	 * column. px rather than rem: the bar should not grow with the 1728 grid.
+	 */
+	.toc-rail {
+		scrollbar-width: thin; /* Firefox */
+		scrollbar-color: rgb(255 255 255 / 0.14) transparent;
+	}
+
+	.toc-rail::-webkit-scrollbar {
+		width: 4px;
+	}
+
+	.toc-rail::-webkit-scrollbar-track {
+		background: transparent;
+	}
+
+	.toc-rail::-webkit-scrollbar-thumb {
+		background: rgb(255 255 255 / 0.14);
+		border-radius: 9999px;
+	}
+
+	.toc-rail:hover {
+		scrollbar-color: rgb(255 255 255 / 0.3) transparent;
+	}
+
+	.toc-rail:hover::-webkit-scrollbar-thumb {
+		background: rgb(255 255 255 / 0.3);
+	}
+</style>
+
+<script>
+	import "../../scripts/legal-toc";
+</script>

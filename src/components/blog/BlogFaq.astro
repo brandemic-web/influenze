@@ -1,0 +1,86 @@
+---
+/**
+ * Post FAQ — the homepage section's layout and accordion, fed the post's own
+ * questions. Driven by scripts/faq.ts through the `data-faq-*` hooks, which
+ * expects one list per page.
+ *
+ * Two gutters, because the section is borrowed:
+ *   "section" — the homepage's own `lg:px-14`, unbounded; what Faq.astro uses.
+ *   "page"    — the blog's container, so the FAQ's edges line up with the hero,
+ *               the body and the listing above it rather than sitting wider.
+ * Keep `page` in step with the container in pages/blog/[slug].astro.
+ */
+import type { BlogFaqItem } from "../../data/blog";
+
+interface Props {
+	heading: string;
+	subcopy: string;
+	faqs: BlogFaqItem[];
+	align?: "section" | "page";
+}
+
+const { heading, subcopy, faqs, align = "section" } = Astro.props;
+---
+
+<section
+	class="bg-background-primary pb-20.5 max-lg:pt-11 max-lg:pb-8"
+	aria-labelledby="blog-faq-heading"
+>
+	<div
+		class:list={[
+			"mx-auto flex flex-col gap-5 lg:relative lg:flex-row lg:justify-between lg:gap-10",
+			align === "page" ? "max-w-410.75 px-6 lg:px-25" : "px-6 lg:px-14",
+		]}
+	>
+		{/* The inset here is the homepage's; on `page` the container already supplies it. */}
+		<div
+			class:list={[
+				"h-fit max-w-full lg:sticky lg:top-38 lg:max-w-120",
+				align === "page" ? "" : "px-3",
+			]}
+		>
+			<h2
+				id="blog-faq-heading"
+				class="max-w-54 text-md leading-[1.2] capitalize text-white lg:max-w-full lg:text-[3.4375rem] lg:leading-16.25"
+			>
+				{heading}
+			</h2>
+			<p class="mt-2 max-w-109 text-[0.875rem] leading-[1.4] text-white/50 lg:mt-3.5 lg:text-[1rem]">
+				{subcopy}
+			</p>
+		</div>
+
+		<div class="flex w-full max-w-196.5 flex-col gap-2.5" data-faq-list>
+			{
+				faqs.map((faq, i) => (
+					<details class="group rounded-sm" open={i === 0} data-faq>
+						<summary class="flex cursor-pointer list-none items-center justify-between gap-2.5 rounded-sm bg-[#131212] p-4 lg:p-7.5 [&::-webkit-details-marker]:hidden">
+							<span class="text-[0.875rem] leading-[normal] font-semibold text-white [text-box:trim-both_cap_alphabetic] lg:text-[1.125rem]">
+								{faq.question}
+							</span>
+							<svg
+								class="h-1.5 w-3 shrink-0 text-white transition-transform group-open:rotate-180"
+								viewBox="0 0 12 6"
+								fill="none"
+								aria-hidden="true"
+								data-faq-chevron
+							>
+								<path d="M1 1l5 4 5-4" stroke="currentColor" stroke-width="1.5" />
+							</svg>
+						</summary>
+						{/* Wrapper so the panel has a height to tween — see scripts/faq.ts. */}
+						<div class="overflow-hidden" data-faq-body>
+							<p class="p-5 text-[0.875rem] leading-7 text-[#CECECE]/70 lg:p-7.5 lg:text-[1rem]">
+								{faq.answer}
+							</p>
+						</div>
+					</details>
+				))
+			}
+		</div>
+	</div>
+</section>
+
+<script>
+	import "../../scripts/faq";
+</script>

@@ -218,3 +218,127 @@ export interface FeaturesPageDoc {
 export async function getFeaturesPage(perspectiveCookie?: string) {
 	return loadQuery<FeaturesPageDoc | null>({ query: featuresPageQuery, perspectiveCookie });
 }
+
+/* ── Blog ────────────────────────────────────────────────────────────
+ * The blog is the one many-document part of the site, so unlike the page
+ * singletons these queries return lists and take params. Every projection
+ * dereferences `category->` and `author->` and resolves the hero asset's URL
+ * and dimensions here, so a component never has to re-query for them.
+ */
+
+/** Everything the listing card and the post hero need, minus the body. */
+const BLOG_CARD_PROJECTION = groq`
+	"slug": slug.current,
+	title,
+	excerpt,
+	publishedAt,
+	readMinutes,
+	hero {
+		alt,
+		"url": asset->url,
+		"dimensions": asset->metadata.dimensions { width, height },
+	},
+	category-> { title, "slug": slug.current },
+	author-> { name, role, initials, "avatarUrl": avatar.asset->url },
+`;
+
+export interface BlogImageDoc {
+	alt?: string;
+	url?: string;
+	dimensions?: { width?: number; height?: number };
+}
+
+export interface BlogCardDoc {
+	slug?: string;
+	title?: string;
+	excerpt?: string;
+	publishedAt?: string;
+	readMinutes?: number;
+	hero?: BlogImageDoc;
+	category?: { title?: string; slug?: string };
+	author?: { name?: string; role?: string; initials?: string; avatarUrl?: string };
+}
+
+/** The full post. `body` comes back as Portable Text — see components/blog/PortableText.astro. */
+export const blogPostQuery = groq`*[_type == "blogPost" && slug.current == $slug][0]{
+	${SEO_PROJECTION},
+	${SCRIPTS_PROJECTION},
+	${BLOG_CARD_PROJECTION}
+	faqHeading,
+	faqSubcopy,
+	faqs[] { question, answer },
+	body[] {
+		...,
+		// Inline images carry their own asset, resolved the same way as the hero.
+		_type == "image" => { ..., "url": asset->url, "dimensions": asset->metadata.dimensions { width, height } },
+	},
+}`;
+
+export interface BlogPostDoc extends BlogCardDoc {
+	seo?: SeoDoc;
+	scripts?: ScriptsDoc;
+	faqHeading?: string;
+	faqSubcopy?: string;
+	faqs?: { question?: string; answer?: string }[];
+	/** Portable Text. Typed loosely on purpose — the renderer narrows per block. */
+	body?: Record<string, unknown>[];
+}
+
+export async function getBlogPost(slug: string, perspectiveCookie?: string) {
+	return loadQuery<BlogPostDoc | null>({
+		query: blogPostQuery,
+		params: { slug },
+		perspectiveCookie,
+	});
+}
+
+/** Newest first, and only posts that are complete enough to render. */
+export const blogPostsQuery = groq`*[_type == "blogPost" && defined(slug.current)] | order(publishedAt desc) {
+	${BLOG_CARD_PROJECTION}
+}`;
+
+export async function getBlogPosts(perspectiveCookie?: string) {
+	return loadQuery<BlogCardDoc[]>({ query: blogPostsQuery, perspectiveCookie });
+}
+
+export const blogCategoriesQuery = groq`*[_type == "blogCategory" && defined(slug.current)] | order(order asc, title asc) {
+	title,
+	"slug": slug.current,
+}`;
+
+export interface BlogCategoryDoc {
+	title?: string;
+	slug?: string;
+}
+
+export async function getBlogCategories(perspectiveCookie?: string) {
+	return loadQuery<BlogCategoryDoc[]>({ query: blogCategoriesQuery, perspectiveCookie });
+}
+
+export const blogIndexQuery = groq`*[_type == "blogIndex"][0]{
+	${SEO_PROJECTION},
+	${SCRIPTS_PROJECTION},
+	title,
+	sub,
+	featuredLabel,
+	listingHeading,
+	emptyTitle,
+	emptyBody,
+	"featuredSlug": featuredPost->slug.current,
+}`;
+
+export interface BlogIndexDoc {
+	seo?: SeoDoc;
+	scripts?: ScriptsDoc;
+	title?: string;
+	sub?: string;
+	featuredLabel?: string;
+	listingHeading?: string;
+	emptyTitle?: string;
+	emptyBody?: string;
+	featuredSlug?: string;
+}
+
+export async function getBlogIndex(perspectiveCookie?: string) {
+	return loadQuery<BlogIndexDoc | null>({ query: blogIndexQuery, perspectiveCookie });
+}
