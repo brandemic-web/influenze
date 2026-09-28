@@ -133,10 +133,10 @@ const published = formatPublished(post.publishedIso);
 			{/* The 60 column — 784×457 on the 1728px grid, like the post hero. */}
 			<BlogImage
 				image={post.hero}
-				widths={[600, 784, 1568]}
+				widths={[600, 784, 1792]}
 				sizes="(min-width: 1024px) 46vw, 92vw"
-				ratio={{ width: 784, height: 457 }}
-				class="order-4 mt-8 aspect-[784/457] w-full rounded-[0.875rem] object-cover lg:order-none lg:mt-0"
+				ratio={{ width: 1792, height: 1344 }}
+				class="order-4 mt-8 aspect-[1792/1344] w-full rounded-[0.875rem] object-cover lg:order-none lg:mt-0"
 				loading="eager"
 			/>
 		</a>
