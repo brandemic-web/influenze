@@ -137,14 +137,8 @@ const inlineFooterScripts = [settings?.scripts?.footer, scripts?.footer].filter(
 			})(window, document, "script", "dataLayer", "GTM-TTJDWGW3");
 		</script>
 		<!-- End Google Tag Manager -->
-		<!-- Google tag (gtag.js) -->
-		<script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-VMXHX5HWWR"></script>
-		<script is:inline>
-		  window.dataLayer = window.dataLayer || [];
-		  function gtag(){dataLayer.push(arguments);}
-		  gtag('js', new Date());
-		  gtag('config', 'G-VMXHX5HWWR');
-		</script>
+		<!-- GA4 (G-958BZ5FG62, shared with app.influenze.ai) fires from inside the GTM
+		     container; a direct gtag.js tag here as well double-counts page views. -->
 		<link rel="icon" type="image/webp" href="/favicon.webp" />
 		<link rel="apple-touch-icon" href="/favicon.webp" />
 		<meta name="generator" content={Astro.generator} />
@@ -208,5 +202,8 @@ const inlineFooterScripts = [settings?.scripts?.footer, scripts?.footer].filter(
 			)
 		}
 		{inlineFooterScripts.map((s) => <Fragment set:html={s} />)}
+		<script>
+			import "../scripts/attribution";
+		</script>
 	</body>
 </html>
