@@ -1,14 +1,8 @@
 import { defineField, defineType } from "sanity";
 
 /**
- * A filter chip on /blog. Its own document so the rail can be reordered and
- * renamed without a deploy, and so a post points at a category rather than
- * repeating its name as a string.
- *
- * The slug is what the listing's markup and filter script exchange, so changing
- * it is safe but renaming the title is the cheaper edit — readers only ever see
- * the title. "All" is not a category here: the rail adds it itself, because it
- * is a view of the list rather than something a post can be filed under.
+ * A filter chip on /blog, its own document so the rail can be reordered without a deploy.
+ * "All" is not a category here: the rail adds it itself.
  */
 export default defineType({
 	name: "blogCategory",

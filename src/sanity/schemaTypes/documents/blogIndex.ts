@@ -1,12 +1,8 @@
 import { defineField, defineType } from "sanity";
 
 /**
- * Singleton — the /blog listing page. Holds the heading, the empty-state wording
- * and which post gets the featured card. The posts and the filter rail are not
- * here: they come from the blogPost and blogCategory documents themselves.
- *
- * The featured post stays in the grid below as well, so filtering to its
- * category lands on the post rather than an empty state.
+ * Singleton for the /blog page: heading, empty-state wording and the featured post. Posts and the
+ * rail come from blogPost / blogCategory; the featured post also stays in the grid.
  */
 export default defineType({
 	name: "blogIndex",

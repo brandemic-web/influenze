@@ -1,21 +1,7 @@
 ---
 /**
- * The filtered grid under the featured card. The category rail is left-aligned
- * and scrolls sideways on narrow screens rather than wrapping into a block.
- *
- * Every post renders here, the featured one included — filtering to its
- * category shows that card again rather than an empty grid, which is why the
- * listing deliberately does not subtract the featured post.
- *
- * Wired through `data-*` hooks; keep these in step with scripts/blog-page/blogFilter.ts:
- *   data-blog-listing   root the script scans for
- *   data-blog-filter    a category chip (data-category = id, or "all")
- *   data-blog-card      one post card (data-category = its category id)
- *   data-blog-grid      the grid, hidden when nothing matches
- *   data-blog-empty     the empty state, shown in its place
- *
- * Without JS every card is visible and "All" reads as selected, which is the
- * same thing the unfiltered view shows.
+ * Filtered grid under the featured card; the featured post is deliberately not subtracted.
+ * Hooks read by scripts/blog-page/blogFilter.ts: data-blog-listing, -filter, -card, -grid, -empty.
  */
 import BlogCard from "./BlogCard.astro";
 import type { BlogCategoryChip, BlogEntry, BlogIndexCopy } from "../../lib/blog-source";
@@ -23,7 +9,7 @@ import { BLOG_ALL_ID, BLOG_ALL_LABEL } from "../../data/blog";
 
 interface Props {
 	posts: BlogEntry[];
-	/** The filter rail, in order — from Sanity, or the local seed list. */
+	/** The filter rail, in order — from Sanity. */
 	categories: BlogCategoryChip[];
 	copy: BlogIndexCopy;
 }
@@ -39,15 +25,11 @@ const chips = [{ id: BLOG_ALL_ID, label: BLOG_ALL_LABEL }, ...categories];
 	data-blog-listing
 >
 	<div class="mx-auto max-w-410.75 px-4 sm:px-6 lg:px-25">
-		<h2 id="blog-listing-heading" class="text-xl leading-[1.2] text-white lg:text-5xl">
+		<h2 id="blog-listing-heading" class="text-md capitalize leading-[1.2] text-white lg:text-[3.4375rem]">
 			{copy.listingHeading}
 		</h2>
 
-		{/*
-			Category rail. A full-bleed negative margin below `sm` so the row can
-			scroll to the screen edge instead of being clipped by the page gutter;
-			the padding puts the first chip back on the gutter line.
-		*/}
+		{/* Rail bleeds to the screen edge below `sm` so it scrolls unclipped; padding restores the gutter. */}
 		<div
 			class="-mx-4 mt-6 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:mx-0 sm:px-0 lg:mt-8 [&::-webkit-scrollbar]:hidden"
 			role="group"

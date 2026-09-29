@@ -1,20 +1,7 @@
 ---
 /**
- * The listing's opening: a centred page heading over one featured post in the
- * same glass card the pricing panel uses — the `.glass-rim` masked gradient ring
- * needs `border-transparent` on the element it sits on, so the two travel
- * together.
- *
- * The card is the link, so it carries no button of its own and the title supplies
- * the accessible name. The featured post is not removed from the grid below; see
- * BlogListing.astro.
- *
- * Below `lg` it takes the post hero's order too — category, date, title, image,
- * excerpt, byline — by the same `display: contents` trick. See BlogHero.astro.
- *
- * From `lg` it is the post hero's 40/60 split, with the same padding and gap — the
- * two cards sit in the same container, so the image lands at the same 784×457 and
- * the pages open on the same shape. See BlogHero.astro for the arithmetic.
+ * Listing opener: page heading over the featured post in a glass card (`.glass-rim` needs
+ * `border-transparent`). Layout mirrors BlogHero.astro so both pages open on the same image shape.
  */
 import BlogImage from "./BlogImage.astro";
 import type { BlogEntry, BlogIndexCopy } from "../../lib/blog-source";
@@ -40,7 +27,7 @@ const published = formatPublished(post.publishedIso);
 	<div class="relative mx-auto max-w-410.75 px-4 pt-26 pb-10 sm:px-6 lg:px-25 lg:pt-50 lg:pb-16">
 		<h1
 			id="blog-index-title"
-			class="text-center text-3xl leading-[1.1] text-white lg:text-8xl"
+			class="text-center text-[1.875rem] capitalize leading-[1.1] text-white lg:text-9xl"
 		>
 			{copy.title}
 		</h1>
@@ -50,11 +37,7 @@ const published = formatPublished(post.publishedIso);
 			{copy.sub}
 		</p>
 
-		{/*
-			── Featured card ─────────────────────────────────────────────
-			The whole card is the link — a `group` so the title can still pick up
-			the hover colour, and `block` because an <a> is inline by default.
-		*/}
+		{/* The whole card is the link; `group` lets the title pick up the hover colour. */}
 		<a
 			href={`/blog/${post.slug}`}
 			class="glass-rim group relative mt-10 rounded-[1.25rem] border border-transparent bg-[#0a071885] px-5 py-8 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.14),inset_0_-1px_0_0_rgba(255,255,255,0.04),0_24px_70px_-12px_rgba(0,0,0,0.55)] backdrop-blur-md backdrop-saturate-150 transition-colors duration-300 hover:bg-[#0a0718b5] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-primary flex flex-col sm:px-8 lg:mt-14 lg:grid lg:grid-cols-[2fr_3fr] lg:items-center lg:gap-10 lg:px-12 lg:py-14"
@@ -63,42 +46,36 @@ const published = formatPublished(post.publishedIso);
 		>
 			{/* The 40 column — copy, as on a post page. `contents` below `lg`. */}
 			<div class="contents lg:block lg:min-w-0">
-				<div class="order-1 flex flex-wrap items-center gap-3">
+				<div class="order-2 flex flex-wrap items-center gap-3">
 					<span
-						class="rounded-full bg-brand-primary px-4 py-2 text-[0.6875rem] leading-none tracking-[0.12em] uppercase text-button-text lg:text-[0.75rem]"
-					>
-						{copy.featuredLabel}
-					</span>
-					<span
-						class="rounded-full border border-brand-primary/40 bg-surface-header px-4 py-2 text-[0.6875rem] leading-none tracking-[0.12em] uppercase text-brand-primary backdrop-blur-md lg:text-[0.75rem]"
+						class="rounded-full border border-brand-primary/40 bg-surface-header px-4 py-2 text-[0.6rem] leading-none tracking-[0.12em] uppercase text-brand-primary backdrop-blur-md lg:text-[0.65rem]"
 					>
 						{post.category.label}
 					</span>
 				</div>
 
-				{/* Mobile only — on desktop the date stays in the byline row. */}
-				<time
-					datetime={post.publishedIso}
-					class="order-2 mt-4 text-[0.75rem] leading-none text-white/45 lg:hidden"
-				>
-					{published}
-				</time>
+				{/* Mobile only — image, category, title, then this line; the excerpt and byline are hidden. */}
+				<p class="order-4 mt-4 text-[0.75rem] leading-none text-white/45 lg:hidden">
+					<time datetime={post.publishedIso}>{published}</time>
+					<span class="mx-2 inline-block h-1 w-1 rounded-full bg-white/25 align-middle" aria-hidden="true"></span>
+					<span>{post.readMinutes} min read</span>
+				</p>
 
 				<h2
-					class="order-3 mt-6 text-2xl leading-[1.15] text-white transition-colors duration-300 group-hover:text-brand-primary lg:mt-8 lg:text-4xl"
+					class="order-3 mt-6 text-[1.25rem] leading-[1.2] text-white transition-colors duration-300 group-hover:text-brand-primary lg:mt-8 lg:text-[2.25rem]"
 				>
 					{post.title}
 				</h2>
 
 				<p
-					class="order-5 mt-4 text-[0.875rem] leading-[1.6] text-white/55 lg:order-none lg:mt-6 lg:text-[1.125rem]"
+					class="order-5 mt-4 hidden text-[0.875rem] leading-[1.6] text-white/55 lg:order-none lg:mt-6 lg:block lg:text-[1.125rem]"
 				>
 					{post.excerpt}
 				</p>
 
 				{/* Byline and meta — matches the post hero's row. */}
 				<div
-					class="order-6 mt-8 flex flex-wrap items-center gap-x-4 gap-y-4 border-t border-white/10 pt-6 lg:order-none lg:mt-12 lg:gap-x-3 lg:pt-5 lg:pr-10 lg:gap-y-6"
+					class="order-6 mt-8 hidden flex-wrap items-center gap-x-4 gap-y-4 border-t border-white/10 pt-6 lg:order-none lg:mt-12 lg:gap-x-3 lg:pt-5 lg:pr-10 lg:gap-y-6 lg:flex"
 				>
 					<span
 						class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-purple-soft text-[0.8125rem] font-semibold text-surface-dark lg:h-12 lg:w-12 lg:text-[0.9375rem]"
@@ -119,11 +96,7 @@ const published = formatPublished(post.publishedIso);
 					<span
 						class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[0.75rem] leading-none text-white/45 lg:gap-x-4 lg:text-[1rem]"
 					>
-						{/*
-							The date is hidden below `lg`, where it sits above the title
-							instead — otherwise it renders twice on a phone. The read time
-							stays here at every size, so the dot goes with the date.
-						*/}
+						{/* Date and dot hide below `lg`, where the date sits above the title instead. */}
 						<time datetime={post.publishedIso} class="hidden lg:inline">{published}</time>
 						<span class="hidden h-1 w-1 rounded-full bg-white/25 lg:block" aria-hidden="true"></span>
 						<span>{post.readMinutes} min read</span>
@@ -136,7 +109,7 @@ const published = formatPublished(post.publishedIso);
 				widths={[600, 784, 1792]}
 				sizes="(min-width: 1024px) 46vw, 92vw"
 				ratio={{ width: 1792, height: 1344 }}
-				class="order-4 mt-8 aspect-[1792/1344] w-full rounded-[0.875rem] object-cover lg:order-none lg:mt-0"
+				class="order-1 mb-6 aspect-[1792/1344] w-full rounded-[0.875rem] object-cover lg:order-none lg:mb-0"
 				loading="eager"
 			/>
 		</a>
@@ -144,8 +117,7 @@ const published = formatPublished(post.publishedIso);
 </section>
 
 <style>
-	/* Masked 1px gradient ring — the pricing panel's rim, kept identical so the
-	   two cards read as the same material. Needs `border-transparent`. */
+	/* Masked 1px ring, identical to the pricing panel's rim. Needs `border-transparent`. */
 	.glass-rim {
 		position: relative;
 	}

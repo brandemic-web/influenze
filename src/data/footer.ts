@@ -18,7 +18,7 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
 		links: [
 			{ label: "Pricing", href: "/pricing" },
 			{ label: "Features", href: "/features" },
-			// Same destination as the header's "Link-in Bio" entry in data/nav.ts.
+			{ label: "Resources", href: "/blog" },
 			{ label: "DotMe", href: "https://www.dotme.in/", newTab: true },
 			{ label: "Contact Us", href: "mailto:info@dotme.in" },
 		],

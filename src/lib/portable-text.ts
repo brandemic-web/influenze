@@ -1,12 +1,6 @@
 /**
- * The small amount of Portable Text handling the blog needs, kept in one place
- * so the renderer stays declarative and the contents rail can read the same
- * headings the body will emit.
- *
- * Deliberately not a dependency: the body uses four styles, two list types, two
- * decorators and one annotation, and hand-rolling that is less code than wiring
- * a serializer library up to Astro components — which matters because the CTA
- * block has to render as the real BlogCta.astro, not as a serialized string.
+ * Minimal Portable Text handling, hand-rolled rather than a serializer library so the CTA block
+ * renders as the real BlogCta.astro and the contents rail reads the same headings as the body.
  */
 
 export interface PortableSpan {
@@ -105,11 +99,7 @@ export function blockText(block: PortableBlock): string {
 	return (block.children ?? []).map((span) => span.text ?? "").join("");
 }
 
-/**
- * A block's inline content as HTML: bold, italic and links, nothing else. The
- * text is escaped first, so what an author typed can never become markup — only
- * the tags this function adds are real.
- */
+/** Bold, italic and links as HTML; text is escaped first so authored text never becomes markup. */
 export function inlineHtml(block: PortableTextBlock): string {
 	const markDefs = block.markDefs ?? [];
 
@@ -154,9 +144,8 @@ export function slugifyHeading(text: string): string {
 }
 
 /**
- * The H2s, in order, with the ids the renderer will put on them. Both the rail
- * and the body call this, so an anchor can never point at a heading that is not
- * there. Duplicate headings get a numeric suffix rather than a duplicate id.
+ * The H2s with the ids the renderer puts on them; rail and body both call this so anchors can't
+ * drift. Duplicate headings get a numeric suffix.
  */
 export function headingSections(blocks: PortableBlock[]): { id: string; text: string }[] {
 	const seen = new Map<string, number>();

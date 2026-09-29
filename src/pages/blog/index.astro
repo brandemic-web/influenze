@@ -1,12 +1,7 @@
 ---
 /**
- * Blog listing. Posts, categories and the page's own copy come from Sanity when
- * there is anything there, and from the seed files otherwise — lib/blog-source.ts
- * decides, and everything below sees one shape either way.
- *
- * The featured post is rendered twice on purpose — once in the glass hero card,
- * once as an ordinary card in the grid — so filtering to its category lands on
- * the post rather than an empty state.
+ * Blog listing, shaped by lib/blog-source.ts (data/blog.ts is fallback copy). The featured post
+ * renders twice on purpose — hero card and grid card — so filtering to its category isn't empty.
  */
 import Layout from "../../layouts/Layout.astro";
 import BlogFeatured from "../../components/blog/BlogFeatured.astro";

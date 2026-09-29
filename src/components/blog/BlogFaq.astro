@@ -1,14 +1,7 @@
 ---
 /**
- * Post FAQ — the homepage section's layout and accordion, fed the post's own
- * questions. Driven by scripts/faq.ts through the `data-faq-*` hooks, which
- * expects one list per page.
- *
- * Two gutters, because the section is borrowed:
- *   "section" — the homepage's own `lg:px-14`, unbounded; what Faq.astro uses.
- *   "page"    — the blog's container, so the FAQ's edges line up with the hero,
- *               the body and the listing above it rather than sitting wider.
- * Keep `page` in step with the container in pages/blog/[slug].astro.
+ * Post FAQ: the homepage section's layout, driven by scripts/faq.ts via `data-faq-*` (one list per page).
+ * `align="page"` must match the container in pages/blog/[slug].astro; "section" is Faq.astro's gutter.
  */
 import type { BlogFaqItem } from "../../data/blog";
 
@@ -41,7 +34,7 @@ const { heading, subcopy, faqs, align = "section" } = Astro.props;
 		>
 			<h2
 				id="blog-faq-heading"
-				class="max-w-54 text-md leading-[1.2] capitalize text-white lg:max-w-full lg:text-[3.4375rem] lg:leading-16.25"
+				class="max-w-54 text-md leading-[1.2] capitalize text-white lg:max-w-full lg:text-[2.25rem] lg:leading-[1.2]"
 			>
 				{heading}
 			</h2>

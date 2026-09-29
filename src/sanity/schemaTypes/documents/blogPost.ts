@@ -1,18 +1,8 @@
 import { defineArrayMember, defineField, defineType } from "sanity";
 
 /**
- * One blog post — one page at /blog/<slug>, listed on /blog.
- *
- * The body is a single rich-text field rather than a list of typed sections:
- * authors write prose, and the two things that are not prose — a call to action
- * and the FAQ — are handled separately. The CTA is an insertable block inside
- * the rich text (Insert → Call to action), so it can sit between two paragraphs;
- * the FAQ is its own field at the end, because it always renders as the same
- * section in the same place.
- *
- * Headings: use Heading 2 for the sections that should appear in the contents
- * rail, Heading 3 for sub-points inside them. The rail is built from the H2s
- * automatically — there is no separate list of sections to keep in step.
+ * One post at /blog/<slug>. The body is one rich-text field with an insertable CTA block; the FAQ
+ * is a separate field. The contents rail is built from the body's H2s, so there is no section list.
  */
 export default defineType({
 	name: "blogPost",

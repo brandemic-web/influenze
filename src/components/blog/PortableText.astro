@@ -1,16 +1,7 @@
 ---
 /**
- * Renders a Sanity post body. Every style here is the one BlogBody.astro uses
- * for the same thing, so a post written in the Studio and a post written in
- * src/data/blog-posts/ come out looking identical.
- *
- * The CTA is the real BlogCta.astro rather than serialized markup — that is why
- * this walks the blocks itself instead of using a to-HTML serializer. Blank
- * fields on the CTA fall back to the blog's one standard CTA, so an author who
- * just inserts the block gets the right wording without typing it.
- *
- * Headings take the same ids lib/portable-text.ts hands the contents rail, so an
- * anchor can never point at a heading the body did not render.
+ * Renders a Sanity post body. Walks blocks itself (no serializer) so the CTA is the real BlogCta.astro,
+ * with blank fields falling back to BLOG_CTA; heading ids come from lib/portable-text.ts, as in the rail.
  */
 import BlogCta from "./BlogCta.astro";
 import { BLOG_CTA } from "../../data/blog-cta";
@@ -121,7 +112,7 @@ const ctaFrom = (block: PortableCtaBlock) => ({
 					return (
 						<h2
 							id={headingIds.get(block._key ?? "")}
-							class="mt-14 scroll-mt-32 text-xl leading-[1.15] text-white first:mt-0 lg:mt-20 lg:text-6xl"
+							class="mt-14 scroll-mt-32 text-[1.25rem] leading-[1.2] text-white first:mt-0 lg:mt-20 lg:text-[2.25rem]"
 							set:html={html}
 						/>
 					);
@@ -129,7 +120,7 @@ const ctaFrom = (block: PortableCtaBlock) => ({
 				case "h3":
 					return (
 						<h3
-							class="mt-9 text-[1.125rem] leading-[1.3] font-semibold text-white lg:mt-12 lg:text-[1.5rem]"
+							class="mt-9 text-[1.125rem] leading-[1.3] font-semibold text-white lg:mt-12 lg:text-md"
 							set:html={html}
 						/>
 					);
@@ -165,7 +156,7 @@ const ctaFrom = (block: PortableCtaBlock) => ({
 		text-decoration: underline;
 	}
 
-	/* The inline marks, matching BlogBody.astro's own scoped copy of these. */
+	/* The inline marks. */
 	.blog-prose strong {
 		color: #fff;
 		font-weight: var(--font-weight-semibold);

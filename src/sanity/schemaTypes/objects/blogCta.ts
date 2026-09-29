@@ -1,13 +1,8 @@
 import { defineField, defineType } from "sanity";
 
 /**
- * The call-to-action an author can drop into the middle of a post's rich text.
- *
- * Every field is optional and falls back to the site's standard blog CTA
- * (src/data/blog-cta.ts), because the blog deliberately runs one CTA with one
- * set of words everywhere — see the note in components/blog/BlogCta.astro.
- * Filling these in is an override for a post that genuinely needs its own, not
- * the normal way to use this.
+ * CTA block for a post's rich text. Every field is optional and falls back to the standard CTA in
+ * src/data/blog-cta.ts; filling one in is an override, not the normal use.
  */
 export default defineType({
 	name: "blogCta",

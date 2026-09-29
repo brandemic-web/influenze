@@ -1,12 +1,4 @@
-/**
- * The one CTA the blog uses. Every inline CTA in every post, and the standing
- * CTA in the contents rail, reads this — same treatment, same words, so a post
- * never escalates through a set of different-looking boxes.
- *
- * It lives in its own module rather than in `data/blog.ts` because the post
- * files import it and `data/blog.ts` imports the post files: keeping the value
- * here means that cycle stays type-only, and types are erased at build.
- */
+/** The one blog CTA: every inline CTA and the contents-rail CTA read this. */
 import type { BlogCta } from "./blog";
 import { APP_URL } from "./site";
 

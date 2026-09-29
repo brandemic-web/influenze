@@ -1,8 +1,7 @@
 ---
 /**
- * The blog's inline CTA — one treatment, used everywhere, fed the one set of
- * words in data/blog-cta.ts. There is deliberately no second variant: a post
- * repeats the same offer rather than escalating through different-looking boxes.
+ * The blog's one inline CTA, fed by data/blog-cta.ts. There is deliberately no second variant:
+ * a post repeats the same offer rather than escalating through different-looking boxes.
  */
 import Button from "../common/Button.astro";
 import type { BlogCta } from "../../data/blog";
@@ -39,7 +38,7 @@ const { heading, body, label, href, newTab = false } = cta;
 </div>
 
 <style>
-	/* Same masked rim as the hero and the pricing panel; needs `border-transparent`. */
+	/* Masked 1px ring, identical to the pricing panel's rim. Needs `border-transparent`. */
 	.glass-rim {
 		position: relative;
 	}

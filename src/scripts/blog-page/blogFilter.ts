@@ -1,16 +1,8 @@
 import gsap from "gsap";
 
 /**
- * Category filter for the blog listing. Selecting a chip hides every card whose
- * `data-category` doesn't match, and swaps the grid for the empty state when
- * nothing does.
- *
- * `hidden` does the hiding, not opacity — a filtered-out card must leave the
- * grid's flow and the tab order, not just fade. The fade is applied to the cards
- * that stay, and is skipped entirely under `prefers-reduced-motion`.
- *
- * Progressive enhancement: without this script every card is rendered and "All"
- * is already the selected chip, so the page reads as the unfiltered list.
+ * Category filter for the blog listing. `hidden`, not opacity, removes filtered cards from the
+ * grid's flow and tab order; the fade on the rest is skipped under reduced motion.
  */
 const ALL = "all";
 const DURATION = 0.28;

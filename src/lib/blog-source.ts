@@ -1,32 +1,7 @@
-/**
- * One source of blog content for both blog routes, whether it comes from Sanity
- * or from the files in src/data/blog-posts/.
- *
- * **Sanity wins outright.** The moment there is one blogPost document, the local
- * posts stop being rendered — they are a seed so the site has a blog before
- * anyone opens the Studio, not a set that Sanity adds to. Mixing the two would
- * mean a post could be edited in the Studio and still be overridden by a file.
- * Once the three seed posts have been re-entered in Sanity, `src/data/blog.ts`,
- * `src/data/blog-posts/` and the local branch below can all be deleted.
- *
- * The two sources differ in exactly two ways, and both are normalised here:
- *   - body — a typed block list from a file, Portable Text from Sanity
- *   - hero — an imported asset from a file, a CDN URL from Sanity
- * Everything downstream sees one shape, so the components do not know or care
- * which source they are rendering.
- */
-import type { ImageMetadata } from "astro";
+/** Shapes Sanity blog documents for both routes so components never see a nullable field. */
 import type { PortableBlock } from "./portable-text";
 import { estimateReadMinutes, headingSections } from "./portable-text";
-import type { BlogBlock } from "../data/blog";
-import {
-	BLOG_CATEGORIES,
-	BLOG_INDEX,
-	BLOG_NOINDEX,
-	BLOG_POSTS,
-	FEATURED_SLUG,
-	categoryLabel,
-} from "../data/blog";
+import { BLOG_INDEX } from "../data/blog";
 import {
 	getBlogCategories,
 	getBlogIndex,
@@ -38,21 +13,15 @@ import {
 	type SeoDoc,
 } from "../sanity/lib/queries";
 
-export type BlogHeroImage =
-	/** Imported through astro:assets, so Astro owns the sizes it emits. */
-	| { kind: "local"; src: ImageMetadata; alt: string }
-	/** A Sanity CDN URL, resized with query params — see BlogImage.astro. */
-	| { kind: "remote"; url: string; alt: string; width?: number; height?: number };
+/** A Sanity CDN URL, resized with query params — see BlogImage.astro. */
+export interface BlogHeroImage {
+	url: string;
+	alt: string;
+	width?: number;
+	height?: number;
+}
 
-export type BlogBody =
-	| { kind: "blocks"; blocks: BlogBlock[] }
-	| { kind: "portable"; blocks: PortableBlock[] };
-
-/**
- * The listing's wording. Its own interface rather than `typeof BLOG_INDEX`,
- * because that object is `as const` — its literal types would reject any string
- * Sanity returned.
- */
+/** Its own interface because `typeof BLOG_INDEX` is `as const` and would reject Sanity's strings. */
 export interface BlogIndexCopy {
 	title: string;
 	sub: string;
@@ -78,7 +47,7 @@ export interface BlogEntry {
 	readMinutes: number;
 	publishedIso: string;
 	hero: BlogHeroImage;
-	body: BlogBody;
+	body: PortableBlock[];
 	/** Section headings, in order, with the ids the body will render. */
 	sections: { id: string; text: string }[];
 	faq: { heading: string; subcopy: string; items: { question: string; answer: string }[] };
@@ -101,7 +70,7 @@ function chipFrom(category: BlogCardDoc["category"]): BlogCategoryChip {
 	};
 }
 
-/** The shared half of a Sanity post — everything the listing card needs. */
+/** The shared half of a post — everything the listing card needs. */
 function entryHeadFrom(doc: BlogCardDoc) {
 	const name = doc.author?.name ?? "Influenze.ai";
 	return {
@@ -116,7 +85,6 @@ function entryHeadFrom(doc: BlogCardDoc) {
 		},
 		publishedIso: doc.publishedAt ?? "",
 		hero: {
-			kind: "remote" as const,
 			url: doc.hero?.url ?? "",
 			alt: doc.hero?.alt ?? "",
 			width: doc.hero?.dimensions?.width,
@@ -137,7 +105,7 @@ function entryFromSanity(doc: BlogPostDoc): BlogEntry {
 		// The field is optional in the Studio, so a blank one is estimated from
 		// the body rather than shown as "0 min read".
 		readMinutes: doc.readMinutes ?? estimateReadMinutes(blocks),
-		body: { kind: "portable", blocks },
+		body: blocks,
 		sections: headingSections(blocks),
 		faq: {
 			heading: doc.faqHeading ?? "FAQs",
@@ -155,30 +123,10 @@ function cardFromSanity(doc: BlogCardDoc): BlogEntry {
 	return {
 		...entryHeadFrom(doc),
 		readMinutes: doc.readMinutes ?? 1,
-		body: { kind: "portable", blocks: [] },
+		body: [],
 		sections: [],
 		faq: { heading: "", subcopy: "", items: [] },
 		noindex: false,
-	};
-}
-
-function entryFromLocal(post: (typeof BLOG_POSTS)[number]): BlogEntry {
-	return {
-		slug: post.slug,
-		title: post.title,
-		metaTitle: post.metaTitle,
-		excerpt: post.excerpt,
-		category: { id: post.category, label: categoryLabel(post.category) },
-		author: post.author,
-		readMinutes: post.readMinutes,
-		publishedIso: post.publishedIso,
-		hero: { kind: "local", src: post.hero.src, alt: post.hero.alt },
-		body: { kind: "blocks", blocks: post.body },
-		sections: post.body
-			.filter((block) => block.type === "heading")
-			.map((block) => ({ id: block.id, text: block.text })),
-		faq: post.faq,
-		noindex: BLOG_NOINDEX,
 	};
 }
 
@@ -190,8 +138,6 @@ export interface BlogListing {
 	seo?: SeoDoc;
 	scripts?: ScriptsDoc;
 	noindex: boolean;
-	/** False while the local seed posts are what is being rendered. */
-	fromSanity: boolean;
 }
 
 export async function getBlogListing(perspectiveCookie?: string): Promise<BlogListing> {
@@ -202,34 +148,21 @@ export async function getBlogListing(perspectiveCookie?: string): Promise<BlogLi
 		getBlogIndex(perspectiveCookie),
 	]);
 
-	const sanityPosts = (posts ?? []).filter((post) => post.slug);
-	const fromSanity = sanityPosts.length > 0;
+	const entries = (posts ?? []).filter((post) => post.slug).map(cardFromSanity);
 
-	const entries = fromSanity
-		? sanityPosts.map(cardFromSanity)
-		: BLOG_POSTS.map(entryFromLocal);
-
-	// The rail comes from the category documents; if nobody has made any yet, it
-	// falls back to whatever the posts are actually filed under, so a fresh
-	// dataset still filters rather than showing one empty chip.
+	// Falls back to the categories posts are filed under when none exist yet, so a
+	// fresh dataset still filters.
 	const sanityChips = (categories ?? [])
 		.filter((category) => category.slug && category.title)
 		.map((category) => ({ id: category.slug!, label: category.title! }));
 
 	const derivedChips = [...new Map(entries.map((entry) => [entry.category.id, entry.category])).values()];
 
-	const chips = fromSanity
-		? sanityChips.length
-			? sanityChips
-			: derivedChips
-		: BLOG_CATEGORIES.map((category) => ({ id: category.id, label: category.label }));
-
-	const featuredSlug = index?.featuredSlug ?? (fromSanity ? entries[0]?.slug : FEATURED_SLUG);
-	const featured = entries.find((entry) => entry.slug === featuredSlug) ?? entries[0];
+	const featured = entries.find((entry) => entry.slug === index?.featuredSlug) ?? entries[0];
 
 	return {
 		entries,
-		categories: chips,
+		categories: sanityChips.length ? sanityChips : derivedChips,
 		featured,
 		copy: {
 			title: index?.title || BLOG_INDEX.title,
@@ -241,10 +174,7 @@ export async function getBlogListing(perspectiveCookie?: string): Promise<BlogLi
 		},
 		seo: index?.seo,
 		scripts: index?.scripts,
-		// Local seed posts stay out of search until their copy is signed off; a
-		// post entered in Sanity is indexable unless its own SEO tab says not.
-		noindex: fromSanity ? (index?.seo?.noindex ?? false) : BLOG_NOINDEX,
-		fromSanity,
+		noindex: index?.seo?.noindex ?? false,
 	};
 }
 
@@ -255,14 +185,5 @@ export async function getBlogEntry(
 	if (!slug) return undefined;
 
 	const { data: doc } = await getBlogPost(slug, perspectiveCookie);
-	if (doc?.slug) return entryFromSanity(doc);
-
-	// No Sanity post under this slug — fall back to a seed post, but only while
-	// Sanity has no posts at all, so a deleted post 404s instead of resurrecting
-	// the file it was seeded from.
-	const { data: posts } = await getBlogPosts(perspectiveCookie);
-	if ((posts ?? []).some((post) => post.slug)) return undefined;
-
-	const local = BLOG_POSTS.find((post) => post.slug === slug);
-	return local ? entryFromLocal(local) : undefined;
+	return doc?.slug ? entryFromSanity(doc) : undefined;
 }

@@ -219,11 +219,9 @@ export async function getFeaturesPage(perspectiveCookie?: string) {
 	return loadQuery<FeaturesPageDoc | null>({ query: featuresPageQuery, perspectiveCookie });
 }
 
-/* ── Blog ────────────────────────────────────────────────────────────
- * The blog is the one many-document part of the site, so unlike the page
- * singletons these queries return lists and take params. Every projection
- * dereferences `category->` and `author->` and resolves the hero asset's URL
- * and dimensions here, so a component never has to re-query for them.
+/* ── Blog ─────────────────────────────────────────────────────────────
+ * Unlike the page singletons these return lists and take params. Projections resolve category,
+ * author and hero asset here so components never re-query.
  */
 
 /** Everything the listing card and the post hero need, minus the body. */

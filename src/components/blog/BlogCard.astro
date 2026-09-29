@@ -1,11 +1,7 @@
 ---
 /**
- * One post in the listing grid. The whole card is the link and carries no button
- * of its own, so the title supplies the accessible name.
- *
- * `data-blog-card` / `data-category` are the hooks scripts/blog-page/blogFilter.ts
- * reads — the featured post renders a card here too, so filtering to its
- * category shows it in the grid rather than an empty state.
+ * One post card; the whole card is the link. `data-blog-card` / `data-category` are read by
+ * scripts/blog-page/blogFilter.ts, and the featured post gets a card too so its filter isn't empty.
  */
 import BlogImage from "./BlogImage.astro";
 import type { BlogEntry } from "../../lib/blog-source";
@@ -25,10 +21,7 @@ const published = formatPublished(post.publishedIso);
 	data-blog-card
 	data-category={post.category.id}
 >
-	{/*
-		Same 784/457 crop the two hero cards use, so a post's art reads the same
-		shape wherever it appears. Lazy, since the grid sits below the fold.
-	*/}
+	{/* Same crop as the hero cards so art reads the same everywhere; lazy, below the fold. */}
 	<BlogImage
 		image={post.hero}
 		widths={[400, 600, 800]}
