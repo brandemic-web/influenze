@@ -8,9 +8,9 @@ export const SITE = {
 } as const;
 
 // Every "Free Trial" / "Login" CTA lands on the product app, which lives on the
-// app. subdomain rather than this marketing site. /login, not /: GA's
-// cross-domain `?_gl=` tag on the bare root 404s for signed-in users.
-export const APP_URL = "https://app.influenze.ai/login";
+// app. subdomain rather than this marketing site. The app routes a bare `/`
+// with a query (GA's `?_gl=`) since IZ-203; before that it 404'd signed-in users.
+export const APP_URL = "https://app.influenze.ai/";
 
 /** Internal route for the features page — the "Learn More" destination. */
 export const FEATURES_URL = "/features";
