@@ -4,19 +4,18 @@
  * `fit=crop` ignores the Studio hotspot, so heroes crop from the centre.
  */
 import type { BlogHeroImage } from "../../lib/blog-source";
+import { BLOG_IMAGE_RATIO as ratio } from "../../data/blog";
 
 interface Props {
 	image: BlogHeroImage;
 	/** Widths to offer the browser. The largest doubles as the fallback `src`. */
 	widths: number[];
 	sizes: string;
-	/** The rendered aspect ratio the crop is cut to. */
-	ratio: { width: number; height: number };
 	class?: string;
 	loading?: "eager" | "lazy";
 }
 
-const { image, widths, sizes, ratio, class: className = "", loading = "lazy" } = Astro.props;
+const { image, widths, sizes, class: className = "", loading = "lazy" } = Astro.props;
 
 const heightFor = (width: number) => Math.round((width * ratio.height) / ratio.width);
 
@@ -37,6 +36,7 @@ const largest = widths.at(-1) ?? 784;
 			width={largest}
 			height={heightFor(largest)}
 			class={className}
+			style={`aspect-ratio: ${ratio.width} / ${ratio.height}`}
 			loading={loading}
 			decoding={loading === "eager" ? "sync" : "async"}
 		/>

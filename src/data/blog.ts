@@ -22,6 +22,9 @@ export interface BlogFaqItem {
 	answer: string;
 }
 
+/** Every blog image (hero, featured, card) is cut to 4:3; 1792×1344 is the recommended upload. */
+export const BLOG_IMAGE_RATIO = { width: 4, height: 3 } as const;
+
 /** "All" is a view of the whole list, not a category, so the listing adds it to the rail itself. */
 export const BLOG_ALL_ID = "all";
 export const BLOG_ALL_LABEL = "All";

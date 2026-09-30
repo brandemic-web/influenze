@@ -50,7 +50,7 @@ export default defineType({
 			group: "content",
 			options: { hotspot: true },
 			description:
-				"Shown beside the title, and on the listing card. Cropped to 784×457 — upload at least 1568×914 so it stays sharp.",
+				"Shown beside the title, and on the listing card. Always cropped to a 4:3 aspect ratio from the centre — upload at 1792×1344 (or any 4:3 size) so nothing is cut off.",
 			fields: [
 				defineField({
 					name: "alt",
