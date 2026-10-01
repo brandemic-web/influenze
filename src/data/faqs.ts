@@ -17,7 +17,7 @@ export const FAQS: Faq[] = [
 	{
 		question: "Is there a free trial?",
 		answer:
-			"Yes, one week, free. Full access to search, creator analytics, and lists so you can test it on a live brief before you commit.",
+			"There's no time-limited trial. Sign up with your work email instead, and your account starts with 500 free credits that never expire, so you can test search, creator analytics and lists on a live brief at your own pace. Up to three people from the same company can each claim them. Personal email addresses, like Gmail or Outlook, don't qualify.",
 	},
 	{
 		question: "How accurate is your creator data?",
