@@ -10,7 +10,8 @@ export const SITE = {
 // Every "Free Trial" / "Login" CTA lands on the product app, which lives on the
 // app. subdomain rather than this marketing site. The app routes a bare `/`
 // with a query (GA's `?_gl=`) since IZ-203; before that it 404'd signed-in users.
-export const APP_URL = "https://app.influenze.ai/";
+// PR previews point at the dev app instead (PUBLIC_APP_URL in preview.yml).
+export const APP_URL = import.meta.env.PUBLIC_APP_URL || "https://app.influenze.ai/";
 
 /** Internal route for the features page — the "Learn More" destination. */
 export const FEATURES_URL = "/features";

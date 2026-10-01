@@ -33,6 +33,10 @@ jobs:
           PUBLIC_SANITY_PROJECT_ID: ${{ secrets.PUBLIC_SANITY_PROJECT_ID }}
           PUBLIC_SANITY_DATASET: ${{ secrets.PUBLIC_SANITY_DATASET }}
           SANITY_API_READ_TOKEN: ${{ secrets.SANITY_API_READ_TOKEN }}
+          # Previews report to dev Analytics and send CTAs to the dev app, never
+          # production. deploy.yml sets neither, so live builds don't carry them.
+          PUBLIC_DEV_GA_ID: G-5SZFPZGLPY
+          PUBLIC_APP_URL: https://influenze-dev.web.app/login
         run: npm run build
 
       - name: Upload version
