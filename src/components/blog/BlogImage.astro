@@ -1,0 +1,44 @@
+---
+/**
+ * One image for a Sanity CDN URL, resized via query params so the srcset lives in one place.
+ * `fit=crop` ignores the Studio hotspot, so heroes crop from the centre.
+ */
+import type { BlogHeroImage } from "../../lib/blog-source";
+import { BLOG_IMAGE_RATIO as ratio } from "../../data/blog";
+
+interface Props {
+	image: BlogHeroImage;
+	/** Widths to offer the browser. The largest doubles as the fallback `src`. */
+	widths: number[];
+	sizes: string;
+	class?: string;
+	loading?: "eager" | "lazy";
+}
+
+const { image, widths, sizes, class: className = "", loading = "lazy" } = Astro.props;
+
+const heightFor = (width: number) => Math.round((width * ratio.height) / ratio.width);
+
+// `auto=format` lets the CDN serve WebP/AVIF to browsers that take it.
+const resizedUrl = (width: number) =>
+	`${image.url}?w=${width}&h=${heightFor(width)}&fit=crop&auto=format`;
+
+const largest = widths.at(-1) ?? 784;
+---
+
+{
+	image.url && (
+		<img
+			src={resizedUrl(largest)}
+			srcset={widths.map((width) => `${resizedUrl(width)} ${width}w`).join(", ")}
+			sizes={sizes}
+			alt={image.alt}
+			width={largest}
+			height={heightFor(largest)}
+			class={className}
+			style={`aspect-ratio: ${ratio.width} / ${ratio.height}`}
+			loading={loading}
+			decoding={loading === "eager" ? "sync" : "async"}
+		/>
+	)
+}

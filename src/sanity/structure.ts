@@ -10,6 +10,7 @@ const SINGLETONS = [
 	{ id: "homePage", title: "Home Page" },
 	{ id: "pricingPage", title: "Pricing Page" },
 	{ id: "featuresPage", title: "Features Page" },
+	{ id: "blogIndex", title: "Blog Index" },
 ];
 
 const SINGLETON_TYPES = new Set(SINGLETONS.map((s) => s.id));
