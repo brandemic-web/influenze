@@ -1,0 +1,48 @@
+---
+/**
+ * Blog listing, shaped by lib/blog-source.ts (data/blog.ts is fallback copy). The featured post
+ * renders twice on purpose — hero card and grid card — so filtering to its category isn't empty.
+ */
+import Layout from "../../layouts/Layout.astro";
+import BlogFeatured from "../../components/blog/BlogFeatured.astro";
+import BlogListing from "../../components/blog/BlogListing.astro";
+import { getBlogListing } from "../../lib/blog-source";
+import { getPerspectiveCookie } from "../../lib/draft-mode";
+import { parseStructuredDataOverride } from "../../sanity/lib/customSchema";
+
+const listing = await getBlogListing(getPerspectiveCookie(Astro.cookies));
+
+const schema = [
+	{
+		"@type": "Blog",
+		name: `${listing.copy.title} — Influenze.ai`,
+		description: listing.copy.sub,
+		blogPost: listing.entries.map((post) => ({
+			"@type": "BlogPosting",
+			headline: post.title,
+			description: post.excerpt,
+			datePublished: post.publishedIso,
+			url: `/blog/${post.slug}`,
+		})),
+	},
+];
+---
+
+<Layout
+	title={listing.seo?.title || "Blog — Influenze.ai"}
+	description={listing.seo?.description || listing.copy.sub}
+	noindex={listing.noindex}
+	canonicalUrl={listing.seo?.canonicalUrl}
+	structuredDataOverride={parseStructuredDataOverride(listing.seo?.customSchema)}
+	scripts={listing.scripts}
+	schema={schema}
+>
+	<main class="bg-background-primary">
+		{listing.featured && <BlogFeatured post={listing.featured} copy={listing.copy} />}
+		<BlogListing
+			posts={listing.entries}
+			categories={listing.categories}
+			copy={listing.copy}
+		/>
+	</main>
+</Layout>

@@ -1,7 +1,7 @@
 import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
 import { visionTool } from "@sanity/vision";
-import { presentationTool, defineDocuments } from "sanity/presentation";
+import { presentationTool, defineDocuments, defineLocations } from "sanity/presentation";
 import { schemaTypes } from "./src/sanity/schemaTypes";
 import { structure } from "./src/sanity/structure";
 
@@ -18,6 +18,7 @@ const DOCUMENT_ROUTES: Record<string, { title: string; href: string }> = {
 	homePage: { title: "Home Page", href: "/" },
 	pricingPage: { title: "Pricing Page", href: "/pricing" },
 	featuresPage: { title: "Features Page", href: "/features" },
+	blogIndex: { title: "Blog Index", href: "/blog" },
 	siteSettings: { title: "Site Settings", href: "/" },
 };
 
@@ -41,16 +42,43 @@ export default defineConfig({
 			resolve: {
 				// Maps each route straight to its document by type, so Presentation
 				// can find and live-refresh a singleton even before it has content.
-				mainDocuments: defineDocuments(
-					Object.entries(DOCUMENT_ROUTES).map(([type, { href }]) => ({
+				// Blog posts are the one many-document route, matched on the slug.
+				mainDocuments: defineDocuments([
+					...Object.entries(DOCUMENT_ROUTES).map(([type, { href }]) => ({
 						route: href,
 						type,
 					})),
-				),
-				locations: (params) => {
-					const route = DOCUMENT_ROUTES[params.type];
-					if (!route) return undefined;
-					return { locations: [route] };
+					{
+						route: "/blog/:slug",
+						filter: `_type == "blogPost" && slug.current == $slug`,
+					},
+				]),
+				/*
+				 * A record rather than one function, because a blog post's location
+				 * depends on its own slug — the function form is only handed the
+				 * document's type and id, with no way to read a field off it.
+				 */
+				locations: {
+					// A singleton's location never varies, so it is stated outright
+					// rather than resolved from the document.
+					...Object.fromEntries(
+						Object.entries(DOCUMENT_ROUTES).map(([type, route]) => [
+							type,
+							{ locations: [route] },
+						]),
+					),
+					blogPost: defineLocations({
+						select: { title: "title", slug: "slug.current" },
+						resolve: (doc) =>
+							doc?.slug
+								? {
+										locations: [
+											{ title: doc.title ?? "Untitled post", href: `/blog/${doc.slug}` },
+											{ title: "Blog Index", href: "/blog" },
+										],
+									}
+								: null,
+					}),
 				},
 			},
 		}),
