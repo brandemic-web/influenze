@@ -1,0 +1,103 @@
+---
+/**
+ * An author's page at /author/<slug>: their byline, then every post filed under them.
+ * A slug no author carries 404s, as an unknown post slug does.
+ */
+import Layout from "../../layouts/Layout.astro";
+import BlogAvatar from "../../components/blog/BlogAvatar.astro";
+import BlogCard from "../../components/blog/BlogCard.astro";
+import { BLOG_AUTHOR_PAGE, authorHref } from "../../data/blog";
+import { getBlogAuthorPage } from "../../lib/blog-source";
+import { getPerspectiveCookie } from "../../lib/draft-mode";
+
+const page = await getBlogAuthorPage(Astro.params.slug, getPerspectiveCookie(Astro.cookies));
+if (!page) return Astro.rewrite("/404");
+
+const { author, bio, entries } = page;
+const listingHeading = BLOG_AUTHOR_PAGE.listingHeading.replace("{name}", author.name);
+const site = Astro.site ?? new URL(Astro.url.origin);
+
+const schema = [
+	{
+		"@type": "ProfilePage",
+		mainEntity: {
+			"@type": "Person",
+			name: author.name,
+			url: new URL(authorHref(author.slug), site).href,
+			...(author.role ? { jobTitle: author.role } : {}),
+			...(bio ? { description: bio } : {}),
+			...(author.avatarUrl ? { image: author.avatarUrl } : {}),
+		},
+	},
+];
+---
+
+<Layout
+	title={`${author.name} — Influenze.ai`}
+	description={bio || BLOG_AUTHOR_PAGE.metaDescription.replace("{name}", author.name)}
+	schema={schema}
+>
+	<main class="bg-background-primary">
+		<section class="relative" aria-labelledby="author-name">
+			{/* Same wash the blog listing and post hero open with. */}
+			<div
+				class="pointer-events-none absolute inset-0 bg-[linear-gradient(179.95deg,#11092B_0%,#6838FF_5.85%,#010101_99.94%)]"
+				aria-hidden="true"
+			>
+			</div>
+
+			<div
+				class="relative mx-auto flex max-w-410.75 flex-col items-center px-4 pt-26 pb-10 text-center sm:px-6 lg:px-25 lg:pt-50 lg:pb-16"
+			>
+				<BlogAvatar
+					author={author}
+					size={112}
+					class="h-20 w-20 text-[1.5rem] lg:h-28 lg:w-28 lg:text-[2rem]"
+				/>
+				<h1 id="author-name" class="mt-6 text-[1.875rem] leading-[1.1] text-white lg:mt-8 lg:text-7xl">
+					{author.name}
+				</h1>
+				{
+					author.role && (
+						<p class="mt-3 text-[0.875rem] leading-none text-brand-primary lg:mt-4 lg:text-[1.125rem]">
+							{author.role}
+						</p>
+					)
+				}
+				{
+					bio && (
+						<p class="mt-5 max-w-160 text-[0.875rem] leading-[1.6] text-white/55 lg:mt-6 lg:text-[1.125rem]">
+							{bio}
+						</p>
+					)
+				}
+			</div>
+		</section>
+
+		<section class="pt-4 pb-20 lg:pt-6 lg:pb-32" aria-labelledby="author-listing-heading">
+			<div class="mx-auto max-w-410.75 px-4 sm:px-6 lg:px-25">
+				<h2
+					id="author-listing-heading"
+					class="text-md leading-[1.2] text-white lg:text-[3.4375rem]"
+				>
+					{listingHeading}
+				</h2>
+
+				{
+					entries.length ? (
+						<div class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:mt-12 lg:grid-cols-3 lg:gap-7">
+							{entries.map((post) => <BlogCard post={post} />)}
+						</div>
+					) : (
+						<div class="mt-8 rounded-[1.25rem] border border-white/10 bg-white/[0.03] px-6 py-14 text-center lg:mt-12 lg:py-20">
+							<p class="text-[1.125rem] text-white lg:text-[1.5rem]">{BLOG_AUTHOR_PAGE.emptyTitle}</p>
+							<p class="mx-auto mt-3 max-w-110 text-[0.875rem] leading-[1.6] text-white/50 lg:text-[1rem]">
+								{BLOG_AUTHOR_PAGE.emptyBody}
+							</p>
+						</div>
+					)
+				}
+			</div>
+		</section>
+	</main>
+</Layout>

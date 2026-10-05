@@ -1,12 +1,14 @@
 /** Shapes Sanity blog documents for both routes so components never see a nullable field. */
 import type { PortableBlock } from "./portable-text";
 import { estimateReadMinutes, headingSections } from "./portable-text";
-import { BLOG_INDEX } from "../data/blog";
+import { BLOG_INDEX, laterUpdate, type BlogAuthor } from "../data/blog";
 import {
+	getBlogAuthor,
 	getBlogCategories,
 	getBlogIndex,
 	getBlogPost,
 	getBlogPosts,
+	type BlogAuthorDoc,
 	type BlogCardDoc,
 	type BlogPostDoc,
 	type ScriptsDoc,
@@ -43,9 +45,11 @@ export interface BlogEntry {
 	metaTitle?: string;
 	excerpt: string;
 	category: BlogCategoryChip;
-	author: { name: string; role: string; initials: string };
+	author: BlogAuthor;
 	readMinutes: number;
 	publishedIso: string;
+	/** Last edit, only when it is a later day than `publishedIso`. */
+	updatedIso?: string;
 	hero: BlogHeroImage;
 	body: PortableBlock[];
 	/** Section headings, in order, with the ids the body will render. */
@@ -70,20 +74,28 @@ function chipFrom(category: BlogCardDoc["category"]): BlogCategoryChip {
 	};
 }
 
+function authorFrom(doc: BlogAuthorDoc | undefined): BlogAuthor {
+	const name = doc?.name ?? "Influenze.ai";
+	return {
+		name,
+		role: doc?.role ?? "",
+		initials: doc?.initials?.trim() || initialsFrom(name),
+		avatarUrl: doc?.avatarUrl || undefined,
+		slug: doc?.slug || undefined,
+	};
+}
+
 /** The shared half of a post — everything the listing card needs. */
 function entryHeadFrom(doc: BlogCardDoc) {
-	const name = doc.author?.name ?? "Influenze.ai";
+	const publishedIso = doc.publishedAt ?? "";
 	return {
 		slug: doc.slug ?? "",
 		title: doc.title ?? "Untitled",
 		excerpt: doc.excerpt ?? "",
 		category: chipFrom(doc.category),
-		author: {
-			name,
-			role: doc.author?.role ?? "",
-			initials: doc.author?.initials?.trim() || initialsFrom(name),
-		},
-		publishedIso: doc.publishedAt ?? "",
+		author: authorFrom(doc.author),
+		publishedIso,
+		updatedIso: laterUpdate(publishedIso, doc.updatedAt),
 		hero: {
 			url: doc.hero?.url ?? "",
 			alt: doc.hero?.alt ?? "",
@@ -175,6 +187,28 @@ export async function getBlogListing(perspectiveCookie?: string): Promise<BlogLi
 		seo: index?.seo,
 		scripts: index?.scripts,
 		noindex: index?.seo?.noindex ?? false,
+	};
+}
+
+export interface BlogAuthorPage {
+	author: BlogAuthor & { slug: string };
+	bio: string;
+	entries: BlogEntry[];
+}
+
+export async function getBlogAuthorPage(
+	slug: string | undefined,
+	perspectiveCookie?: string,
+): Promise<BlogAuthorPage | undefined> {
+	if (!slug) return undefined;
+
+	const { data: doc } = await getBlogAuthor(slug, perspectiveCookie);
+	if (!doc?.slug) return undefined;
+
+	return {
+		author: { ...authorFrom(doc), slug: doc.slug },
+		bio: doc.bio ?? "",
+		entries: (doc.posts ?? []).filter((post) => post.slug).map(cardFromSanity),
 	};
 }
 

@@ -150,6 +150,15 @@ export default defineType({
 			validation: (Rule) => Rule.required(),
 		}),
 		defineField({
+			name: "updatedAt",
+			title: "Last updated on",
+			type: "date",
+			group: "meta",
+			options: { dateFormat: "D MMMM YYYY" },
+			description:
+				"Shown beside the published date when it is later. Left blank, the date this post was last edited in the Studio is used.",
+		}),
+		defineField({
 			name: "readMinutes",
 			title: "Read time (minutes)",
 			type: "number",

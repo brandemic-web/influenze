@@ -4,7 +4,9 @@
  * put the image first; from `lg` the 40/60 grid, padding and gap are sized for a 784×457 image.
  */
 import BlogImage from "./BlogImage.astro";
-import type { BlogAuthor } from "../../data/blog";
+import BlogAvatar from "./BlogAvatar.astro";
+import BlogMeta from "./BlogMeta.astro";
+import { authorHref, type BlogAuthor } from "../../data/blog";
 import type { BlogHeroImage } from "../../lib/blog-source";
 
 interface Props {
@@ -13,14 +15,14 @@ interface Props {
 	excerpt: string;
 	author: BlogAuthor;
 	readMinutes: number;
-	/** ISO 8601, for the `<time>` machine value. */
+	/** ISO 8601. */
 	publishedIso: string;
-	/** The same date, already formatted for reading. */
-	published: string;
+	/** ISO 8601; only passed when later than `publishedIso`. */
+	updatedIso?: string;
 	hero: BlogHeroImage;
 }
 
-const { category, title, excerpt, author, readMinutes, publishedIso, published, hero } =
+const { category, title, excerpt, author, readMinutes, publishedIso, updatedIso, hero } =
 	Astro.props;
 ---
 
@@ -40,17 +42,12 @@ const { category, title, excerpt, author, readMinutes, publishedIso, published, 
 			{/* Copy column: `min-w-0` from `lg` so a long title wraps instead of widening it. */}
 			<div class="contents lg:block lg:min-w-0">
 				<span
-					class="order-2 w-fit rounded-full border border-brand-primary/40 bg-surface-header px-4 py-2 text-[0.75rem] leading-none tracking-[0.14em] uppercase text-brand-primary backdrop-blur-md lg:text-[0.65rem]"
+					class="order-2 w-fit rounded-full border border-brand-primary/40 bg-surface-header px-4 py-2 text-[0.6rem] leading-none tracking-[0.14em] uppercase text-brand-primary backdrop-blur-md lg:text-[0.65rem]"
 				>
 					{category}
 				</span>
 
-				{/* Mobile only — image, category, title, then this line; the excerpt and byline are hidden. */}
-				<p class="order-4 mt-4 text-[0.75rem] leading-none text-white/45 lg:hidden">
-					<time datetime={publishedIso}>{published}</time>
-					<span class="mx-2 inline-block h-1 w-1 rounded-full bg-white/25 align-middle" aria-hidden="true"></span>
-					<span>{readMinutes} min read</span>
-				</p>
+				
 
 				<h1
 					id="blog-title"
@@ -65,34 +62,45 @@ const { category, title, excerpt, author, readMinutes, publishedIso, published, 
 					{excerpt}
 				</p>
 
-				{/* Byline: author, then read time and date as separated meta. */}
+				{/* Byline: author on one row, the labelled dates and read time on the next. */}
 				<div
-					class="order-6 mt-8 hidden flex-wrap items-center gap-x-4 gap-y-4 border-t border-white/10 pt-6 lg:order-none lg:mt-12 lg:gap-x-3 lg:pt-5 lg:pr-10 lg:gap-y-6 lg:flex"
+					class="order-6 mt-8 border-t border-white/10 pt-6 lg:order-none lg:mt-12 lg:block lg:pr-10"
 				>
-					<span
-						class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-purple-soft text-[0.8125rem] font-semibold text-surface-dark lg:h-12 lg:w-12 lg:text-[0.9375rem]"
-						aria-hidden="true"
-					>
-						{author.initials}
-					</span>
+					<div class="flex items-center gap-3">
+						<BlogAvatar
+							author={author}
+							size={48}
+							class="h-10 w-10 text-[0.8125rem] lg:h-12 lg:w-12 lg:text-[0.9375rem]"
+						/>
 
-					<span class="flex flex-col gap-3">
-						<span class="text-[0.875rem] leading-none font-semibold text-white lg:text-[1rem]"
-							>{author.name}</span
-						>
-						<span class="text-[0.75rem] leading-none text-white/45 lg:text-[0.875rem]"
-							>{author.role}</span
-						>
-					</span>
+						<span class="flex flex-col gap-3">
+							{
+								author.slug ? (
+									<a
+										href={authorHref(author.slug)}
+										class="text-[0.875rem] leading-none font-semibold text-white transition-colors duration-300 hover:text-brand-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary lg:text-[1rem]"
+									>
+										{author.name}
+									</a>
+								) : (
+									<span class="text-[1rem] leading-none font-semibold text-white lg:text-[1.25rem]">
+										{author.name}
+									</span>
+								)
+							}
+							<span class="text-[0.75rem] leading-none text-white/45 lg:text-[0.875rem]"
+								>{author.role}</span
+							>
+						</span>
+					</div>
 
-					<span
-						class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[0.75rem] leading-none text-white/45 lg:gap-x-4 lg:text-[0.875rem]"
-					>
-						{/* Date and dot hide below `lg`, where the date sits above the title instead. */}
-						<time datetime={publishedIso} class="hidden lg:inline">{published}</time>
-						<span class="hidden h-1 w-1 rounded-full bg-white/25 lg:block" aria-hidden="true"></span>
-						<span>{readMinutes} min read</span>
-					</span>
+					<BlogMeta
+						publishedIso={publishedIso}
+						updatedIso={updatedIso}
+						readMinutes={readMinutes}
+						variant="labelled"
+						class="mt-6"
+					/>
 				</div>
 			</div>
 

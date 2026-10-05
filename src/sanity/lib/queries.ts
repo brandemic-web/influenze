@@ -224,12 +224,24 @@ export async function getFeaturesPage(perspectiveCookie?: string) {
  * author and hero asset here so components never re-query.
  */
 
+const BLOG_AUTHOR_PROJECTION = groq`name, role, initials, "slug": slug.current, "avatarUrl": avatar.asset->url`;
+
+export interface BlogAuthorDoc {
+	name?: string;
+	role?: string;
+	initials?: string;
+	slug?: string;
+	avatarUrl?: string;
+}
+
 /** Everything the listing card and the post hero need, minus the body. */
 const BLOG_CARD_PROJECTION = groq`
 	"slug": slug.current,
 	title,
 	excerpt,
 	publishedAt,
+	// The editor's date when set, otherwise the document's own last-edit time.
+	"updatedAt": coalesce(updatedAt, _updatedAt),
 	readMinutes,
 	hero {
 		alt,
@@ -237,7 +249,7 @@ const BLOG_CARD_PROJECTION = groq`
 		"dimensions": asset->metadata.dimensions { width, height },
 	},
 	category-> { title, "slug": slug.current },
-	author-> { name, role, initials, "avatarUrl": avatar.asset->url },
+	author-> { ${BLOG_AUTHOR_PROJECTION} },
 `;
 
 export interface BlogImageDoc {
@@ -251,10 +263,11 @@ export interface BlogCardDoc {
 	title?: string;
 	excerpt?: string;
 	publishedAt?: string;
+	updatedAt?: string;
 	readMinutes?: number;
 	hero?: BlogImageDoc;
 	category?: { title?: string; slug?: string };
-	author?: { name?: string; role?: string; initials?: string; avatarUrl?: string };
+	author?: BlogAuthorDoc;
 }
 
 /** The full post. `body` comes back as Portable Text — see components/blog/PortableText.astro. */
@@ -299,7 +312,29 @@ export async function getBlogPosts(perspectiveCookie?: string) {
 	return loadQuery<BlogCardDoc[]>({ query: blogPostsQuery, perspectiveCookie });
 }
 
-export const blogCategoriesQuery = groq`*[_type == "blogCategory" && defined(slug.current)] | order(order asc, title asc) {
+/** One author and their posts, newest first, for /author/<slug>. */
+export const blogAuthorQuery = groq`*[_type == "blogAuthor" && slug.current == $slug][0]{
+	${BLOG_AUTHOR_PROJECTION},
+	bio,
+	"posts": *[_type == "blogPost" && author._ref == ^._id && defined(slug.current)] | order(publishedAt desc) {
+		${BLOG_CARD_PROJECTION}
+	},
+}`;
+
+export interface BlogAuthorPageDoc extends BlogAuthorDoc {
+	bio?: string;
+	posts?: BlogCardDoc[];
+}
+
+export async function getBlogAuthor(slug: string, perspectiveCookie?: string) {
+	return loadQuery<BlogAuthorPageDoc | null>({
+		query: blogAuthorQuery,
+		params: { slug },
+		perspectiveCookie,
+	});
+}
+
+export const blogCategoriesQuery =groq`*[_type == "blogCategory" && defined(slug.current)] | order(order asc, title asc) {
 	title,
 	"slug": slug.current,
 }`;

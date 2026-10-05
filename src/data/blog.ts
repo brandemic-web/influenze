@@ -3,8 +3,17 @@
 export interface BlogAuthor {
 	name: string;
 	role: string;
-	/** Two letters shown in the avatar disc, since there is no portrait yet. */
+	/** Two letters shown in the avatar disc when there is no portrait. */
 	initials: string;
+	/** Sanity CDN URL of the portrait, when one is uploaded. */
+	avatarUrl?: string;
+	/** Absent for authors saved before slugs existed; their byline simply doesn't link. */
+	slug?: string;
+}
+
+/** Where an author's page lives — the one place the /author/ prefix is spelled. */
+export function authorHref(slug: string): string {
+	return `/author/${slug}`;
 }
 
 /** Shape of the blog's one CTA (see `data/blog-cta.ts`), not a licence for per-post variants. */
@@ -38,6 +47,40 @@ export function formatPublished(iso: string): string {
 		timeZone: "UTC",
 	});
 }
+
+const SHORT_MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+/** "23 Sep 2026" for the byline meta. Spelled out because en-GB gives "Sept" but "Oct". */
+export function formatShort(iso: string): string {
+	const date = new Date(iso);
+	return `${date.getUTCDate()} ${SHORT_MONTHS[date.getUTCMonth()]} ${date.getUTCFullYear()}`;
+}
+
+/** Labels for the byline meta, so the two dates are never confused. */
+export const BLOG_META_LABELS = {
+	published: "Published",
+	updated: "Updated",
+	readTime: "Read time",
+	minutesSuffix: "min read",
+	/** Under the "Read time" label, where "read" would say it twice. */
+	minutesShort: "min",
+} as const;
+
+/** The last-edit date, only when it falls on a later day than publication — otherwise it adds nothing. */
+export function laterUpdate(publishedIso: string, updatedIso: string | undefined): string | undefined {
+	if (!updatedIso || !publishedIso) return undefined;
+	const day = (iso: string) => iso.slice(0, 10);
+	return day(updatedIso) > day(publishedIso) ? updatedIso : undefined;
+}
+
+/** Author-page copy; `{name}` is replaced with the author's name. */
+export const BLOG_AUTHOR_PAGE = {
+	listingHeading: "Articles by {name}",
+	/** Meta description when the author has no bio. */
+	metaDescription: "Articles by {name} on the Influenze.ai blog.",
+	emptyTitle: "No articles yet",
+	emptyBody: "Nothing has been published under this byline so far.",
+} as const;
 
 /** Listing-page copy, used for any field the Studio's blog index leaves blank. */
 export const BLOG_INDEX = {
