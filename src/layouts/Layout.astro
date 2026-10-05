@@ -1,7 +1,7 @@
 ---
 import "../styles/global.css";
 import { getImage } from "astro:assets";
-import { SITE } from "../data/site";
+import { APP_URL, SITE } from "../data/site";
 import Header from "../components/common/Header.astro";
 import CtaBand from "../components/common/CtaBand.astro";
 import Footer from "../components/common/Footer.astro";
@@ -67,6 +67,11 @@ const canonical = canonicalUrl ? new URL(canonicalUrl, site) : new URL(path, sit
 //   sharp(master).resize(1200, 630).jpeg({ quality: 90, mozjpeg: true })
 const ogImage = new URL("/og-card.jpg", site);
 
+// Set only by preview.yml: PR previews report to dev Analytics instead of GTM,
+// so they never reach live numbers. Production builds leave it unset.
+const devGaId = import.meta.env.PUBLIC_DEV_GA_ID;
+const appHost = new URL(APP_URL).hostname;
+
 // Independent of each other, so they run concurrently rather than adding
 // their latencies — the logo render doesn't need Sanity's response or vice versa.
 const [orgLogo, { data: settings }] = await Promise.all([
@@ -123,28 +128,42 @@ const inlineFooterScripts = [settings?.scripts?.footer, scripts?.footer].filter(
 		<meta name="saashub-verification" content="nfzi8lh09rn2" />
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<!-- Google Tag Manager -->
-		<script is:inline>
-			(function (w, d, s, l, i) {
-				w[l] = w[l] || [];
-				w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
-				var f = d.getElementsByTagName(s)[0],
-					j = d.createElement(s),
-					dl = l != "dataLayer" ? "&l=" + l : "";
-				j.async = true;
-				j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
-				f.parentNode.insertBefore(j, f);
-			})(window, document, "script", "dataLayer", "GTM-TTJDWGW3");
-		</script>
-		<!-- End Google Tag Manager -->
-		<!-- Google tag (gtag.js) -->
-		<script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-VMXHX5HWWR"></script>
-		<script is:inline>
-		  window.dataLayer = window.dataLayer || [];
-		  function gtag(){dataLayer.push(arguments);}
-		  gtag('js', new Date());
-		  gtag('config', 'G-VMXHX5HWWR');
-		</script>
+		{
+			devGaId ? (
+				<>
+					<script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${devGaId}`} />
+					{/* The dev app is on another domain, so the visitor ID crosses in the link (`_gl`). */}
+					<script is:inline define:vars={{ devGaId, appHost }}>
+						window.dataLayer = window.dataLayer || [];
+						window.gtag = function () {
+							window.dataLayer.push(arguments);
+						};
+						window.izDirectGa = true;
+						gtag("js", new Date());
+						gtag("config", devGaId, { linker: { domains: [appHost] } });
+					</script>
+				</>
+			) : (
+				<>
+					<!-- Google Tag Manager -->
+					<script is:inline>
+						(function (w, d, s, l, i) {
+							w[l] = w[l] || [];
+							w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+							var f = d.getElementsByTagName(s)[0],
+								j = d.createElement(s),
+								dl = l != "dataLayer" ? "&l=" + l : "";
+							j.async = true;
+							j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+							f.parentNode.insertBefore(j, f);
+						})(window, document, "script", "dataLayer", "GTM-TTJDWGW3");
+					</script>
+					<!-- End Google Tag Manager -->
+				</>
+			)
+		}
+		<!-- GA4 (G-958BZ5FG62, shared with app.influenze.ai) fires from inside the GTM
+		     container; a direct gtag.js tag here as well double-counts page views. -->
 		<link rel="icon" type="image/webp" href="/favicon.webp" />
 		<link rel="apple-touch-icon" href="/favicon.webp" />
 		<meta name="generator" content={Astro.generator} />
@@ -186,15 +205,17 @@ const inlineFooterScripts = [settings?.scripts?.footer, scripts?.footer].filter(
 		{inlineHeaderScripts.map((s) => <Fragment set:html={s} />)}
 	</head>
 	<body class="min-h-screen overflow-x-clip antialiased">
-		<!-- Google Tag Manager (noscript) -->
-		<noscript
-			><iframe
-				src="https://www.googletagmanager.com/ns.html?id=GTM-TTJDWGW3"
-				height="0"
-				width="0"
-				style="display:none;visibility:hidden"></iframe></noscript
-		>
-		<!-- End Google Tag Manager (noscript) -->
+		{
+			!devGaId && (
+				<noscript
+					><iframe
+						src="https://www.googletagmanager.com/ns.html?id=GTM-TTJDWGW3"
+						height="0"
+						width="0"
+						style="display:none;visibility:hidden"></iframe></noscript
+				>
+			)
+		}
 		<Header />
 		<slot />
 		{!hideCta && <CtaBand buttonLabel={ctaButtonLabel} />}
@@ -208,5 +229,8 @@ const inlineFooterScripts = [settings?.scripts?.footer, scripts?.footer].filter(
 			)
 		}
 		{inlineFooterScripts.map((s) => <Fragment set:html={s} />)}
+		<script>
+			import "../scripts/attribution";
+		</script>
 	</body>
 </html>
