@@ -18,15 +18,20 @@ const siteOrigin = env.PUBLIC_SITE_ORIGIN ?? "http://localhost:1234";
 // https://astro.build/config
 export default defineConfig({
   site: "https://influenze.ai",
-  // Server-rendered: Presentation's draft mode sets a cookie, which can only
-  // be read per-request. Published visitors still get CDN-fresh content —
-  // see loadQuery.ts's useCdn logic.
-  output: "server",
+  // Static: every page is built once and served as a file. Content changes
+  // reach the site by a rebuild (Sanity's publish webhook triggers deploy.yml),
+  // so there is no per-visit Sanity fetch. Routes that must run per request
+  // opt out with `export const prerender = false` — the draft-mode API and /qc.
+  // Live draft preview on the production site is given up for this; editors
+  // did not use it.
 
   // /sitemap.xml is now a route (src/pages/sitemap.xml.ts): it checks Site
   // Settings for a custom upload before falling back to the auto-generated one.
 
-  integrations: [sitemap(), sanity({
+  integrations: [sitemap({
+      // Neither is a public page: /qc 404s on production, /studio is the CMS.
+      filter: (page) => !/\/(studio|qc)\/?$/.test(page),
+  }), sanity({
       projectId: env.PUBLIC_SANITY_PROJECT_ID,
       dataset: env.PUBLIC_SANITY_DATASET ?? "production",
       // Studio is embedded at /studio (see sanity.config.ts) rather than
@@ -93,5 +98,8 @@ export default defineConfig({
       },
   },
 
-  adapter: cloudflare(),
+  // "compile" runs sharp at build time. The default, "cloudflare-binding",
+  // transforms at request time and — with no `q` in the URL — returns lossless
+  // WebP, which made every image roughly 7x its lossy size.
+  adapter: cloudflare({ imageService: "compile" }),
 });

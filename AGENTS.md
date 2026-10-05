@@ -3,6 +3,11 @@
 Astro 7 static site, Tailwind v4, GSAP. Deployed to Cloudflare Workers Assets.
 Five routes — `/`, `/features`, `/pricing`, `/terms`, `/privacy` — plus a 404.
 
+Sanity content is read at build time, so a publish reaches the site only through
+a rebuild (`repository_dispatch: sanity-publish` in `deploy.yml`). Only the
+draft-mode API and `/qc` run in the Worker. Keep `imageService: "compile"`: the
+runtime binding serves lossless WebP, about 7× the bytes.
+
 ## Commands
 
 ```

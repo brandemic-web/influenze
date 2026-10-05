@@ -9,10 +9,10 @@
  * shrinks the whole card off the design's size, so its proportions and line breaks
  * survive whatever size we settle on.
  */
-import type { WorkflowCard } from "../../../data/workflowCards";
+import type { NumberedCard } from "../../../data/workflowCards";
 
 interface Props {
-	card: WorkflowCard;
+	card: NumberedCard;
 }
 
 const { card } = Astro.props;
@@ -57,6 +57,6 @@ const rem = (figmaPx: number) => `${((figmaPx * 1.125 * SCALE) / 16).toFixed(3)}
 		<p class="text-[#b9b9b9]" style={`font-size:${rem(18)};line-height:${rem(28)}`}>{card.body}</p>
 	</div>
 	<span class="relative leading-[1.1] whitespace-nowrap text-white/31" style={`font-size:${rem(110)}`}>
-		{card.step}
+		{card.numeral}
 	</span>
 </div>
