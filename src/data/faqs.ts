@@ -17,7 +17,7 @@ export const FAQS: Faq[] = [
 	{
 		question: "Is there a free trial?",
 		answer:
-			"Yes, one week, free. Full access to search, creator analytics, and lists so you can test it on a live brief before you commit.",
+			"Better than a trial: sign up with your work email and your account starts with 500 free credits that never expire. Test search, creator analytics and lists on a live brief at your own pace, and up to three people from your company can each claim their own.",
 	},
 	{
 		question: "How accurate is your creator data?",
