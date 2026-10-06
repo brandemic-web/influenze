@@ -3,12 +3,21 @@
  * An author's page at /author/<slug>: their byline, then every post filed under them.
  * A slug no author carries 404s, as an unknown post slug does.
  */
+import type { GetStaticPaths } from "astro";
 import Layout from "../../layouts/Layout.astro";
 import BlogAvatar from "../../components/blog/BlogAvatar.astro";
 import BlogCard from "../../components/blog/BlogCard.astro";
 import { BLOG_AUTHOR_PAGE, authorHref } from "../../data/blog";
 import { getBlogAuthorPage } from "../../lib/blog-source";
 import { getPerspectiveCookie } from "../../lib/draft-mode";
+import { getBlogAuthorSlugs } from "../../sanity/lib/queries";
+
+// Every author with a slug, as the server route resolved any of them. A new
+// author reaches the site through the same publish-triggered rebuild.
+export const getStaticPaths = (async () => {
+	const { data: slugs } = await getBlogAuthorSlugs();
+	return (slugs ?? []).map((slug) => ({ params: { slug } }));
+}) satisfies GetStaticPaths;
 
 const page = await getBlogAuthorPage(Astro.params.slug, getPerspectiveCookie(Astro.cookies));
 if (!page) return Astro.rewrite("/404");
