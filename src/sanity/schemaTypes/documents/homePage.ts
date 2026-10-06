@@ -77,6 +77,14 @@ export default defineType({
 						}),
 					],
 				}),
+				defineField({
+					name: "showShortlistFlow",
+					title: "Show Shortlist flow",
+					description:
+						"On: the workflow animation ticks three creators, saves them to a shortlist and opens Selwyn from it. Off: it opens Selwyn straight from the search results. Takes effect on the next build.",
+					type: "boolean",
+					initialValue: false,
+				}),
 			],
 		}),
 

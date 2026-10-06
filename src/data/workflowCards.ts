@@ -13,14 +13,20 @@
  * unresolvable mark drops the card, not the story.
  */
 export interface StoryMark {
+	/** Counted in the full story; with the shortlist off, beats 3–6 are skipped, not removed. */
 	beat: number;
 	at: "start" | "end" | (string & {});
 	offset?: number;
 }
 
 interface CardContent {
-	/** The numeral the card shows, and its order in the story. */
+	/**
+	 * The card's place in the full, shortlist-on story — its `data-wf-card` hook.
+	 * What it *shows* is `numeral`, from `storyCards`, which closes the gaps.
+	 */
 	step: number;
+	/** Only plays when the Sanity "Show Shortlist flow" toggle is on. */
+	shortlistOnly?: true;
 	title: string;
 	body: string;
 	/** When it fades up. */
@@ -47,6 +53,7 @@ export const WORKFLOW_CARDS: WorkflowCard[] = [
 	},
 	{
 		step: 2,
+		shortlistOnly: true,
 		title: "Shortlist for Free",
 		body: "Park anyone worth a second look in a shortlist. Nothing is charged until you open a profile.",
 		// Held back until the dialog is open, where the app states the same thing in
@@ -59,8 +66,9 @@ export const WORKFLOW_CARDS: WorkflowCard[] = [
 		step: 3,
 		title: "Vet & Get Insights",
 		body: "Audience and Creator insights, content performance and growth metrics in real time.",
-		// Waits for the profile to finish rising — see beat 7's `settled` — so the
-		// card follows the panel rather than arriving with it. Runs until the media
+		// Waits for the profile to finish rising — see beat 7's `settled`, which both
+		// ways of opening it carry — so the card follows the panel rather than
+		// arriving with it. Runs until the media
 		// kit has been scrolled, before the cursor reaches for Back.
 		show: { beat: 7, at: "settled", offset: 0.25 },
 		hide: { beat: 8, at: "scrolled" },
@@ -101,3 +109,16 @@ export const WORKFLOW_CARDS: WorkflowCard[] = [
 		dwell: 4.5,
 	},
 ];
+
+export type NumberedCard = WorkflowCard & { numeral: number };
+
+/**
+ * The cards one flow plays, numbered in the order they appear — so dropping the
+ * shortlist card turns 3 into 2 rather than leaving a hole.
+ */
+export function storyCards(shortlistFlow: boolean): NumberedCard[] {
+	return WORKFLOW_CARDS.filter((card) => shortlistFlow || !card.shortlistOnly).map((card, i) => ({
+		...card,
+		numeral: i + 1,
+	}));
+}

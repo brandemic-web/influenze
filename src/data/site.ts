@@ -14,4 +14,4 @@ export const SITE = {
 export const APP_URL = import.meta.env.PUBLIC_APP_URL || "https://app.influenze.ai/";
 
 /** Internal route for the features page — the "Learn More" destination. */
-export const FEATURES_URL = "/features";
+export const FEATURES_URL = "/features/";

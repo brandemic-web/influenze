@@ -9,6 +9,7 @@ import { listDetail } from "./beats/listDetail";
 import { mediaKitTab } from "./beats/mediaKitTab";
 import { myLists } from "./beats/myLists";
 import { openCreator } from "./beats/openCreator";
+import { openFromResults } from "./beats/openFromResults";
 import { openShortlist } from "./beats/openShortlist";
 import { shareModal } from "./beats/shareModal";
 import { shortlistSelect } from "./beats/shortlistSelect";
@@ -16,7 +17,7 @@ import { createPointer } from "./utils/pointer";
 import { restart } from "./beats/restart";
 import { resultsList } from "./beats/resultsList";
 import { holdForSpan, spotlight } from "./utils/spotlight";
-import { WORKFLOW_CARDS, type StoryMark } from "../../../data/workflowCards";
+import { storyCards, type StoryMark } from "../../../data/workflowCards";
 import { LANDSCAPE_CLOSE, LANDSCAPE_OPEN } from "../../landscape-viewer";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -42,13 +43,20 @@ function initWorkflow(mockup: HTMLElement) {
 	//
 	// The shortlist is visited once, on the way in: the story promotes the creator
 	// from the panel it opened them in, so it never walks back to the list of rows.
+	// With the Sanity toggle off, 4–6 are not rendered at all.
+	const shortlistFlow = mockup.dataset.wfFlow === "shortlist";
 	const layer = (step: number) => mockup.querySelector<HTMLElement>(`[data-wf-screen="${step}"]`);
-	const found = {
-		analyze: layer(1),
-		results: layer(3),
+	const detour = {
 		shortlistAdd: layer(4),
 		shortlists: layer(5),
 		shortlist: layer(6),
+	};
+	if (shortlistFlow && !Object.values(detour).every(Boolean)) return;
+	const shortlistScreen = detour as { [K in keyof typeof detour]: HTMLElement };
+
+	const found = {
+		analyze: layer(1),
+		results: layer(3),
 		profile: layer(7),
 		kit: layer(8),
 		listAdd: layer(9),
@@ -97,16 +105,32 @@ function initWorkflow(mockup: HTMLElement) {
 	// point and has to wind it back before it comes into view.
 	const analyze = analyzeLookalike(screen.analyze, pointer);
 
+	// Beats 3–6 are the shortlist detour. Off, they stay in the list as nulls, so
+	// every later beat keeps its number and the cards' marks still resolve.
+	const detourBeats = shortlistFlow
+		? [
+				shortlistSelect({ screen: screen.results }, pointer),
+				// Opens on List like the app, then crosses to ShortList for the free save.
+				addToListDialog(
+					{ from: screen.results, to: shortlistScreen.shortlistAdd, switchTo: "shortlist" },
+					pointer
+				),
+				// The nav link lands on Lists, so this stop crosses to ShortLists itself.
+				myLists(
+					{ from: shortlistScreen.shortlistAdd, to: shortlistScreen.shortlists, switchTo: "shortlist" },
+					pointer
+				),
+				openShortlist({ from: shortlistScreen.shortlists, to: shortlistScreen.shortlist }, pointer),
+			]
+		: [null, null, null, null];
+
 	const beats = [
 		analyze?.timeline,
 		resultsList({ from: screen.analyze, to: screen.results }, pointer),
-		shortlistSelect({ screen: screen.results }, pointer),
-		// Opens on List like the app, then crosses to ShortList for the free save.
-		addToListDialog({ from: screen.results, to: screen.shortlistAdd, switchTo: "shortlist" }, pointer),
-		// The nav link lands on Lists, so this stop crosses to ShortLists itself.
-		myLists({ from: screen.shortlistAdd, to: screen.shortlists, switchTo: "shortlist" }, pointer),
-		openShortlist({ from: screen.shortlists, to: screen.shortlist }, pointer),
-		openCreator({ from: screen.shortlist, to: screen.profile }, pointer),
+		...detourBeats,
+		shortlistFlow
+			? openCreator({ from: shortlistScreen.shortlist, to: screen.profile }, pointer)
+			: openFromResults({ from: screen.results, to: screen.profile }, pointer),
 		mediaKitTab({ from: screen.profile, to: screen.kit }, pointer),
 		// Promoted straight from the panel, which is where the app puts the control.
 		addToListDialog({ from: screen.kit, to: screen.listAdd }),
@@ -147,7 +171,7 @@ function initWorkflow(mockup: HTMLElement) {
 	// than appends, so a card fades up at its mark while the story runs underneath.
 	// Queried from the mockup root, not `document` — a second mockup on the page
 	// must not get wired into this timeline.
-	for (const card of WORKFLOW_CARDS) {
+	for (const card of storyCards(shortlistFlow)) {
 		const el = mockup.querySelector<HTMLElement>(`[data-wf-card="${card.step}"]`);
 		const show = markTime(card.show);
 		if (!el || show === null) continue;

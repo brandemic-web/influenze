@@ -5,6 +5,7 @@
  */
 import Analyze from "./screens/analyze/Analyze.astro";
 import AddToListDialog from "./screens/analyze/AddToListDialog.astro";
+import AnalyzedCreator from "./screens/analyze/AnalyzedCreator.astro";
 import Lists from "./screens/list/Lists.astro";
 import ExportDialog from "./screens/list/ExportDialog.astro";
 import ListDetails from "./screens/list/ListDetails.astro";
@@ -14,14 +15,22 @@ import ShareModal from "./screens/share-management/ShareModal.astro";
 import StoryStep from "./story/StoryStep.astro";
 import WorkflowPointer from "./story/WorkflowPointer.astro";
 import WorkflowCard from "./story/WorkflowCard.astro";
-import { WORKFLOW_CARDS } from "../../data/workflowCards";
+import { storyCards } from "../../data/workflowCards";
 import mousePointerClick from "../../assets/icons/workflow/mouse_pointer_click.svg";
 
 interface Props {
 	class?: string;
+	/**
+	 * Sanity's "Show Shortlist flow". On, three creators are saved to a shortlist and
+	 * Selwyn is opened from it; off, he is opened straight from the results.
+	 */
+	shortlistFlow?: boolean;
 }
 
-const { class: className = "" } = Astro.props;
+const { class: className = "", shortlistFlow = false } = Astro.props;
+
+/** Where Selwyn's panel is hosted — the app puts it in whichever screen opened him. */
+const Creator = shortlistFlow ? ShortlistCreator : AnalyzedCreator;
 ---
 
 {/* `data-canvas-fit` / `data-canvas` are what scripts/canvasScale measures. */}
@@ -30,6 +39,7 @@ const { class: className = "" } = Astro.props;
 	data-workflow
 	data-canvas-fit
 	data-landscape-target="workflow"
+	data-wf-flow={shortlistFlow ? "shortlist" : "direct"}
 >
 	{/* Hidden from assistive tech — this is a markup picture of the product; narration lives in .wf-card-layer instead. */}
 	<div
@@ -46,21 +56,31 @@ const { class: className = "" } = Astro.props;
 			already-opened creator is free again. The promote happens **from the
 			creator's own panel**, where the app puts the control — the story never
 			walks back to the shortlist to select them again.
+
+			With the shortlist flow off, steps 4–6 are not rendered and 7–9 are hosted
+			by Analyze, so the story opens Selwyn straight from the results. qc.astro
+			reads this file's step numbers, so keep every StoryStep a literal.
 		*/}
 		<StoryStep step={1} active><Analyze /></StoryStep>
 		<StoryStep step={3}><Analyze results /></StoryStep>
-		<StoryStep step={4}>
-			<AddToListDialog count={3} adds="shortlist">
-				<Analyze results selected slot="backdrop" />
-			</AddToListDialog>
-		</StoryStep>
-		<StoryStep step={5}><Lists target="shortlist" /></StoryStep>
-		<StoryStep step={6}><ShortlistDetails /></StoryStep>
-		<StoryStep step={7}><ShortlistCreator tab="about" /></StoryStep>
-		<StoryStep step={8}><ShortlistCreator tab="mediaKit" /></StoryStep>
+		{
+			shortlistFlow && (
+				<>
+					<StoryStep step={4}>
+						<AddToListDialog count={3} adds="shortlist">
+							<Analyze results selected slot="backdrop" />
+						</AddToListDialog>
+					</StoryStep>
+					<StoryStep step={5}><Lists target="shortlist" /></StoryStep>
+					<StoryStep step={6}><ShortlistDetails /></StoryStep>
+				</>
+			)
+		}
+		<StoryStep step={7}><Creator tab="about" /></StoryStep>
+		<StoryStep step={8}><Creator tab="mediaKit" /></StoryStep>
 		<StoryStep step={9}>
 			<AddToListDialog count={1}>
-				<ShortlistCreator tab="mediaKit" slot="backdrop" />
+				<Creator tab="mediaKit" slot="backdrop" />
 			</AddToListDialog>
 		</StoryStep>
 		<StoryStep step={10}><Lists /></StoryStep>
@@ -79,7 +99,7 @@ const { class: className = "" } = Astro.props;
 
 	{/* Own unclipped layer so cards can hang past the stage's clipped edge — see .wf-card-layer. */}
 	<div class="wf-card-layer">
-		{WORKFLOW_CARDS.map((card) => <WorkflowCard card={card} />)}
+		{storyCards(shortlistFlow).map((card) => <WorkflowCard card={card} />)}
 	</div>
 
 	{/* Play/pause control, revealed only once scripts/home-page/workflow claims it (data-wf-controls). */}

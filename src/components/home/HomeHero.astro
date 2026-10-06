@@ -17,6 +17,8 @@ const words = home?.hero?.words?.length ? home.hero.words : HERO_WORDS;
 const ctaLabel = home?.hero?.cta?.label || "Free Trial";
 const ctaHref = home?.hero?.cta?.href || APP_URL;
 const ctaNewTab = home?.hero?.cta?.newTab ?? true;
+// Off unless switched on in Sanity — the shortlist detour is parked, not gone.
+const shortlistFlow = home?.hero?.showShortlistFlow ?? false;
 // Structured (lead/highlight/trail) so the brand-green phrase survives
 // editing in Sanity — a plain string field would have dropped it, since it
 // can't carry per-word formatting.
@@ -116,7 +118,7 @@ const subcopy =
 
 		{/* product mockup: real markup so GSAP can play the workflow through it */}
 		<div class="order-2 lg:order-4 relative mt-6 w-full max-w-7xl px-0 lg:mt-14.75 lg:w-7xl lg:px-0">
-			<WorkflowMockup />
+			<WorkflowMockup shortlistFlow={shortlistFlow} />
 		</div>
 	</div>
 </section>

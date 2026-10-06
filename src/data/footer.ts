@@ -16,9 +16,9 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
 	{
 		title: "Quick Links",
 		links: [
-			{ label: "Pricing", href: "/pricing" },
-			{ label: "Features", href: "/features" },
-			{ label: "Resources", href: "/blog" },
+			{ label: "Pricing", href: "/pricing/" },
+			{ label: "Features", href: "/features/" },
+			{ label: "Resources", href: "/blog/" },
 			{ label: "DotMe", href: "https://www.dotme.in/", newTab: true },
 			{ label: "Contact Us", href: "mailto:info@dotme.in" },
 		],
@@ -38,8 +38,8 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
 	{
 		title: "Legal",
 		links: [
-			{ label: "Terms of Service", href: "/terms" },
-			{ label: "Privacy Policy", href: "/privacy" },
+			{ label: "Terms of Service", href: "/terms/" },
+			{ label: "Privacy Policy", href: "/privacy/" },
 		],
 	},
 ];

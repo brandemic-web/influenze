@@ -8,9 +8,9 @@ import type { Pointer } from "../utils/pointer";
  * them. The 1 → 3 layer swap is hidden, not cross-faded: the panel is empty and the
  * shell, search bar and rail match on both sides.
  *
- * It stops at the scroll. Opening a creator from here would bill the 50-credit
- * unlock, and the whole point of what follows is that the story does not do that
- * yet — `shortlistSelect` ticks these rows and saves them for free instead.
+ * It stops at the scroll. What follows depends on Sanity's shortlist toggle:
+ * `shortlistSelect` ticks these rows and saves them for free, or `openFromResults`
+ * opens Selwyn from here and spends the 50-credit unlock.
  */
 
 export interface ResultsListLayers {
@@ -71,7 +71,7 @@ export function resultsList(layers: ResultsListLayers, pointer: Pointer) {
 
 	// ── a look down the results, and back ────────────────────────────────────
 	// Wheel-style scroll under a parked cursor. It returns to the top because the
-	// next beat ticks rows near it, which a scrolled list would slide out from under.
+	// next beat presses rows near it, which a scrolled list would slide out from under.
 	tl.add(pointer.moveTo(el.scroller, { at: { x: 0.5, y: 0.35 }, duration: 0.55 }), "+=0.2")
 		.to(el.scroller, { y: () => -rowPitch() * 1.3, duration: 0.9, ease: "power2.inOut" }, "+=0.1")
 		.addLabel("read")

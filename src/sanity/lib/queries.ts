@@ -112,6 +112,7 @@ export interface HomePageDoc {
 		words?: string[];
 		subcopy?: { lead?: string; highlight?: string; trail?: string };
 		cta?: { label?: string; href?: string; newTab?: boolean };
+		showShortlistFlow?: boolean;
 	};
 	creatorCollage?: {
 		heading?: { lead?: string; accent?: string };

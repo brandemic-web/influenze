@@ -27,14 +27,15 @@ components/app/                 everything that reproduces the product
   screens/                      ← lib/src/screens — whole screens at 1:1 app pixels
     analyze/                      ← lib/src/screens/analyze
       Analyze.astro                 steps 1 and 3 (`results`, `selected`)
-      AnalyzedCreator.astro         the Analyze-hosted creator panel — unused by the
-                                    story since it opens creators from the shortlist
+      AnalyzedCreator.astro         steps 7–9 with the shortlist flow off — the
+                                    Analyze-hosted creator panel
       AddToListDialog.astro         steps 4 and 9 (`tab`, `adds`) — both panes, one layer
       widgets/  filters/  media-kit/
     list/                         ← lib/src/screens/list
       Lists.astro                   steps 5 and 10 (`type`, `target`) — both panes, one layer
       ShortlistDetails.astro        step 6 — visited once, on the way in
-      ShortlistCreator.astro        steps 7 and 8 — CreatorDetail in the lists shell
+      ShortlistCreator.astro        steps 7–9 with the shortlist flow on — CreatorDetail
+                                    in the lists shell
       ListDetails.astro             steps 11, 12 (`compare`) and 14 (`exported`)
       ExportDialog.astro            step 13 — the column picker, over step 11
       widgets/
@@ -711,6 +712,24 @@ Add a creator whose cards differ in height and this is what will show.
 
 ## Animation handoff
 
+### The shortlist toggle
+
+Sanity's **Home Page → Hero → Show Shortlist flow** (`hero.showShortlistFlow`,
+default **off**) picks between two cuts of the story. `HomeHero` passes it to
+`WorkflowMockup` as `shortlistFlow`, which publishes it as `data-wf-flow`
+(`shortlist` | `direct`) for `index.ts` to read.
+
+- **On** — every beat below, as written.
+- **Off** — beats 3–6 are skipped: steps 4–6 are not rendered, and Selwyn is opened
+  straight from the results by `openFromResults.ts`, in the Analyze-hosted
+  `AnalyzedCreator` (rail dimmed, as the app does). It spends the same 50 credits.
+  Beats 8 onwards run unchanged on that host.
+- The skipped beats stay in `index.ts`'s list as **nulls**, so beat numbers — and
+  the cards' `StoryMark`s — mean the same thing in both cuts. Card 2 is
+  `shortlistOnly`; `storyCards()` drops it and renumbers the rest, so the numerals
+  run 1–6 with no gap.
+- `/qc?flow=direct` shows the off cut.
+
 ### Beat 1 — Analyze / Lookalike (built)
 
 `scripts/home-page/workflow/` holds the timeline: `index.ts` (finds each mockup,
@@ -1165,9 +1184,13 @@ Three conventions run through them:
 | Attribute | On | Purpose |
 | --- | --- | --- |
 | `data-workflow` | `.wf-mockup` | root handle for the timeline |
+| `data-wf-flow` | `.wf-mockup` | `shortlist` or `direct` — which cut of the story plays; see "The shortlist toggle" |
 | `data-wf-screen="1..15"` | each screen layer | the fourteen steps, all stacked and absolutely positioned (2 is a keyframe, not a layer) |
 | `data-wf-active` | one screen layer | the visible step. `app-tokens.css` hides every layer **without** it via `opacity: 0; visibility: hidden` — GSAP must either take over both properties or the CSS will fight the tween |
 | `data-wf-rail` | filter rail wrapper | the rail as a whole |
+| `data-wf-searchbar` | Analyze search bar | dimmed with the rail when a creator opens from the results |
+| `data-wf-dimmed` | `DimmedFilterSidebar` wrapper | the dim opacity and blur `openFromResults` reads and tweens to |
+| `data-wf-creator-name` | a `ProfileCard`'s name | where `openFromResults` aims the press that opens Selwyn |
 | `data-wf-rail-scroll` | rail's inner column | scrolled with `transform: translateY(-{scroll}rem)`; steps 1–2 sit at `0`, step 3 at `36.4375` |
 | `data-wf-rail-thumb` | rail scrollbar | offset is `scroll × 0.27` |
 
