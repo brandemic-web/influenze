@@ -335,6 +335,13 @@ export async function getBlogAuthor(slug: string, perspectiveCookie?: string) {
 	});
 }
 
+/** Every author with a page to build — see getStaticPaths in pages/author/[slug].astro. */
+export const blogAuthorSlugsQuery = groq`*[_type == "blogAuthor" && defined(slug.current)].slug.current`;
+
+export async function getBlogAuthorSlugs() {
+	return loadQuery<string[]>({ query: blogAuthorSlugsQuery });
+}
+
 export const blogCategoriesQuery =groq`*[_type == "blogCategory" && defined(slug.current)] | order(order asc, title asc) {
 	title,
 	"slug": slug.current,
