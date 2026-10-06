@@ -1,0 +1,32 @@
+---
+/** Task cards with their credit total worked out from the live per-action costs. */
+import CardGrid from "./CardGrid.astro";
+import { CALCULATOR } from "../../data/landing";
+import { creditsFor } from "../../lib/landing-source";
+import type { LandingCreditScenarioDoc } from "../../sanity/lib/landingQueries";
+
+interface Props {
+	scenarios: LandingCreditScenarioDoc[];
+}
+
+const { scenarios } = Astro.props;
+
+const cards = scenarios.flatMap((scenario) =>
+	scenario.title
+		? [
+				{
+					title: scenario.title,
+					body: scenario.body,
+					kicker: `≈ ${creditsFor(scenario).toLocaleString("en-IN")} credits`,
+					bullets: [
+						`${scenario.searches ?? 0} ${CALCULATOR.fields.search.toLowerCase()}`,
+						`${scenario.analytics ?? 0} ${CALCULATOR.fields.analytics.toLowerCase()}`,
+						`${scenario.contacts ?? 0} ${CALCULATOR.fields.contact.toLowerCase()}`,
+					],
+				},
+			]
+		: [],
+);
+---
+
+<CardGrid cards={cards} columns={3} />

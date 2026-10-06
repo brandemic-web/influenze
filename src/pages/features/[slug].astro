@@ -1,0 +1,98 @@
+---
+/** One feature's page — Content Playbook doc 05: the job, how it works, and where it stops. */
+import type { GetStaticPaths } from "astro";
+import LandingPage from "../../components/landing/LandingPage.astro";
+import LandingSection from "../../components/landing/LandingSection.astro";
+import CardGrid from "../../components/landing/CardGrid.astro";
+import DataTable from "../../components/landing/DataTable.astro";
+import StepList from "../../components/landing/StepList.astro";
+import PointList from "../../components/landing/PointList.astro";
+import BlogImage from "../../components/blog/BlogImage.astro";
+import PortableText from "../../components/blog/PortableText.astro";
+import { DATA_CAVEATS, SECTION_HEADINGS, WORKFLOW_STEPS } from "../../data/landing";
+import { cardsOf, hasBlocks, landingPaths, stepsOf, tableOf } from "../../lib/landing-source";
+import { getLandingPage } from "../../sanity/lib/landingQueries";
+import { getPerspectiveCookie } from "../../lib/draft-mode";
+import type { PortableBlock } from "../../lib/portable-text";
+
+export const getStaticPaths = (() => landingPaths("featurePage")) satisfies GetStaticPaths;
+
+const { data: page } = await getLandingPage("featurePage", Astro.params.slug ?? "", getPerspectiveCookie(Astro.cookies));
+if (!page?.slug) return Astro.rewrite("/404");
+
+const steps = stepsOf(page.howItWorks);
+const io = tableOf(page.inputsOutputs);
+const definitions = cardsOf(page.definitions);
+const useCases = cardsOf(page.useCases);
+---
+
+<LandingPage page={page} type="featurePage" boundary={page.boundary}>
+	{
+		page.heroImage?.url && (
+			<BlogImage
+				slot="aside"
+				image={{ url: page.heroImage.url, alt: page.heroImage.alt ?? "" }}
+				widths={[600, 784, 1568]}
+				sizes="(min-width: 1024px) 40vw, 92vw"
+				class="w-full rounded-[0.875rem] object-cover"
+				loading="eager"
+			/>
+		)
+	}
+
+	{
+		hasBlocks(page.problem?.body) && (
+			<LandingSection id="problem" heading={page.problem?.heading || SECTION_HEADINGS.problem}>
+				<div class="max-w-240"><PortableText blocks={page.problem.body as PortableBlock[]} /></div>
+			</LandingSection>
+		)
+	}
+
+	{
+		steps.length > 0 && (
+			<LandingSection id="how-it-works" heading={page.howItWorks?.heading || SECTION_HEADINGS.howItWorks} intro={page.howItWorks?.intro}>
+				<StepList steps={steps} />
+			</LandingSection>
+		)
+	}
+
+	{
+		io && (
+			<LandingSection id="inputs-outputs" heading={page.inputsOutputs?.heading || SECTION_HEADINGS.inputsOutputs} intro={page.inputsOutputs?.intro}>
+				<DataTable caption="Inputs and outputs" {...io} />
+			</LandingSection>
+		)
+	}
+
+	{
+		definitions.length > 0 && (
+			<LandingSection id="definitions" heading={page.definitions?.heading || SECTION_HEADINGS.definitions} intro={page.definitions?.intro}>
+				<CardGrid cards={definitions} />
+			</LandingSection>
+		)
+	}
+
+	<LandingSection id="data" heading={DATA_CAVEATS.heading}>
+		<div class="max-w-240"><PointList points={DATA_CAVEATS.points} /></div>
+	</LandingSection>
+
+	{
+		useCases.length > 0 && (
+			<LandingSection id="use-cases" heading={page.useCases?.heading || SECTION_HEADINGS.useCases} intro={page.useCases?.intro}>
+				<CardGrid cards={useCases} />
+			</LandingSection>
+		)
+	}
+
+	<LandingSection id="workflow" heading={SECTION_HEADINGS.relatedWorkflow}>
+		<StepList steps={WORKFLOW_STEPS} current={page.workflowStep} compact />
+	</LandingSection>
+
+	{
+		hasBlocks(page.scope?.body) && (
+			<LandingSection id="scope" heading={page.scope?.heading || SECTION_HEADINGS.scope}>
+				<div class="max-w-240"><PortableText blocks={page.scope.body as PortableBlock[]} /></div>
+			</LandingSection>
+		)
+	}
+</LandingPage>

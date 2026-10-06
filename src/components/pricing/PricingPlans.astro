@@ -51,6 +51,14 @@ import {
   formatAmount,
 } from "../../scripts/pricing-page/pricingModel";
 
+interface Props {
+  /** Inside a pricing guide: the guide owns the H1 and the hero's spacing. */
+  embedded?: boolean;
+}
+
+const { embedded = false } = Astro.props;
+const Heading = embedded ? "h2" : "h1";
+
 const tiersJson = JSON.stringify(PRICING_TIERS);
 const stops = stopPositions();
 
@@ -72,7 +80,10 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
 ---
 
 <section
-  class="relative overflow-hidden pt-26 pb-12 lg:pt-50 lg:pb-32"
+  class:list={[
+    "relative overflow-hidden",
+    embedded ? "py-10 lg:py-16" : "pt-26 pb-12 lg:pt-50 lg:pb-32",
+  ]}
   aria-labelledby="pricing-heading"
   data-plan-panel
   data-cta-location="pricing_plans"
@@ -87,14 +98,14 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
   />
 
   {/* ── Heading ───────────────────────────────────────────────────── */}
-  <h1
+  <Heading
     id="pricing-heading"
     class="relative mx-auto max-w-225 px-6 text-center text-9xl capitalize leading-[1.1] max-lg:text-4xl max-md:text-[1.875rem] max-md:leading-[1.2] max-md:tracking-[-0.0375rem] lg:mx-auto"
   >
     <span class="block text-white">{PRICING_HEADING.lead}</span><span
       class="block text-brand-primary">{PRICING_HEADING.accent}</span
     >
-  </h1>
+  </Heading>
   <p
     class="relative mt-1.25 text-center text-[1rem] capitalize text-white lg:text-[1.125rem]"
   >

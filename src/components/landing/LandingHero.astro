@@ -1,0 +1,175 @@
+---
+/**
+ * Breadcrumb, freshness line, H1, the direct answer and proof chips. The `aside` slot takes
+ * the right-hand column (a screenshot or the platform search mock); without it the copy
+ * spans the card.
+ */
+import Button from "../common/Button.astro";
+import Icon from "../app/common/Icon.astro";
+import PlatformIcon from "../app/common/PlatformIcon.astro";
+import { LIVE_PLATFORMS, type LandingIconName } from "../../data/landing";
+
+interface Crumb {
+	label: string;
+	href?: string;
+}
+
+interface Props {
+	crumbs: Crumb[];
+	eyebrow: string;
+	title: string;
+	answer: string;
+	/** A second line under the answer — the feature template's "what it does not do". */
+	boundary?: string;
+	chips: { label: string; icon?: LandingIconName; platforms?: true }[];
+	ctaLabel: string;
+	ctaHref: string;
+	secondary?: { label: string; href: string };
+	reviewedLabel?: string;
+	reviewed?: string;
+	reviewedIso?: string;
+	methodology?: { label: string; href: string };
+}
+
+const {
+	crumbs,
+	eyebrow,
+	title,
+	answer,
+	boundary,
+	chips,
+	ctaLabel,
+	ctaHref,
+	secondary,
+	reviewedLabel,
+	reviewed,
+	reviewedIso,
+	methodology,
+} = Astro.props;
+
+const hasAside = Astro.slots.has("aside");
+---
+
+<section class="relative" aria-labelledby="landing-title">
+	<div
+		class="pointer-events-none absolute inset-0 bg-[linear-gradient(179.95deg,#11092B_0%,#6838FF_5.85%,#010101_99.94%)]"
+		aria-hidden="true"
+	>
+	</div>
+
+	<div class="relative mx-auto max-w-410.75 px-4 pt-26 pb-6 sm:px-6 lg:px-25 lg:pt-44 lg:pb-10">
+		<nav aria-label="Breadcrumb" class="mb-5 px-1 lg:mb-7">
+			<ol class="flex flex-wrap items-center gap-x-2 gap-y-1 text-[0.75rem] leading-none text-white/50 lg:text-[0.875rem]">
+				{
+					crumbs.map((crumb, i) => (
+						<li class="flex items-center gap-2">
+							{i > 0 && <span aria-hidden="true">/</span>}
+							{crumb.href ? (
+								<a href={crumb.href} class="transition-colors duration-300 hover:text-brand-primary">
+									{crumb.label}
+								</a>
+							) : (
+								<span aria-current="page" class="text-white/80">
+									{crumb.label}
+								</span>
+							)}
+						</li>
+					))
+				}
+			</ol>
+		</nav>
+
+		<div
+			class:list={[
+				"relative rounded-[1.25rem] border border-white/15 bg-[#0a071885] px-5 py-8 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.14),0_24px_70px_-12px_rgba(0,0,0,0.55)] backdrop-blur-md sm:px-8 lg:px-12 lg:py-14",
+				hasAside && "lg:grid lg:grid-cols-[1fr_1fr] lg:items-center lg:gap-12",
+			]}
+			data-reveal
+			data-reveal-stagger="0.1"
+		>
+			<div class="min-w-0">
+				<span class="inline-block rounded-full border border-brand-primary/40 bg-surface-header px-4 py-2 text-[0.6rem] leading-none tracking-[0.14em] uppercase text-brand-primary lg:text-[0.65rem]">
+					{eyebrow}
+				</span>
+
+				<h1
+					id="landing-title"
+					class="mt-6 max-w-260 text-[1.875rem] leading-[1.1] text-white lg:mt-8 lg:text-7xl"
+				>
+					{title}
+				</h1>
+
+				<p class="mt-5 max-w-200 text-[0.9375rem] leading-[1.6] text-white/70 lg:mt-6 lg:text-[1.1875rem]">
+					{answer}
+				</p>
+
+				{
+					boundary && (
+						<p class="mt-3 max-w-200 text-[0.8125rem] leading-[1.6] text-white/45 lg:text-[0.9375rem]">
+							{boundary}
+						</p>
+					)
+				}
+
+				<ul class="mt-6 flex flex-wrap gap-2 lg:mt-8 lg:gap-3" aria-label="At a glance">
+					{
+						chips.map((chip) => (
+							<li class="flex items-center gap-2 rounded-full border border-white/15 bg-white/5 py-1.5 pr-3.5 pl-1.5 text-[0.75rem] leading-none text-white/80 lg:pr-4 lg:text-[0.875rem]">
+								{chip.platforms ? (
+									<span class="flex -space-x-1">
+										{LIVE_PLATFORMS.map((platform) => (
+											<PlatformIcon platform={platform} tile="1.375rem" glyph="0.75rem" radius="9999px" class="ring-2 ring-[#1a1235]" />
+										))}
+									</span>
+								) : (
+									chip.icon && (
+										<span class="grid h-5.5 w-5.5 place-items-center rounded-full bg-brand-primary/15 text-brand-primary">
+											<Icon name={chip.icon} size="0.75rem" />
+										</span>
+									)
+								)}
+								{chip.label}
+							</li>
+						))
+					}
+				</ul>
+
+				<div class="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center lg:mt-10 lg:gap-5">
+					<Button href={ctaHref} newTab>{ctaLabel}</Button>
+					{
+						secondary && (
+							<a
+								href={secondary.href}
+								class="text-[0.875rem] text-white/70 underline-offset-4 transition-colors duration-300 hover:text-brand-primary hover:underline max-sm:text-center lg:text-[1rem]"
+							>
+								{secondary.label}
+							</a>
+						)
+					}
+				</div>
+
+				{
+					reviewed && (
+						<p class="mt-8 border-t border-white/10 pt-5 text-[0.75rem] leading-[1.5] text-white/45 lg:text-[0.875rem]">
+							{reviewedLabel} <time datetime={reviewedIso}>{reviewed}</time>
+							{methodology && (
+								<>
+									{" · "}
+									<a href={methodology.href} class="text-white/70 underline underline-offset-4 hover:text-brand-primary">
+										{methodology.label}
+									</a>
+								</>
+							)}
+						</p>
+					)
+				}
+			</div>
+
+			{hasAside && <div class="mt-8 min-w-0 lg:mt-0"><slot name="aside" /></div>}
+		</div>
+	</div>
+</section>
+
+<script>
+	import "../../scripts/reveals";
+</script>

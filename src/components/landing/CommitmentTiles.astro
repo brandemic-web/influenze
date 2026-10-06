@@ -1,0 +1,80 @@
+---
+/**
+ * Pricing & commitment as tiles — one per term, both sides on it — under a strip of the
+ * live per-action credit costs (the numbers /pricing prints), so the cost model is seen,
+ * not read. Takes a three-column table section.
+ */
+import Icon from "../app/common/Icon.astro";
+import LandingIcon from "./LandingIcon.astro";
+import AppVignette from "./AppVignette.astro";
+import { CREDIT_COSTS } from "../../data/pricing";
+import { COMMITMENT_ICONS, CREDIT_STRIP_LABEL, LANDING_CTA, iconFor } from "../../data/landing";
+
+interface Props {
+	rows: { cells: string[] }[];
+	ours: string;
+	theirs: string;
+	note?: string;
+}
+
+const { rows, ours, theirs, note } = Astro.props;
+---
+
+<div class="flex flex-col gap-5 lg:gap-6">
+	<div class="flex flex-col gap-3 rounded-[1.25rem] border border-brand-primary/25 bg-[linear-gradient(120deg,rgba(58,255,152,0.08),rgba(104,56,255,0.12))] p-5 lg:flex-row lg:items-center lg:justify-between lg:p-7">
+		<p class="flex items-center gap-2.5 text-[0.875rem] font-semibold text-white lg:text-[1rem]">
+			<Icon name="coins" size="1.125rem" class="text-brand-primary" />
+			{CREDIT_STRIP_LABEL}
+			<span class="font-normal text-white/50">· {LANDING_CTA.signupNote}</span>
+		</p>
+		<ul class="flex flex-wrap gap-2" data-pop-group>
+			{
+				CREDIT_COSTS.map((action) => (
+					<li class="flex items-center gap-2 rounded-full border border-white/12 bg-wf-card py-1.5 pr-3.5 pl-1.5 text-[0.75rem] text-white/80 lg:text-[0.875rem]" data-pop>
+						<span class="grid h-6 min-w-6 place-items-center rounded-full bg-brand-primary px-1.5 text-[0.75rem] font-semibold text-button-text tabular-nums">
+							<span data-count-to={action.credits}>{action.credits}</span>
+						</span>
+						{action.label}
+					</li>
+				))
+			}
+		</ul>
+	</div>
+
+	<div class="grid grid-cols-1 gap-4 lg:grid-cols-[2fr_3fr] lg:gap-5">
+	<AppVignette kind="credits" class="self-start" />
+	<ul class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:gap-5">
+		{
+			rows.map(({ cells: [term = "", us = "", them = ""] }) => (
+				<li class="flex gap-4 rounded-[1.25rem] border border-white/10 bg-[#0a071885] p-5 transition-transform duration-300 hover:-translate-y-1 motion-reduce:hover:translate-y-0 lg:p-6" data-reveal-item>
+					<LandingIcon icon={{ name: iconFor(term, COMMITMENT_ICONS, "coins") }} />
+					<div class="min-w-0">
+						<h3 class="text-[1rem] font-semibold text-white lg:text-[1.125rem]">{term}</h3>
+						<dl class="mt-3 grid gap-2 text-[0.8125rem] leading-[1.45] lg:text-[0.9375rem]">
+							<div class="flex gap-2">
+								<dt class="sr-only">{ours}</dt>
+								<Icon name="check" size="1rem" class="mt-0.5 text-brand-primary" />
+								<dd class="text-white">
+									<span class="text-brand-primary">{ours}</span> · {us}
+								</dd>
+							</div>
+							<div class="flex gap-2">
+								<dt class="sr-only">{theirs}</dt>
+								<Icon name="info" size="1rem" class="mt-0.5 text-ui-lilac" />
+								<dd class="text-white/60">
+									<span class="text-ui-lilac">{theirs}</span> · {them}
+								</dd>
+							</div>
+						</dl>
+					</div>
+				</li>
+			))
+		}
+	</ul>
+	</div>
+	{note && <p class="text-[0.8125rem] leading-[1.6] text-white/45 lg:text-[0.9375rem]">{note}</p>}
+</div>
+
+<script>
+	import "../../scripts/landing-page/visuals";
+</script>

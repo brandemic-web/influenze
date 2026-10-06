@@ -1,0 +1,87 @@
+---
+/**
+ * The frame all six templates share: Layout, the hero, the template's own sections (default
+ * slot), then related links, FAQs and the closing CTA — the order every playbook doc ends on.
+ */
+import Layout from "../../layouts/Layout.astro";
+import LandingHero from "./LandingHero.astro";
+import LandingSection from "./LandingSection.astro";
+import LinkGrid from "./LinkGrid.astro";
+import BlogFaq from "../blog/BlogFaq.astro";
+import BlogCta from "../blog/BlogCta.astro";
+import { REVIEWED_LABEL, SECTION_HEADINGS, type LandingType } from "../../data/landing";
+import { ctaFrom, faqItems, heroFrom, landingSchema, relatedLinks } from "../../lib/landing-source";
+import { parseStructuredDataOverride } from "../../sanity/lib/customSchema";
+import type { LandingPageDoc } from "../../sanity/lib/landingQueries";
+
+interface Props {
+	page: LandingPageDoc;
+	type: LandingType;
+	/** Extra JSON-LD nodes beyond the breadcrumb and FAQ every template gets. */
+	schema?: Record<string, unknown>[];
+	secondary?: { label: string; href: string };
+	methodology?: { label: string; href: string };
+	boundary?: string;
+}
+
+const { page, type, schema = [], secondary, methodology, boundary } = Astro.props;
+
+const hero = heroFrom(page, type);
+const faqs = faqItems(page);
+const links = relatedLinks(page.related);
+const cta = ctaFrom(page, type);
+const site = Astro.site ?? new URL(Astro.url.origin);
+const heroProps = { ...hero, boundary, secondary, reviewedLabel: REVIEWED_LABEL, methodology };
+---
+
+<Layout
+	title={page.seo?.title || `${page.title} — Influenze.ai`}
+	description={page.seo?.description || page.answer}
+	noindex={page.seo?.noindex ?? false}
+	canonicalUrl={page.seo?.canonicalUrl}
+	structuredDataOverride={parseStructuredDataOverride(page.seo?.customSchema)}
+	scripts={page.scripts}
+	dateModified={page.reviewedAt}
+	schema={[...landingSchema(page, type, site), ...schema]}
+	ctaButtonLabel="Sign Up"
+>
+	<main class="bg-background-primary">
+		{
+			/* Forwarding an empty slot still counts as filled, so only forward a real one. */
+			Astro.slots.has("aside") ? (
+				<LandingHero {...heroProps}>
+					<slot name="aside" slot="aside" />
+				</LandingHero>
+			) : (
+				<LandingHero {...heroProps} />
+			)
+		}
+
+		<slot />
+
+		{
+			links.length > 0 && (
+				<LandingSection id="related" heading={page.related?.heading || SECTION_HEADINGS.related}>
+					<LinkGrid links={links} />
+				</LandingSection>
+			)
+		}
+
+		{
+			faqs.length > 0 && (
+				<div class="pt-10 lg:pt-16">
+					<BlogFaq
+						heading={page.faq?.heading || SECTION_HEADINGS.faqs}
+						subcopy={page.faq?.intro ?? ""}
+						faqs={faqs}
+						align="page"
+					/>
+				</div>
+			)
+		}
+
+		<div class="mx-auto max-w-410.75 px-6 lg:px-25">
+			<BlogCta cta={cta} />
+		</div>
+	</main>
+</Layout>

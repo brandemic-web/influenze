@@ -1,0 +1,113 @@
+---
+/**
+ * The comparison hero's graphic, drawn with the hero mockup's own parts: the app's search
+ * bar, platform tiles, credits pill and creator portraits. Markup is the finished state;
+ * scripts/landing-page/visuals.ts types the search, counts the figures and drops the faces in.
+ */
+import Icon from "../app/common/Icon.astro";
+import PlatformIcon from "../app/common/PlatformIcon.astro";
+import CreatorAvatar from "../app/common/CreatorAvatar.astro";
+import logo from "../../assets/images/common/logos_and_icons/influenze_logo_nav.webp";
+import { COMPARISON_VISUAL as V, LIVE_PLATFORMS, PLATFORM_LABELS, STARTER_CREDITS } from "../../data/landing";
+
+interface Props {
+	competitorName: string;
+}
+
+const { competitorName } = Astro.props;
+---
+
+<div class="relative" data-visual>
+	{/* The glow the hero mockup sits on. */}
+	<div class="pointer-events-none absolute -inset-6 rounded-[2rem] bg-[radial-gradient(60%_60%_at_50%_40%,rgba(104,56,255,0.45),transparent_70%)]" aria-hidden="true"></div>
+
+	<div class="relative overflow-hidden rounded-[1.25rem] border border-white/12 bg-wf-card p-4 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7)] lg:p-6">
+		{/* Who's in the ring. */}
+		<div class="flex items-center justify-between gap-3" data-pop-group>
+			<span class="flex shrink items-center rounded-[0.875rem] border border-brand-primary/30 bg-brand-primary/8 px-2.5 py-2 sm:px-3 sm:py-2.5" data-pop>
+				<img src={logo.src} alt="Influenze.ai" class="h-4.5 w-auto sm:h-6 lg:h-7" />
+			</span>
+			<span class="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-gradient-primary text-[0.625rem] font-semibold uppercase text-white sm:h-9 sm:w-9 sm:text-[0.75rem] lg:h-10 lg:w-10" data-pop>{V.vs}</span>
+			<span class="flex min-w-0 items-center gap-2 rounded-[0.875rem] border border-white/10 bg-white/5 px-2.5 py-2 sm:gap-2.5 sm:px-3 sm:py-2.5" data-pop>
+				<span class="hidden h-6 w-6 shrink-0 place-items-center rounded-md bg-wf-panel text-[0.75rem] font-semibold text-ui-lilac sm:grid lg:h-7 lg:w-7" aria-hidden="true">{competitorName.slice(0, 1)}</span>
+				<span class="truncate text-[0.8125rem] font-semibold text-white sm:text-[0.875rem] lg:text-[1rem]">{competitorName}</span>
+			</span>
+		</div>
+
+		{/* The app's search bar, with the brief being typed into it. */}
+		<div class="mt-5 flex items-center gap-2.5 rounded-[0.625rem] border border-wf-surface-border bg-wf-surface px-3.5 py-3">
+			<Icon name="search" size="1rem" class="text-ui-muted" />
+			<span class="min-w-0 truncate text-[0.8125rem] text-white lg:text-[0.9375rem]">
+				<span data-type-text aria-label={V.searchQuery}>{V.searchQuery}</span><span class="ml-0.5 inline-block h-[1em] w-px translate-y-0.5 animate-pulse bg-brand-primary" aria-hidden="true"></span>
+			</span>
+			<Icon name="parameterMagic" size="1rem" class="ml-auto text-brand-primary" />
+		</div>
+
+		{/* Platform filter, Instagram picked — as the hero's first beat leaves it. */}
+		<div class="mt-3 flex flex-wrap gap-2" data-pop-group>
+			{
+				LIVE_PLATFORMS.map((platform, i) => (
+					<span
+						class:list={[
+							"flex items-center gap-2 rounded-md border px-2.5 py-1.5 text-[0.75rem] text-white lg:text-[0.8125rem]",
+							i === 0 ? "border-purple-deep bg-purple-deep/40" : "border-white/10 bg-wf-panel",
+						]}
+						data-pop
+					>
+						<PlatformIcon platform={platform} tile="1.125rem" glyph="0.625rem" />
+						{PLATFORM_LABELS[platform]}
+					</span>
+				))
+			}
+		</div>
+
+		{/* The approved facts as stat tiles, counted up on scroll. */}
+		<div class="mt-4 grid grid-cols-2 gap-3" data-pop-group>
+			<div class="rounded-[0.625rem] border border-white/8 bg-wf-panel p-3.5 lg:p-4" data-pop>
+				<Icon name="usersRound" size="1.125rem" class="text-brand-primary" />
+				<p class="mt-2.5 text-[1.5rem] leading-none font-semibold text-white tabular-nums lg:text-[2rem]">
+					<span data-count-to={V.profiles.value}>{V.profiles.value}</span>{V.profiles.suffix}
+				</p>
+				<p class="mt-1.5 text-[0.6875rem] leading-[1.3] text-ui-muted lg:text-[0.8125rem]">{V.profiles.label}</p>
+			</div>
+			<div class="rounded-[0.625rem] border border-white/8 bg-wf-panel p-3.5 lg:p-4" data-pop>
+				<Icon name="hourglass" size="1.125rem" class="text-ui-lilac" />
+				<p class="mt-2.5 text-[1.5rem] leading-none font-semibold text-white tabular-nums lg:text-[2rem]">
+					<span data-count-to={V.refresh.value}>{V.refresh.value}</span>{V.refresh.suffix}
+				</p>
+				<p class="mt-1.5 text-[0.6875rem] leading-[1.3] text-ui-muted lg:text-[0.8125rem]">{V.refresh.label}</p>
+			</div>
+		</div>
+
+		{/* The outcome: faces landing in a shortlist, paid for in credits. */}
+		<div class="mt-4 flex items-center justify-between gap-3 rounded-[0.625rem] border border-white/8 bg-wf-surface p-3 lg:p-3.5">
+			<div class="flex min-w-0 items-center gap-3">
+				<span class="flex -space-x-2.5" data-pop-group>
+					{V.creators.map((handle) => (
+						<span data-pop><CreatorAvatar handle={handle} size="2rem" class="ring-2 ring-wf-surface" /></span>
+					))}
+				</span>
+				<span class="flex min-w-0 items-center gap-1.5 text-[0.75rem] text-white/80 lg:text-[0.875rem]">
+					<Icon name="share" size="0.875rem" class="shrink-0 text-ui-lilac" />
+					<span class="truncate">{V.shortlistLabel}</span>
+				</span>
+			</div>
+			<span class="flex shrink-0 items-center gap-1.5 rounded-full border border-brand-primary/40 bg-[#123524] px-3 py-1.5 text-[0.75rem] text-brand-primary lg:text-[0.8125rem]" data-float>
+				<Icon name="coins" size="0.875rem" />
+				{V.creditsLabel} <span class="tabular-nums" data-count-to={STARTER_CREDITS}>{STARTER_CREDITS}</span>
+			</span>
+		</div>
+	</div>
+
+	{/* Floating portraits around the frame, like the CTA band's. */}
+	<span class="absolute -top-5 -right-3 hidden lg:block" data-float aria-hidden="true">
+		<CreatorAvatar handle={V.creators[2]} size="3.25rem" radius="0.875rem" class="rotate-6 shadow-[0_12px_30px_rgba(0,0,0,0.5)] ring-2 ring-white/20" />
+	</span>
+	<span class="absolute -bottom-6 -left-5 hidden lg:block" data-float aria-hidden="true">
+		<CreatorAvatar handle={V.creators[1]} size="2.75rem" radius="0.75rem" class="-rotate-6 shadow-[0_12px_30px_rgba(0,0,0,0.5)] ring-2 ring-white/20" />
+	</span>
+</div>
+
+<script>
+	import "../../scripts/landing-page/visuals";
+</script>

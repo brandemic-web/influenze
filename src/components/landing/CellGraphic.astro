@@ -1,0 +1,50 @@
+---
+/** The drawn half of a head-to-head cell: the fact the text states, as the app shows it. */
+import Icon from "../app/common/Icon.astro";
+import PlatformIcon from "../app/common/PlatformIcon.astro";
+import { CREDIT_COSTS } from "../../data/pricing";
+import { COMPARISON_VISUAL, LIVE_PLATFORMS, PLATFORM_LABELS } from "../../data/landing";
+
+interface Props {
+	kind: "platforms" | "credits" | "database";
+}
+
+const { kind } = Astro.props;
+---
+
+<div class="mt-2.5 flex flex-wrap gap-1.5" aria-hidden="true" data-pop-group>
+	{
+		kind === "platforms" &&
+			LIVE_PLATFORMS.map((platform) => (
+				<span class="flex items-center gap-1.5 rounded-md border border-white/10 bg-wf-panel px-2 py-1 text-[0.6875rem] text-white" data-pop>
+					<PlatformIcon platform={platform} tile="0.9375rem" glyph="0.5rem" />
+					{PLATFORM_LABELS[platform]}
+				</span>
+			))
+	}
+	{
+		kind === "credits" &&
+			CREDIT_COSTS.map((action) => (
+				<span class="flex items-center gap-1.5 rounded-full border border-white/10 bg-wf-panel py-0.5 pr-2.5 pl-0.5 text-[0.6875rem] text-white/80" data-pop>
+					<span class="grid h-5 min-w-5 place-items-center rounded-full bg-brand-primary px-1 text-[0.625rem] font-semibold text-button-text tabular-nums">
+						{action.credits}
+					</span>
+					{action.label}
+				</span>
+			))
+	}
+	{
+		kind === "database" && (
+			<span class="flex items-center gap-2 rounded-[0.625rem] border border-brand-primary/30 bg-brand-primary/8 px-2.5 py-1.5" data-pop>
+				<Icon name="usersRound" size="0.875rem" class="text-brand-primary" />
+				<span class="text-[1rem] font-semibold text-white tabular-nums">
+					<span data-count-to={COMPARISON_VISUAL.profiles.value}>{COMPARISON_VISUAL.profiles.value}</span>{COMPARISON_VISUAL.profiles.suffix}
+				</span>
+			</span>
+		)
+	}
+</div>
+
+<script>
+	import "../../scripts/landing-page/visuals";
+</script>

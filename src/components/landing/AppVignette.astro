@@ -1,0 +1,304 @@
+---
+/**
+ * A small piece of the product, drawn with the hero mockup's own parts — its creators,
+ * figures, icons and palette — to stand beside a card or deep dive in place of more text.
+ * Every vignette ships in its finished state; scripts/landing-page/visuals.ts plays it in.
+ */
+import Icon from "../app/common/Icon.astro";
+import PlatformIcon from "../app/common/PlatformIcon.astro";
+import CreatorAvatar from "../app/common/CreatorAvatar.astro";
+import { CREDIT_COSTS } from "../../data/pricing";
+import {
+	LIVE_PLATFORMS,
+	PLATFORM_LABELS,
+	STARTER_CREDITS,
+	VIGNETTE_COPY as C,
+	WORKFLOW_STEPS,
+	type VignetteKind,
+} from "../../data/landing";
+import {
+	COMPARED_HANDLES,
+	CREATOR_LISTS,
+	LOOKALIKE_HANDLE,
+	MEDIA_KIT_STATS,
+	RESULT_CREATORS,
+	SHORTLIST_HANDLES,
+} from "../../data/workflowMockup";
+import { creditsFor } from "../../lib/landing-source";
+
+interface Props {
+	kind: VignetteKind;
+	class?: string;
+}
+
+const { kind, class: className = "" } = Astro.props;
+
+const creator = (handle: string) => RESULT_CREATORS.find((c) => c.handle === handle) ?? RESULT_CREATORS[0];
+const selwyn = RESULT_CREATORS[0];
+const stats = MEDIA_KIT_STATS.selwyn;
+const list = CREATOR_LISTS[0];
+const listFaces = [...new Set([...list.preview, ...SHORTLIST_HANDLES])].slice(0, 4);
+const orbit = RESULT_CREATORS.filter((c) => c.handle !== LOOKALIKE_HANDLE).slice(0, 6);
+const compared = COMPARED_HANDLES.map(creator);
+// Bars scale against the higher of the two, so the leader fills its track.
+const maxEngagement = Math.max(...compared.map((c) => parseFloat(c.engagement)));
+
+// The calculator's worked example, split by action so the meter shows where credits go.
+const example = { searches: 10, analytics: 8, contacts: 10 };
+const spend = CREDIT_COSTS.map((action) => ({
+	label: action.label,
+	credits:
+		action.credits *
+		{ search: example.searches, analytics: example.analytics, contact: example.contacts }[action.id],
+}));
+const spent = creditsFor(example);
+const segmentTone = ["bg-brand-primary", "bg-purple-deep", "bg-ui-lilac"];
+---
+
+<div
+	class:list={[
+		"relative overflow-hidden rounded-[0.875rem] border border-white/10 bg-wf-card p-4 shadow-[0_20px_50px_-20px_rgba(104,56,255,0.45)] lg:p-5",
+		className,
+	]}
+	aria-hidden="true"
+	data-vignette={kind}
+>
+	{
+		kind === "search" && (
+			<div class="flex flex-col gap-3" data-pop-group>
+				<div class="flex items-center gap-2.5 rounded-[0.625rem] border border-wf-surface-border bg-wf-surface px-3 py-2.5" data-pop>
+					<Icon name="search" size="0.9375rem" class="text-ui-muted" />
+					<span class="min-w-0 truncate text-[0.8125rem] text-white">
+						<span data-type-text>{C.searchQuery}</span>
+					</span>
+					<Icon name="parameterMagic" size="0.9375rem" class="ml-auto text-brand-primary" />
+				</div>
+				<div class="flex flex-wrap gap-1.5">
+					{LIVE_PLATFORMS.map((platform, i) => (
+						<span
+							class:list={[
+								"flex items-center gap-1.5 rounded-md border px-2 py-1 text-[0.6875rem] text-white",
+								i === 0 ? "border-purple-deep bg-purple-deep/40" : "border-white/10 bg-wf-panel",
+							]}
+							data-pop
+						>
+							<PlatformIcon platform={platform} tile="0.9375rem" glyph="0.5rem" />
+							{PLATFORM_LABELS[platform]}
+						</span>
+					))}
+				</div>
+				<ul class="flex flex-col gap-1.5">
+					{RESULT_CREATORS.slice(0, 3).map((c) => (
+						<li class="flex items-center gap-2.5 rounded-md bg-wf-panel px-2.5 py-1.5" data-pop>
+							<CreatorAvatar handle={c.handle} size="1.5rem" />
+							<span class="min-w-0 flex-1 truncate text-[0.75rem] text-white">{c.name}</span>
+							<span class="text-[0.6875rem] text-ui-muted tabular-nums">{c.followers}</span>
+							<span class="text-[0.6875rem] text-brand-primary tabular-nums">{c.engagement}</span>
+						</li>
+					))}
+				</ul>
+			</div>
+		)
+	}
+
+	{
+		kind === "lookalike" && (
+			<div class="relative mx-auto grid aspect-square w-full max-w-60 place-items-center">
+				<span class="absolute inset-[12%] rounded-full border border-dashed border-white/15" />
+				<span class="absolute inset-[30%] rounded-full border border-brand-primary/25" />
+				<div class="absolute inset-0" data-spin>
+					{orbit.map((c, i) => {
+						const angle = (i / orbit.length) * Math.PI * 2;
+						const x = 50 + 38 * Math.cos(angle);
+						const y = 50 + 38 * Math.sin(angle);
+						return (
+							<span class="absolute -translate-x-1/2 -translate-y-1/2" style={`left:${x}%;top:${y}%`} data-counter-spin>
+								<CreatorAvatar handle={c.handle} size="2.25rem" class="ring-2 ring-wf-card" />
+							</span>
+						);
+					})}
+				</div>
+				<div class="relative flex flex-col items-center gap-1.5">
+					<CreatorAvatar handle={LOOKALIKE_HANDLE} size="3.5rem" class="ring-2 ring-brand-primary" />
+					<span class="rounded-full bg-wf-panel px-2 py-0.5 text-[0.625rem] text-ui-muted">
+						{C.lookalikeLabel} <span class="text-brand-primary">@{LOOKALIKE_HANDLE}</span>
+					</span>
+				</div>
+			</div>
+		)
+	}
+
+	{
+		kind === "analytics" && (
+			<div class="flex flex-col gap-3">
+				<div class="flex items-center gap-3">
+					<CreatorAvatar handle={selwyn.handle} size="2.5rem" />
+					<div class="min-w-0">
+						<p class="truncate text-[0.875rem] font-semibold text-white">{selwyn.name}</p>
+						<p class="text-[0.6875rem] text-ui-muted">{stats.tier}</p>
+					</div>
+				</div>
+				<div class="grid grid-cols-3 gap-2" data-pop-group>
+					{[
+						{ label: C.engagementLabel, value: stats.engagement, accent: true },
+						{ label: C.followersLabel, value: stats.followers },
+						{ label: C.likesLabel, value: stats.likes },
+					].map((tile) => (
+						<div class="rounded-md bg-wf-panel px-2.5 py-2" data-pop>
+							<p class:list={["text-[0.9375rem] font-semibold tabular-nums", tile.accent ? "text-brand-primary" : "text-white"]}>
+								{tile.value}
+							</p>
+							<p class="mt-0.5 text-[0.625rem] text-ui-muted">{tile.label}</p>
+						</div>
+					))}
+				</div>
+				{/* The media kit's benchmark rail: where 5.62% sits on the tier's scale. */}
+				<div>
+					<div class="relative h-1.5 rounded-full bg-white/8">
+						<span class="absolute inset-y-0 left-0 origin-left rounded-full bg-linear-to-r from-purple-deep to-brand-primary" style={`width:${stats.marker}%`} data-draw="x" />
+					</div>
+					<div class="mt-1.5 flex justify-between text-[0.625rem] text-ui-muted tabular-nums">
+						<span>{stats.axis[0]}%</span>
+						<span>{stats.axis[1]}%</span>
+					</div>
+				</div>
+			</div>
+		)
+	}
+
+	{
+		kind === "compare" && (
+			<div class="grid grid-cols-2 gap-3">
+				{compared.map((c) => (
+					<div class="flex flex-col items-center gap-2 rounded-[0.625rem] bg-wf-panel p-3 text-center">
+						<CreatorAvatar handle={c.handle} size="2.75rem" />
+						<p class="w-full truncate text-[0.75rem] font-semibold text-white">{c.name}</p>
+						<p class="text-[0.625rem] text-ui-muted">{c.tierLabel} · {c.followers}</p>
+						<div class="mt-1 w-full">
+							<div class="h-1.5 rounded-full bg-white/8">
+								<span class="block h-full origin-left rounded-full bg-brand-primary" style={`width:${(parseFloat(c.engagement) / maxEngagement) * 100}%`} data-draw="x" />
+							</div>
+							<p class="mt-1 text-[0.6875rem] text-brand-primary tabular-nums">{c.engagement}</p>
+						</div>
+					</div>
+				))}
+			</div>
+		)
+	}
+
+	{
+		kind === "shortlist" && (
+			<div class="flex gap-4">
+				<div class="w-30 shrink-0 rounded-[0.875rem] bg-wf-panel p-2.5">
+					<div class="grid grid-cols-2 gap-1.5" data-pop-group>
+						{listFaces.map((handle) => (
+							<span class="block" data-pop>
+								<CreatorAvatar handle={handle} size="2.875rem" radius="0.625rem" />
+							</span>
+						))}
+					</div>
+					<p class="mt-2 text-[0.75rem] font-semibold text-white">{list.name}</p>
+					<p class="text-[0.5625rem] text-ui-muted">{list.updated}</p>
+				</div>
+				<div class="flex min-w-0 flex-1 flex-col justify-center gap-2.5">
+					<span class="flex w-fit items-center gap-1.5 rounded-full bg-purple-deep px-3 py-1.5 text-[0.6875rem] text-white" data-float>
+						<Icon name="share" size="0.75rem" />
+						{C.shareLabel}
+					</span>
+					<span class="flex items-center gap-1.5 text-[0.6875rem] text-brand-primary">
+						<Icon name="circleCheck" size="0.8125rem" />
+						{C.sharedLabel}
+					</span>
+					<div class="flex -space-x-2">
+						{SHORTLIST_HANDLES.map((handle) => (
+							<CreatorAvatar handle={handle} size="1.5rem" class="ring-2 ring-wf-card" />
+						))}
+					</div>
+				</div>
+			</div>
+		)
+	}
+
+	{
+		kind === "credits" && (
+			<div class="flex flex-col gap-3">
+				<div class="flex items-end justify-between">
+					<p class="text-[1.75rem] leading-none font-semibold text-white tabular-nums">
+						<span data-count-to={spent}>{spent}</span>
+					</p>
+					<span class="flex items-center gap-1.5 rounded-full border border-brand-primary/40 bg-[#123524] px-2.5 py-1 text-[0.6875rem] text-brand-primary">
+						<Icon name="coins" size="0.75rem" />
+						{C.creditsOf}
+					</span>
+				</div>
+				<div class="flex h-2.5 overflow-hidden rounded-full bg-white/8">
+					{spend.map((part, i) => (
+						<span
+							class:list={["h-full origin-left", segmentTone[i]]}
+							style={`width:${(part.credits / STARTER_CREDITS) * 100}%`}
+							data-draw="x"
+						/>
+					))}
+				</div>
+				<ul class="grid gap-1.5">
+					{spend.map((part, i) => (
+						<li class="flex items-center gap-2 text-[0.6875rem] text-white/70">
+							<span class:list={["h-2 w-2 rounded-full", segmentTone[i]]} />
+							<span class="flex-1">{part.label}</span>
+							<span class="tabular-nums text-white">{part.credits}</span>
+						</li>
+					))}
+				</ul>
+			</div>
+		)
+	}
+
+	{
+		kind === "steps" && (
+			<ol class="relative flex flex-col gap-2.5" data-pop-group>
+				<span class="absolute top-3 bottom-3 left-3.5 w-px origin-top bg-linear-to-b from-brand-primary to-purple-deep" data-draw="y" />
+				{WORKFLOW_STEPS.slice(0, 5).map((step) => (
+					<li class="relative flex items-center gap-3" data-pop>
+						<span class="grid h-7 w-7 shrink-0 place-items-center rounded-full border border-brand-primary/40 bg-wf-card text-brand-primary">
+							<Icon name={step.icon} size="0.8125rem" />
+						</span>
+						<span class="text-[0.75rem] text-white">{step.title}</span>
+					</li>
+				))}
+			</ol>
+		)
+	}
+
+	{
+		kind === "boundary" && (
+			<div class="grid gap-3 sm:grid-cols-[3fr_2fr]">
+				<div class="rounded-[0.625rem] border border-brand-primary/30 bg-brand-primary/6 p-3">
+					<p class="text-[0.625rem] tracking-[0.1em] uppercase text-brand-primary">{C.inside}</p>
+					<ul class="mt-2 flex flex-wrap gap-1.5" data-pop-group>
+						{WORKFLOW_STEPS.map((step) => (
+							<li class="flex items-center gap-1.5 rounded-md bg-wf-panel px-2 py-1 text-[0.6875rem] text-white" data-pop>
+								<Icon name={step.icon} size="0.75rem" class="text-brand-primary" />
+								{step.title}
+							</li>
+						))}
+					</ul>
+				</div>
+				<div class="rounded-[0.625rem] border border-dashed border-white/20 p-3">
+					<p class="text-[0.625rem] tracking-[0.1em] uppercase text-ui-muted">{C.outside}</p>
+					<ul class="mt-2 flex flex-wrap gap-1.5">
+						{C.outsideSteps.map((step) => (
+							<li class="flex items-center gap-1.5 rounded-md border border-dashed border-white/15 px-2 py-1 text-[0.6875rem] text-white/55">
+								<Icon name="externalLink" size="0.75rem" />
+								{step}
+							</li>
+						))}
+					</ul>
+				</div>
+			</div>
+		)
+	}
+</div>
+
+<script>
+	import "../../scripts/landing-page/visuals";
+</script>

@@ -1,0 +1,97 @@
+---
+/**
+ * Workflow coverage as a pipeline rather than a table: one node per step, the connector
+ * drawn on scroll, and each side's status as a pill. A real ordered list underneath, so the
+ * data still reads in order without the graphic. Takes a three-column table section.
+ */
+import Icon from "../app/common/Icon.astro";
+import { COVERAGE_STATUS, STEP_ICONS, iconFor } from "../../data/landing";
+
+interface Props {
+	rows: { cells: string[] }[];
+	ours: string;
+	theirs: string;
+	note?: string;
+}
+
+const { rows, ours, theirs, note } = Astro.props;
+
+function statusOf(value: string) {
+	const key = (Object.keys(COVERAGE_STATUS) as (keyof typeof COVERAGE_STATUS)[]).find((k) =>
+		COVERAGE_STATUS[k].match.test(value),
+	);
+	return key ?? "verify";
+}
+
+const steps = rows.map(({ cells: [step = "", us = "", them = ""] }) => ({
+	step,
+	icon: iconFor(step, STEP_ICONS, "circleCheck"),
+	sides: [
+		{ who: ours, value: us, status: statusOf(us), mine: true },
+		{ who: theirs, value: them, status: statusOf(them), mine: false },
+	],
+}));
+
+const pill = {
+	core: "border-brand-primary/40 bg-brand-primary/10 text-brand-primary",
+	outside: "border-white/10 bg-white/4 text-white/55",
+	verify: "border-ui-amber/30 bg-ui-amber/8 text-ui-amber",
+};
+---
+
+<div class="relative">
+	{/* The connector: horizontal from `lg`, vertical down the node column below it. */}
+	<span
+		class="absolute top-6 right-[8%] left-[8%] hidden h-0.5 origin-left bg-linear-to-r from-brand-primary via-purple-deep to-white/10 lg:block"
+		aria-hidden="true"
+		data-draw="x"
+	></span>
+	<span
+		class="absolute top-6 bottom-6 left-6 w-0.5 origin-top bg-linear-to-b from-brand-primary via-purple-deep to-white/10 lg:hidden"
+		aria-hidden="true"
+		data-draw="y"
+	></span>
+
+	<ol class="relative grid grid-cols-1 gap-6 lg:gap-4" style={`--steps:${steps.length}`} data-pop-group>
+		{
+			steps.map((step) => (
+				<li class="flex gap-4 lg:flex-col lg:items-center lg:gap-0 lg:text-center" data-pop>
+					<span class="relative z-1 grid h-12 w-12 shrink-0 place-items-center rounded-full border border-brand-primary/40 bg-wf-card text-brand-primary shadow-[0_0_0_6px_#010101] lg:h-12 lg:w-12">
+						<Icon name={step.icon} size="1.25rem" />
+					</span>
+					<div class="min-w-0 flex-1 lg:mt-4 lg:w-full">
+						<h3 class="text-[0.9375rem] font-semibold text-white lg:text-[1.0625rem]">{step.step}</h3>
+						<ul class="mt-2.5 flex flex-col gap-2 lg:items-center">
+							{step.sides.map((side) => (
+								<li
+									class:list={[
+										"flex max-w-full items-start gap-1.5 rounded-[0.625rem] border px-2.5 py-1.5 text-left text-[0.75rem] leading-[1.35] lg:text-[0.8125rem]",
+										pill[side.status],
+									]}
+								>
+									<Icon name={COVERAGE_STATUS[side.status].icon} size="0.8125rem" class="mt-px" />
+									<span>
+										<span class="font-semibold">{side.who}:</span> {side.value}
+									</span>
+								</li>
+							))}
+						</ul>
+					</div>
+				</li>
+			))
+		}
+	</ol>
+	{note && <p class="mt-6 text-[0.8125rem] leading-[1.6] text-white/45 lg:text-[0.9375rem]">{note}</p>}
+</div>
+
+<style>
+	@media (min-width: 1024px) {
+		ol {
+			grid-template-columns: repeat(var(--steps), minmax(0, 1fr));
+		}
+	}
+</style>
+
+<script>
+	import "../../scripts/landing-page/visuals";
+</script>

@@ -1,0 +1,97 @@
+---
+/** One platform's discovery page — Content Playbook doc 04. */
+import type { GetStaticPaths } from "astro";
+import LandingPage from "../../components/landing/LandingPage.astro";
+import LandingSection from "../../components/landing/LandingSection.astro";
+import CardGrid from "../../components/landing/CardGrid.astro";
+import StepList from "../../components/landing/StepList.astro";
+import PointList from "../../components/landing/PointList.astro";
+import FilterPanel from "../../components/landing/FilterPanel.astro";
+import LinkGrid from "../../components/landing/LinkGrid.astro";
+import PortableText from "../../components/blog/PortableText.astro";
+import { DATA_CAVEATS, PLATFORM_LABELS, SECTION_HEADINGS, WORKFLOW_STEPS, landingHref } from "../../data/landing";
+import { cardsOf, hasBlocks, landingPaths } from "../../lib/landing-source";
+import { getLandingList, getLandingPage } from "../../sanity/lib/landingQueries";
+import { getPerspectiveCookie } from "../../lib/draft-mode";
+import type { PortableBlock } from "../../lib/portable-text";
+
+export const getStaticPaths = (() => landingPaths("platformPage")) satisfies GetStaticPaths;
+
+const perspective = getPerspectiveCookie(Astro.cookies);
+const [{ data: page }, { data: siblings }] = await Promise.all([
+	getLandingPage("platformPage", Astro.params.slug ?? "", perspective),
+	getLandingList("platformPage", perspective),
+]);
+if (!page?.slug) return Astro.rewrite("/404");
+
+const platformLabel = page.platform ? PLATFORM_LABELS[page.platform] : undefined;
+const filters = (page.searchExample ?? []).flatMap((f) => (f.label && f.value ? [{ label: f.label, value: f.value }] : []));
+const searchBy = cardsOf(page.searchBy);
+const evaluate = cardsOf(page.evaluate);
+const useCases = cardsOf(page.useCases);
+const briefs = cardsOf(page.exampleBriefs);
+// The multi-platform block: every other published platform page, parents first.
+const others = (siblings ?? [])
+	.filter((other) => other.slug && other.slug !== page.slug && other.title)
+	.map((other) => ({ label: other.title!, href: landingHref("platformPage", other.slug!), description: other.summary }));
+---
+
+<LandingPage page={page} type="platformPage">
+	{filters.length > 0 && <FilterPanel slot="aside" title="New search" platform={platformLabel} filters={filters} />}
+
+	{
+		searchBy.length > 0 && (
+			<LandingSection id="search-by" heading={page.searchBy?.heading || SECTION_HEADINGS.searchBy} intro={page.searchBy?.intro}>
+				<CardGrid cards={searchBy} />
+			</LandingSection>
+		)
+	}
+
+	{
+		evaluate.length > 0 && (
+			<LandingSection id="evaluate" heading={page.evaluate?.heading || SECTION_HEADINGS.evaluate} intro={page.evaluate?.intro}>
+				<CardGrid cards={evaluate} />
+			</LandingSection>
+		)
+	}
+
+	<LandingSection id="workflow" heading={SECTION_HEADINGS.workflow}>
+		<StepList steps={WORKFLOW_STEPS} />
+	</LandingSection>
+
+	{
+		useCases.length > 0 && (
+			<LandingSection id="use-cases" heading={page.useCases?.heading || SECTION_HEADINGS.useCases} intro={page.useCases?.intro}>
+				<CardGrid cards={useCases} />
+			</LandingSection>
+		)
+	}
+
+	{
+		briefs.length > 0 && (
+			<LandingSection id="briefs" heading={page.exampleBriefs?.heading || SECTION_HEADINGS.exampleBriefs} intro={page.exampleBriefs?.intro}>
+				<CardGrid cards={briefs} />
+			</LandingSection>
+		)
+	}
+
+	{
+		hasBlocks(page.selectionGuide?.body) && (
+			<LandingSection id="selection-guide" heading={page.selectionGuide?.heading || SECTION_HEADINGS.selectionGuide}>
+				<div class="max-w-240"><PortableText blocks={page.selectionGuide.body as PortableBlock[]} /></div>
+			</LandingSection>
+		)
+	}
+
+	{
+		others.length > 0 && (
+			<LandingSection id="other-platforms" heading={SECTION_HEADINGS.otherPlatforms}>
+				<LinkGrid links={others} />
+			</LandingSection>
+		)
+	}
+
+	<LandingSection id="freshness" heading={DATA_CAVEATS.heading}>
+		<div class="max-w-240"><PointList points={DATA_CAVEATS.points} /></div>
+	</LandingSection>
+</LandingPage>
