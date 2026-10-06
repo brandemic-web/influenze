@@ -37,6 +37,9 @@ jobs:
           # production. deploy.yml sets neither, so live builds don't carry them.
           PUBLIC_DEV_GA_ID: G-5SZFPZGLPY
           PUBLIC_APP_URL: https://influenze-dev.web.app/login
+          # Fills landing templates from seed/landing-pages.ndjson while Sanity has
+          # none published, so the preview shows every layout. Never set in deploy.yml.
+          LANDING_SEED_PREVIEW: "true"
         run: npm run build
 
       - name: Upload version

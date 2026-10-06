@@ -1,4 +1,5 @@
 import groq from "groq";
+import type { QueryParams } from "@sanity/client";
 import { loadQuery } from "./loadQuery";
 import type { ScriptsDoc, SeoDoc } from "./queries";
 import type { SanityIcon } from "./icon";
@@ -209,14 +210,34 @@ export interface LandingPageDoc {
 	quoteLed?: LandingTableSectionDoc;
 }
 
+/**
+ * PR previews only: when Sanity has no landing page to show, answer from the draft examples
+ * in seed/landing-pages.ndjson, so a preview link shows every template before any content is
+ * published. Set by preview.yml alone — production builds never read the seed.
+ */
+const SEED_PREVIEW = import.meta.env.LANDING_SEED_PREVIEW === "true";
+
+async function fromSeed<T>(query: string, params: QueryParams): Promise<T> {
+	const [{ parse, evaluate }, { default: raw }] = await Promise.all([
+		import("groq-js"),
+		import("../../../seed/landing-pages.ndjson?raw"),
+	]);
+	// The seed's documents are drafts; read them as if published so references resolve.
+	const dataset = (raw as string)
+		.trim()
+		.split("\n")
+		.map((line) => JSON.parse(line))
+		.map((doc) => ({ ...doc, _id: String(doc._id).replace(/^drafts\./, "") }));
+	return (await (await evaluate(parse(query, { params }), { dataset, params })).get()) as T;
+}
+
 export const landingPageQuery = groq`*[_type == $type && slug.current == $slug][0]{ ${PAGE_PROJECTION} }`;
 
 export async function getLandingPage(type: LandingType, slug: string, perspectiveCookie?: string) {
-	return loadQuery<LandingPageDoc | null>({
-		query: landingPageQuery,
-		params: { type, slug },
-		perspectiveCookie,
-	});
+	const params = { type, slug };
+	const result = await loadQuery<LandingPageDoc | null>({ query: landingPageQuery, params, perspectiveCookie });
+	if (result.data || !SEED_PREVIEW) return result;
+	return { data: await fromSeed<LandingPageDoc | null>(landingPageQuery, params), sourceMap: undefined };
 }
 
 /** A card per published page, for hubs, getStaticPaths and the platform cross-links. */
@@ -239,5 +260,8 @@ export const landingListQuery = groq`*[_type == $type && defined(slug.current)] 
 }`;
 
 export async function getLandingList(type: LandingType, perspectiveCookie?: string) {
-	return loadQuery<LandingCardSummaryDoc[]>({ query: landingListQuery, params: { type }, perspectiveCookie });
+	const params = { type };
+	const result = await loadQuery<LandingCardSummaryDoc[]>({ query: landingListQuery, params, perspectiveCookie });
+	if (result.data?.length || !SEED_PREVIEW) return result;
+	return { data: await fromSeed<LandingCardSummaryDoc[]>(landingListQuery, params), sourceMap: undefined };
 }
