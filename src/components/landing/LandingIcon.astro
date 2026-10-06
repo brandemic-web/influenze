@@ -1,0 +1,36 @@
+---
+/**
+ * A card's icon in a tinted tile — the hero mockup's own glyphs (app/common/Icon), the way
+ * the app's empty-state cards draw them. An uploaded icon renders as an image instead.
+ */
+import Icon from "../app/common/Icon.astro";
+import type { LandingIconRef } from "../../lib/landing-source";
+
+interface Props {
+	icon: LandingIconRef;
+	/** `accent` for Influenze.ai's side, `muted` for the other. */
+	tone?: "accent" | "muted";
+	size?: "sm" | "md" | "lg";
+	class?: string;
+}
+
+const { icon, tone = "accent", size = "md", class: className = "" } = Astro.props;
+
+const box = { sm: "h-7 w-7 rounded-md", md: "h-10 w-10 rounded-[0.625rem] lg:h-12 lg:w-12", lg: "h-14 w-14 rounded-[0.875rem] lg:h-16 lg:w-16" }[size];
+const glyph = { sm: "0.875rem", md: "1.25rem", lg: "1.75rem" }[size];
+---
+
+<span
+	class:list={[
+		"inline-grid shrink-0 place-items-center border",
+		box,
+		tone === "accent"
+			? "border-brand-primary/25 bg-brand-primary/10 text-brand-primary"
+			: "border-white/10 bg-white/5 text-ui-lilac",
+		className,
+	]}
+	aria-hidden="true"
+	data-icon-tile
+>
+	{"name" in icon ? <Icon name={icon.name} size={glyph} /> : <img src={icon.src} alt="" style={`width:${glyph};height:${glyph}`} loading="lazy" />}
+</span>

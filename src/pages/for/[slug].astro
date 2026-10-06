@@ -1,0 +1,87 @@
+---
+/** One ICP's landing page — Content Playbook doc 03. */
+import type { GetStaticPaths } from "astro";
+import LandingPage from "../../components/landing/LandingPage.astro";
+import LandingSection from "../../components/landing/LandingSection.astro";
+import CardGrid from "../../components/landing/CardGrid.astro";
+import DataTable from "../../components/landing/DataTable.astro";
+import StepList from "../../components/landing/StepList.astro";
+import FilterPanel from "../../components/landing/FilterPanel.astro";
+import CreditScenarios from "../../components/landing/CreditScenarios.astro";
+import { BEFORE_AFTER, PRODUCT_BOUNDARY, SECTION_HEADINGS } from "../../data/landing";
+import { cardsOf, landingPaths, stepsOf, tableOf } from "../../lib/landing-source";
+import { getLandingPage } from "../../sanity/lib/landingQueries";
+import { getPerspectiveCookie } from "../../lib/draft-mode";
+
+export const getStaticPaths = (() => landingPaths("icpPage")) satisfies GetStaticPaths;
+
+const { data: page } = await getLandingPage("icpPage", Astro.params.slug ?? "", getPerspectiveCookie(Astro.cookies));
+if (!page?.slug) return Astro.rewrite("/404");
+
+const strip = stepsOf(page.workflowStrip);
+const problems = cardsOf(page.problems);
+// The standard five rows unless the page brings its own.
+const beforeAfter = tableOf(page.beforeAfter) ?? {
+	columns: BEFORE_AFTER.columns,
+	rows: BEFORE_AFTER.rows.map((cells) => ({ cells })),
+	note: undefined,
+};
+const capabilities = cardsOf(page.capabilities);
+const filters = (page.scenario?.filters ?? []).flatMap((f) => (f.label && f.value ? [{ label: f.label, value: f.value }] : []));
+const economics = page.economics?.filter((row) => row.title) ?? [];
+---
+
+<LandingPage page={page} type="icpPage">
+	{
+		strip.length > 0 && (
+			<LandingSection id="workflow" heading={page.workflowStrip?.heading || SECTION_HEADINGS.workflowStrip} intro={page.workflowStrip?.intro}>
+				<StepList steps={strip} compact />
+			</LandingSection>
+		)
+	}
+
+	{
+		problems.length > 0 && (
+			<LandingSection id="problems" heading={page.problems?.heading || SECTION_HEADINGS.problems} intro={page.problems?.intro}>
+				<CardGrid cards={problems} />
+			</LandingSection>
+		)
+	}
+
+	<LandingSection id="before-after" heading={page.beforeAfter?.heading || BEFORE_AFTER.heading} intro={page.beforeAfter?.intro}>
+		<DataTable caption={BEFORE_AFTER.heading} {...beforeAfter} highlight={1} />
+	</LandingSection>
+
+	{
+		capabilities.length > 0 && (
+			<LandingSection id="capabilities" heading={page.capabilities?.heading || SECTION_HEADINGS.capabilities} intro={page.capabilities?.intro}>
+				<CardGrid cards={capabilities} columns={capabilities.length === 4 ? 4 : 3} />
+			</LandingSection>
+		)
+	}
+
+	{
+		page.scenario?.brief && (
+			<LandingSection id="scenario" heading={page.scenario.heading || SECTION_HEADINGS.scenario}>
+				<div class="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:items-start lg:gap-12">
+					<blockquote class="border-l-2 border-brand-primary pl-5 text-[1.0625rem] leading-[1.6] text-white lg:pl-8 lg:text-[1.375rem]">
+						{page.scenario.brief}
+					</blockquote>
+					<FilterPanel title="Search" filters={filters} footer={page.scenario.outcome} />
+				</div>
+			</LandingSection>
+		)
+	}
+
+	<LandingSection id="boundary" heading={PRODUCT_BOUNDARY.heading}>
+		<p class="max-w-240 text-[0.9375rem] leading-[1.7] text-white/70 lg:text-[1.125rem]">{PRODUCT_BOUNDARY.body}</p>
+	</LandingSection>
+
+	{
+		economics.length > 0 && (
+			<LandingSection id="economics" heading={SECTION_HEADINGS.economics}>
+				<CreditScenarios scenarios={economics} />
+			</LandingSection>
+		)
+	}
+</LandingPage>

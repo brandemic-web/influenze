@@ -1,0 +1,36 @@
+---
+/** A plain list of statements: `check` for qualifiers and checklists, `cross` for a disqualifier. */
+interface Props {
+	points: string[];
+	variant?: "dot" | "check" | "cross";
+	columns?: 1 | 2;
+}
+
+const { points, variant = "dot", columns = 1 } = Astro.props;
+---
+
+<ul class:list={["grid gap-3 lg:gap-4", columns === 2 && "lg:grid-cols-2 lg:gap-x-10"]}>
+	{
+		points.map((point) => (
+			<li class="flex gap-3 text-[0.9375rem] leading-[1.6] text-white/75 lg:gap-4 lg:text-[1.0625rem]" data-reveal-item>
+				{variant === "dot" ? (
+					<span class="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-primary" aria-hidden="true" />
+				) : (
+					<svg
+						class:list={["mt-1 h-5 w-5 shrink-0", variant === "check" ? "text-brand-primary" : "text-[#FF7A7A]"]}
+						viewBox="0 0 20 20"
+						fill="none"
+						aria-hidden="true"
+					>
+						{variant === "check" ? (
+							<path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+						) : (
+							<path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+						)}
+					</svg>
+				)}
+				<span>{point}</span>
+			</li>
+		))
+	}
+</ul>

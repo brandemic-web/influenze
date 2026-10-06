@@ -1,0 +1,119 @@
+---
+/** Influenze.ai vs <competitor> — Content Playbook doc 01, sections in its canonical order. */
+import type { GetStaticPaths } from "astro";
+import LandingPage from "../../components/landing/LandingPage.astro";
+import LandingSection from "../../components/landing/LandingSection.astro";
+import CardGrid from "../../components/landing/CardGrid.astro";
+import DataTable from "../../components/landing/DataTable.astro";
+import DeepDives from "../../components/landing/DeepDives.astro";
+import ComparisonVisual from "../../components/landing/ComparisonVisual.astro";
+import CoverageTrack from "../../components/landing/CoverageTrack.astro";
+import CommitmentTiles from "../../components/landing/CommitmentTiles.astro";
+import LandingIcon from "../../components/landing/LandingIcon.astro";
+import AppVignette from "../../components/landing/AppVignette.astro";
+import PortableText from "../../components/blog/PortableText.astro";
+import { DEEP_DIVE_LABELS, JUMP_LABEL, METHODOLOGY_LABEL, SECTION_HEADINGS, SECTION_ICONS } from "../../data/landing";
+import { cardsOf, hasBlocks, headToHeadRows, landingPaths, tableOf } from "../../lib/landing-source";
+import { getLandingPage } from "../../sanity/lib/landingQueries";
+import { getPerspectiveCookie } from "../../lib/draft-mode";
+import type { PortableBlock } from "../../lib/portable-text";
+
+export const getStaticPaths = (() => landingPaths("comparisonPage")) satisfies GetStaticPaths;
+
+const { data: page } = await getLandingPage("comparisonPage", Astro.params.slug ?? "", getPerspectiveCookie(Astro.cookies));
+if (!page?.slug) return Astro.rewrite("/404");
+
+const competitorName = page.competitor?.name ?? "the competitor";
+// Influenze.ai's card is the accented one; either may be left empty.
+const verdict = [
+	...cardsOf({ cards: page.chooseInfluenze ? [page.chooseInfluenze] : [] }, SECTION_ICONS.chooseInfluenze).map((card) => ({
+		...card,
+		accent: true,
+	})),
+	...cardsOf({ cards: page.chooseCompetitor ? [page.chooseCompetitor] : [] }, SECTION_ICONS.chooseCompetitor).map(
+		(card) => ({ ...card, accent: false }),
+	),
+];
+const h2h = headToHeadRows(page.competitor);
+const coverage = tableOf(page.workflowCoverage);
+const scenarios = cardsOf(page.scenarios, SECTION_ICONS.scenarios, { autoVisual: true });
+const commitment = tableOf(page.pricingCommitment);
+---
+
+<LandingPage
+	page={page}
+	type="comparisonPage"
+	secondary={{ label: JUMP_LABEL, href: "#head-to-head" }}
+	methodology={page.methodologyUrl ? { label: METHODOLOGY_LABEL, href: page.methodologyUrl } : undefined}
+>
+	<ComparisonVisual slot="aside" competitorName={competitorName} />
+
+	{
+		verdict.length > 0 && (
+			<LandingSection id="verdict" heading={SECTION_HEADINGS.quickVerdict}>
+				<CardGrid cards={verdict} columns={2} />
+			</LandingSection>
+		)
+	}
+
+	<LandingSection id="head-to-head" heading={SECTION_HEADINGS.headToHead}>
+		<DataTable
+			caption={`Influenze.ai vs ${competitorName}`}
+			columns={["Metric", "Influenze.ai", competitorName]}
+			rows={h2h.map((row) => ({ cells: [row.metric, row.influenze, row.competitor], source: row.source, icon: row.icon, graphic: row.graphic }))}
+			highlight={1}
+		/>
+	</LandingSection>
+
+	{
+		page.deepDives?.length ? (
+			<DeepDives items={page.deepDives} competitorName={competitorName} labels={DEEP_DIVE_LABELS} heading={SECTION_HEADINGS.deepDives} />
+		) : null
+	}
+
+	{
+		coverage && (
+			<LandingSection id="workflow" heading={page.workflowCoverage?.heading || SECTION_HEADINGS.workflowCoverage} intro={page.workflowCoverage?.intro}>
+				{coverage.columns.length === 3 ? (
+					<CoverageTrack rows={coverage.rows} ours={coverage.columns[1]} theirs={coverage.columns[2]} note={coverage.note} />
+				) : (
+					<DataTable caption="Workflow coverage" {...coverage} highlight={1} />
+				)}
+			</LandingSection>
+		)
+	}
+
+	{
+		scenarios.length > 0 && (
+			<LandingSection id="scenarios" heading={page.scenarios?.heading || SECTION_HEADINGS.scenarios} intro={page.scenarios?.intro}>
+				<CardGrid cards={scenarios} />
+			</LandingSection>
+		)
+	}
+
+	{
+		commitment && (
+			<LandingSection id="pricing" heading={page.pricingCommitment?.heading || SECTION_HEADINGS.pricingCommitment} intro={page.pricingCommitment?.intro}>
+				{commitment.columns.length === 3 ? (
+					<CommitmentTiles rows={commitment.rows} ours={commitment.columns[1]} theirs={commitment.columns[2]} note={commitment.note} />
+				) : (
+					<DataTable caption="Pricing and commitment" {...commitment} highlight={1} />
+				)}
+			</LandingSection>
+		)
+	}
+
+	{
+		hasBlocks(page.limitations?.body) && (
+			<LandingSection id="limitations" heading={page.limitations?.heading || SECTION_HEADINGS.limitations}>
+				<div class="flex max-w-260 flex-col gap-5 rounded-[1.25rem] border border-ui-amber/20 bg-ui-amber/4 p-5 sm:flex-row lg:gap-8 lg:p-10">
+					<LandingIcon icon={{ name: "info" }} tone="muted" size="lg" class="text-ui-amber!" />
+					<div class="min-w-0 flex-1 [&>.blog-prose>*:first-child]:mt-0">
+						<PortableText blocks={page.limitations.body as PortableBlock[]} />
+						<AppVignette kind="boundary" class="mt-6 lg:mt-8" />
+					</div>
+				</div>
+			</LandingSection>
+		)
+	}
+</LandingPage>

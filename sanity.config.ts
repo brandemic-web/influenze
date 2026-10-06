@@ -4,6 +4,7 @@ import { visionTool } from "@sanity/vision";
 import { presentationTool, defineDocuments, defineLocations } from "sanity/presentation";
 import { schemaTypes } from "./src/sanity/schemaTypes";
 import { structure } from "./src/sanity/structure";
+import { LANDING_ROUTES, type LandingType } from "./src/data/landing";
 
 const projectId = import.meta.env.PUBLIC_SANITY_PROJECT_ID;
 const dataset = import.meta.env.PUBLIC_SANITY_DATASET ?? "production";
@@ -21,6 +22,9 @@ const DOCUMENT_ROUTES: Record<string, { title: string; href: string }> = {
 	blogIndex: { title: "Blog Index", href: "/blog" },
 	siteSettings: { title: "Site Settings", href: "/" },
 };
+
+// The six landing templates are many-document routes like the blog, matched on slug.
+const LANDING_TYPES = Object.keys(LANDING_ROUTES) as LandingType[];
 
 export default defineConfig({
 	name: "influenze",
@@ -52,6 +56,10 @@ export default defineConfig({
 						route: "/blog/:slug",
 						filter: `_type == "blogPost" && slug.current == $slug`,
 					},
+					...LANDING_TYPES.map((type) => ({
+						route: `${LANDING_ROUTES[type].prefix}/:slug`,
+						filter: `_type == "${type}" && slug.current == $slug`,
+					})),
 				]),
 				/*
 				 * A record rather than one function, because a blog post's location
@@ -79,6 +87,26 @@ export default defineConfig({
 									}
 								: null,
 					}),
+					...Object.fromEntries(
+						LANDING_TYPES.map((type) => [
+							type,
+							defineLocations({
+								select: { title: "title", slug: "slug.current" },
+								resolve: (doc) =>
+									doc?.slug
+										? {
+												locations: [
+													{
+														title: doc.title ?? "Untitled page",
+														href: `${LANDING_ROUTES[type].prefix}/${doc.slug}`,
+													},
+													{ title: LANDING_ROUTES[type].crumb, href: LANDING_ROUTES[type].hub },
+												],
+											}
+										: null,
+							}),
+						]),
+					),
 				},
 			},
 		}),

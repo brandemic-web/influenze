@@ -1,0 +1,111 @@
+---
+/** <Competitor> alternative — Content Playbook doc 02. Leads with the switching trigger. */
+import type { GetStaticPaths } from "astro";
+import LandingPage from "../../components/landing/LandingPage.astro";
+import LandingSection from "../../components/landing/LandingSection.astro";
+import CardGrid from "../../components/landing/CardGrid.astro";
+import DataTable from "../../components/landing/DataTable.astro";
+import PointList from "../../components/landing/PointList.astro";
+import StepList from "../../components/landing/StepList.astro";
+import PortableText from "../../components/blog/PortableText.astro";
+import { JUMP_LABEL, SECTION_HEADINGS, SWITCHING_CHECKLIST } from "../../data/landing";
+import { cardsOf, hasBlocks, headToHeadRows, landingPaths, stepsOf, tableOf } from "../../lib/landing-source";
+import { getLandingPage } from "../../sanity/lib/landingQueries";
+import { getPerspectiveCookie } from "../../lib/draft-mode";
+import type { PortableBlock } from "../../lib/portable-text";
+
+export const getStaticPaths = (() => landingPaths("alternativePage")) satisfies GetStaticPaths;
+
+const { data: page } = await getLandingPage("alternativePage", Astro.params.slug ?? "", getPerspectiveCookie(Astro.cookies));
+if (!page?.slug) return Astro.rewrite("/404");
+
+const competitorName = page.competitor?.name ?? "the competitor";
+const qualifiers = page.whoFor?.qualifiers?.filter(Boolean) ?? [];
+const whyLook = cardsOf(page.whyLook);
+const fit = tableOf(page.fitMatrix);
+const whyUs = cardsOf(page.whyInfluenze);
+const switching = stepsOf(page.switchingWorkflow);
+const useCases = cardsOf(page.useCases);
+---
+
+<LandingPage page={page} type="alternativePage" secondary={{ label: JUMP_LABEL, href: "#head-to-head" }}>
+	{
+		(qualifiers.length > 0 || page.whoFor?.disqualifier) && (
+			<LandingSection id="who-for" heading={page.whoFor?.heading || SECTION_HEADINGS.whoFor}>
+				<div class="flex max-w-240 flex-col gap-4">
+					<PointList points={qualifiers} variant="check" />
+					{page.whoFor?.disqualifier && <PointList points={[page.whoFor.disqualifier]} variant="cross" />}
+				</div>
+			</LandingSection>
+		)
+	}
+
+	{
+		whyLook.length > 0 && (
+			<LandingSection id="why-look" heading={page.whyLook?.heading || SECTION_HEADINGS.whyLook} intro={page.whyLook?.intro}>
+				<CardGrid cards={whyLook} />
+			</LandingSection>
+		)
+	}
+
+	{
+		fit && (
+			<LandingSection id="fit" heading={page.fitMatrix?.heading || SECTION_HEADINGS.fitMatrix} intro={page.fitMatrix?.intro}>
+				<DataTable caption="Quick fit matrix" {...fit} highlight={1} />
+			</LandingSection>
+		)
+	}
+
+	{
+		whyUs.length > 0 && (
+			<LandingSection id="why-influenze" heading={page.whyInfluenze?.heading || SECTION_HEADINGS.whyInfluenze} intro={page.whyInfluenze?.intro}>
+				<CardGrid cards={whyUs} />
+			</LandingSection>
+		)
+	}
+
+	<LandingSection id="head-to-head" heading={SECTION_HEADINGS.headToHead}>
+		<DataTable
+			caption={`Influenze.ai vs ${competitorName}`}
+			columns={["Metric", "Influenze.ai", competitorName]}
+			rows={headToHeadRows(page.competitor).map((row) => ({ cells: [row.metric, row.influenze, row.competitor], source: row.source }))}
+			highlight={1}
+		/>
+	</LandingSection>
+
+	{
+		switching.length > 0 && (
+			<LandingSection id="switching" heading={page.switchingWorkflow?.heading || SECTION_HEADINGS.switchingWorkflow} intro={page.switchingWorkflow?.intro}>
+				<StepList steps={switching} />
+			</LandingSection>
+		)
+	}
+
+	<LandingSection id="checklist" heading={SWITCHING_CHECKLIST.heading} intro={SWITCHING_CHECKLIST.intro}>
+		<div class="max-w-240"><PointList points={SWITCHING_CHECKLIST.questions} variant="check" /></div>
+	</LandingSection>
+
+	{
+		useCases.length > 0 && (
+			<LandingSection id="use-cases" heading={page.useCases?.heading || SECTION_HEADINGS.useCases} intro={page.useCases?.intro}>
+				<CardGrid cards={useCases} columns={useCases.length === 4 ? 4 : 3} />
+			</LandingSection>
+		)
+	}
+
+	{
+		hasBlocks(page.whenToKeep?.body) && (
+			<LandingSection id="when-to-keep" heading={page.whenToKeep?.heading || SECTION_HEADINGS.whenToKeep}>
+				<div class="max-w-240"><PortableText blocks={page.whenToKeep.body as PortableBlock[]} /></div>
+			</LandingSection>
+		)
+	}
+
+	{
+		hasBlocks(page.pricingCommitment?.body) && (
+			<LandingSection id="pricing" heading={page.pricingCommitment?.heading || SECTION_HEADINGS.pricingCommitment}>
+				<div class="max-w-240"><PortableText blocks={page.pricingCommitment.body as PortableBlock[]} /></div>
+			</LandingSection>
+		)
+	}
+</LandingPage>

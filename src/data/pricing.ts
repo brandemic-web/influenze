@@ -90,8 +90,13 @@ export const PLAN_FEATURES = [
 ];
 
 export interface CreditCost {
+	/** Stable key, so the landing pages' calculator can address an action by name. */
+	id: "search" | "analytics" | "contact";
 	label: string;
 	detail: string;
+	/** Credits one action costs. The pricing panel and every landing page read this. */
+	credits: number;
+	/** `credits` as the panel prints it. */
 	cost: string;
 	/** Explanation revealed on hover/focus of the row's info icon. */
 	tooltip: string;
@@ -100,24 +105,27 @@ export interface CreditCost {
 /** Per-action credit costs, shared across all tiers. */
 export const CREDIT_COSTS: CreditCost[] = [
 	{
+		id: "search",
 		label: "Direct search",
 		detail: "1 result",
-		cost: "5 Credits",
+		credits: 5,
 		tooltip:
 			"5 credits are deducted for each creator/account in the analyzed results.",
 	},
 	{
+		id: "analytics",
 		label: "Profile analytics unlock",
 		detail: "",
-		cost: "50 Credits",
+		credits: 50,
 		tooltip:
 			"50 credits are deducted for every creator/account media kit unlocked.",
 	},
 	{
+		id: "contact",
 		label: "Contact detail unlock",
 		detail: "",
-		cost: "5 Credits",
+		credits: 5,
 		tooltip:
 			"5 credits are deducted for every creator/account contact details unlocked.",
 	},
-];
+].map((action) => ({ ...action, cost: `${action.credits} Credits` }) as CreditCost);

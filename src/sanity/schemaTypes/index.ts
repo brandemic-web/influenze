@@ -14,6 +14,8 @@ import redirect from "./documents/redirect";
 import blogPost from "./documents/blogPost";
 import blogCategory from "./documents/blogCategory";
 import blogAuthor from "./documents/blogAuthor";
+import { landingSectionTypes } from "./objects/landing/sections";
+import { landingDocumentTypes } from "./documents/landing";
 
 export const schemaTypes = [
 	// objects
@@ -24,6 +26,7 @@ export const schemaTypes = [
 	customScripts,
 	blogCta,
 	blogFaq,
+	...landingSectionTypes,
 	// singleton documents
 	siteSettings,
 	homePage,
@@ -35,4 +38,5 @@ export const schemaTypes = [
 	blogPost,
 	blogCategory,
 	blogAuthor,
+	...landingDocumentTypes,
 ];

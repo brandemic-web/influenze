@@ -1,0 +1,38 @@
+---
+/**
+ * A static picture of a search: the platform preselected and the filters a brief turns into.
+ * Markup, not a screenshot, so the example stays editable in Sanity.
+ */
+interface Props {
+	title: string;
+	platform?: string;
+	filters: { label: string; value: string }[];
+	footer?: string;
+}
+
+const { title, platform, filters, footer } = Astro.props;
+---
+
+<figure class="rounded-[1.25rem] border border-white/15 bg-[#0d0a1c] p-5 shadow-[0_24px_70px_-12px_rgba(104,56,255,0.35)] lg:p-7">
+	<figcaption class="flex items-center justify-between gap-3">
+		<span class="text-[0.8125rem] font-semibold text-white lg:text-[1rem]">{title}</span>
+		{
+			platform && (
+				<span class="rounded-full bg-brand-primary px-3 py-1.5 text-[0.6875rem] leading-none font-semibold text-button-text lg:text-[0.8125rem]">
+					{platform}
+				</span>
+			)
+		}
+	</figcaption>
+	<dl class="mt-5 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+		{
+			filters.map((filter) => (
+				<div class="rounded-md border border-white/10 bg-white/4 px-3.5 py-3">
+					<dt class="text-[0.6875rem] leading-none tracking-[0.08em] uppercase text-ui-muted lg:text-[0.75rem]">{filter.label}</dt>
+					<dd class="mt-2 text-[0.875rem] leading-[1.35] text-white lg:text-[0.9375rem]">{filter.value}</dd>
+				</div>
+			))
+		}
+	</dl>
+	{footer && <p class="mt-5 text-[0.8125rem] leading-[1.6] text-white/55 lg:text-[0.9375rem]">{footer}</p>}
+</figure>

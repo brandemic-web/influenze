@@ -1,0 +1,112 @@
+---
+/**
+ * A pricing or credit guide — Content Playbook doc 06. The credit table sits near the top, as
+ * the playbook asks, and every number on it comes from the live pricing data.
+ */
+import type { GetStaticPaths } from "astro";
+import LandingPage from "../../components/landing/LandingPage.astro";
+import LandingSection from "../../components/landing/LandingSection.astro";
+import DataTable from "../../components/landing/DataTable.astro";
+import PointList from "../../components/landing/PointList.astro";
+import CreditCalculator from "../../components/landing/CreditCalculator.astro";
+import CreditScenarios from "../../components/landing/CreditScenarios.astro";
+import PricingPlans from "../../components/pricing/PricingPlans.astro";
+import PortableText from "../../components/blog/PortableText.astro";
+import { CREDIT_COSTS } from "../../data/pricing";
+import { LANDING_CTA, ROLLOVER_RULES, SECTION_HEADINGS } from "../../data/landing";
+import { hasBlocks, landingPaths, tableOf } from "../../lib/landing-source";
+import { getLandingPage } from "../../sanity/lib/landingQueries";
+import { getPerspectiveCookie } from "../../lib/draft-mode";
+import type { PortableBlock } from "../../lib/portable-text";
+
+export const getStaticPaths = (() => landingPaths("pricingGuide")) satisfies GetStaticPaths;
+
+const { data: page } = await getLandingPage("pricingGuide", Astro.params.slug ?? "", getPerspectiveCookie(Astro.cookies));
+if (!page?.slug) return Astro.rewrite("/404");
+
+const includes = page.includes?.filter(Boolean) ?? [];
+const scenarios = page.starterScenarios?.filter((s) => s.title) ?? [];
+const planFit = tableOf(page.planFit);
+const quoteLed = tableOf(page.quoteLed);
+---
+
+<LandingPage page={page} type="pricingGuide">
+	<LandingSection id="credits" heading={SECTION_HEADINGS.creditTable} intro={LANDING_CTA.signupNote}>
+		<DataTable
+			caption="Credits per action"
+			columns={["Action", "Credits"]}
+			rows={CREDIT_COSTS.map((action) => ({ cells: [action.label, String(action.credits)] }))}
+		/>
+	</LandingSection>
+
+	{page.showPlans && <PricingPlans embedded />}
+
+	{
+		hasBlocks(page.body) && (
+			<LandingSection id="guide">
+				<div class="max-w-240"><PortableText blocks={page.body as PortableBlock[]} /></div>
+			</LandingSection>
+		)
+	}
+
+	{
+		page.showCalculator !== false && (
+			<LandingSection id="calculator" heading={SECTION_HEADINGS.calculator}>
+				<CreditCalculator />
+			</LandingSection>
+		)
+	}
+
+	{
+		includes.length > 0 && (
+			<LandingSection id="includes" heading={SECTION_HEADINGS.includes}>
+				<PointList points={includes} variant="check" columns={2} />
+			</LandingSection>
+		)
+	}
+
+	{
+		scenarios.length > 0 && (
+			<LandingSection id="scenarios" heading={SECTION_HEADINGS.starterScenarios}>
+				<CreditScenarios scenarios={scenarios} />
+			</LandingSection>
+		)
+	}
+
+	{
+		page.showRollover !== false && (
+			<LandingSection id="rollover" heading={ROLLOVER_RULES.heading}>
+				<div class="max-w-240">
+					<PointList points={ROLLOVER_RULES.points} />
+					<a href={ROLLOVER_RULES.termsHref} class="mt-5 inline-block text-[0.875rem] font-semibold text-brand-primary underline-offset-4 hover:underline lg:text-[1rem]">
+						{ROLLOVER_RULES.termsLabel} →
+					</a>
+				</div>
+			</LandingSection>
+		)
+	}
+
+	{
+		planFit && (
+			<LandingSection id="plan-fit" heading={page.planFit?.heading || SECTION_HEADINGS.planFit} intro={page.planFit?.intro}>
+				<DataTable caption="Which plan fits which team" {...planFit} />
+			</LandingSection>
+		)
+	}
+
+	{
+		hasBlocks(page.oneTime?.body) && (
+			<LandingSection id="one-time" heading={page.oneTime?.heading || SECTION_HEADINGS.oneTime}>
+				<div class="max-w-240"><PortableText blocks={page.oneTime.body as PortableBlock[]} /></div>
+			</LandingSection>
+		)
+	}
+
+	{
+		quoteLed && (
+			<LandingSection id="quote-led" heading={page.quoteLed?.heading || SECTION_HEADINGS.quoteLed} intro={page.quoteLed?.intro}>
+				<DataTable caption="Credits vs quote-led and annual platforms" {...quoteLed} highlight={1} />
+			</LandingSection>
+		)
+	}
+</LandingPage>

@@ -13,7 +13,18 @@ const SINGLETONS = [
 	{ id: "blogIndex", title: "Blog Index" },
 ];
 
-const SINGLETON_TYPES = new Set(SINGLETONS.map((s) => s.id));
+/** The six SEO templates and the competitors they share, kept in one folder. */
+const LANDING_TYPES = [
+	"comparisonPage",
+	"alternativePage",
+	"icpPage",
+	"platformPage",
+	"featurePage",
+	"pricingGuide",
+	"competitor",
+];
+
+const NOT_LISTED_LOOSE = new Set([...SINGLETONS.map((s) => s.id), ...LANDING_TYPES]);
 
 export const structure: StructureResolver = (S) =>
 	S.list()
@@ -25,7 +36,17 @@ export const structure: StructureResolver = (S) =>
 					.title(title)
 					.child(S.document().schemaType(id).documentId(id)),
 			),
+			S.divider(),
+			S.listItem()
+				.id("landingPages")
+				.title("Landing Pages")
+				.child(
+					S.list()
+						.title("Landing Pages")
+						.items(LANDING_TYPES.map((type) => S.documentTypeListItem(type))),
+				),
+			S.divider(),
 			...S.documentTypeListItems().filter(
-				(item) => !SINGLETON_TYPES.has(item.getId() ?? ""),
+				(item) => !NOT_LISTED_LOOSE.has(item.getId() ?? ""),
 			),
 		]);

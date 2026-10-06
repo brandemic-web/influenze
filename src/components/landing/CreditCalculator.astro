@@ -1,0 +1,67 @@
+---
+/**
+ * The playbook's credit formula as a calculator. Per-action costs come from CREDIT_COSTS, the
+ * numbers /pricing prints. Inputs are disabled until the script claims them, so without
+ * JavaScript the panel reads as a worked example rather than a form that does nothing.
+ */
+import { CREDIT_COSTS } from "../../data/pricing";
+import { CALCULATOR, STARTER_CREDITS } from "../../data/landing";
+import { creditsFor } from "../../lib/landing-source";
+
+interface Props {
+	/** The worked example the panel opens on. */
+	example?: { searches: number; analytics: number; contacts: number };
+}
+
+const { example = { searches: 10, analytics: 8, contacts: 10 } } = Astro.props;
+
+const countFor = { search: example.searches, analytics: example.analytics, contact: example.contacts };
+const total = creditsFor(example);
+---
+
+<div
+	class="rounded-[1.25rem] border border-white/10 bg-[#0a071885] p-5 lg:grid lg:grid-cols-[3fr_2fr] lg:items-center lg:gap-12 lg:p-10"
+	data-credit-calc
+	data-starter={STARTER_CREDITS}
+>
+	<div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+		{
+			CREDIT_COSTS.map((action) => (
+				<label class="flex flex-col gap-2">
+					<span class="text-[0.8125rem] leading-[1.3] text-white/70 lg:text-[0.9375rem]">
+						{CALCULATOR.fields[action.id]}
+						<span class="block text-[0.75rem] text-white/40 lg:text-[0.8125rem]">× {action.credits} credits</span>
+					</span>
+					<input
+						type="number"
+						inputmode="numeric"
+						min="0"
+						step="1"
+						value={countFor[action.id]}
+						data-credits={action.credits}
+						disabled
+						class="w-full rounded-md border border-white/15 bg-white/5 px-4 py-3 text-[1rem] text-white tabular-nums focus-visible:outline-2 focus-visible:outline-brand-primary disabled:opacity-100 lg:text-[1.125rem]"
+					/>
+				</label>
+			))
+		}
+	</div>
+
+	<div class="mt-6 rounded-md bg-brand-primary/8 p-5 lg:mt-0 lg:p-7" aria-live="polite">
+		<p class="text-[0.75rem] tracking-[0.12em] uppercase text-brand-primary lg:text-[0.8125rem]">{CALCULATOR.totalLabel}</p>
+		<p class="mt-2 text-[2.25rem] leading-none font-semibold text-white tabular-nums lg:text-5xl">
+			<span data-credit-total>{total.toLocaleString("en-IN")}</span>
+		</p>
+		<p class="mt-3 text-[0.8125rem] text-white/60 lg:text-[0.9375rem]" data-credit-fits hidden={total > STARTER_CREDITS}>
+			{CALCULATOR.starterNote}
+		</p>
+		<p class="mt-3 text-[0.8125rem] text-white/60 lg:text-[0.9375rem]" data-credit-over hidden={total <= STARTER_CREDITS}>
+			{CALCULATOR.overNote}
+		</p>
+	</div>
+</div>
+<p class="mt-4 text-[0.8125rem] leading-[1.6] text-white/45 lg:text-[0.9375rem]">{CALCULATOR.intro}</p>
+
+<script>
+	import "../../scripts/landing-page/creditCalculator";
+</script>
