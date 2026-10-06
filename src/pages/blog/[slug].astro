@@ -10,7 +10,7 @@ import BlogHero from "../../components/blog/BlogHero.astro";
 import BlogToc from "../../components/blog/BlogToc.astro";
 import PortableText from "../../components/blog/PortableText.astro";
 import BlogFaq from "../../components/blog/BlogFaq.astro";
-import { formatPublished } from "../../data/blog";
+import { authorHref } from "../../data/blog";
 import { BLOG_CTA } from "../../data/blog-cta";
 import { getBlogEntry, getBlogListing } from "../../lib/blog-source";
 import { getPerspectiveCookie } from "../../lib/draft-mode";
@@ -26,8 +26,6 @@ export const getStaticPaths = (async () => {
 const post = await getBlogEntry(Astro.params.slug, getPerspectiveCookie(Astro.cookies));
 if (!post) return Astro.rewrite("/404");
 
-const published = formatPublished(post.publishedIso);
-
 // Built from the same content the page renders, so the JSON-LD can't drift. The
 // FAQ node is dropped entirely when a post has no questions.
 const schema = [
@@ -36,7 +34,12 @@ const schema = [
 		headline: post.title,
 		description: post.excerpt,
 		datePublished: post.publishedIso,
-		author: { "@type": "Person", name: post.author.name },
+		dateModified: post.updatedIso ?? post.publishedIso,
+		author: {
+			"@type": "Person",
+			name: post.author.name,
+			...(post.author.slug ? { url: new URL(authorHref(post.author.slug), Astro.site).href } : {}),
+		},
 		articleSection: post.category.label,
 	},
 	...(post.faq.items.length
@@ -71,7 +74,7 @@ const schema = [
 			author={post.author}
 			readMinutes={post.readMinutes}
 			publishedIso={post.publishedIso}
-			published={published}
+			updatedIso={post.updatedIso}
 			hero={post.hero}
 		/>
 

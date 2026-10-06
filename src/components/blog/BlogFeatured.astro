@@ -4,8 +4,9 @@
  * `border-transparent`). Layout mirrors BlogHero.astro so both pages open on the same image shape.
  */
 import BlogImage from "./BlogImage.astro";
+import BlogAvatar from "./BlogAvatar.astro";
+import BlogMeta from "./BlogMeta.astro";
 import type { BlogEntry, BlogIndexCopy } from "../../lib/blog-source";
-import { formatPublished } from "../../data/blog";
 
 interface Props {
 	post: BlogEntry;
@@ -13,7 +14,6 @@ interface Props {
 }
 
 const { post, copy } = Astro.props;
-const published = formatPublished(post.publishedIso);
 ---
 
 <section class="relative" aria-labelledby="blog-index-title">
@@ -27,7 +27,7 @@ const published = formatPublished(post.publishedIso);
 	<div class="relative mx-auto max-w-410.75 px-4 pt-26 pb-10 sm:px-6 lg:px-25 lg:pt-50 lg:pb-16">
 		<h1
 			id="blog-index-title"
-			class="text-center text-[1.875rem] capitalize leading-[1.1] text-white lg:text-9xl"
+			class="text-center text-[2rem] capitalize leading-[1.1] text-white lg:text-9xl"
 		>
 			{copy.title}
 		</h1>
@@ -54,15 +54,10 @@ const published = formatPublished(post.publishedIso);
 					</span>
 				</div>
 
-				{/* Mobile only — image, category, title, then this line; the excerpt and byline are hidden. */}
-				<p class="order-4 mt-4 text-[0.75rem] leading-none text-white/45 lg:hidden">
-					<time datetime={post.publishedIso}>{published}</time>
-					<span class="mx-2 inline-block h-1 w-1 rounded-full bg-white/25 align-middle" aria-hidden="true"></span>
-					<span>{post.readMinutes} min read</span>
-				</p>
+
 
 				<h2
-					class="order-3 mt-6 text-[1.25rem] leading-[1.2] text-white transition-colors duration-300 group-hover:text-brand-primary lg:mt-8 lg:text-[2.25rem]"
+					class="order-3 mt-6 text-[1.875rem] leading-[1.2] text-white transition-colors duration-300 group-hover:text-brand-primary lg:mt-8 lg:text-[2.25rem]"
 				>
 					{post.title}
 				</h2>
@@ -73,34 +68,34 @@ const published = formatPublished(post.publishedIso);
 					{post.excerpt}
 				</p>
 
-				{/* Byline and meta — matches the post hero's row. */}
+				{/* Byline and meta — same two rows as the post hero. */}
 				<div
-					class="order-6 mt-8 hidden flex-wrap items-center gap-x-4 gap-y-4 border-t border-white/10 pt-6 lg:order-none lg:mt-12 lg:gap-x-3 lg:pt-5 lg:pr-10 lg:gap-y-6 lg:flex"
+					class="order-6 mt-8 border-t border-white/10 pt-6 lg:order-none lg:mt-12 lg:block lg:pr-10"
 				>
-					<span
-						class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-purple-soft text-[0.8125rem] font-semibold text-surface-dark lg:h-12 lg:w-12 lg:text-[0.9375rem]"
-						aria-hidden="true"
-					>
-						{post.author.initials}
-					</span>
+					<div class="flex items-center gap-3">
+						<BlogAvatar
+							author={post.author}
+							size={48}
+							class="h-10 w-10 text-[0.8125rem] lg:h-12 lg:w-12 lg:text-[0.9375rem]"
+						/>
 
-					<span class="flex flex-col gap-3">
-						<span class="text-[0.875rem] leading-none font-semibold text-white lg:text-[1rem]"
-							>{post.author.name}</span
-						>
-						<span class="text-[0.75rem] leading-none text-white/45 lg:text-[0.875rem]"
-							>{post.author.role}</span
-						>
-					</span>
+						<span class="flex flex-col gap-3">
+							<span class="text-[1rem] leading-none font-semibold text-white lg:text-[1.25rem]"
+								>{post.author.name}</span
+							>
+							<span class="text-[0.75rem] leading-none text-white/45 lg:text-[0.875rem]"
+								>{post.author.role}</span
+							>
+						</span>
+					</div>
 
-					<span
-						class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[0.75rem] leading-none text-white/45 lg:gap-x-4 lg:text-[1rem]"
-					>
-						{/* Date and dot hide below `lg`, where the date sits above the title instead. */}
-						<time datetime={post.publishedIso} class="hidden lg:inline">{published}</time>
-						<span class="hidden h-1 w-1 rounded-full bg-white/25 lg:block" aria-hidden="true"></span>
-						<span>{post.readMinutes} min read</span>
-					</span>
+					<BlogMeta
+						publishedIso={post.publishedIso}
+						updatedIso={post.updatedIso}
+						readMinutes={post.readMinutes}
+						variant="labelled"
+						class="mt-6"
+					/>
 				</div>
 			</div>
 			{/* The 60 column — 784×457 on the 1728px grid, like the post hero. */}

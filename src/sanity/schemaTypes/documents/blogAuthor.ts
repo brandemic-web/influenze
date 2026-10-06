@@ -16,6 +16,15 @@ export default defineType({
 			validation: (Rule) => Rule.required(),
 		}),
 		defineField({
+			name: "slug",
+			title: "Slug",
+			type: "slug",
+			options: { source: "name", maxLength: 96 },
+			description:
+				"The author page's address: /author/<slug>. Click Generate to take it from the name. Changing it breaks existing links.",
+			validation: (Rule) => Rule.required(),
+		}),
+		defineField({
 			name: "role",
 			title: "Role",
 			type: "string",
@@ -35,6 +44,13 @@ export default defineType({
 			type: "image",
 			description: "Optional. Replaces the initials disc on the byline.",
 			options: { hotspot: true },
+		}),
+		defineField({
+			name: "bio",
+			title: "Bio",
+			type: "text",
+			rows: 3,
+			description: "Optional. A short paragraph under the name on the author page.",
 		}),
 	],
 	preview: {

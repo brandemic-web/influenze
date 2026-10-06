@@ -1,0 +1,63 @@
+---
+/**
+ * A post's dates and read time. `inline` is the one-line mobile row; `labelled` is the desktop
+ * strip, where each value sits under its own label so the two dates can't be confused.
+ */
+import { BLOG_META_LABELS, formatShort } from "../../data/blog";
+
+interface Props {
+	publishedIso: string;
+	/** Only passed when later than `publishedIso`. */
+	updatedIso?: string;
+	readMinutes: number;
+	variant: "inline" | "labelled";
+	class?: string;
+}
+
+const { publishedIso, updatedIso, readMinutes, variant, class: className = "" } = Astro.props;
+
+const items = [
+	{ label: BLOG_META_LABELS.published, iso: publishedIso },
+	...(updatedIso ? [{ label: BLOG_META_LABELS.updated, iso: updatedIso }] : []),
+];
+const readTime = `${readMinutes} ${BLOG_META_LABELS.minutesSuffix}`;
+---
+
+{
+	variant === "inline" ? (
+		<p
+			class={`flex flex-wrap items-center gap-x-2 gap-y-2 text-[0.75rem] leading-none text-white/45 ${className}`}
+		>
+			{items.map((item) => (
+				<>
+					<span>
+						{item.label} <time datetime={item.iso}>{formatShort(item.iso)}</time>
+					</span>
+					<span class="h-1 w-1 rounded-full bg-white/25" aria-hidden="true" />
+				</>
+			))}
+			<span>{readTime}</span>
+		</p>
+	) : (
+		<dl class={`flex flex-wrap gap-y-4 ${className}`}>
+			{items.map((item) => (
+				<div class="border-r border-white/10 pr-6 mr-2 lg:pr-8 lg:mr-8">
+					<dt class="text-[0.5rem] lg:text-[0.6875rem] leading-none tracking-[0.12em] uppercase text-white/35">
+						{item.label}
+					</dt>
+					<dd class="mt-2.5 text-[0.75rem] leading-none text-white/80 lg:text-[0.8rem]">
+						<time datetime={item.iso}>{formatShort(item.iso)}</time>
+					</dd>
+				</div>
+			))}
+			<div>
+				<dt class="text-[0.5rem] lg:text-[0.6875rem] leading-none tracking-[0.12em] uppercase text-white/35">
+					{BLOG_META_LABELS.readTime}
+				</dt>
+				<dd class="mt-2.5 text-[0.75rem] leading-none text-white/80 lg:text-[0.8rem]">
+					{readMinutes} {BLOG_META_LABELS.minutesShort}
+				</dd>
+			</div>
+		</dl>
+	)
+}
