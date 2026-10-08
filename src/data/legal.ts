@@ -1,6 +1,7 @@
 /**
- * Shared shapes and company details for the two legal routes, `/terms` and
- * `/privacy`. The clause text itself lives in `terms.ts` and `privacy.ts`.
+ * Shared shapes and company details for the legal routes — `/terms`, `/privacy`,
+ * `/refund-policy` and `/contact`. The clause text itself lives in `terms.ts`
+ * and `privacy.ts`; the other two pages are assembled from it and from here.
  *
  * The counsel-issued drafts left five fields blank; all five are now filled —
  * the contact email, the registered office, and the grievance officer's name,
@@ -41,7 +42,8 @@ export interface LegalDoc {
 	eyebrow: string;
 	title: string;
 	description: string;
-	updated: string;
+	/** "Last updated" in the hero. Omitted on `/contact`, which is not a policy. */
+	updated?: string;
 	/** The "electronic record" line the ToS opens with. */
 	notice?: string;
 	preamble: string[];
@@ -69,6 +71,9 @@ export const LEGAL_UPDATED = new Date(`${LEGAL_UPDATED_ISO}T00:00:00Z`).toLocale
  */
 export const LEGAL_CONTACT_EMAIL = "info@dotme.in";
 
+/** As named in the preamble of both drafts. */
+export const COMPANY_NAME = "Dotme Technologies Private Limited";
+
 /** Registered office, taken from the body of both drafts. */
 export const COMPANY_ADDRESS =
 	"1612, Ground Floor, 7th Cross, 19th Main Road, 1st Sector, HSR Layout, Bengaluru, Karnataka – 560102";
@@ -88,6 +93,17 @@ export const GRIEVANCE_ROWS: LegalContactRow[] = [
 		href: `mailto:${LEGAL_CONTACT_EMAIL}`,
 	},
 	{ label: "Mobile No.", value: "+91 72044 64330", href: "tel:+917204464330" },
+];
+
+/**
+ * Every legal route, in footer order. Each page links to the rest at its foot,
+ * and the footer's Legal column reads the same list.
+ */
+export const LEGAL_PAGES = [
+	{ label: "Terms of Service", href: "/terms/" },
+	{ label: "Privacy Policy", href: "/privacy/" },
+	{ label: "Cancellation and Refund Policy", href: "/refund-policy/" },
+	{ label: "Contact Us", href: "/contact/" },
 ];
 
 /**

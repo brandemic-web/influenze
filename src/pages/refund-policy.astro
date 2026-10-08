@@ -1,15 +1,15 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import LegalDocument from "../components/legal/LegalDocument.astro";
-import { PRIVACY } from "../data/privacy";
+import { REFUND } from "../data/refund";
 import { LEGAL_UPDATED_ISO } from "../data/legal";
 ---
 
 <Layout
-	title={`${PRIVACY.title} — Influenze.ai`}
-	description={PRIVACY.description}
+	title={`${REFUND.title} — Influenze.ai`}
+	description={REFUND.description}
 	hideCta
 	dateModified={LEGAL_UPDATED_ISO}
 >
-	<LegalDocument doc={PRIVACY} href="/privacy/" />
+	<LegalDocument doc={REFUND} href="/refund-policy/" />
 </Layout>

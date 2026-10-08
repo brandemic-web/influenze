@@ -1,21 +1,22 @@
 ---
 /**
- * Whole-page shell for a legal route: hero, contents rail, body, and a link
- * across to the other document. Numbering is worked out here so the rail and
+ * Whole-page shell for a legal route: hero, contents rail, body, and links
+ * across to the other legal pages. Numbering is worked out here so the rail and
  * the body can never disagree about which section is which.
  */
-import type { LegalDoc } from "../../data/legal";
+import { LEGAL_PAGES, type LegalDoc } from "../../data/legal";
 import LegalHero from "./LegalHero.astro";
 import LegalContents from "./LegalContents.astro";
 import LegalBody from "./LegalBody.astro";
 
 interface Props {
 	doc: LegalDoc;
-	/** The other legal page, linked at the foot of this one. */
-	sibling: { label: string; href: string };
+	/** This page's route; every other entry in LEGAL_PAGES is linked at the foot. */
+	href: string;
 }
 
-const { doc, sibling } = Astro.props;
+const { doc, href } = Astro.props;
+const siblings = LEGAL_PAGES.filter((page) => page.href !== href);
 
 // `unnumbered` sections (the ToS definitions block) sit outside the count.
 let n = 0;
@@ -41,10 +42,17 @@ const sections = doc.sections.map((section) => ({
 			<LegalBody preamble={doc.preamble} sections={sections} />
 
 			<p class="mt-14 border-t border-white/10 pt-8 text-[0.875rem] leading-[1.8] text-white/50 lg:mt-20 lg:text-[1rem]">
-				See also our <a
-					href={sibling.href}
-					class="text-brand-primary underline-offset-4 hover:underline">{sibling.label}</a
-				>.
+				See also our{" "}
+				{
+					siblings.map((page, i) => (
+						<>
+							{i > 0 && (i === siblings.length - 1 ? " and " : ", ")}
+							<a href={page.href} class="text-brand-primary underline-offset-4 hover:underline">
+								{page.label}
+							</a>
+						</>
+					))
+				}.
 			</p>
 		</div>
 	</div>

@@ -19,6 +19,8 @@ influenze.ai is a creator discovery and campaign platform: targeted search and f
 - [Pricing](https://influenze.ai/pricing): credit-based plans and what's included
 - [Terms of Service](https://influenze.ai/terms)
 - [Privacy Policy](https://influenze.ai/privacy)
+- [Cancellation and Refund Policy](https://influenze.ai/refund-policy)
+- [Contact Us](https://influenze.ai/contact)
 `;
 
 // No draft-mode wiring here — crawlers only ever see published content, same
