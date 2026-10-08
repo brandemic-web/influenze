@@ -5,6 +5,9 @@ import hyper from "../assets/images/home_page/trusted_by/hyper_logo.svg";
 import owled from "../assets/images/home_page/trusted_by/owled_logo.svg";
 import iplixMedia from "../assets/images/home_page/trusted_by/iplix_media_logo.svg";
 import circuit from "../assets/images/home_page/trusted_by/circuit_logo.png";
+import contraband from "../assets/images/home_page/trusted_by/contraband_logo.svg";
+import lovetc from "../assets/images/home_page/trusted_by/lovetc_logo.svg";
+import glenwalk from "../assets/images/home_page/trusted_by/the_glenwalk_logo.svg";
 
 /** Per-side spacing in design px; omitted sides are 0. */
 export interface TrustedByBox {
@@ -52,5 +55,29 @@ export const TRUSTED_BY_LOGOS: TrustedByLogo[] = [
 	{ src: circuit, alt: "Circuit", mobile: { width: 88, height: 20 }, desktop: { width: 160, height: 36 } },
 	{ src: owled, alt: "Owled", w: 93, h: 64, desktop: { width: 76, height: 52 } },
 	{ src: hammerhead, alt: "Hammerhead Global", w: 245, h: 68 },
-
+	// Boxes follow each artwork's own ratio (240×22, 892×291, 212×48), so none is squeezed.
+	{
+		src: contraband,
+		alt: "Contraband",
+		w: 240,
+		h: 22,
+		mobile: { width: 100, height: 9 },
+		desktop: { width: 210, height: 19 },
+	},
+	{
+		src: lovetc,
+		alt: "LoveTC",
+		w: 892,
+		h: 291,
+		mobile: { width: 74, height: 24 },
+		desktop: { width: 147, height: 48 },
+	},
+	{
+		src: glenwalk,
+		alt: "The Glenwalk",
+		w: 212,
+		h: 48,
+		mobile: { width: 100, height: 23 },
+		desktop: { width: 190, height: 43 },
+	},
 ];
