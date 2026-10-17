@@ -5,6 +5,7 @@ import trustedBySpacing from "./objects/trustedBySpacing";
 import customScripts from "./objects/customScripts";
 import blogCta from "./objects/blogCta";
 import blogFaq from "./objects/blogFaq";
+import compareCell from "./objects/compareCell";
 import siteSettings from "./documents/siteSettings";
 import homePage from "./documents/homePage";
 import pricingPage from "./documents/pricingPage";
@@ -14,6 +15,7 @@ import redirect from "./documents/redirect";
 import blogPost from "./documents/blogPost";
 import blogCategory from "./documents/blogCategory";
 import blogAuthor from "./documents/blogAuthor";
+import comparePage from "./documents/comparePage";
 
 export const schemaTypes = [
 	// objects
@@ -24,6 +26,7 @@ export const schemaTypes = [
 	customScripts,
 	blogCta,
 	blogFaq,
+	compareCell,
 	// singleton documents
 	siteSettings,
 	homePage,
@@ -35,4 +38,5 @@ export const schemaTypes = [
 	blogPost,
 	blogCategory,
 	blogAuthor,
+	comparePage,
 ];

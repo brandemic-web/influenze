@@ -1,5 +1,6 @@
 import groq from "groq";
 import { loadQuery } from "./loadQuery";
+import { SECTION_COPY_FIELDS } from "../../data/compare/shared";
 import type { Image } from "sanity";
 
 const SEO_PROJECTION = groq`seo { title, description, ogImage, noindex, canonicalUrl, customSchema }`;
@@ -382,4 +383,48 @@ export interface BlogIndexDoc {
 
 export async function getBlogIndex(perspectiveCookie?: string) {
 	return loadQuery<BlogIndexDoc | null>({ query: blogIndexQuery, perspectiveCookie });
+}
+
+/** Every compare page with a slug — see lib/compare-source.ts, which merges these with the code fallbacks. */
+export const comparePagesQuery = groq`*[_type == "comparePage" && defined(slug.current)]{
+	"slug": slug.current,
+	competitorName,
+	draft,
+	intro,
+	chooseInfluenze,
+	chooseCompetitor,
+	features,
+	pricing,
+	workflow,
+	faqs[]{ question, answer },
+	"headings": { ${SECTION_COPY_FIELDS.map((f) => f.key).join(", ")} },
+	scenarios,
+	${SEO_PROJECTION},
+	${SCRIPTS_PROJECTION},
+}`;
+
+export interface CompareCellDoc {
+	text?: string;
+	mark?: boolean;
+}
+
+export interface ComparePageDoc {
+	slug: string;
+	competitorName?: string;
+	draft?: boolean;
+	intro?: string;
+	chooseInfluenze?: string[];
+	chooseCompetitor?: string[];
+	features?: Record<string, CompareCellDoc | undefined>;
+	pricing?: Record<string, CompareCellDoc | undefined>;
+	workflow?: Record<string, string | undefined>;
+	faqs?: { question?: string; answer?: string }[];
+	headings?: Record<string, string | undefined>;
+	scenarios?: Record<string, { title?: string; description?: string } | undefined>;
+	seo?: SeoDoc;
+	scripts?: ScriptsDoc;
+}
+
+export async function getComparePages(perspectiveCookie?: string) {
+	return loadQuery<ComparePageDoc[]>({ query: comparePagesQuery, perspectiveCookie });
 }

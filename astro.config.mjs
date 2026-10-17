@@ -70,7 +70,32 @@ export default defineConfig({
               "lodash/partition.js",
               "lodash/sortedIndex.js",
               "lodash/startCase.js",
+              // Every package the page scripts import, pre-bundled up front:
+              // found on first page load instead, one makes Vite re-optimize
+              // mid-session, which strands the Cloudflare dev runner on deps that
+              // no longer exist (500 on every page until a restart).
+              "gsap",
+              "gsap/ScrollTrigger",
+              "gsap/SplitText",
+              "swiper",
+              "swiper/modules",
           ],
+      },
+      // The server side of the same problem: a package first imported at request
+      // time (the draft-mode API loads @sanity/preview-url-secret when Studio
+      // opens) re-optimizes deps_ssr and strands the Cloudflare runner — 500 on
+      // every page until restart. Everything server code imports is listed here.
+      ssr: {
+          optimizeDeps: {
+              include: [
+                  "@sanity/client",
+                  "@sanity/image-url",
+                  "@sanity/preview-url-secret",
+                  "@sanity/preview-url-secret/constants",
+                  "groq",
+                  "astro/logger/json",
+              ],
+          },
       },
       resolve: {
           alias: {
