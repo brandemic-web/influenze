@@ -1,0 +1,56 @@
+---
+/**
+ * The hero's product mockup: the search box, the Platform picker and the 2×2 filter
+ * summary, at the design's sizes on a 624×284 stage (px ÷ 16 → rem). The Platform
+ * card is the app's own element, scaled to the 276px drawn.
+ */
+import Icon from "../app/common/Icon.astro";
+import PlatformFilter from "../app/elements/PlatformFilter.astro";
+import type { PlatformKey } from "../../data/platform";
+
+interface Props {
+	platform: PlatformKey;
+	searchTerm: string;
+	niche: string;
+	audience: string;
+	location: string;
+	class?: string;
+}
+
+const { platform, searchTerm, niche, audience, location, class: className = "" } = Astro.props;
+const tile = "rounded-[0.5625rem] border-[0.056rem] border-[#2d2c3b] bg-[#161425] pt-[1.625rem] pl-[1.92rem]";
+const label = "block text-[0.791rem] leading-none text-[#bfabff] [text-box:trim-both_cap_alphabetic]";
+const value = "mt-[0.6875rem] block text-[0.791rem] leading-none text-white [text-box:trim-both_cap_alphabetic]";
+---
+
+<div class:list={["relative h-[17.75rem] w-[39rem] text-left font-sans", className]} aria-hidden="true">
+	<div class="absolute top-[5rem] left-[2.5625rem] h-[12.75rem] w-[31.875rem] rounded-[1.125rem] bg-[#0c0a1c] p-[1.125rem]">
+		<div class="grid h-full grid-cols-2 grid-rows-2 gap-[0.678rem]">
+			<div class={tile}><span class={label}>NICHE</span><span class={value}>{niche}</span></div>
+			<div class={tile}><span class={label}>AUDIENCE</span><span class={value}>{audience}</span></div>
+			<div class={tile}>
+				<span class={label}>FOLLOWERS</span>
+				<span class="-ml-[0.6rem] mt-[0.55rem] flex w-[11.27rem] items-center justify-between p-[0.6rem] text-[0.506rem] leading-none whitespace-nowrap">
+					<span class="flex items-center gap-[0.405rem] text-white">
+						<span class="size-[0.606rem] rounded-[0.2rem] border-[0.05rem] border-[#615381]"></span>
+						🔥 Micro Influencer
+					</span>
+					<span class="text-[#c0acff]">10k - 50k followers</span>
+				</span>
+			</div>
+			<div class={tile}><span class={label}>LOCATION</span><span class={value}>{location}</span></div>
+		</div>
+	</div>
+
+	<div class="absolute top-[2.6rem] left-0 h-[3.28rem] w-[20.625rem] overflow-hidden rounded-[0.678rem] border-[0.056rem] border-[#a589ff] bg-[#242433]">
+		<Icon name="search" size="0.906rem" class="absolute top-[1.19rem] left-[0.906rem] text-[#c0acff]" />
+		<span class="absolute top-1/2 left-[2.3125rem] -translate-y-1/2 text-[0.791rem] leading-none text-white">{searchTerm}</span>
+		<span class="absolute top-[0.906rem] left-[14.47rem] flex h-[1.47rem] items-center rounded-[0.3375rem] bg-[#653ee1] px-[0.565rem] text-[0.565rem] leading-none font-medium whitespace-nowrap text-white">
+			Apply &amp; Search
+		</span>
+	</div>
+
+	<div class="absolute top-0 left-[21.75rem] origin-top-left scale-[0.746]">
+		<PlatformFilter selected={platform} />
+	</div>
+</div>

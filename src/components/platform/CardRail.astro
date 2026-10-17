@@ -1,0 +1,62 @@
+---
+/**
+ * A free-scrolling row of cards (scripts/swiper-rail.ts). `inset` is the first card's
+ * left offset in rem, as drawn; `centeredOn` makes it a carousel opening centred on
+ * that card. Cards sit 20px apart (Swiper's own spacing, so centring is exact). Without
+ * JS the same markup scrolls natively.
+ */
+interface Props {
+	/** Desktop left inset in rem. */
+	inset?: number;
+	centeredOn?: number;
+	class?: string;
+}
+
+const { inset = 1.5, centeredOn, class: className = "" } = Astro.props;
+---
+
+<div
+	class:list={["card-rail swiper", className]}
+	data-swiper-rail
+	data-inset-mobile="1.5"
+	data-inset-desktop={String(inset)}
+	data-centered={centeredOn === undefined ? undefined : String(centeredOn)}
+	data-gap="1.25"
+	style={`--inset:${inset}rem`}
+>
+	<ul class="swiper-wrapper">
+		<slot />
+	</ul>
+</div>
+
+<style>
+	.card-rail :global(.swiper-wrapper > li) {
+		width: auto;
+	}
+
+	/* Swiper spaces the cards once it runs; before that (or without JS) the gap does. */
+	.card-rail:not(:global(.swiper-initialized)) :global(.swiper-wrapper) {
+		gap: 1.25rem;
+	}
+
+	/* Before Swiper runs (or without JS) the row scrolls natively. */
+	.card-rail:not(:global(.swiper-initialized)) {
+		overflow-x: auto;
+		scrollbar-width: none;
+		padding-inline: 1.5rem;
+	}
+
+	.card-rail:not(:global(.swiper-initialized))::-webkit-scrollbar {
+		display: none;
+	}
+
+	@media (min-width: 1024px) {
+		.card-rail:not(:global(.swiper-initialized)) {
+			padding-inline: var(--inset);
+		}
+	}
+</style>
+
+<script>
+	import "../../scripts/swiper-rail";
+</script>

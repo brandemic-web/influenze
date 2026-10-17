@@ -2,9 +2,9 @@
 /**
  * A two-way table — label, raised Influenze column, competitor — on the same grid
  * technique as common/ComparisonTable.astro (see its notes on the raised column,
- * `display: contents` rows and the sideways scroll below `lg`). Used for both the
- * feature and the pricing table on a compare page; `variant` carries the values
- * the design draws differently for each.
+ * `display: contents` rows and the sideways scroll below `lg`). Used for the compare
+ * page's feature and pricing tables and the alternative page's "find the right fit";
+ * `variant` carries the values the design draws differently for each.
  */
 import logo from "../../assets/images/common/logos_and_icons/influenze_logo_nav.webp";
 import CreditChips from "./CreditChips.astro";
@@ -20,16 +20,21 @@ interface Props {
 	competitorName: string;
 	rows: readonly CompareRow[];
 	cells: Record<string, CompetitorCell>;
-	variant: "feature" | "pricing";
+	variant: "feature" | "pricing" | "fit" | "quote" | "beforeAfter";
 	/** CSS background for the section; the variant's own when omitted. */
 	background?: string;
+	/** Text in the empty top-left header cell, e.g. "Need". */
+	cornerLabel?: string;
+	/** The pricing guide draws the other column at full white, not dimmed. */
+	competitorTone?: "muted" | "bright";
 }
 
 const VARIANTS = {
 	feature: {
-		heading: "text-3xl leading-[1.15] lg:text-9xl",
+		heading: "text-[1.875rem] leading-[1.15] lg:text-9xl",
 		accentOwnLine: false,
 		subcopy: "max-w-112 lg:mt-6",
+		tableGap: "lg:mt-24",
 		grid: "max-w-363.75 lg:grid-cols-[399fr_520fr_536fr]",
 		raised: "lg:-mt-7.75 lg:-mb-11.5",
 		// Bottom padding equals the raised column's overhang, so the section ends at the
@@ -37,6 +42,7 @@ const VARIANTS = {
 		bottom: "lg:pb-11.5",
 		label: "lg:text-sm lg:leading-6.25",
 		labelPad: "lg:pr-6 lg:pl-13.5",
+		headerPad: "lg:py-7",
 		rowPad: "lg:py-7",
 		headerLine: "border-white/30",
 		rowLine: "border-white/30",
@@ -44,14 +50,16 @@ const VARIANTS = {
 		background: undefined,
 	},
 	pricing: {
-		heading: "text-3xl leading-[1.15] lg:text-[2.25rem] lg:leading-9",
+		heading: "text-[1.875rem] leading-[1.15] lg:text-[2.25rem] lg:leading-9",
 		accentOwnLine: true,
 		subcopy: "max-w-93 lg:mt-7",
+		tableGap: "lg:mt-24",
 		grid: "max-w-[92.0625rem] lg:grid-cols-[356fr_649fr_468fr]",
 		raised: "lg:-mt-7.75 lg:-mb-8.75",
 		bottom: "lg:pb-8.75",
 		label: "lg:text-xs lg:leading-5",
 		labelPad: "lg:pr-6 lg:pl-25",
+		headerPad: "lg:py-7",
 		rowPad: "lg:py-9.5",
 		// The design's header divider sits under the panel, so header and first row read as one block.
 		headerLine: "border-transparent",
@@ -62,10 +70,69 @@ const VARIANTS = {
 		background:
 			"linear-gradient(180deg, #010101 0%, #010101 17.6%, #21144B 26.1%, #8058FF 52.6%, #241949 79.2%, #000000 98.2%)",
 	},
+	// Alternative page, "find the right fit": a 1177px table, header 118px tall with
+	// "Need" in the corner, 126px rows, the raised column overhanging 44px / 32px.
+	fit: {
+		heading: "text-[1.875rem] leading-[1.15] lg:text-[2.25rem] lg:leading-9",
+		accentOwnLine: false,
+		subcopy: "max-w-94 lg:mt-7",
+		tableGap: "lg:mt-28.5",
+		grid: "max-w-[73.5625rem] lg:grid-cols-[390fr_340fr_447fr]",
+		raised: "lg:-mt-11 lg:-mb-8",
+		bottom: "lg:pb-8",
+		label: "lg:text-xs lg:leading-5",
+		labelPad: "lg:pr-6 lg:pl-25.5",
+		headerPad: "lg:py-9.5",
+		rowPad: "lg:py-9.5",
+		headerLine: "border-white/15",
+		rowLine: "border-white/15",
+		chips: "md" as const,
+		background: undefined,
+	},
+	// Pricing guide, "credits vs quote-led platforms": the fit table's grid under a 55px
+	// two-line heading with no subheading; the raised column overhangs 39px both ways.
+	quote: {
+		heading: "text-[1.875rem] leading-[1.15] [text-box:trim-both_cap_alphabetic] lg:text-[3.4375rem] lg:leading-[4.25rem]",
+		accentOwnLine: false,
+		subcopy: "",
+		tableGap: "lg:mt-[6.3125rem]",
+		grid: "max-w-[73.5625rem] lg:grid-cols-[390fr_340fr_447fr]",
+		raised: "lg:-mt-[2.4375rem] lg:-mb-[2.4375rem]",
+		bottom: "lg:pb-[2.4375rem]",
+		label: "lg:text-xs lg:leading-5",
+		labelPad: "lg:pr-6 lg:pl-[6.125rem]",
+		headerPad: "lg:py-[2.625rem]",
+		rowPad: "lg:py-[2.4375rem]",
+		headerLine: "border-white/15",
+		rowLine: "border-white/15",
+		chips: "md" as const,
+		background: undefined,
+	},
+	// ICP "before and after": two columns only, Before | With Influenze.ai, the raised
+	// column 430px wide and the right edge 36px past it, as drawn (panel 923×750).
+	beforeAfter: {
+		heading: "text-[1.875rem] leading-[1.15] [text-box:trim-both_cap_alphabetic] lg:text-[2.25rem] lg:leading-9",
+		accentOwnLine: false,
+		subcopy: "max-w-[26.3125rem] [text-box:trim-both_cap_alphabetic] lg:mt-[2.25rem]",
+		tableGap: "lg:mt-[6.0625rem]",
+		grid: "max-w-[57.6875rem] lg:grid-cols-[457fr_430fr_36fr]",
+		raised: "lg:-mt-[2.75rem] lg:-mb-[1.5625rem]",
+		bottom: "lg:pb-[1.5625rem]",
+		label: "lg:text-xs lg:leading-5",
+		labelPad: "lg:pr-6 lg:pl-[5.0625rem]",
+		headerPad: "lg:py-[1.9375rem]",
+		rowPad: "lg:py-[2.3125rem]",
+		headerLine: "border-white/15",
+		rowLine: "border-white/15",
+		chips: "md" as const,
+		background: undefined,
+	},
 };
 
-const { id, heading, subcopy, competitorName, rows, cells, variant, background } = Astro.props;
+const { id, heading, subcopy, competitorName, rows, cells, variant, background, cornerLabel, competitorTone = "muted" } = Astro.props;
 const v = VARIANTS[variant];
+/** Before/after draws only two columns: the label and Influenze's, with "With" over the logo. */
+const twoColumn = variant === "beforeAfter";
 // `pre-line` honours the line breaks written into the data, so cells wrap where the design does.
 const cellText = "text-[0.75rem] capitalize leading-4.5 whitespace-pre-line lg:text-xs lg:leading-5";
 // A lead-in sentence the design sets larger and in sentence case.
@@ -79,20 +146,30 @@ const leadText = "text-[0.8125rem] leading-5 whitespace-pre-line lg:text-[1.125r
 	aria-labelledby={`${id}-heading`}
 >
 	<div class="relative z-2 flex flex-col items-center px-6 text-center">
-		<h2 id={`${id}-heading`} class:list={["capitalize text-white", v.heading]}>
+		<h2 id={`${id}-heading`} class:list={["text-white lg:whitespace-pre-line", !twoColumn && "capitalize", v.heading]}>
 			<TwoTone text={heading} accentBlock={v.accentOwnLine} />
 		</h2>
-		<p class:list={["mt-3 text-[0.875rem] leading-[1.55] text-[#CDCDCD]/70 lg:text-[1.125rem] lg:leading-7", v.subcopy]}>
+		{subcopy && (
+			<p class:list={["mt-3 text-[0.875rem] leading-[1.55] text-[#CDCDCD]/70 lg:text-[1.125rem] lg:leading-7", v.subcopy]}>
 			{plainText(subcopy)}
 		</p>
+		)}
 	</div>
 
 	<div
-		class="compare-scroller relative z-2 mt-6 overflow-x-auto overscroll-x-contain px-6 py-8 -mb-8 lg:mt-24 lg:mb-0 lg:overflow-visible lg:py-0"
+		class:list={[
+			"compare-scroller relative z-2 mt-6 overflow-x-auto overscroll-x-contain px-6 py-8 -mb-8 lg:mb-0 lg:overflow-visible lg:py-0",
+			v.tableGap,
+		]}
 		data-rail-scroller={id}
 	>
 		<div
-			class:list={["mx-auto grid w-max grid-cols-[repeat(3,calc((100vw-3rem)/2.5))] rounded-[1.25rem] lg:w-auto", v.grid]}
+			class:list={[
+				"mx-auto grid rounded-[1.25rem] lg:w-auto",
+				// Two columns fit a phone, so only the three-column tables scroll.
+				twoColumn ? "grid-cols-[1fr_1fr_1rem]" : "w-max grid-cols-[repeat(3,calc((100vw-3rem)/2.5))]",
+				v.grid,
+			]}
 			role="table"
 			aria-label={`Influenze.ai compared with ${competitorName}`}
 		>
@@ -119,26 +196,36 @@ const leadText = "text-[0.8125rem] leading-5 whitespace-pre-line lg:text-[1.125r
 			</div>
 
 			<div role="row" style="display: contents">
-				<div class="col-start-1 row-start-1" role="columnheader"></div>
 				<div
-					class="relative z-2 col-start-2 row-start-1 flex items-center justify-center px-4 py-8 lg:py-7"
+					class:list={["relative z-2 col-start-1 row-start-1 flex items-center px-4 text-left", v.labelPad]}
 					role="columnheader"
 				>
-					<img
-						src={logo.src}
-						alt="influenze.ai"
-						width={logo.width}
-						height={logo.height}
-						class="h-6 w-auto lg:h-10.75"
-						loading="lazy"
-					/>
+					{cornerLabel && <span class:list={["text-[0.75rem] leading-4.5 text-white", v.label]}>{cornerLabel}</span>}
 				</div>
 				<div
-					class="relative z-2 col-start-3 row-start-1 flex items-center justify-center px-4 py-8 lg:py-7"
+					class:list={["relative z-2 col-start-2 row-start-1 flex items-center justify-center px-4 py-8", v.headerPad]}
 					role="columnheader"
 				>
-					<span class="text-[1.125rem] font-medium text-white lg:text-md lg:leading-7.5">{competitorName}</span>
+					<span class="flex flex-col items-center gap-[0.5625rem]">
+						{twoColumn && <span class="text-[1rem] capitalize leading-none text-brand-primary">With</span>}
+						<img
+							src={logo.src}
+							alt="influenze.ai"
+							width={logo.width}
+							height={logo.height}
+							class="h-6 w-auto lg:h-10.75"
+							loading="lazy"
+						/>
+					</span>
 				</div>
+				{!twoColumn && (
+					<div
+						class:list={["relative z-2 col-start-3 row-start-1 flex items-center justify-center px-4 py-8", v.headerPad]}
+						role="columnheader"
+					>
+						<span class="text-[1.125rem] font-medium text-white lg:text-md lg:leading-7.5">{competitorName}</span>
+					</div>
+				)}
 			</div>
 
 			{
@@ -187,6 +274,10 @@ const leadText = "text-[0.8125rem] leading-5 whitespace-pre-line lg:text-[1.125r
 								{influenze.credits && <CreditChips size={v.chips} class={v.chips === "lg" ? "mt-7.25" : "mt-2.5"} />}
 							</div>
 
+							{twoColumn ? (
+								// The panel's right edge, past the raised column: dividers stop at the column, as drawn.
+								<div class="relative z-2" style={`grid-column: 3; grid-row: ${r + 2}`} aria-hidden="true" />
+							) : (
 							<div
 								class:list={[
 									"relative z-2 flex flex-col items-center justify-center gap-1.5 px-3 py-5 text-center lg:px-5",
@@ -210,8 +301,11 @@ const leadText = "text-[0.8125rem] leading-5 whitespace-pre-line lg:text-[1.125r
 										<path d="M5 12h14" />
 									</svg>
 								)}
-								{theirs?.text && <span class:list={[cellText, "max-w-87 text-white/60"]}>{theirs.text}</span>}
+								{theirs?.text && (
+									<span class:list={[cellText, "max-w-87", competitorTone === "bright" ? "text-white" : "text-white/60"]}>{theirs.text}</span>
+								)}
 							</div>
+							)}
 						</div>
 					);
 				})
@@ -219,15 +313,17 @@ const leadText = "text-[0.8125rem] leading-5 whitespace-pre-line lg:text-[1.125r
 		</div>
 	</div>
 
-	<div
-		class="relative z-2 mx-6 mt-12 h-1.5 overflow-hidden rounded-full bg-white/12 lg:hidden"
-		data-rail={id}
-		aria-hidden="true"
-	>
-		<span
-			class="absolute inset-y-0 left-0 block w-6 touch-none rounded-full bg-white/45 will-change-transform"
-			data-rail-thumb></span>
-	</div>
+	{!twoColumn && (
+		<div
+			class="relative z-2 mx-6 mt-12 h-1.5 overflow-hidden rounded-full bg-white/12 lg:hidden"
+			data-rail={id}
+			aria-hidden="true"
+		>
+			<span
+				class="absolute inset-y-0 left-0 block w-6 touch-none rounded-full bg-white/45 will-change-transform"
+				data-rail-thumb></span>
+		</div>
+	)}
 </section>
 
 <style>

@@ -7,7 +7,7 @@ import iplixMedia from "../assets/images/home_page/trusted_by/iplix_media_logo.s
 import circuit from "../assets/images/home_page/trusted_by/circuit_logo.png";
 import contraband from "../assets/images/home_page/trusted_by/contraband_logo.svg";
 import lovetc from "../assets/images/home_page/trusted_by/lovetc_logo.svg";
-import glenwalk from "../assets/images/home_page/trusted_by/the_glenwalk_logo.svg";
+import glenwalk from "../assets/images/home_page/trusted_by/the_glenwalk_logo.webp";
 
 /** Per-side spacing in design px; omitted sides are 0. */
 export interface TrustedByBox {
@@ -75,9 +75,9 @@ export const TRUSTED_BY_LOGOS: TrustedByLogo[] = [
 	{
 		src: glenwalk,
 		alt: "The Glenwalk",
-		w: 212,
-		h: 48,
-		mobile: { width: 100, height: 23 },
-		desktop: { width: 190, height: 43 },
+		w: 424,
+		h: 70,
+		mobile: { width: 100, height: 17 },
+		desktop: { width: 190, height: 31 },
 	},
 ];

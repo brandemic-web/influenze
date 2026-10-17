@@ -1,0 +1,6 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="lucide/circle-dollar-sign">
+<rect width="48" height="48" rx="9.6" fill="#242433"/>
+<path id="Vector" d="M29 19H21.5C20.837 19 20.2011 19.2634 19.7322 19.7322C19.2634 20.2011 19 20.837 19 21.5C19 22.163 19.2634 22.7989 19.7322 23.2678C20.2011 23.7366 20.837 24 21.5 24H26.5C27.163 24 27.7989 24.2634 28.2678 24.7322C28.7366 25.2011 29 25.837 29 26.5C29 27.163 28.7366 27.7989 28.2678 28.2678C27.7989 28.7366 27.163 29 26.5 29H19M24 31.5V16.5M36.5 24C36.5 30.9036 30.9036 36.5 24 36.5C17.0964 36.5 11.5 30.9036 11.5 24C11.5 17.0964 17.0964 11.5 24 11.5C30.9036 11.5 36.5 17.0964 36.5 24Z" stroke="#3AFF98" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+</svg>

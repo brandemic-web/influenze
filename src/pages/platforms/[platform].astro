@@ -1,0 +1,124 @@
+---
+/**
+ * /platforms/<slug>: creator search on one social platform, from the Figma "Platform"
+ * frame. Content comes from the slug's Sanity "Platform Page" document, falling back
+ * to data/platform (see lib/platform-source.ts).
+ */
+import type { GetStaticPaths } from "astro";
+import Layout from "../../layouts/Layout.astro";
+import PlatformHero from "../../components/platform/PlatformHero.astro";
+import CardRail from "../../components/platform/CardRail.astro";
+import IconCard from "../../components/platform/IconCard.astro";
+import IconCardSection from "../../components/platform/IconCardSection.astro";
+import WhoForSection from "../../components/platform/WhoForSection.astro";
+import ExampleBriefs from "../../components/platform/ExampleBriefs.astro";
+import WhatMatters from "../../components/platform/WhatMatters.astro";
+import CreatorsAI from "../../components/home/CreatorsAI.astro";
+import TwoTone from "../../components/compare/TwoTone.astro";
+import BlogFaq from "../../components/blog/BlogFaq.astro";
+import { APP_URL } from "../../data/site";
+import { FAQS } from "../../data/faqs";
+import { SHOW_DRAFTS } from "../../data/compare";
+import { plainText } from "../../data/platform";
+import { getPlatform, getPlatforms } from "../../lib/platform-source";
+import { getPerspectiveCookie } from "../../lib/draft-mode";
+import { parseStructuredDataOverride } from "../../sanity/lib/customSchema";
+
+// Built once per slug in production; rendered on request in dev, where Astro caches
+// getStaticPaths and a renamed or new slug would otherwise 404 until restart.
+export const prerender = import.meta.env.PROD;
+
+export const getStaticPaths = (async () => {
+	const pages = await getPlatforms();
+	return pages.filter((p) => !p.draft || SHOW_DRAFTS).map((p) => ({ params: { platform: p.slug } }));
+}) satisfies GetStaticPaths;
+
+const page = await getPlatform(Astro.params.platform, getPerspectiveCookie(Astro.cookies));
+if (!page || (page.draft && !SHOW_DRAFTS)) return Astro.rewrite("/404");
+const { copy } = page;
+const overrides = page.seoOverrides;
+const faqs = page.faqs ?? FAQS;
+
+// Built from the same list the page renders, so the JSON-LD can't drift from it.
+const schema = [
+	{
+		"@type": "FAQPage",
+		mainEntity: faqs.map((faq) => ({
+			"@type": "Question",
+			name: faq.question,
+			acceptedAnswer: { "@type": "Answer", text: faq.answer },
+		})),
+	},
+];
+
+const sectionHeading = "text-center text-[1.875rem] capitalize leading-[1.15] [text-box:trim-both_cap_alphabetic] lg:text-[2.25rem]";
+---
+
+<Layout
+	title={page.seo.title}
+	description={page.seo.description}
+	noindex={page.draft || (overrides?.noindex ?? false)}
+	canonicalUrl={overrides?.canonicalUrl}
+	schema={schema}
+	structuredDataOverride={parseStructuredDataOverride(overrides?.customSchema)}
+	scripts={page.scripts}
+	fluidRem
+>
+	<main>
+		<PlatformHero page={page} />
+		{/*
+			One backdrop for everything below the hero, as drawn: a purple band behind the
+			search-by cards, a second peaking between "who is it for" and the briefs, then
+			black. Stops are the design's distances from this wrapper's top (1440px down the
+			frame), in rem.
+		*/}
+		<div
+			style="background: linear-gradient(180deg, #0b0a11 0rem, #110e1a 3.75rem, #1c1733 10rem, #30205d 16.25rem, #5130b8 35rem, #2e2158 44.375rem, #151223 53.75rem, #0d0b12 63.125rem, #040306 72.5rem, #070510 81.875rem, #150e2a 91.25rem, #221744 100.625rem, #3a2873 110rem, #7c55f8 138.125rem, #6343c9 147.5rem, #4b3199 156.875rem, #321f6a 166.25rem, #180f37 175.625rem, #010101 185rem)"
+		>
+			<section class="relative pt-16 lg:pt-[9rem]" aria-labelledby="search-by-heading">
+				<p class="text-center text-[0.875rem] uppercase text-brand-primary [text-box:trim-both_cap_alphabetic] lg:text-[1.125rem]">
+					{plainText(copy.searchByEyebrow)}
+				</p>
+				<h2 id="search-by-heading" class:list={[sectionHeading, "mt-5 px-6 text-white lg:mt-[2.6875rem]"]}>
+					<TwoTone text={copy.searchByHeading} />
+				</h2>
+				<CardRail inset={2.375} class="mt-10 lg:mt-[3.9375rem]">
+					{
+						page.searchByList.map((card) => (
+							<li class="swiper-slide">
+								<IconCard icon={card.icon} title={card.title} body={card.body} class="lg:h-[10.125rem]" />
+							</li>
+						))
+					}
+				</CardRail>
+			</section>
+
+			<div class="lg:pt-[10.1875rem]">
+				<CreatorsAI
+					headingText={copy.creatorsAiHeading}
+					button={{ label: plainText(copy.creatorsAiButton), href: APP_URL, newTab: true }}
+					backdrop={false}
+				/>
+			</div>
+
+			<WhoForSection heading={copy.whoForHeading} cards={page.whoForList} gap={12.8125} />
+
+			<ExampleBriefs heading={copy.briefsHeading} briefs={page.briefList} />
+
+			<WhatMatters heading={copy.mattersHeading} points={page.mattersList} stats={page.statList} />
+
+			<IconCardSection id="freshness" heading={copy.freshnessHeading} cards={page.freshnessList} gap={9} cardsGap={3.375} cardHeight={13.375} />
+
+			<div class="pt-16 lg:pt-[10.875rem]">
+				<BlogFaq
+					heading={plainText(copy.faqHeading)}
+					subcopy={plainText(copy.faqSubcopy)}
+					faqs={faqs}
+					align="wide"
+					size="section"
+					transparent
+				/>
+			</div>
+		</div>
+	</main>
+</Layout>

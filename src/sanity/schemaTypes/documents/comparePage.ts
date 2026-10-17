@@ -9,6 +9,7 @@ import {
 	type SectionCopyKey,
 } from "../../../data/compare/shared";
 import { UPFLUENCE } from "../../../data/compare/upfluence";
+import { copyField } from "../../lib/copyField";
 
 /**
  * One /compare/<slug> page: the competitor's half of the comparison. Influenze's
@@ -37,30 +38,9 @@ const cellFields = (rows: readonly { id: string; label: string }[]) =>
 		}),
 	);
 
-/**
- * A section heading or subheading, from SECTION_COPY_FIELDS. Empty keeps the default,
- * which the field shows as its placeholder. The page reads these as `headings`.
- */
-const headingField = (key: SectionCopyKey, group: string) => {
-	const f = SECTION_COPY_FIELDS.find((field) => field.key === key)!;
-	const long = "long" in f && f.long;
-	const green = "twoTone" in f && f.twoTone;
-	return defineField({
-		name: key,
-		title: f.title,
-		type: long ? "text" : "string",
-		...(long ? { rows: 2 } : {}),
-		group,
-		placeholder: f.default,
-		description: [
-			"Leave empty to keep the default.",
-			f.default.includes("{name}") && "{name} becomes the competitor's name.",
-			green && "Wrap words in *stars* to make them green.",
-		]
-			.filter(Boolean)
-			.join(" "),
-	});
-};
+/** A section heading or subheading, from SECTION_COPY_FIELDS; the page reads these as `headings`. */
+const headingField = (key: SectionCopyKey, group: string) =>
+	copyField(SECTION_COPY_FIELDS.find((field) => field.key === key)!, group);
 
 /** An empty cell, with the design's dash wherever Influenze shows a tick. */
 const blankCell = (row: CompareRow) => ({ _type: "compareCell", text: "", mark: Boolean(row.influenze.mark) });

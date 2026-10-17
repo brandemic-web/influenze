@@ -1,0 +1,93 @@
+---
+/**
+ * "The fastest way to discover and evaluate the right creators" — a two-line heading
+ * staggered as drawn, over three of the app's search-result rows that fade into a
+ * blurred shadow. Rows are rebuilt as markup from the design (879×107, 8px apart).
+ */
+import { Image } from "astro:assets";
+import Icon from "../app/common/Icon.astro";
+import PlatformIcon from "../app/common/PlatformIcon.astro";
+import VerifiedBadge from "../app/common/VerifiedBadge.astro";
+import TwoTone from "../compare/TwoTone.astro";
+import saloni from "../../assets/images/feature_page/results/avatar_saloni.png";
+import justin from "../../assets/images/feature_page/results/avatar_justin.png";
+import placeholder from "../../assets/images/feature_page/results/avatar_placeholder.png";
+import { RESULT_ROWS } from "../../data/feature";
+
+interface Props {
+	line1: string;
+	line2: string;
+}
+
+const { line1, line2 } = Astro.props;
+const avatars = { saloni, justin, placeholder } as const;
+const levelColour = { GOOD: "text-[#3fbd71]", AVERAGE: "text-[#f2994a]" } as const;
+// Below lg the two lines run together as one heading.
+const line = "text-[1.875rem] capitalize leading-[1.15] lg:block lg:text-9xl lg:leading-[4.375rem] lg:[text-box:trim-both_cap_alphabetic]";
+---
+
+<section class="relative px-6 pt-20 lg:px-0 lg:pt-[11.5625rem]" aria-labelledby="fastest-heading">
+	<h2 id="fastest-heading" class="text-[1.875rem] leading-[1.15] text-white lg:w-[108rem] lg:text-9xl lg:mx-[calc(50%-54rem)]">
+		<span class:list={[line, "lg:ml-[6.875rem]"]}><TwoTone text={line1} /></span>{" "}
+		<span class:list={[line, "lg:mt-[2.75rem] lg:ml-[37.5625rem]"]}><TwoTone text={line2} /></span>
+	</h2>
+
+	{/* 419px from the frame's left, as drawn — not quite centred. Below lg each row stacks. */}
+	<div class="relative mx-auto mt-8 max-w-[54.9375rem] lg:mt-[1.5625rem] lg:ml-[calc(50%-27.8125rem)]" aria-hidden="true">
+		<ul class="flex flex-col gap-2 font-sans lg:w-[54.9375rem]">
+			{
+				RESULT_ROWS.map((row) => (
+					<li class="relative grid grid-cols-[3rem_1fr] gap-x-3 gap-y-1.5 rounded-sm border border-[#2c2c3c] bg-[#181822] p-4 lg:block lg:h-[6.6875rem] lg:p-0">
+						<Image
+							src={avatars[row.avatar]}
+							alt=""
+							width={61}
+							height={61}
+							class="row-span-2 size-12 self-center rounded-full lg:absolute lg:top-4 lg:left-[2.3125rem] lg:size-[3.8125rem]"
+							loading="lazy"
+						/>
+						<span class="flex items-center gap-1 self-end text-[1rem] leading-none text-white lg:absolute lg:top-[1.125rem] lg:left-[7.5rem] lg:leading-[0.75rem]">
+							{row.name}
+							<VerifiedBadge size="0.75rem" />
+						</span>
+						<span class="flex items-center gap-1.5 self-start lg:absolute lg:top-[2.25rem] lg:left-[7.5rem]">
+							<span class="text-[0.75rem] leading-none font-medium text-[#bfabff] lg:text-[0.625rem]">{row.handle}</span>
+							<span class="rounded-[0.375rem] bg-[#33294c] px-[0.3rem] py-[0.2rem] text-[0.5625rem] leading-none text-[#dac9ff] lg:text-[0.375rem]">
+								{row.tier}
+							</span>
+						</span>
+						<span class="col-span-2 my-1.5 h-px bg-[#3c3c5b] lg:absolute lg:top-[3.875rem] lg:left-[7.5rem] lg:my-0 lg:w-[46.5625rem]" />
+						<span class="col-span-2 flex items-center gap-[1.2rem] text-[0.75rem] leading-none text-[#c9c9c9] lg:absolute lg:top-[4.8125rem] lg:left-[7.5rem] lg:text-[0.625rem]">
+							<span class="flex items-center gap-1">
+								<Icon name="mapPin" size="0.625rem" />
+								{row.location}
+							</span>
+							<span>{row.gender}</span>
+							<span>{row.language}</span>
+						</span>
+						<span class="absolute top-4 right-4 flex gap-1 lg:top-[1.1875rem] lg:right-auto lg:left-[20.5rem]">
+							{row.platforms.map((p) => (
+								<PlatformIcon platform={p} tile="1.5625rem" glyph="0.75rem" radius="0.375rem" />
+							))}
+						</span>
+						<span class="col-span-2 mt-2 flex gap-8 lg:contents">
+							<span class="flex flex-col gap-1.5 lg:contents">
+								<span class="text-[0.625rem] leading-none text-[#8379a4] lg:absolute lg:top-[1.0625rem] lg:left-[33.375rem] lg:text-[0.5rem]">Aggregate Followers</span>
+								<span class="text-[0.9375rem] leading-none text-white lg:absolute lg:top-[1.875rem] lg:left-[33.375rem] lg:text-[0.875rem]">{row.followers}</span>
+							</span>
+							<span class="flex flex-col gap-1.5 lg:contents">
+								<span class="text-[0.625rem] leading-none text-[#8379a4] lg:absolute lg:top-[1.0625rem] lg:left-[39.8125rem] lg:text-[0.5rem]">Engagement Rate</span>
+								<span class="flex items-baseline gap-1 lg:absolute lg:top-[1.875rem] lg:left-[39.8125rem]">
+									<span class="text-[0.9375rem] leading-none text-white lg:text-[0.875rem]">{row.engagement}</span>
+									<span class:list={["text-[0.5625rem] leading-none lg:text-[0.5rem]", levelColour[row.level]]}>{row.level}</span>
+								</span>
+							</span>
+						</span>
+					</li>
+				))
+			}
+		</ul>
+		{/* The design's blurred black ellipse, fading the last rows into the page. */}
+		<div class="pointer-events-none absolute top-[16.75rem] -left-[6.0625rem] h-[12.875rem] w-[67.8125rem] rounded-full bg-black blur-[6.25rem] max-lg:hidden" />
+	</div>
+</section>

@@ -176,10 +176,9 @@ export const WORKFLOW_STEPS = [
 	{ id: "analyze", title: "Analyze", icon: "eyeSmall", influenze: "Core" },
 	{ id: "shortlist", title: "Shortlist & Compare", icon: "hourglass", influenze: "Core" },
 	{ id: "share", title: "Share", icon: "share", influenze: "Core" },
-	// "Core" for these two is as drawn, but the feature table says outreach happens
-	// elsewhere — confirm before publishing.
+	// "Core" is as drawn, but the feature table says outreach happens elsewhere —
+	// confirm before publishing.
 	{ id: "outreach", title: "Outreach", icon: "mail", influenze: "Core" },
-	{ id: "tracking", title: "Tracking & Payments", icon: "chartColumnIncreasing", influenze: "Core" },
 ] as const satisfies readonly { id: string; title: string; icon: WorkflowIconName; influenze: string }[];
 
 export type WorkflowStepId = (typeof WORKFLOW_STEPS)[number]["id"];
@@ -287,17 +286,33 @@ export const SECTION_COPY_FIELDS = [
 	{ key: "scenariosHeading", title: "Scenarios — heading", default: "Which Fits Your Scenario?", twoTone: true },
 	{ key: "faqHeading", title: "FAQ — heading", default: FAQ_HEADING },
 	{ key: "faqSubcopy", title: "FAQ — subheading", default: FAQ_SUBCOPY, long: true },
-] as const satisfies readonly { key: string; title: string; default: string; twoTone?: boolean; long?: boolean }[];
+] as const satisfies readonly CopyField[];
 
 export type SectionCopyKey = (typeof SECTION_COPY_FIELDS)[number]["key"];
 export type SectionCopy = Record<SectionCopyKey, string>;
 
-/** Overrides layered on the defaults, with `{name}` filled in. Blank overrides keep the default. */
-export function resolveSectionCopy(overrides: Partial<Record<string, string | undefined>> | undefined, name: string) {
-	return Object.fromEntries(
-		SECTION_COPY_FIELDS.map((f) => {
-			const value = overrides?.[f.key]?.trim();
-			return [f.key, fillName(value || f.default, name)];
-		}),
-	) as SectionCopy;
+/** One editable heading or text: its key, Studio label and default. */
+export interface CopyField {
+	key: string;
+	title: string;
+	default: string;
+	/** `*stars*` render brand green. */
+	twoTone?: boolean;
+	/** A multi-line field in Studio. */
+	long?: boolean;
 }
+
+/** Any copy-field list's overrides layered on its defaults, `{name}` filled in. Blank keeps the default. */
+export function resolveCopy<K extends string>(
+	fields: readonly (CopyField & { key: K })[],
+	overrides: Partial<Record<string, string | undefined>> | undefined,
+	name: string,
+) {
+	return Object.fromEntries(
+		fields.map((f) => [f.key, fillName(overrides?.[f.key]?.trim() || f.default, name)]),
+	) as Record<K, string>;
+}
+
+/** Overrides layered on the defaults, with `{name}` filled in. Blank overrides keep the default. */
+export const resolveSectionCopy = (overrides: Partial<Record<string, string | undefined>> | undefined, name: string) =>
+	resolveCopy(SECTION_COPY_FIELDS, overrides, name) as SectionCopy;

@@ -1,0 +1,66 @@
+---
+/**
+ * Alternative-page hero: eyebrow, two-line title, the framed intro with its three
+ * floating pills, then the CTAs. Backdrop and pills are the compare hero's; only the
+ * pills' lg-up positions differ, measured off the Figma frame against the 516px box.
+ */
+import Button from "../common/Button.astro";
+import HeroBackdrop from "../compare/HeroBackdrop.astro";
+import HeroPills from "../compare/HeroPills.astro";
+import { APP_URL } from "../../data/site";
+import { ALTERNATIVE_HERO, plainText } from "../../data/alternative";
+import type { ResolvedAlternative } from "../../lib/alternative-source";
+
+interface Props {
+	competitor: ResolvedAlternative;
+}
+
+const { copy } = Astro.props.competitor;
+---
+
+<section class="relative overflow-hidden" aria-labelledby="alternative-title">
+	<HeroBackdrop />
+
+	{/* The 150px gap below the CTAs is the hero's own padding, so its wash fades out over it, as drawn. */}
+	<div class="relative mx-auto flex max-w-370 flex-col items-center px-6 pt-32 pb-16 text-center lg:pt-59 lg:pb-37.5">
+		<div class="flex flex-col items-center" data-reveal data-reveal-stagger="0.1">
+			<p class="text-[0.875rem] uppercase text-brand-primary lg:text-[1.125rem]">
+				{plainText(copy.heroEyebrow)}
+			</p>
+			<h1
+				id="alternative-title"
+				class="mt-2 max-w-264 text-[2.125rem] leading-[1.1] tracking-[-0.08rem] lg:whitespace-pre-line text-white lg:mt-4 lg:text-9xl lg:leading-17.5"
+			>
+				{plainText(copy.heroTitle)}
+			</h1>
+		</div>
+
+		<div class="relative mt-10 w-full max-w-129 lg:mt-15">
+			<p
+				class="rounded-sm border border-[#19123a] bg-[#010101]/50 px-6 py-8 text-[1rem] leading-6.5 text-white lg:px-9 lg:py-11 lg:text-[1.125rem] lg:leading-7"
+			>
+				{plainText(copy.heroBody)}
+			</p>
+
+			<HeroPills
+				profiles="lg:top-14 lg:right-[calc(100%-1.0625rem)]"
+				credits="lg:top-2 lg:left-[calc(100%-1.375rem)]"
+				platforms="lg:top-[10.1875rem] lg:left-1/2 lg:-translate-x-1/2"
+			/>
+		</div>
+
+		<div class="mt-8 flex flex-wrap justify-center gap-4 lg:mt-27.25 lg:gap-5.5">
+			<Button href={APP_URL} newTab>{ALTERNATIVE_HERO.primaryCta}</Button>
+			<a
+				href="#comparison"
+				class="inline-flex items-center rounded-full bg-button-primary px-4 py-3 text-[0.75rem] leading-none text-button-text transition-colors duration-300 hover:bg-brand-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary lg:px-7.5 lg:py-4 lg:text-xs"
+			>
+				{plainText(copy.secondaryCta)}
+			</a>
+		</div>
+	</div>
+</section>
+
+<script>
+	import "../../scripts/reveals";
+</script>

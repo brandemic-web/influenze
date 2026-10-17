@@ -16,6 +16,11 @@ import blogPost from "./documents/blogPost";
 import blogCategory from "./documents/blogCategory";
 import blogAuthor from "./documents/blogAuthor";
 import comparePage from "./documents/comparePage";
+import alternativePage from "./documents/alternativePage";
+import platformPage from "./documents/platformPage";
+import featureLandingPage from "./documents/featurePage";
+import pricingGuidePage from "./documents/pricingGuidePage";
+import icpPage from "./documents/icpPage";
 
 export const schemaTypes = [
 	// objects
@@ -39,4 +44,9 @@ export const schemaTypes = [
 	blogCategory,
 	blogAuthor,
 	comparePage,
+	alternativePage,
+	platformPage,
+	featureLandingPage,
+	pricingGuidePage,
+	icpPage,
 ];

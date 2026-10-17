@@ -2,19 +2,16 @@
 /**
  * Compare-page hero: the "vs" title, the framed question with its three floating
  * pills, the intro and CTAs, then the two "Choose …" cards. Below `lg` the pills
- * drop out of their absolute positions into a centred row under the frame. The
- * backdrop — gradient, arcs, side and centre glows — is HomeHero's, placed the same way.
+ * drop out of their absolute positions into a centred row under the frame.
  */
 import Button from "../common/Button.astro";
 import Icon from "../app/common/Icon.astro";
-import PlatformIcon from "../app/common/PlatformIcon.astro";
 import { APP_URL } from "../../data/site";
 import TwoTone from "./TwoTone.astro";
+import HeroBackdrop from "./HeroBackdrop.astro";
+import HeroPills from "./HeroPills.astro";
 import { COMPARE_HERO, plainText } from "../../data/compare";
 import type { ResolvedCompetitor } from "../../lib/compare-source";
-import backgroundArcs from "../../assets/images/home_page/hero/bg_svg_lines_hero.svg";
-import darkLayerSide from "../../assets/images/home_page/hero/dark_layer_side.svg";
-import darkLayerCenter from "../../assets/images/home_page/hero/dark_layer_center.svg";
 import infoCircle from "../../assets/images/compare_page/choose_cards/info_circle.svg";
 
 interface Props {
@@ -23,62 +20,21 @@ interface Props {
 
 const { competitor } = Astro.props;
 const { copy } = competitor;
-const pill =
-	"flex w-fit items-center gap-2.5 rounded-full border border-white/20 bg-surface-pill/60 py-2 pr-4 pl-2 leading-5 whitespace-nowrap text-white lg:py-3 lg:pr-4.5 lg:pl-4";
-const pillText = "text-[0.8125rem] lg:text-xs";
 // The brand name is green wherever the intro mentions it, as drawn.
 const BRAND = "Influenze.ai";
 const introParts = competitor.intro.split(BRAND);
-const pillIcon = "grid size-6 place-items-center rounded-full bg-brand-primary/35 text-brand-primary lg:size-7";
 ---
 
 <section class="relative overflow-hidden" aria-labelledby="compare-title">
-	<div
-		class="pointer-events-none absolute inset-0 bg-[linear-gradient(179.95deg,#11092B_0%,#6838FF_5.85%,#26195A_100%)]"
-		aria-hidden="true"
-	>
-	</div>
-
-	<div class="pointer-events-none absolute top-18 left-1/2 w-full -translate-x-1/2 lg:top-36" aria-hidden="true">
-		<img
-			src={backgroundArcs.src}
-			alt=""
-			class="absolute left-1/2 w-[120%] max-w-none -translate-x-1/2 lg:left-0 lg:w-full lg:max-w-full lg:translate-x-0"
-			loading="eager"
-			fetchpriority="high"
-			width={backgroundArcs.width}
-			height={backgroundArcs.height}
-		/>
-	</div>
-
-	{/*
-		The glows centre on the title-to-CTA block, as HomeHero's centre on its title and
-		copy card; the content comes later in the markup, so it paints above them.
-	*/}
-	<div class="pointer-events-none absolute inset-x-0 top-0 h-[44rem] lg:h-[63rem]" aria-hidden="true">
-		<img
-			src={darkLayerSide.src}
-			alt=""
-			class="absolute top-0 left-0 h-[50%] -translate-x-1/2 lg:top-1/2 lg:h-auto lg:max-w-none lg:-translate-y-1/2"
-		/>
-		<img
-			src={darkLayerSide.src}
-			alt=""
-			class="absolute top-0 right-0 h-[50%] translate-x-1/2 lg:top-1/2 lg:h-auto lg:max-w-none lg:-translate-y-1/2"
-		/>
-		<img
-			src={darkLayerCenter.src}
-			alt=""
-			class="absolute top-8 left-1/2 -translate-x-1/2 lg:top-1/2 lg:max-w-none lg:-translate-y-1/2"
-		/>
-	</div>
+	{/* Ends on the feature table's opening purple, so the two meet without a seam. */}
+	<HeroBackdrop fade="#26195A" />
 
 	<div class="relative mx-auto flex max-w-370 flex-col items-center px-6 pt-32 pb-0 text-center lg:pt-59">
 		<div class="flex flex-col items-center" data-reveal data-reveal-stagger="0.1">
 			<p class="text-[0.875rem] uppercase text-brand-primary lg:text-[1.125rem]">
 				{plainText(copy.heroEyebrow)}
 			</p>
-			<h1 id="compare-title" class="mt-2 text-3xl leading-[1.1] text-white lg:mt-4 lg:text-9xl">
+			<h1 id="compare-title" class="mt-2 text-[2.125rem] leading-[1.1] text-white lg:mt-4 lg:text-9xl">
 				{plainText(copy.heroTitle)}
 			</h1>
 		</div>
@@ -95,25 +51,11 @@ const pillIcon = "grid size-6 place-items-center rounded-full bg-brand-primary/3
 				<TwoTone text={copy.heroQuestion} />
 			</p>
 
-			<ul class="mt-6 flex flex-wrap justify-center gap-3 lg:contents" aria-label="At a glance">
-				<li class:list={[pill, "text-[16px] lg:absolute lg:top-[56%] lg:right-[calc(100%-1.5rem)]"]}>
-					<span class={pillIcon}><Icon name="usersRound" size="1rem" /></span>
-					{COMPARE_HERO.pills.profiles}
-				</li>
-				<li class:list={[pill, "text-[16px] lg:absolute lg:top-9.75 lg:left-[calc(100%-2.125rem)]"]}>
-					<span class={pillIcon}><Icon name="coins" size="1rem" /></span>
-					{COMPARE_HERO.pills.credits}
-				</li>
-				<li class:list={[pill, pillText, "lg:absolute lg:-bottom-8.75 lg:left-1/2 lg:-translate-x-1/2"]}>
-					{/* Overlapping tiles, as the app shows a creator's platforms. */}
-					<span class="flex -space-x-1.5" aria-hidden="true">
-						<PlatformIcon platform="instagram" radius="999px" class="ring-1 ring-surface-pill" />
-						<PlatformIcon platform="youtube" radius="999px" class="ring-1 ring-surface-pill" />
-						<PlatformIcon platform="tiktok" radius="999px" class="ring-1 ring-surface-pill" />
-					</span>
-					{COMPARE_HERO.pills.platforms}
-				</li>
-			</ul>
+			<HeroPills
+				profiles="lg:top-[56%] lg:right-[calc(100%-1.5rem)]"
+				credits="lg:top-9.75 lg:left-[calc(100%-2.125rem)]"
+				platforms="lg:-bottom-8.75 lg:left-1/2 lg:-translate-x-1/2"
+			/>
 		</div>
 
 		<p class="mt-8 max-w-146 text-[1rem] leading-6.5 text-white lg:mt-24 lg:text-[1.125rem] lg:leading-7">

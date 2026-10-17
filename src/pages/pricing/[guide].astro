@@ -1,0 +1,91 @@
+---
+/**
+ * /pricing/<slug>: credits explained end to end, from the Figma "Pricing Guide" frame.
+ * Content comes from the slug's Sanity "Pricing Guide Page", falling back to
+ * data/pricing-guide (see lib/pricing-guide-source.ts). /pricing itself is untouched;
+ * the plans panel here is that page's own component, so prices stay in one place.
+ */
+import type { GetStaticPaths } from "astro";
+import Layout from "../../layouts/Layout.astro";
+import PricingGuideHero from "../../components/pricing-guide/PricingGuideHero.astro";
+import CreditEstimator from "../../components/pricing-guide/CreditEstimator.astro";
+import OneTimeCampaign from "../../components/pricing-guide/OneTimeCampaign.astro";
+import PricingPlans from "../../components/pricing/PricingPlans.astro";
+import CompareTable from "../../components/compare/CompareTable.astro";
+import BlogFaq from "../../components/blog/BlogFaq.astro";
+import { FAQS } from "../../data/faqs";
+import { SHOW_DRAFTS } from "../../data/compare";
+import { plainText } from "../../data/pricing-guide";
+import { getPricingGuide, getPricingGuides } from "../../lib/pricing-guide-source";
+import { getPerspectiveCookie } from "../../lib/draft-mode";
+import { parseStructuredDataOverride } from "../../sanity/lib/customSchema";
+
+// Built once per slug in production; rendered on request in dev, where Astro caches
+// getStaticPaths and a renamed or new slug would otherwise 404 until restart.
+export const prerender = import.meta.env.PROD;
+
+export const getStaticPaths = (async () => {
+	const pages = await getPricingGuides();
+	return pages.filter((p) => !p.draft || SHOW_DRAFTS).map((p) => ({ params: { guide: p.slug } }));
+}) satisfies GetStaticPaths;
+
+const page = await getPricingGuide(Astro.params.guide, getPerspectiveCookie(Astro.cookies));
+if (!page || (page.draft && !SHOW_DRAFTS)) return Astro.rewrite("/404");
+const { copy } = page;
+const overrides = page.seoOverrides;
+const faqs = page.faqs ?? FAQS;
+
+const schema = [
+	{
+		"@type": "FAQPage",
+		mainEntity: faqs.map((faq) => ({
+			"@type": "Question",
+			name: faq.question,
+			acceptedAnswer: { "@type": "Answer", text: faq.answer },
+		})),
+	},
+];
+---
+
+<Layout
+	title={page.seo.title}
+	description={page.seo.description}
+	noindex={page.draft || (overrides?.noindex ?? false)}
+	canonicalUrl={overrides?.canonicalUrl}
+	schema={schema}
+	structuredDataOverride={parseStructuredDataOverride(overrides?.customSchema)}
+	scripts={page.scripts}
+	fluidRem
+>
+	{/*
+		One backdrop for the whole page, as drawn: a purple band behind the hero, a second
+		behind the plans, then glows either side of the comparison table. Stops are the
+		design's distances from the top of the frame, in rem.
+	*/}
+	<main
+		style="background:
+			radial-gradient(ellipse 22% 22rem at 0% 310rem, rgba(104, 56, 252, 0.95), transparent),
+			radial-gradient(ellipse 22% 22rem at 100% 310rem, rgba(104, 56, 252, 0.95), transparent),
+			linear-gradient(180deg, #030304 0rem, #0c0919 6.25rem, #0c0a11 12.5rem, #120f1c 18.75rem, #1b1729 25rem, #2d214f 31.25rem, #5231bc 37.5rem, #6738fb 43.75rem, #6838fe 50rem, #5532c3 56.25rem, #2b224d 62.5rem, #1e1a2c 68.75rem, #13101e 75rem, #0e0c13 81.25rem, #07070a 87.5rem, #020203 93.75rem, #010101 100rem, #010101 106.25rem, #16102b 118.75rem, #1f153c 125rem, #281c50 131.25rem, #392771 137.5rem, #4a3392 143.75rem, #5a3eb3 150rem, #6a49d3 156.25rem, #7a54f3 162.5rem, #7651ec 168.75rem, #6645cc 175rem, #5439ac 181.25rem, #452e8e 187.5rem, #33216d 193.75rem, #23164e 200rem, #120b27 206.25rem, #020202 212.5rem, #010101 268.75rem, #1b162d 293.75rem, #271c4b 300rem, #3c238d 306.25rem, #5332b7 318.75rem, #2c244b 325rem, #1f1a30 331.25rem, #171322 337.5rem, #0e0c15 343.75rem, #030304 356.25rem)"
+	>
+		<PricingGuideHero copy={copy} rows={page.creditList} />
+		<CreditEstimator copy={copy} />
+		<PricingPlans embedded class="pt-16 pb-12 lg:pt-[7.25rem] lg:pb-[3.375rem]" />
+		<OneTimeCampaign heading={copy.oneTimeHeading} body={copy.oneTimeBody} />
+		<CompareTable
+			id="quote-led"
+			variant="quote"
+			background="transparent"
+			cornerLabel={plainText(copy.quoteCorner)}
+			competitorTone="bright"
+			heading={copy.quoteHeading}
+			subcopy=""
+			competitorName={plainText(copy.quoteThem)}
+			rows={page.quoteRows}
+			cells={page.quoteCells}
+		/>
+		<div class="pt-16 lg:pt-[10.75rem]">
+			<BlogFaq heading={plainText(copy.faqHeading)} subcopy={plainText(copy.faqSubcopy)} faqs={faqs} align="wide" size="section" transparent />
+		</div>
+	</main>
+</Layout>

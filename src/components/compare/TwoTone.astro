@@ -2,20 +2,22 @@
 /**
  * Renders a heading string's `*starred*` words in brand green — see `twoTone` in
  * data/compare/shared.ts. `accentBlock` puts each green run on its own line, as
- * the pricing heading is drawn.
+ * the pricing heading is drawn. `accentClass` restyles the starred run, for headings
+ * drawn green throughout with an italic word instead.
  */
 import { twoTone } from "../../data/compare";
 
 interface Props {
 	text: string;
 	accentBlock?: boolean;
+	accentClass?: string;
 }
 
-const { text, accentBlock = false } = Astro.props;
+const { text, accentBlock = false, accentClass = "text-brand-primary" } = Astro.props;
 ---
 
 {
 	twoTone(text).map((s) =>
-		s.accent ? <span class:list={["text-brand-primary", accentBlock && "block"]}>{s.text}</span> : s.text,
+		s.accent ? <span class:list={[accentClass, accentBlock && "block"]}>{s.text}</span> : s.text,
 	)
 }

@@ -52,6 +52,5 @@ export const UPFLUENCE: Competitor = {
 		shortlist: TBC,
 		share: TBC,
 		outreach: TBC,
-		tracking: TBC,
 	},
 };

@@ -138,6 +138,14 @@
        middle of a large monitor. No upper cap on purpose (widest container is
        108rem, so this can never overflow); `100vh / 45` is a backstop for short or
        ultra-wide viewports. Both rules meet at exactly 16px, so no jump. */
+    /* Opt-in (Layout's fluidRem): below 1728 the root follows the window with no 12px
+       floor, so pages laid out at design positions never outgrow a 1024–1296px screen. */
+    @media (min-width: 1024px) and (max-width: 1727.98px) {
+        html.fluid-rem {
+            font-size: calc(100vw / 108);
+        }
+    }
+
     @media (min-width: 1728px) {
         html {
             font-size: max(16px, min(calc(100vw / 108), calc(100vh / 45)));
@@ -159,4 +167,12 @@
     h4 {
         @apply text-sm font-semibold;
     }
+}
+/* The landing-page card edge: a 1px border fading #19123a → #575757 left to right
+   over a black fill, as the compare-family designs draw every outlined card. */
+@utility card-edge {
+    border: 1px solid transparent;
+    background:
+        linear-gradient(#010101, #010101) padding-box,
+        linear-gradient(90deg, #19123a, #575757) border-box;
 }

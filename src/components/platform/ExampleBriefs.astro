@@ -1,0 +1,230 @@
+---
+/**
+ * "Example briefs" — three brief cards in a dark panel, each tied to its own photos and
+ * the app's Creator Location field over them, at the design's offsets on a 1189×552
+ * stage. The active brief is outlined green and its set shown; the section steps through
+ * them on its own and on click (scripts/linked-showcase.ts), sets cross-fading in place.
+ * Without JS the first pairing shows, as drawn. Below lg the stage stacks.
+ */
+import { Image } from "astro:assets";
+import Icon from "../app/common/Icon.astro";
+import TwoTone from "../compare/TwoTone.astro";
+import skincareMain from "../../assets/images/platform_page/example_briefs/skincare_hand.png";
+import skincareDetail from "../../assets/images/platform_page/example_briefs/skincare_face.png";
+import cookingMain from "../../assets/images/platform_page/example_briefs/cooking_main.png";
+import cookingDetail from "../../assets/images/platform_page/example_briefs/cooking_detail.png";
+import fitnessMain from "../../assets/images/platform_page/example_briefs/fitness_main.png";
+import fitnessDetail from "../../assets/images/platform_page/example_briefs/fitness_detail.png";
+import type { CardText } from "../../data/platform";
+
+type Brief = CardText & { id: string; location?: string; photos: "skincare" | "cooking" | "fitness" };
+
+interface Props {
+	heading: string;
+	briefs: Brief[];
+	/** lg gap above the heading, in rem; heading size in rem. The ICP page draws it smaller and nearer. */
+	gap?: number;
+	headingSize?: number;
+	/** Gap from the heading to the panel, in rem. */
+	panelGap?: number;
+	/** lg left edge of the panel on the 108rem stage, in rem. */
+	left?: number;
+}
+
+const { heading, briefs, gap = 15.0625, headingSize = 3.4375, panelGap = 4.375, left = 18.3125 } = Astro.props;
+/** Everything right of the brief list sits a fixed distance from its left edge, as drawn. */
+const at = (offset: number) => `${left + offset}rem`;
+const PHOTOS = {
+	skincare: { main: skincareMain, detail: skincareDetail },
+	cooking: { main: cookingMain, detail: cookingDetail },
+	fitness: { main: fitnessMain, detail: fitnessDetail },
+} as const;
+const tabId = (id: string) => `brief-tab-${id}`;
+const panelId = (id: string) => `brief-panel-${id}`;
+---
+
+<section
+	class="relative px-6 pt-20 lg:px-0 lg:pt-(--gap)"
+	style={`--gap:${gap}rem;--hs:${headingSize}rem;--pg:${panelGap}rem;--l:${left}rem;--l-hand:${at(35)};--l-loc:${at(53.5)};--l-face:${at(59)}`}
+	aria-labelledby="briefs-heading"
+>
+	<h2
+		id="briefs-heading"
+		class="text-center text-[1.875rem] capitalize leading-[1.15] text-white [text-box:trim-both_cap_alphabetic] lg:text-(length:--hs)"
+	>
+		<TwoTone text={heading} />
+	</h2>
+
+	{/* Figma sets the block off-centre, so it is placed on the 108rem stage. */}
+	<div
+		class="showcase relative mx-auto mt-10 flex max-w-[74.3125rem] flex-col gap-8 lg:mt-(--pg) lg:block lg:h-[34.5rem] lg:w-[108rem] lg:mx-[calc(50%-54rem)] lg:max-w-none"
+		data-showcase
+	>
+		<div
+			class="flex flex-col gap-3 rounded-[1.25rem] bg-[#010101]/40 p-3 lg:absolute lg:top-[0.0625rem] lg:left-(--l) lg:w-[32.5625rem] lg:gap-[0.875rem] lg:px-[1.125rem] lg:pt-[1.3125rem] lg:pb-5"
+			role="tablist"
+			aria-orientation="vertical"
+			aria-label="Example briefs"
+		>
+			{
+				briefs.map((brief, i) => (
+					<button
+						type="button"
+						role="tab"
+						id={tabId(brief.id)}
+						aria-controls={panelId(brief.id)}
+						aria-selected={i === 0 ? "true" : "false"}
+						tabindex={i === 0 ? 0 : -1}
+						data-showcase-item
+						data-active={i === 0 ? "" : undefined}
+						class="brief card-edge relative flex cursor-pointer flex-col justify-center gap-5 overflow-hidden rounded-sm px-6 py-7 text-left lg:gap-7 lg:px-[3.625rem] lg:py-10"
+					>
+						<span class="text-[1.25rem] leading-7 text-white lg:w-[23.0625rem] lg:text-md lg:leading-7.5 lg:[text-box:trim-both_cap_alphabetic]">{brief.title}</span>
+						<span class="text-[0.9375rem] leading-6 text-[#CECECE]/70 lg:w-[23.0625rem] lg:text-[1.125rem] lg:leading-6.5 lg:[text-box:trim-both_cap_alphabetic]">
+							{brief.body}
+						</span>
+						{/* Time left on this brief before the next takes over. */}
+						<span class="brief-progress pointer-events-none absolute bottom-0 left-0 h-0.5 w-full origin-left bg-brand-primary/70" aria-hidden="true" />
+					</button>
+				))
+			}
+		</div>
+
+		<div class="relative mx-auto h-[25rem] w-full max-w-[25rem] lg:static lg:h-auto lg:max-w-none">
+			{
+				briefs.map((brief, i) => (
+					<div
+						role="tabpanel"
+						id={panelId(brief.id)}
+						aria-labelledby={tabId(brief.id)}
+						aria-hidden={i === 0 ? "false" : "true"}
+						data-showcase-panel
+						data-active={i === 0 ? "" : undefined}
+						class="brief-set pointer-events-none absolute inset-0"
+					>
+						<Image
+							src={PHOTOS[brief.photos].main}
+							alt=""
+							widths={[478, 956]}
+							sizes="(min-width: 1024px) 29.875rem, 80vw"
+							class="set-main absolute top-0 left-0 h-[88%] w-[80%] rounded-[0.9375rem] object-cover lg:top-0 lg:left-(--l-hand) lg:h-[34.5rem] lg:w-[29.875rem]"
+							loading="lazy"
+						/>
+						<div class="set-location absolute top-4 right-0 w-[60%] rounded-[0.919rem] bg-[#121214] px-4 py-5 lg:top-[1.375rem] lg:left-(--l-loc) lg:w-[22.875rem]">
+							<span class="block text-[0.85rem] font-medium leading-none text-[#d0c2ff] [text-box:trim-both_cap_alphabetic] lg:text-[0.997rem]">
+								Creator Location
+							</span>
+							<span class="mt-4 flex items-center gap-[0.665rem] rounded-[0.332rem] border-[0.083rem] border-[#302846] bg-[#282434] px-[0.665rem] py-[0.997rem] text-[0.831rem] leading-none text-white">
+								<Icon name="search" size="1.164rem" class="text-[#c0acff]" />
+								{brief.location}
+							</span>
+						</div>
+						<Image
+							src={PHOTOS[brief.photos].detail}
+							alt=""
+							widths={[245, 490]}
+							sizes="(min-width: 1024px) 15.3125rem, 40vw"
+							class="set-detail absolute right-0 bottom-0 size-[45%] rounded-[1.19rem] object-cover lg:top-[10.375rem] lg:left-(--l-face) lg:size-[15.3125rem]"
+							loading="lazy"
+						/>
+					</div>
+				))
+			}
+		</div>
+	</div>
+</section>
+
+<style>
+	.brief {
+		transition: box-shadow 0.4s ease;
+	}
+
+	/* The active brief takes the design's green outline. */
+	.brief[data-active] {
+		background:
+			linear-gradient(#010101, #010101) padding-box,
+			linear-gradient(#32e889, #32e889) border-box;
+	}
+
+	.brief-progress {
+		transform: scaleX(0);
+		opacity: 0;
+	}
+
+	:global([data-showcase-ready]) .brief[data-active] .brief-progress {
+		opacity: 1;
+		animation: brief-progress var(--showcase-interval, 4500ms) linear forwards;
+	}
+
+	:global([data-showcase-ready][data-paused]) .brief[data-active] .brief-progress {
+		animation-play-state: paused;
+	}
+
+	@keyframes brief-progress {
+		from {
+			transform: scaleX(0);
+		}
+		to {
+			transform: scaleX(1);
+		}
+	}
+
+	/* Sets stack in one place; the active one fades in, its pieces arriving in turn. */
+	.brief-set {
+		opacity: 0;
+		visibility: hidden;
+		transition:
+			opacity 0.5s ease,
+			visibility 0s linear 0.5s;
+	}
+
+	.brief-set[data-active] {
+		opacity: 1;
+		visibility: visible;
+		transition: opacity 0.5s ease;
+	}
+
+	.brief-set :is(.set-main, .set-location, .set-detail) {
+		transition:
+			transform 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+			opacity 0.7s ease;
+	}
+
+	.brief-set:not([data-active]) .set-main {
+		transform: scale(0.97);
+	}
+
+	.brief-set:not([data-active]) .set-location {
+		transform: translateY(-0.75rem);
+		opacity: 0;
+	}
+
+	.brief-set:not([data-active]) .set-detail {
+		transform: translateY(1rem);
+		opacity: 0;
+	}
+
+	.brief-set[data-active] .set-location {
+		transition-delay: 0.15s;
+	}
+
+	.brief-set[data-active] .set-detail {
+		transition-delay: 0.25s;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.brief-set,
+		.brief-set :is(.set-main, .set-location, .set-detail),
+		.brief {
+			transition: none;
+		}
+
+		.brief-progress {
+			display: none;
+		}
+	}
+</style>
+
+<script>
+	import "../../scripts/linked-showcase";
+</script>

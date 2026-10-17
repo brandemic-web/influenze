@@ -1,6 +1,6 @@
 export interface CreatorAIFeature {
 	/** Key into the icon map in common/LucideIcon.astro */
-	icon: "search" | "users" | "square-check" | "scaling";
+	icon: "search" | "users" | "square-check" | "scaling" | "share";
 	title: string;
 	description: string;
 }

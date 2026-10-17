@@ -1,0 +1,100 @@
+---
+/**
+ * /features/<slug>: one feature told end to end, from the Figma "Features" frame. Content
+ * comes from the slug's Sanity "Feature Landing Page" document, falling back to
+ * data/feature (see lib/feature-source.ts). /features itself is the separate overview.
+ */
+import type { GetStaticPaths } from "astro";
+import Layout from "../../layouts/Layout.astro";
+import FeatureHero from "../../components/feature/FeatureHero.astro";
+import ManualWay from "../../components/feature/ManualWay.astro";
+import FastestResults from "../../components/feature/FastestResults.astro";
+import IconCardSection from "../../components/platform/IconCardSection.astro";
+import WhoForSection from "../../components/platform/WhoForSection.astro";
+import CreatorsAI from "../../components/home/CreatorsAI.astro";
+import BlogFaq from "../../components/blog/BlogFaq.astro";
+import { APP_URL } from "../../data/site";
+import { FAQS } from "../../data/faqs";
+import { SHOW_DRAFTS } from "../../data/compare";
+import { plainText } from "../../data/feature";
+import { getFeaturePage, getFeaturePages } from "../../lib/feature-source";
+import { getPerspectiveCookie } from "../../lib/draft-mode";
+import { parseStructuredDataOverride } from "../../sanity/lib/customSchema";
+
+// Built once per slug in production; rendered on request in dev, where Astro caches
+// getStaticPaths and a renamed or new slug would otherwise 404 until restart.
+export const prerender = import.meta.env.PROD;
+
+export const getStaticPaths = (async () => {
+	const pages = await getFeaturePages();
+	return pages.filter((p) => !p.draft || SHOW_DRAFTS).map((p) => ({ params: { feature: p.slug } }));
+}) satisfies GetStaticPaths;
+
+const page = await getFeaturePage(Astro.params.feature, getPerspectiveCookie(Astro.cookies));
+if (!page || (page.draft && !SHOW_DRAFTS)) return Astro.rewrite("/404");
+const { copy } = page;
+const overrides = page.seoOverrides;
+const faqs = page.faqs ?? FAQS;
+
+// Built from the same list the page renders, so the JSON-LD can't drift from it.
+const schema = [
+	{
+		"@type": "FAQPage",
+		mainEntity: faqs.map((faq) => ({
+			"@type": "Question",
+			name: faq.question,
+			acceptedAnswer: { "@type": "Answer", text: faq.answer },
+		})),
+	},
+];
+---
+
+<Layout
+	title={page.seo.title}
+	description={page.seo.description}
+	noindex={page.draft || (overrides?.noindex ?? false)}
+	canonicalUrl={overrides?.canonicalUrl}
+	schema={schema}
+	structuredDataOverride={parseStructuredDataOverride(overrides?.customSchema)}
+	scripts={page.scripts}
+	fluidRem
+>
+	<main>
+		<FeatureHero page={page} />
+		{/*
+			One backdrop below the hero, as drawn: a purple band behind the manual way and the
+			top of "how it works", then a second peaking behind the fresh-and-accurate cards,
+			fading out by the results. Stops are the design's distances from this wrapper's
+			top (1376px down the frame), in rem.
+		*/}
+		<div
+			style="background: linear-gradient(180deg, #13101c 0rem, #13101c 1.5rem, #1e1833 7.75rem, #2f215a 14rem, #44299a 20.25rem, #5432c0 26.5rem, #5432c0 32.75rem, #3f2a80 39rem, #261d49 45.25rem, #1a1527 51.5rem, #100e18 57.75rem, #0b0910 64rem, #050407 70.25rem, #020203 76.5rem, #050408 82.75rem, #0e0a1a 89rem, #150f2a 95.25rem, #1e153c 101.5rem, #291c52 107.75rem, #3a2873 114rem, #4a3393 120.25rem, #5a3eb4 126.5rem, #6c4ad6 132.75rem, #7c56f6 139rem, #7551ea 145.25rem, #6444c9 151.5rem, #5338aa 157.75rem, #422b8b 164rem, #32216c 170.25rem, #21144b 176.5rem, #100a23 182.75rem, #010101 189rem)"
+		>
+			<ManualWay eyebrow={copy.manualEyebrow} heading={copy.manualHeading} body={copy.manualBody} />
+
+			<CreatorsAI
+				headingText={copy.howHeading}
+				button={{ label: plainText(copy.howButton), href: APP_URL, newTab: true }}
+				backdrop={false}
+			/>
+
+			<IconCardSection id="numbers" heading={copy.numbersHeading} cards={page.numbersList} gap={11} cardsGap={2.625} cardHeight={11.75} />
+			<IconCardSection id="freshness" heading={copy.freshnessHeading} cards={page.freshnessList} gap={10.375} cardsGap={3.375} cardHeight={13.375} />
+
+			<FastestResults line1={copy.fastestLine1} line2={copy.fastestLine2} />
+
+			<WhoForSection heading={copy.whoForHeading} cards={page.whoForList} gap={12} />
+
+			<div class="pt-16 lg:pt-[12.875rem]">
+				<BlogFaq
+					heading={plainText(copy.faqHeading)}
+					subcopy={plainText(copy.faqSubcopy)}
+					faqs={faqs}
+					align="wide"
+					size="section"
+					transparent
+				/>
+			</div>
+		</div>
+	</main>
+</Layout>
