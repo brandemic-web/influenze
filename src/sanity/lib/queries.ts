@@ -516,6 +516,7 @@ export const featureLandingPagesQuery = groq`*[_type == "featureLandingPage" && 
 	name,
 	draft,
 	"headings": { ${FEATURE_COPY_FIELDS.map((f) => f.key).join(", ")} },
+	howSteps,
 	numbers,
 	freshness,
 	whoForCards[]{ title, body },
@@ -529,6 +530,7 @@ export interface FeatureLandingPageDoc {
 	name?: string;
 	draft?: boolean;
 	headings?: Record<string, string | undefined>;
+	howSteps?: Record<string, { title?: string; body?: string } | undefined>;
 	numbers?: Record<string, { title?: string; body?: string } | undefined>;
 	freshness?: Record<string, { title?: string; body?: string } | undefined>;
 	whoForCards?: { title?: string; body?: string }[];

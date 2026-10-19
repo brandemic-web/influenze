@@ -76,6 +76,7 @@ const schema = [
 				headingText={copy.howHeading}
 				button={{ label: plainText(copy.howButton), href: APP_URL, newTab: true }}
 				backdrop={false}
+				steps={page.howList.map((step) => ({ icon: step.icon, title: step.title, description: step.body }))}
 			/>
 
 			<IconCardSection id="numbers" heading={copy.numbersHeading} cards={page.numbersList} gap={11} cardsGap={2.625} cardHeight={11.75} />

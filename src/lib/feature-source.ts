@@ -7,6 +7,7 @@
 import {
 	FEATURE_PAGES,
 	FRESHNESS_CARDS,
+	HOW_STEPS,
 	NUMBERS_CARDS,
 	WHO_FOR_CARDS,
 	plainText,
@@ -21,6 +22,7 @@ import { getFeatureLandingPages, type FeatureLandingPageDoc, type ScriptsDoc, ty
 
 export interface ResolvedFeature extends FeaturePage {
 	copy: FeatureCopy;
+	howList: ReturnType<typeof resolveSlots<(typeof HOW_STEPS)[number]>>;
 	numbersList: ReturnType<typeof resolveSlots<(typeof NUMBERS_CARDS)[number]>>;
 	freshnessList: ReturnType<typeof resolveSlots<(typeof FRESHNESS_CARDS)[number]>>;
 	whoForList: CardText[];
@@ -38,6 +40,7 @@ function finish(p: FeaturePage, extra?: Pick<ResolvedFeature, "seoOverrides" | "
 	return {
 		...p,
 		copy: resolveFeatureCopy(p.headings),
+		howList: resolveSlots(HOW_STEPS, p.howSteps),
 		numbersList: resolveSlots(NUMBERS_CARDS, p.numbers),
 		freshnessList: resolveSlots(FRESHNESS_CARDS, p.freshness),
 		whoForList: whoFor.length ? whoFor : WHO_FOR_CARDS,
@@ -64,6 +67,7 @@ function fromSanity(doc: FeatureLandingPageDoc, code: FeaturePage | undefined): 
 				description: has(doc.seo?.description) ? doc.seo.description : (code?.seo.description ?? plainText(copy.heroBody)),
 			},
 			headings,
+			howSteps: { ...code?.howSteps, ...doc.howSteps },
 			numbers: { ...code?.numbers, ...doc.numbers },
 			freshness: { ...code?.freshness, ...doc.freshness },
 			whoForCards: whoForCards.length ? whoForCards : code?.whoForCards,

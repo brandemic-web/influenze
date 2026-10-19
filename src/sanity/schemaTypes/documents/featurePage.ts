@@ -2,6 +2,7 @@ import { defineArrayMember, defineField, defineType } from "sanity";
 import {
 	FEATURE_COPY_FIELDS,
 	FRESHNESS_CARDS,
+	HOW_STEPS,
 	NUMBERS_CARDS,
 	WHO_FOR_CARDS,
 } from "../../../data/feature/shared";
@@ -79,6 +80,15 @@ export default defineType({
 		...copyFields("hero"),
 		...copyFields("manual"),
 		...copyFields("how"),
+		defineField({
+			name: "howSteps",
+			title: "Steps",
+			type: "object",
+			group: "how",
+			options: { collapsible: false },
+			description: "Leave a field empty to keep the default shown in it. The icons stay as designed.",
+			fields: slotFields(HOW_STEPS, "Step"),
+		}),
 		...copyFields("numbers"),
 		defineField({
 			name: "numbers",

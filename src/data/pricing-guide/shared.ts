@@ -66,6 +66,9 @@ export const PRICING_GUIDE_COPY_FIELDS = [
 		default: `Needs more than the ${SIGNUP_CREDITS} signup credits`,
 	},
 	{ key: "rollover", group: "estimator", title: "Rollover pill", default: "Unused Credits Roll Over" },
+	{ key: "plansHeading", group: "plans", title: "Heading — first line", default: "Plans That" },
+	{ key: "plansAccent", group: "plans", title: "Heading — green line", default: "Fit How You Work" },
+	{ key: "plansIncluded", group: "plans", title: "Label above the features list", default: "Included In Every Plan" },
 	{ key: "oneTimeHeading", group: "oneTime", title: "Heading", default: "Running A *One-Time\nCampaign?*", twoTone: true, long: true },
 	{
 		key: "oneTimeBody",

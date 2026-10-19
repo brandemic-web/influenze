@@ -14,10 +14,13 @@ interface Props {
 }
 
 const { text, accentBlock = false, accentClass = "text-brand-primary" } = Astro.props;
+// Headings are `capitalize`d, which would print the brand as "Influenze.Ai".
+const brandSplit = (t: string) => t.split(/(Influenze\.ai)/);
 ---
 
 {
-	twoTone(text).map((s) =>
-		s.accent ? <span class:list={[accentClass, accentBlock && "block"]}>{s.text}</span> : s.text,
-	)
+	twoTone(text).map((s) => {
+		const parts = brandSplit(s.text).map((part, i) => (i % 2 ? <span class="normal-case">{part}</span> : part));
+		return s.accent ? <span class:list={[accentClass, accentBlock && "block"]}>{parts}</span> : parts;
+	})
 }

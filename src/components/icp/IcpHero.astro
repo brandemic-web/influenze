@@ -31,15 +31,15 @@ const { copy } = Astro.props;
 			<TwoTone text={copy.heroTitle} />
 		</h1>
 
-		{/* The frame sits 52px left of centre, as drawn; its pills move with it. */}
+		{/* The frame sits 52px left of centre, as drawn; its pills move with it, the third riding its bottom edge as the copy grows. */}
 		<div class="relative mt-10 w-full max-w-[29.875rem] lg:mt-[4.8125rem] lg:-translate-x-[3.25rem]">
-			<p class="card-edge rounded-sm px-6 py-8 text-[1rem] leading-6.5 text-white [background:linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5))_padding-box,linear-gradient(90deg,#19123a,#575757)_border-box] lg:h-[11rem] lg:px-[2.625rem] lg:pt-[2.875rem] lg:pb-0 lg:text-[1.125rem] lg:leading-7">
+			<p class="card-edge rounded-sm px-6 py-8 text-[1rem] leading-6.5 text-white [background:linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5))_padding-box,linear-gradient(90deg,#19123a,#575757)_border-box] lg:min-h-[11rem] lg:px-[2.625rem] lg:py-[2.875rem] lg:text-[1.125rem] lg:leading-7">
 				<TwoTone text={copy.heroBody} accentClass="font-semibold text-brand-primary" />
 			</p>
 			<HeroPills
 				profiles="lg:top-[1.875rem] lg:right-[calc(100%-1.5rem)]"
 				credits="lg:top-[1.4375rem] lg:left-[calc(100%-1.0625rem)]"
-				platforms="lg:top-[9.625rem] lg:left-[22.75rem]"
+				platforms="lg:bottom-0 lg:left-[22.75rem] lg:translate-y-[calc(100%-1.375rem)]"
 			/>
 		</div>
 

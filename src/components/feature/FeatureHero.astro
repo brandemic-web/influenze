@@ -37,6 +37,8 @@ const bubbles = [
 	{ src: bubbleSix, x: 902, y: 801, w: 143, h: 146 },
 ];
 const rem = (px: number) => `${px / 16}rem`;
+/** A title line longer than the design's (25 characters) steps down a size so it still sets in two lines. */
+const longTitle = Math.max(...plainText(copy.heroTitle).split("\n").map((l) => l.length)) > 25;
 ---
 
 <section class="relative overflow-hidden" aria-labelledby="feature-title">
@@ -58,7 +60,10 @@ const rem = (px: number) => `${px / 16}rem`;
 			</p>
 			<h1
 				id="feature-title"
-				class="relative mt-4 text-[2.125rem] leading-[1.1] lg:whitespace-pre-line text-white [text-box:trim-both_cap_alphabetic] lg:absolute lg:top-[19.75rem] lg:left-[28.25rem] lg:mt-0 lg:w-[51.5rem] lg:text-9xl lg:leading-[4.5rem] lg:tracking-[-0.08rem]"
+				class:list={[
+					"relative mt-4 text-[2.125rem] leading-[1.1] lg:whitespace-pre-line text-white [text-box:trim-both_cap_alphabetic] lg:absolute lg:left-[28.25rem] lg:mt-0 lg:w-[51.5rem] lg:tracking-[-0.08rem]",
+					longTitle ? "lg:top-[20.75rem] lg:text-[3rem] lg:leading-[3.5rem]" : "lg:top-[19.75rem] lg:text-9xl lg:leading-[4.5rem]",
+				]}
 			>
 				<TwoTone text={copy.heroTitle} />
 			</h1>

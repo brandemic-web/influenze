@@ -70,7 +70,12 @@ const schema = [
 	>
 		<PricingGuideHero copy={copy} rows={page.creditList} />
 		<CreditEstimator copy={copy} />
-		<PricingPlans embedded class="pt-16 pb-12 lg:pt-[7.25rem] lg:pb-[3.375rem]" />
+		<PricingPlans
+			embedded
+			class="pt-16 pb-12 lg:pt-[7.25rem] lg:pb-[3.375rem]"
+			heading={{ lead: `${plainText(copy.plansHeading)} `, accent: plainText(copy.plansAccent) }}
+			includedLabel={plainText(copy.plansIncluded)}
+		/>
 		<OneTimeCampaign heading={copy.oneTimeHeading} body={copy.oneTimeBody} />
 		<div class="quote-band">
 			<CompareTable

@@ -21,6 +21,7 @@ export default defineType({
 	groups: [
 		{ name: "hero", title: "Hero & Credits", default: true },
 		{ name: "estimator", title: "Estimator" },
+		{ name: "plans", title: "Plans" },
 		{ name: "oneTime", title: "One-Time Campaign" },
 		{ name: "quote", title: "Credits vs Quote-Led" },
 		{ name: "faq", title: "FAQ" },
@@ -73,6 +74,7 @@ export default defineType({
 			],
 		}),
 		...copyFields("estimator"),
+		...copyFields("plans"),
 		...copyFields("oneTime"),
 		...copyFields("quote"),
 		defineField({

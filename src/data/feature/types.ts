@@ -1,5 +1,5 @@
 import type { Faq } from "../faqs";
-import type { CardText, FeatureCopy, FreshnessId, NumbersId } from "./shared";
+import type { CardText, FeatureCopy, FreshnessId, HowStepId, NumbersId } from "./shared";
 
 /** One /features/<slug> page. Everything past the SEO is optional; defaults are in shared.ts. */
 export interface FeaturePage {
@@ -11,6 +11,7 @@ export interface FeaturePage {
 	draft: boolean;
 	seo: { title: string; description: string };
 	headings?: Partial<FeatureCopy>;
+	howSteps?: Partial<Record<HowStepId, Partial<CardText>>>;
 	numbers?: Partial<Record<NumbersId, Partial<CardText>>>;
 	freshness?: Partial<Record<FreshnessId, Partial<CardText>>>;
 	whoForCards?: CardText[];

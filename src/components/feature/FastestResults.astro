@@ -12,7 +12,7 @@ import TwoTone from "../compare/TwoTone.astro";
 import saloni from "../../assets/images/feature_page/results/avatar_saloni.png";
 import justin from "../../assets/images/feature_page/results/avatar_justin.png";
 import placeholder from "../../assets/images/feature_page/results/avatar_placeholder.png";
-import { RESULT_ROWS } from "../../data/feature";
+import { RESULT_ROWS, plainText } from "../../data/feature";
 
 interface Props {
 	line1: string;
@@ -23,13 +23,18 @@ const { line1, line2 } = Astro.props;
 const avatars = { saloni, justin, placeholder } as const;
 const levelColour = { GOOD: "text-[#3fbd71]", AVERAGE: "text-[#f2994a]" } as const;
 // Below lg the two lines run together as one heading.
-const line = "text-[1.875rem] capitalize leading-[1.15] lg:block lg:text-9xl lg:leading-[4.375rem] lg:[text-box:trim-both_cap_alphabetic]";
+/** Lines longer than the design's (31 characters) step down a size so each still fits its row. */
+const long = Math.max(plainText(line1).length, plainText(line2).length) > 31;
+const line = [
+	"text-[1.875rem] capitalize leading-[1.15] lg:block lg:[text-box:trim-both_cap_alphabetic]",
+	long ? "lg:text-[3rem] lg:leading-[3.5rem]" : "lg:text-9xl lg:leading-[4.375rem]",
+];
 ---
 
 <section class="relative px-6 pt-20 lg:px-0 lg:pt-[11.5625rem]" aria-labelledby="fastest-heading">
-	<h2 id="fastest-heading" class="text-[1.875rem] leading-[1.15] text-white lg:w-[108rem] lg:text-9xl lg:mx-[calc(50%-54rem)]">
-		<span class:list={[line, "lg:ml-[6.875rem]"]}><TwoTone text={line1} /></span>{" "}
-		<span class:list={[line, "lg:mt-[2.75rem] lg:ml-[37.5625rem]"]}><TwoTone text={line2} /></span>
+	<h2 id="fastest-heading" class:list={["text-[1.875rem] leading-[1.15] text-white lg:mx-[calc(50%-54rem)] lg:w-[108rem]", long ? "lg:text-[3rem]" : "lg:text-9xl"]}>
+		<span class:list={[...line, "lg:ml-[6.875rem]"]}><TwoTone text={line1} /></span>{" "}
+		<span class:list={[...line, long ? "lg:mt-[2rem]" : "lg:mt-[2.75rem]", "lg:ml-[37.5625rem]"]}><TwoTone text={line2} /></span>
 	</h2>
 
 	{/* 419px from the frame's left, as drawn — not quite centred. Below lg each row stacks. */}
