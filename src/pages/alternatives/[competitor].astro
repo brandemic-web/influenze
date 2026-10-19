@@ -65,15 +65,9 @@ const schema = [
 			Everything below the hero shares one backdrop, as drawn: side glows behind the
 			fit table, then the purple band behind the feature table and again behind the
 			use cases. Stops are the design's distances from this wrapper's top (the "why"
-			heading, 962px down the frame), in rem.
+			heading, 962px down the frame), in rem — see the style block below.
 		*/}
-		<div
-			style="background:
-				radial-gradient(ellipse 30% 45rem at 0% 64.875rem, rgba(101, 57, 244, 0.95), transparent),
-				radial-gradient(ellipse 30% 45rem at 100% 64.875rem, rgba(101, 57, 244, 0.95), transparent),
-				radial-gradient(ellipse 48% 36rem at 50% 64.875rem, rgba(103, 56, 255, 0.8), transparent),
-				linear-gradient(180deg, #010101 0rem, #010101 121.125rem, #21144B 132.125rem, #8058FF 177.375rem, #241949 200.025rem, #010101 224.875rem, #010101 237.375rem, #21144B 245.925rem, #8058FF 283.625rem, #241949 298.625rem, #010101 318.025rem)"
-		>
+		<div class="alt-backdrop isolate lg:isolation-auto">
 			<WhyCards heading={copy.whyHeading} cards={competitor.whyCardList} />
 			<CompareTable
 				id="fit"
@@ -125,3 +119,25 @@ const schema = [
 		</div>
 	</main>
 </Layout>
+
+<style>
+	/* Below lg the page is shorter than the design, so the use cases' band would land on
+	   the FAQ; there UseCaseGrid draws its own (which needs `isolate`) and this one stops. */
+	.alt-backdrop {
+		background:
+			radial-gradient(ellipse 30% 45rem at 0% 64.875rem, rgba(101, 57, 244, 0.95), transparent),
+			radial-gradient(ellipse 30% 45rem at 100% 64.875rem, rgba(101, 57, 244, 0.95), transparent),
+			radial-gradient(ellipse 48% 36rem at 50% 64.875rem, rgba(103, 56, 255, 0.8), transparent),
+			linear-gradient(180deg, #010101 0rem, #010101 121.125rem, #21144B 132.125rem, #8058FF 177.375rem, #241949 200.025rem, #010101 224.875rem);
+	}
+
+	@media (min-width: 1024px) {
+		.alt-backdrop {
+			background:
+				radial-gradient(ellipse 30% 45rem at 0% 64.875rem, rgba(101, 57, 244, 0.95), transparent),
+				radial-gradient(ellipse 30% 45rem at 100% 64.875rem, rgba(101, 57, 244, 0.95), transparent),
+				radial-gradient(ellipse 48% 36rem at 50% 64.875rem, rgba(103, 56, 255, 0.8), transparent),
+				linear-gradient(180deg, #010101 0rem, #010101 121.125rem, #21144B 132.125rem, #8058FF 177.375rem, #241949 200.025rem, #010101 224.875rem, #010101 237.375rem, #21144B 245.925rem, #8058FF 283.625rem, #241949 298.625rem, #010101 318.025rem);
+		}
+	}
+</style>

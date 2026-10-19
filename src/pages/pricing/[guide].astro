@@ -72,20 +72,36 @@ const schema = [
 		<CreditEstimator copy={copy} />
 		<PricingPlans embedded class="pt-16 pb-12 lg:pt-[7.25rem] lg:pb-[3.375rem]" />
 		<OneTimeCampaign heading={copy.oneTimeHeading} body={copy.oneTimeBody} />
-		<CompareTable
-			id="quote-led"
-			variant="quote"
-			background="transparent"
-			cornerLabel={plainText(copy.quoteCorner)}
-			competitorTone="bright"
-			heading={copy.quoteHeading}
-			subcopy=""
-			competitorName={plainText(copy.quoteThem)}
-			rows={page.quoteRows}
-			cells={page.quoteCells}
-		/>
-		<div class="pt-16 lg:pt-[10.75rem]">
+		<div class="quote-band">
+			<CompareTable
+				id="quote-led"
+				variant="quote"
+				background="transparent"
+				cornerLabel={plainText(copy.quoteCorner)}
+				competitorTone="bright"
+				heading={copy.quoteHeading}
+				subcopy=""
+				competitorName={plainText(copy.quoteThem)}
+				rows={page.quoteRows}
+				cells={page.quoteCells}
+			/>
+		</div>
+		{/* The backdrop's stops are desktop distances; below lg its last band lands on the FAQ, so cover it. */}
+		<div class="bg-background-primary pt-16 lg:bg-transparent lg:pt-[10.75rem]">
 			<BlogFaq heading={plainText(copy.faqHeading)} subcopy={plainText(copy.faqSubcopy)} faqs={faqs} align="wide" size="section" transparent />
 		</div>
 	</main>
 </Layout>
+
+<style>
+	/* Below lg, the backdrop's 268.75–356.25rem band and its side glows, re-stopped as
+	   percentages of the table section; from lg up the backdrop itself sits behind it. */
+	@media (max-width: 1023.98px) {
+		.quote-band {
+			background:
+				radial-gradient(ellipse 22% 22rem at 0% 47%, rgba(104, 56, 252, 0.95), transparent),
+				radial-gradient(ellipse 22% 22rem at 100% 47%, rgba(104, 56, 252, 0.95), transparent),
+				linear-gradient(180deg, #010101 0%, #1b162d 28.6%, #271c4b 35.7%, #3c238d 42.9%, #5332b7 57.1%, #2c244b 64.3%, #1f1a30 71.4%, #171322 78.6%, #0e0c15 85.7%, #010101 100%);
+		}
+	}
+</style>

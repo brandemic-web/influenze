@@ -166,8 +166,10 @@ const leadText = "text-[0.8125rem] leading-5 whitespace-pre-line lg:text-[1.125r
 		<div
 			class:list={[
 				"mx-auto grid rounded-[1.25rem] lg:w-auto",
-				// Two columns fit a phone, so only the three-column tables scroll.
-				twoColumn ? "grid-cols-[1fr_1fr_1rem]" : "w-max grid-cols-[repeat(3,calc((100vw-3rem)/2.5))]",
+				// Two columns fit a phone, so only the three-column tables scroll. 
+				twoColumn
+					? "grid-cols-[1fr_1fr_1rem]"
+					: "w-max grid-cols-[calc((100vw-3rem)/2.5)_minmax(calc((100vw-3rem)/2.5),min-content)_calc((100vw-3rem)/2.5)]",
 				v.grid,
 			]}
 			role="table"
