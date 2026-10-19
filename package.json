@@ -30,6 +30,7 @@
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "sanity": "^6.9.2",
+    "swiper": "^14.3.0",
     "tailwindcss": "^4.3.2"
   },
   "devDependencies": {

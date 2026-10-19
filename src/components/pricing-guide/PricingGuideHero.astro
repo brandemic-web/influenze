@@ -1,0 +1,106 @@
+---
+/**
+ * Pricing-guide hero and "how credits work", the Figma frame's first 1480px. From lg up
+ * each element sits at its design coordinates (px ÷ 16 → rem on the 108rem stage); below
+ * lg they stack. The Add Credits card and upgrade nudge are the app's dialog, rebuilt as
+ * markup at the sizes drawn.
+ */
+import { Image } from "astro:assets";
+import Button from "../common/Button.astro";
+import Icon from "../app/common/Icon.astro";
+import TwoTone from "../compare/TwoTone.astro";
+import logo3d from "../../assets/images/pricing_guide_page/common/influenze_logo_3d.png";
+import { APP_URL } from "../../data/site";
+import { plainText, type CreditRow, type PricingGuideCopy } from "../../data/pricing-guide";
+
+interface Props {
+	copy: PricingGuideCopy;
+	rows: CreditRow[];
+}
+
+const { copy, rows } = Astro.props;
+const panel = "rounded-[1.25rem] bg-[#0a0718]/40 backdrop-blur-md";
+---
+
+<section class="relative" aria-labelledby="guide-title">
+	<div class="relative mx-auto flex flex-col items-center px-6 pt-32 pb-16 text-center lg:block lg:h-[92.5rem] lg:w-[108rem] lg:mx-[calc(50%-54rem)] lg:p-0">
+		<div class:list={[panel, "pointer-events-none absolute hidden lg:block lg:inset-auto lg:top-[12.6875rem] lg:left-[22.375rem] lg:h-[46.9375rem] lg:w-[63.3125rem]"]} aria-hidden="true"></div>
+
+		{/* Below lg the panel wraps its content; from lg it is the drawn box behind absolutely placed pieces. */}
+		<div class="relative -mx-3 flex flex-col self-stretch items-center rounded-[1.25rem] bg-[#0a0718]/40 px-5 pt-10 pb-10 backdrop-blur-md lg:contents">
+			<p class="relative text-[0.875rem] uppercase text-brand-primary [text-box:trim-both_cap_alphabetic] lg:absolute lg:top-[16.5rem] lg:left-0 lg:w-full lg:text-[1.125rem]">
+				{plainText(copy.heroEyebrow)}
+			</p>
+			<h1
+				id="guide-title"
+				class="relative mt-4 text-[2.125rem] leading-[1.1] lg:whitespace-pre-line text-white [text-box:trim-both_cap_alphabetic] lg:absolute lg:top-[19.75rem] lg:left-[28.25rem] lg:mt-0 lg:w-[51.5rem] lg:text-9xl lg:leading-[4.5rem] lg:tracking-[-0.08rem]"
+			>
+				<TwoTone text={copy.heroTitle} />
+			</h1>
+			<p class="relative mt-6 max-w-[39.3125rem] text-[1rem] leading-6 text-[#cdcdcd] [text-box:trim-both_cap_alphabetic] lg:absolute lg:top-[31.25rem] lg:left-[34.375rem] lg:mt-0 lg:text-[1.125rem] lg:leading-7">
+				{plainText(copy.heroBody)}
+			</p>
+
+			{/* The app's Add Credits dialog and upgrade nudge, at 653,628 and 918,709 on the frame. */}
+			<div class="relative mt-10 h-[15.625rem] w-[32.3125rem] text-left font-sans max-lg:[zoom:0.56] min-[380px]:max-lg:[zoom:0.62] sm:max-lg:[zoom:0.9] lg:absolute lg:top-[39.25rem] lg:left-[40.8125rem] lg:mt-0" aria-hidden="true">
+				<div class="absolute top-0 left-0 h-[15.625rem] w-[18.125rem] rounded-[1.157rem] border-[0.048rem] border-[#3a3a61] bg-[#181823]">
+					<span class="absolute top-[1.4375rem] left-0 w-full text-center text-[1.35rem] leading-none text-white">Add Credits</span>
+					<Icon name="cross" size="0.6875rem" class="absolute top-[0.875rem] right-[0.875rem] text-[#8f8fb9]" />
+					<span class="absolute top-[3.1875rem] left-[5.875rem] flex items-center gap-[0.4rem] text-[0.482rem] leading-none text-[#8f8fb9]">
+						CURRENT PLAN
+						<span class="rounded-[0.193rem] bg-[#343461] px-[0.3rem] py-[0.2rem] text-white">Starter</span>
+					</span>
+					<span class="absolute top-[4.75rem] left-0 h-px w-full bg-[#3a3a61]"></span>
+					<span class="absolute top-[6.8125rem] left-0 w-full bg-[linear-gradient(90deg,#aa8fff_31%,#00ff7a)] bg-clip-text text-center text-[1.928rem] leading-none text-transparent">7,000</span>
+					<span class="absolute top-[9.0625rem] left-[3.25rem] h-px w-[11.6875rem] bg-[#3a3a61]"></span>
+					<span class="absolute top-[9.5625rem] left-[5.875rem] flex gap-[0.3rem] text-[0.482rem] leading-none text-white">
+						{["1,000", "2,000", "3,000"].map((v) => <span class="rounded-[0.193rem] bg-[#343461] px-[0.3rem] py-[0.25rem]">{v}</span>)}
+					</span>
+					<span class="absolute top-[12rem] left-[1.1875rem] flex h-[2.5rem] w-[15.8125rem] items-center justify-center rounded-[0.482rem] bg-[#653ee1] text-[0.771rem] font-semibold text-white">Purchase</span>
+				</div>
+				<div class="absolute top-[5.0625rem] left-[16.5625rem] h-[6.5625rem] w-[15.75rem] rounded-[1.005rem] bg-[#282434]">
+					<span class="absolute top-[1.125rem] left-[1.3125rem] text-[0.922rem] leading-none text-white">Consider upgrading</span>
+					<span class="absolute top-[2.25rem] left-[1.3125rem] text-[0.503rem] leading-[0.625rem] text-[#baacde]">
+						Upgrade to <span class="text-brand-primary">Growth</span> to get +20% bonus in credits<br />every time you recharge
+					</span>
+					<span class="absolute top-[4.375rem] left-[1.3125rem] rounded-[0.251rem] border-[0.042rem] border-brand-primary bg-[#253b2e] px-[0.45rem] py-[0.3rem] text-[0.503rem] leading-none font-medium text-white">UPGRADE</span>
+				</div>
+			</div>
+
+			<div class="relative mt-8 lg:absolute lg:top-[58rem] lg:left-0 lg:mt-0 lg:flex lg:w-full lg:justify-center">
+				<Button href={APP_URL} newTab>{plainText(copy.heroCta)}</Button>
+			</div>
+		</div>
+
+		{/* How credits work: a panel at 358,1053 with the 3D logo standing over its right end (placed from the panel). */}
+		<div class:list={[panel, "relative mt-16 w-full max-w-[63.3125rem] p-6 text-left lg:absolute lg:top-[65.8125rem] lg:left-[22.375rem] lg:mt-0 lg:h-[16.75rem] lg:p-0"]}>
+			<p class="text-[1rem] uppercase text-brand-primary [text-box:trim-both_cap_alphabetic] lg:absolute lg:top-[2.6875rem] lg:left-[4.1875rem] lg:text-[1.125rem]">
+				{plainText(copy.creditsEyebrow)}
+			</p>
+			<ul class="mt-6 flex flex-col gap-3 lg:absolute lg:top-[5.8125rem] lg:left-[4.25rem] lg:mt-0 lg:w-[37.625rem] lg:gap-[0.5rem]">
+				{
+					rows.map((row) => (
+						<li class="flex min-h-[1.625rem] items-center justify-between gap-4 lg:h-[1.625rem]">
+							<span class="flex flex-wrap items-center gap-x-1.5 text-[0.875rem] text-[#f3f3ff] max-lg:leading-5 lg:flex-nowrap lg:text-xs">
+								{row.label}
+								{row.detail && <span class="whitespace-nowrap text-[#f3f3ff]/50">· {row.detail}</span>}
+								<Icon name="info" size="0.8125rem" class="text-[#f3f3ff]/60" />
+							</span>
+							<span class="shrink-0 rounded-[0.363rem] bg-[#245e3b] px-2 py-1 text-[0.8125rem] leading-[1.125rem] text-[#a1ffce] lg:text-[0.906rem]">
+								{row.cost}
+							</span>
+						</li>
+					))
+				}
+			</ul>
+			<Image
+				src={logo3d}
+				alt=""
+				widths={[301, 602]}
+				sizes="(min-width: 1024px) 18.8125rem, 6rem"
+				class="pointer-events-none absolute -top-12 right-3 w-16 lg:top-[-8.375rem] lg:right-auto lg:left-[41.875rem] lg:w-[18.8125rem]"
+				loading="eager"
+			/>
+		</div>
+	</div>
+</section>

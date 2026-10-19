@@ -1,0 +1,44 @@
+---
+/**
+ * A heading over three icon cards in a row — "how fresh and accurate is the data",
+ * "what the numbers mean". 451px cards, 20px apart, centred, as drawn.
+ */
+import IconCard from "./IconCard.astro";
+import TwoTone from "../compare/TwoTone.astro";
+import type { IconCardText } from "../../data/platform";
+
+interface Props {
+	id: string;
+	heading: string;
+	cards: IconCardText[];
+	/** lg gap from the section above, and from the heading to the cards, in rem. */
+	gap: number;
+	cardsGap: number;
+	/** lg card height in rem. */
+	cardHeight: number;
+}
+
+const { id, heading, cards, gap, cardsGap, cardHeight } = Astro.props;
+---
+
+<section
+	class="relative px-6 pt-20 lg:px-0 lg:pt-(--gap)"
+	style={`--gap:${gap}rem;--cards-gap:${cardsGap}rem;--card-h:${cardHeight}rem`}
+	aria-labelledby={`${id}-heading`}
+>
+	<h2
+		id={`${id}-heading`}
+		class="text-center text-[1.875rem] capitalize leading-[1.15] lg:whitespace-pre-line text-white [text-box:trim-both_cap_alphabetic] lg:text-[2.25rem] lg:leading-[2.8125rem]"
+	>
+		<TwoTone text={heading} />
+	</h2>
+	<ul class="mx-auto mt-10 grid max-w-[87.0625rem] gap-4 lg:mt-(--cards-gap) lg:grid-cols-3 lg:gap-5">
+		{
+			cards.map((card) => (
+				<li>
+					<IconCard icon={card.icon} title={card.title} body={card.body} class="w-full! lg:h-(--card-h)" />
+				</li>
+			))
+		}
+	</ul>
+</section>

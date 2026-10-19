@@ -4,17 +4,19 @@ import { FOLLOWER_TIERS } from "../../../data/workflowMockup";
 /**
  * Follower metrics filter — the tier list, with one tier expanded.
  */
-interface Props {
-	class?: string;
-}
-
-const { class: className = "" } = Astro.props;
-
 /**
- * The tier this element shows picked. The workflow story picks Macro; this one
- * ends on Mega, so the row is chosen by label rather than the data's own flag.
+ * The tier this element shows picked by default. The workflow story picks Macro; this
+ * one ends on Mega, so the row is chosen by label rather than the data's own flag.
  */
 const SELECTED_TIER = "👑 Mega Influencer";
+
+interface Props {
+	class?: string;
+	/** Tier label to show picked; the alternative page's mockup picks Macro, as drawn. */
+	selectedTier?: string;
+}
+
+const { class: className = "", selectedTier = SELECTED_TIER } = Astro.props;
 ---
 
 <div
@@ -28,7 +30,7 @@ const SELECTED_TIER = "👑 Mega Influencer";
 	<ul class="mt-2.5 flex list-none flex-col gap-1 p-0">
 		{
 			FOLLOWER_TIERS.map((tier) => {
-				const on = tier.label === SELECTED_TIER;
+				const on = tier.label === selectedTier;
 				return (
 					<li
 						data-metrics-row={on ? true : undefined}

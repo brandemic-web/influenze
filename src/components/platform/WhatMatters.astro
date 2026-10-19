@@ -1,0 +1,194 @@
+---
+/**
+ * "What matters on this platform" — three points, each tied to its own mockup in a
+ * 690×555 panel: reach to the stat tiles over follower quality, engagement to the
+ * account stats, platform-specific to the filters with creators. The active point is
+ * lit and its mockup shown, stepping on its own and on click
+ * (scripts/linked-showcase.ts). Mockups are Figma exports at the design's offsets.
+ * Without JS the first pairing shows, as drawn. Below lg the panel zooms to fit.
+ */
+import { Image } from "astro:assets";
+import TwoTone from "../compare/TwoTone.astro";
+import { ICON_ASSETS } from "./IconCard.astro";
+import followerQuality from "../../assets/images/platform_page/what_matters/follower_quality_card.png";
+import accountStats from "../../assets/images/platform_page/what_matters/account_stats_cards.png";
+import filtersCard from "../../assets/images/platform_page/what_matters/filters_card.png";
+import creatorBubbles from "../../assets/images/platform_page/what_matters/creator_bubbles.png";
+import type { IconTile } from "../../data/platform";
+
+interface Props {
+	heading: string;
+	points: { icon: IconTile; title: string; body: string }[];
+	stats: { label: string; value: string; note: string }[];
+}
+
+const { heading, points, stats } = Astro.props;
+/** Stat tile left offsets in the panel, and widths, as drawn. */
+const tiles = [
+	{ left: "9.625rem", width: "10.232rem" },
+	{ left: "20.3125rem", width: "10.342rem" },
+	{ left: "31.0625rem", width: "10.232rem" },
+];
+---
+
+<section class="relative px-6 pt-20 lg:px-0 lg:pt-[15rem]" aria-labelledby="matters-heading">
+	<h2
+		id="matters-heading"
+		class="text-center text-[1.875rem] capitalize leading-[1.15] text-white [text-box:trim-both_cap_alphabetic] lg:text-[3.4375rem]"
+	>
+		<TwoTone text={heading} />
+	</h2>
+
+	<div
+		class="mx-auto mt-10 flex max-w-[98.25rem] flex-col gap-10 rounded-[1.75rem] bg-white/10 p-5 lg:mt-[3.9375rem] lg:h-[37.5rem] lg:flex-row lg:items-start lg:justify-between lg:gap-0 lg:p-0 lg:pt-[1.4375rem] lg:pr-[1.1875rem]"
+		data-showcase
+	>
+		<div class="w-full lg:mt-[3.3125rem] lg:ml-[9.25rem] lg:w-[33.0625rem]" role="tablist" aria-orientation="vertical" aria-label="What matters">
+			{
+				points.map((point, i) => (
+					<button
+						type="button"
+						role="tab"
+						id={`matters-tab-${i}`}
+						aria-controls={`matters-panel-${i}`}
+						aria-selected={i === 0 ? "true" : "false"}
+						tabindex={i === 0 ? 0 : -1}
+						data-showcase-item
+						data-active={i === 0 ? "" : undefined}
+						class:list={["point relative block w-full cursor-pointer text-left", i > 0 && "mt-8 border-t border-white/20 pt-8 lg:w-[31rem]"]}
+					>
+						<span class="flex items-center gap-4">
+							<img src={ICON_ASSETS[point.icon].src} alt="" width="48" height="48" class="size-12 shrink-0 rounded-sm" loading="lazy" />
+							<span class="text-[1.25rem] capitalize leading-7 text-white lg:text-md lg:leading-7.5">{point.title}</span>
+						</span>
+						<span class="mt-3 block pl-16 text-[0.9375rem] leading-6 text-white lg:w-[33.0625rem] lg:pr-0 lg:pl-[4.0625rem] lg:text-xs lg:leading-6.5 lg:[text-box:trim-both_cap_alphabetic]">
+							{point.body}
+						</span>
+					</button>
+				))
+			}
+		</div>
+
+		<div class="mx-auto shrink-0 max-lg:[zoom:0.38] min-[420px]:max-lg:[zoom:0.45] sm:max-lg:[zoom:0.8] lg:mx-0">
+			<div class="relative h-[34.6875rem] w-[43.125rem] overflow-hidden rounded-[1.25rem] bg-white/20">
+				<div role="tabpanel" id="matters-panel-0" aria-labelledby="matters-tab-0" aria-hidden="false" data-showcase-panel data-active class="mock absolute inset-0">
+				{
+					stats.map((stat, i) => (
+						<div
+							class="absolute top-[1.8125rem] h-[9.352rem] overflow-hidden rounded-[0.88rem] bg-[#25292c] font-sans whitespace-nowrap text-white"
+							style={`left:${tiles[i].left};width:${tiles[i].width}`}
+						>
+							<span class="absolute top-[1.32rem] left-[1.32rem] text-[0.88rem] leading-none opacity-80 [text-box:trim-both_cap_alphabetic]">
+								{stat.label}
+							</span>
+							<span class="absolute top-[5.17rem] left-[1.32rem] flex flex-col gap-[0.88rem]">
+								<span class="text-[1.76rem] leading-none [text-box:trim-both_cap_alphabetic]">{stat.value}</span>
+								<span class="text-[0.88rem] leading-none text-[#32e889] [text-box:trim-both_cap_alphabetic]">{stat.note}</span>
+							</span>
+						</div>
+					))
+				}
+				<div class="absolute top-[12.75rem] left-[3.1875rem] h-[19.0625rem] w-[25.832rem] overflow-hidden rounded-[1.069rem]">
+					<Image
+						src={followerQuality}
+						alt=""
+						widths={[413, 616]}
+						sizes="25.85rem"
+						class="absolute top-[-1.87%] left-[-3.45%] h-[104.21%] w-[106.21%] max-w-none"
+						loading="lazy"
+					/>
+				</div>
+				</div>
+				<div role="tabpanel" id="matters-panel-1" aria-labelledby="matters-tab-1" aria-hidden="true" data-showcase-panel class="mock absolute inset-0">
+					<Image
+						src={accountStats}
+						alt=""
+						widths={[611, 1222]}
+						sizes="38.1875rem"
+						class="mock-piece absolute top-[2.9375rem] left-[2.5625rem] w-[38.1875rem] max-w-none"
+						loading="lazy"
+					/>
+				</div>
+				<div role="tabpanel" id="matters-panel-2" aria-labelledby="matters-tab-2" aria-hidden="true" data-showcase-panel class="mock absolute inset-0">
+					<Image
+						src={filtersCard}
+						alt=""
+						widths={[284, 568]}
+						sizes="17.75rem"
+						class="mock-piece absolute top-[4.8125rem] left-[23.3125rem] w-[17.75rem] max-w-none"
+						loading="lazy"
+					/>
+					<Image
+						src={creatorBubbles}
+						alt=""
+						widths={[372, 744]}
+						sizes="23.25rem"
+						class="mock-piece mock-late absolute top-[11.0625rem] left-[1.9375rem] w-[23.25rem] max-w-none"
+						loading="lazy"
+					/>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+
+<style>
+	/* The idle points dim, so the lit one reads as the one the mockup belongs to. */
+	.point {
+		transition: opacity 0.4s ease;
+	}
+
+	:global([data-showcase-ready]) .point:not([data-active]) {
+		opacity: 0.45;
+	}
+
+	:global([data-showcase-ready]) .point:not([data-active]):hover {
+		opacity: 0.75;
+	}
+
+	.mock {
+		opacity: 0;
+		visibility: hidden;
+		transition:
+			opacity 0.5s ease,
+			visibility 0s linear 0.5s;
+	}
+
+	.mock[data-active] {
+		opacity: 1;
+		visibility: visible;
+		transition: opacity 0.5s ease;
+	}
+
+	/* Each mockup's pieces rise into place, the later ones a beat behind. */
+	.mock :global(.mock-piece),
+	.mock > div {
+		transition:
+			transform 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+			opacity 0.7s ease;
+	}
+
+	.mock:not([data-active]) :global(.mock-piece),
+	.mock:not([data-active]) > div {
+		transform: translateY(1rem);
+		opacity: 0;
+	}
+
+	.mock[data-active] :global(.mock-late),
+	.mock[data-active] > div:nth-child(n + 4) {
+		transition-delay: 0.15s;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.point,
+		.mock,
+		.mock :global(.mock-piece),
+		.mock > div {
+			transition: none;
+		}
+	}
+</style>
+
+<script>
+	import "../../scripts/linked-showcase";
+</script>

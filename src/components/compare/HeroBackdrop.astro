@@ -1,0 +1,55 @@
+---
+/**
+ * HomeHero's backdrop — purple wash, concentric arcs, side and centre glows — for the
+ * compare-family heroes (compare, alternative). Place it first in a `relative
+ * overflow-hidden` section; the content after it paints above.
+ */
+import backgroundArcs from "../../assets/images/home_page/hero/bg_svg_lines_hero.svg";
+import darkLayerSide from "../../assets/images/home_page/hero/dark_layer_side.svg";
+import darkLayerCenter from "../../assets/images/home_page/hero/dark_layer_center.svg";
+
+interface Props {
+	/** The wash's last stop, so the hero can hand over to the section below without a seam. */
+	fade?: string;
+}
+
+const { fade = "#010101" } = Astro.props;
+---
+
+<div
+	class="pointer-events-none absolute inset-0"
+	style={`background: linear-gradient(179.95deg, #11092B 0%, #6838FF 5.85%, ${fade} 100%)`}
+	aria-hidden="true"
+>
+</div>
+
+<div class="pointer-events-none absolute top-18 left-1/2 w-full -translate-x-1/2 lg:top-36" aria-hidden="true">
+	<img
+		src={backgroundArcs.src}
+		alt=""
+		class="absolute left-1/2 w-[120%] max-w-none -translate-x-1/2 lg:left-0 lg:w-full lg:max-w-full lg:translate-x-0"
+		loading="eager"
+		fetchpriority="high"
+		width={backgroundArcs.width}
+		height={backgroundArcs.height}
+	/>
+</div>
+
+{/* The glows centre on the title-to-CTA block, as HomeHero's centre on its title and copy card. */}
+<div class="pointer-events-none absolute inset-x-0 top-0 h-[44rem] lg:h-[63rem]" aria-hidden="true">
+	<img
+		src={darkLayerSide.src}
+		alt=""
+		class="absolute top-0 left-0 h-[50%] -translate-x-1/2 lg:top-1/2 lg:h-auto lg:max-w-none lg:-translate-y-1/2"
+	/>
+	<img
+		src={darkLayerSide.src}
+		alt=""
+		class="absolute top-0 right-0 h-[50%] translate-x-1/2 lg:top-1/2 lg:h-auto lg:max-w-none lg:-translate-y-1/2"
+	/>
+	<img
+		src={darkLayerCenter.src}
+		alt=""
+		class="absolute top-8 left-1/2 -translate-x-1/2 lg:top-1/2 lg:max-w-none lg:-translate-y-1/2"
+	/>
+</div>

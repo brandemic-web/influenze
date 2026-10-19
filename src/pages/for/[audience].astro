@@ -1,0 +1,132 @@
+---
+/**
+ * /for/<audience>: Influenze.ai for one kind of customer, from the Figma "ICP" frame.
+ * Content comes from the slug's Sanity "ICP Page", falling back to data/icp
+ * (see lib/icp-source.ts).
+ */
+import type { GetStaticPaths } from "astro";
+import Layout from "../../layouts/Layout.astro";
+import IcpHero from "../../components/icp/IcpHero.astro";
+import WorkflowShowcase from "../../components/icp/WorkflowShowcase.astro";
+import BriefCost from "../../components/icp/BriefCost.astro";
+import CreatorsAI from "../../components/home/CreatorsAI.astro";
+import ExampleBriefs from "../../components/platform/ExampleBriefs.astro";
+import CompareTable from "../../components/compare/CompareTable.astro";
+import TwoTone from "../../components/compare/TwoTone.astro";
+import BlogFaq from "../../components/blog/BlogFaq.astro";
+import { FAQS } from "../../data/faqs";
+import { SHOW_DRAFTS } from "../../data/compare";
+import { plainText } from "../../data/icp";
+import { NO_CELLS, getIcp, getIcps } from "../../lib/icp-source";
+import { getPerspectiveCookie } from "../../lib/draft-mode";
+import { parseStructuredDataOverride } from "../../sanity/lib/customSchema";
+
+// Built once per slug in production; rendered on request in dev, where Astro caches
+// getStaticPaths and a renamed or new slug would otherwise 404 until restart.
+export const prerender = import.meta.env.PROD;
+
+export const getStaticPaths = (async () => {
+	const pages = await getIcps();
+	return pages.filter((p) => !p.draft || SHOW_DRAFTS).map((p) => ({ params: { audience: p.slug } }));
+}) satisfies GetStaticPaths;
+
+const page = await getIcp(Astro.params.audience, getPerspectiveCookie(Astro.cookies));
+if (!page || (page.draft && !SHOW_DRAFTS)) return Astro.rewrite("/404");
+const { copy } = page;
+const overrides = page.seoOverrides;
+const faqs = page.faqs ?? FAQS;
+
+const schema = [
+	{
+		"@type": "FAQPage",
+		mainEntity: faqs.map((faq) => ({
+			"@type": "Question",
+			name: faq.question,
+			acceptedAnswer: { "@type": "Answer", text: faq.answer },
+		})),
+	},
+];
+const trim = "[text-box:trim-both_cap_alphabetic]";
+/** The homepage section's tile names for this page's step icons. */
+const SMARTER_ICON = { search: "search", users: "users", squareCheckBig: "square-check", share: "share" } as const;
+---
+
+<Layout
+	title={page.seo.title}
+	description={page.seo.description}
+	noindex={page.draft || (overrides?.noindex ?? false)}
+	canonicalUrl={overrides?.canonicalUrl}
+	schema={schema}
+	structuredDataOverride={parseStructuredDataOverride(overrides?.customSchema)}
+	scripts={page.scripts}
+	fluidRem
+>
+	<main>
+		<IcpHero copy={copy} />
+		{/*
+			One backdrop below the hero, as drawn: a purple band behind the workflow steps,
+			another behind the before/after table, a third behind the briefs. Stops are the
+			design's distances from this wrapper's top (frame y 975), in rem.
+		*/}
+		<div
+			style="background: linear-gradient(180deg, #010101 0rem, #050307 1.5625rem, #09070d 7.8125rem, #0e0c15 14.0625rem, #161224 20.3125rem, #261b44 26.5625rem, #3a2774 32.8125rem, #4c31a1 39.0625rem, #5636bc 45.3125rem, #5938c8 51.5625rem, #5b39cb 57.8125rem, #5a37c9 64.0625rem, #5436ba 70.3125rem, #493194 76.5625rem, #34275e 82.8125rem, #211b34 89.0625rem, #14111e 95.3125rem, #0d0b13 101.5625rem, #060509 107.8125rem, #030304 114.0625rem, #010101 120.3125rem, #0c0917 126.5625rem, #140e28 132.8125rem, #1d143a 139.0625rem, #281c4f 145.3125rem, #382770 151.5625rem, #493392 157.8125rem, #5b3fb5 164.0625rem, #6c4ad7 170.3125rem, #7d56f9 176.5625rem, #6c49d9 182.8125rem, #5338a9 189.0625rem, #3a267a 195.3125rem, #21144b 201.5625rem, #170e32 207.8125rem, #0c0819 214.0625rem, #020202 220.3125rem, #010101 232.8125rem, #0d0919 239.0625rem, #191131 245.3125rem, #271b4c 251.5625rem, #3e2b7b 257.8125rem, #543aa8 264.0625rem, #6d4bd8 270.3125rem, #7c55f6 276.5625rem, #573bb1 282.8125rem, #33216b 289.0625rem, #190f36 295.3125rem, #06040c 301.5625rem, #010101 307.8125rem)"
+		>
+			<WorkflowShowcase heading={copy.workflowHeading} pills={page.pills} />
+
+			<section class="relative px-6 pt-20 lg:px-0 lg:pt-[9.75rem]" aria-labelledby="slows-heading">
+				<h2 id="slows-heading" class:list={["text-center text-[1.875rem] capitalize leading-[1.15] text-white lg:text-[2.25rem]", trim]}>
+					<TwoTone text={copy.slowsHeading} />
+				</h2>
+				<ul class="mx-auto mt-10 grid max-w-[84.4375rem] gap-4 lg:mt-[4rem] lg:grid-cols-3 lg:gap-[1.3125rem]">
+					{
+						page.slowsList.map((card) => (
+							<li class="card-edge flex flex-col justify-center gap-5 rounded-sm px-6 py-7 lg:h-[10.375rem] lg:gap-7 lg:px-[2.375rem]">
+								<h3 class:list={["text-[1.25rem] capitalize leading-7 text-white lg:text-md lg:leading-7.5 lg:whitespace-nowrap", trim]}>{card.title}</h3>
+								<p class:list={["text-[0.9375rem] leading-6 text-[#cdcdcd]/70 lg:w-[20.875rem] lg:text-[1.125rem] lg:leading-6.5", trim]}>{card.body}</p>
+							</li>
+						))
+					}
+				</ul>
+			</section>
+
+			<CompareTable
+				id="before-after"
+				variant="beforeAfter"
+				background="transparent"
+				cornerLabel="Before"
+				heading={copy.beforeAfterHeading}
+				subcopy={copy.beforeAfterSubcopy}
+				competitorName=""
+				rows={page.beforeAfterRows}
+				cells={NO_CELLS}
+			/>
+
+			{/*
+				The homepage's animated "found with AI" section with this page's heading and four
+				steps; 48px of its own top padding plus 102px here makes the 150px gap drawn.
+			*/}
+			<div class="lg:pt-[6.375rem]">
+				<CreatorsAI
+					headingText={copy.smarterHeading}
+					button={false}
+					backdrop={false}
+					steps={page.smarterList.map((step) => ({
+						icon: SMARTER_ICON[step.icon],
+						title: step.title,
+						description: step.body.replaceAll("\n", " "),
+					}))}
+				/>
+			</div>
+
+			<ExampleBriefs heading={copy.briefsHeading} briefs={page.briefList} gap={9.375} headingSize={2.25} panelGap={4} left={15.8125} />
+
+			<div class="pt-20 lg:pt-[9.25rem]">
+				<BriefCost heading={copy.costHeading} subcopy={copy.costSubcopy} total={copy.costTotal} lines={page.costList} />
+			</div>
+
+			<div class="pt-16 lg:pt-[2.875rem]">
+				<BlogFaq heading={plainText(copy.faqHeading)} subcopy={plainText(copy.faqSubcopy)} faqs={faqs} align="wide" size="section" transparent />
+			</div>
+		</div>
+	</main>
+</Layout>

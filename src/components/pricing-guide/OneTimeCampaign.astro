@@ -1,0 +1,67 @@
+---
+/**
+ * "Running a one-time campaign?" — the heading and line of copy ringed by seven creator
+ * bubbles, each at its design position on a 951px stage (frame y 3200 onward; the table below adds its own 150px). Below lg
+ * the bubbles gather into a row above the text.
+ */
+import { Image } from "astro:assets";
+import TwoTone from "../compare/TwoTone.astro";
+import one from "../../assets/images/pricing_guide_page/one_time/creator_bubble_one.png";
+import two from "../../assets/images/pricing_guide_page/one_time/creator_bubble_two.png";
+import three from "../../assets/images/pricing_guide_page/one_time/creator_bubble_three.png";
+import four from "../../assets/images/pricing_guide_page/one_time/creator_bubble_four.png";
+import five from "../../assets/images/pricing_guide_page/one_time/creator_bubble_five.png";
+import six from "../../assets/images/pricing_guide_page/one_time/creator_bubble_six.png";
+import seven from "../../assets/images/pricing_guide_page/one_time/creator_bubble_seven.png";
+import { plainText } from "../../data/pricing-guide";
+
+interface Props {
+	heading: string;
+	body: string;
+}
+
+const { heading, body } = Astro.props;
+/** Design position (relative to the stage) and size of each bubble, in px. */
+const bubbles = [
+	{ src: one, x: 313, y: 326, w: 203, h: 207 },
+	{ src: two, x: 552, y: 88, w: 200, h: 204 },
+	{ src: three, x: 850, y: 44, w: 234, h: 238 },
+	{ src: four, x: 1116, y: 253, w: 177, h: 181 },
+	{ src: five, x: 1192, y: 533, w: 184, h: 186 },
+	{ src: six, x: 440, y: 679, w: 224, h: 232 },
+	{ src: seven, x: 877, y: 726, w: 200, h: 204 },
+];
+const rem = (px: number) => `${px / 16}rem`;
+---
+
+<section class="relative px-6 pt-20 text-center lg:h-[59.4375rem] lg:w-[108rem] lg:mx-[calc(50%-54rem)] lg:p-0" aria-labelledby="one-time-heading">
+	<ul class="flex flex-wrap justify-center gap-2 lg:contents" aria-hidden="true">
+		{
+			bubbles.map((b) => (
+				<li class="size-14 shrink-0 lg:absolute lg:size-auto" style={`--x:${rem(b.x)};--y:${rem(b.y)};--w:${rem(b.w)};--h:${rem(b.h)}`}>
+					<Image src={b.src} alt="" class="h-full w-full object-contain" loading="lazy" />
+				</li>
+			))
+		}
+	</ul>
+	<h2
+		id="one-time-heading"
+		class="mt-8 text-[1.875rem] capitalize leading-[1.15] lg:whitespace-pre-line text-white [text-box:trim-both_cap_alphabetic] lg:absolute lg:top-[27.5625rem] lg:left-[33.5rem] lg:mt-0 lg:w-[41rem] lg:text-[3.4375rem] lg:leading-[4.25rem]"
+	>
+		<TwoTone text={heading} />
+	</h2>
+	<p class="mx-auto mt-6 max-w-[32.875rem] text-[1rem] leading-6 text-[#cdcdcd] [text-box:trim-both_cap_alphabetic] lg:absolute lg:top-[37.8125rem] lg:left-[37.5625rem] lg:mt-0 lg:text-[1.125rem] lg:leading-7">
+		{plainText(body)}
+	</p>
+</section>
+
+<style>
+	@media (min-width: 1024px) {
+		li[style*="--x"] {
+			left: var(--x);
+			top: var(--y);
+			width: var(--w);
+			height: var(--h);
+		}
+	}
+</style>

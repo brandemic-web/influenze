@@ -1,0 +1,63 @@
+---
+/**
+ * The three floating "at a glance" pills. Below `lg` they sit in a centred row under
+ * the frame. From `lg` up, either each takes the absolute position its page draws,
+ * passed in as classes and anchored on the edge that overlaps the frame (so a wider
+ * label grows outward rather than over it) — or, with `row`, all three sit in one
+ * centred row 15px apart (profiles, platforms, credits), as the features hero draws
+ * them. A row's text scales with the 1728 grid like the rest of the hero, so the pills
+ * keep their drawn widths at every desktop size and can never overlap.
+ */
+import Icon from "../app/common/Icon.astro";
+import PlatformIcon from "../app/common/PlatformIcon.astro";
+import { COMPARE_HERO } from "../../data/compare";
+
+type Props =
+	| { profiles: string; credits: string; platforms: string; row?: undefined }
+	/** lg-up classes placing the whole row, e.g. its top offset. */
+	| { row: string; profiles?: undefined; credits?: undefined; platforms?: undefined };
+
+const props = Astro.props;
+const row = props.row;
+// 52px tall with each pill's own side padding, as drawn.
+const pill =
+	"flex w-fit items-center gap-2.5 rounded-full border border-white/25 bg-surface-pill/60 py-2 pr-4 pl-2 leading-5 whitespace-nowrap text-white lg:h-[3.25rem] lg:py-0";
+const pillIcon = "grid size-6 place-items-center rounded-full bg-brand-primary/35 text-brand-primary lg:size-7";
+// Edge-anchored pills keep a fixed 16px label, as requested for those heroes; row pills scale.
+const bigText = row ? "text-[1rem]" : "text-[16px] lg:absolute";
+const place = (cls: string | undefined) => (row ? "" : cls);
+---
+
+<ul
+	class:list={[
+		"mt-6 flex flex-wrap justify-center gap-3",
+		row ? ["lg:absolute lg:left-0 lg:mt-0 lg:w-full lg:flex-nowrap lg:gap-[0.9375rem]", row] : "lg:contents",
+	]}
+	aria-label="At a glance"
+>
+	<li class:list={[pill, bigText, "lg:pr-[0.8125rem] lg:pl-[1.0625rem]", place(props.profiles)]}>
+		<span class={pillIcon}><Icon name="usersRound" size="1rem" /></span>
+		{COMPARE_HERO.pills.profiles}
+	</li>
+	<li
+		class:list={[
+			pill,
+			"text-[0.8125rem] lg:gap-2 lg:pr-[1.5rem] lg:pl-[1.3125rem] lg:text-[0.806rem]",
+			!row && "lg:absolute",
+			row && "order-2",
+			place(props.platforms),
+		]}
+	>
+		{/* Overlapping tiles, as the app shows a creator's platforms. */}
+		<span class="flex -space-x-1.5" aria-hidden="true">
+			<PlatformIcon platform="instagram" radius="999px" class="ring-1 ring-surface-pill" />
+			<PlatformIcon platform="youtube" radius="999px" class="ring-1 ring-surface-pill" />
+			<PlatformIcon platform="tiktok" radius="999px" class="ring-1 ring-surface-pill" />
+		</span>
+		{COMPARE_HERO.pills.platforms}
+	</li>
+	<li class:list={[pill, bigText, "lg:pr-4 lg:pl-[1.0625rem]", row && "order-3", place(props.credits)]}>
+		<span class={pillIcon}><Icon name="coins" size="1rem" /></span>
+		{COMPARE_HERO.pills.credits}
+	</li>
+</ul>

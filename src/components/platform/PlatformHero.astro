@@ -1,0 +1,110 @@
+---
+/**
+ * Platform hero. From lg up it is the Figma frame's first 1440px: the panel's content is a
+ * flex column, while the panel box, body copy and bubbles sit at their design coordinates
+ * (px ÷ 16 → rem, so the 108rem stage is the 1728 grid).
+ * Below lg the same elements stack in reading order. Backdrop is the compare family's.
+ */
+import { Image } from "astro:assets";
+import Button from "../common/Button.astro";
+import HeroBackdrop from "../compare/HeroBackdrop.astro";
+import TwoTone from "../compare/TwoTone.astro";
+import SearchMockup from "./SearchMockup.astro";
+import bubbleOne from "../../assets/images/platform_page/hero/creator_bubble_one.png";
+import bubbleTwo from "../../assets/images/platform_page/hero/creator_bubble_two.png";
+import bubbleThree from "../../assets/images/platform_page/hero/creator_bubble_three.png";
+import bubbleFour from "../../assets/images/platform_page/hero/creator_bubble_four.png";
+import { APP_URL } from "../../data/site";
+import { plainText } from "../../data/platform";
+import type { ResolvedPlatform } from "../../lib/platform-source";
+
+interface Props {
+	page: ResolvedPlatform;
+}
+
+const { page } = Astro.props;
+const { copy } = page;
+
+/** Design position and size of each creator bubble, in px on the 1728 frame. */
+const bubbles = [
+	{ src: bubbleOne, x: 281, y: 1057, w: 200, h: 204 },
+	{ src: bubbleTwo, x: 555, y: 1193, w: 200, h: 204 },
+	{ src: bubbleThree, x: 888, y: 1186, w: 224, h: 228 },
+	{ src: bubbleFour, x: 1192, y: 1071, w: 225, h: 229 },
+];
+const rem = (px: number) => `${px / 16}rem`;
+---
+
+<section class="relative overflow-hidden" aria-labelledby="platform-title">
+	<HeroBackdrop fade="#0b0a11" />
+
+	<div class="relative mx-auto flex flex-col items-center px-6 pt-32 pb-16 text-center lg:block lg:h-[90rem] lg:w-[108rem] lg:mx-[calc(50%-54rem)] lg:p-0">
+		<div
+			class="pointer-events-none absolute hidden rounded-[1.25rem] border border-white/10 bg-[#0a0718]/40 backdrop-blur-md lg:block lg:inset-auto lg:top-[12.6875rem] lg:left-[22.375rem] lg:h-[49.8125rem] lg:w-[63.3125rem]"
+			aria-hidden="true"
+		>
+		</div>
+
+		{/*
+			Below lg the panel wraps its content; from lg it drops its box (the drawn one above
+			stands behind) and stacks eyebrow, title, mockup and CTA 44px apart from the eyebrow's line.
+		*/}
+		<div class="relative -mx-3 flex flex-col self-stretch items-center rounded-[1.25rem] border border-white/10 bg-[#0a0718]/40 px-5 pt-10 pb-10 backdrop-blur-md lg:mx-0 lg:gap-11 lg:rounded-none lg:border-0 lg:bg-transparent lg:px-0 lg:pt-66 lg:pb-0 lg:backdrop-blur-none">
+			<p
+				class="relative text-[0.875rem] uppercase text-brand-primary [text-box:trim-both_cap_alphabetic] lg:text-[1.125rem]"
+			>
+				{plainText(copy.heroEyebrow)}
+			</p>
+			<h1
+				id="platform-title"
+				class="relative mt-4 text-[2.125rem] leading-[1.1] lg:whitespace-pre-line text-white [text-box:trim-both_cap_alphabetic] lg:mt-0 lg:w-[48.5rem] lg:text-9xl lg:leading-[4.625rem] lg:tracking-[-0.08rem]"
+			>
+				<TwoTone text={copy.heroTitle} />
+			</h1>
+
+			<div class="relative mt-10 max-lg:[zoom:0.46] min-[380px]:max-lg:[zoom:0.5] sm:max-lg:[zoom:0.9] lg:mt-0">
+				<SearchMockup
+					platform={page.platform}
+					searchTerm={plainText(copy.searchTerm)}
+					niche={plainText(copy.nicheValue)}
+					audience={plainText(copy.audienceValue)}
+					location={plainText(copy.locationValue)}
+				/>
+			</div>
+
+			<div class="relative mt-8 lg:mt-0">
+				<Button href={APP_URL} newTab>{plainText(copy.heroCta)}</Button>
+			</div>
+		</div>
+
+		<p
+			class="relative mt-10 max-w-[39.3125rem] text-[1rem] leading-6 text-white/80 lg:absolute lg:top-[64.25rem] lg:left-[34.375rem] lg:mt-0 lg:text-[1.125rem] lg:leading-[1.4]"
+		>
+			<TwoTone text={copy.heroBody} accentClass="text-[1.375rem] font-semibold text-brand-primary" />
+		</p>
+
+		<ul class="relative mt-10 flex justify-center gap-2 lg:static lg:mt-0" aria-hidden="true">
+			{
+				bubbles.map((b) => (
+					<li
+						class="size-18 shrink-0 lg:absolute lg:size-auto"
+						style={`--x:${rem(b.x)};--y:${rem(b.y)};--w:${rem(b.w)};--h:${rem(b.h)}`}
+					>
+						<Image src={b.src} alt="" class="bubble h-full w-full object-contain" loading="lazy" />
+					</li>
+				))
+			}
+		</ul>
+	</div>
+</section>
+
+<style>
+	@media (min-width: 1024px) {
+		li[style*="--x"] {
+			left: var(--x);
+			top: var(--y);
+			width: var(--w);
+			height: var(--h);
+		}
+	}
+</style>
