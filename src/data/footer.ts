@@ -1,3 +1,5 @@
+import { LEGAL_PAGES } from "./legal";
+
 export interface FooterColumn {
 	title: string;
 	links: {
@@ -9,8 +11,8 @@ export interface FooterColumn {
 }
 
 /**
- * Two columns, four links then two. Every href resolves — a real route, the
- * DotMe site or a mailto — so nothing here is a placeholder.
+ * Two columns: quick links, then the legal pages. Every href resolves — a real
+ * route or the DotMe site — so nothing here is a placeholder.
  */
 export const FOOTER_COLUMNS: FooterColumn[] = [
 	{
@@ -20,7 +22,7 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
 			{ label: "Features", href: "/features/" },
 			{ label: "Resources", href: "/blog/" },
 			{ label: "DotMe", href: "https://www.dotme.in/", newTab: true },
-			{ label: "Contact Us", href: "mailto:info@dotme.in" },
+			{ label: "Contact Us", href: "/contact/" },
 		],
 	},
 	// "Resources" is hidden for now — its links have no destinations yet, matching
@@ -37,10 +39,8 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
 	// },
 	{
 		title: "Legal",
-		links: [
-			{ label: "Terms of Service", href: "/terms/" },
-			{ label: "Privacy Policy", href: "/privacy/" },
-		],
+		// Contact Us already sits under Quick Links.
+		links: LEGAL_PAGES.filter((page) => page.href !== "/contact/"),
 	},
 ];
 

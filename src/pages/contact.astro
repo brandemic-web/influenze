@@ -1,0 +1,9 @@
+---
+import Layout from "../layouts/Layout.astro";
+import LegalDocument from "../components/legal/LegalDocument.astro";
+import { CONTACT } from "../data/contact";
+---
+
+<Layout title={`${CONTACT.title} — Influenze.ai`} description={CONTACT.description} hideCta>
+	<LegalDocument doc={CONTACT} href="/contact/" />
+</Layout>
