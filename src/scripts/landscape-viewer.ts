@@ -74,6 +74,38 @@ function exitFullscreen() {
 	}
 }
 
+/*
+ * Chrome on Android, after an orientation lock is released and fullscreen exits, can
+ * keep the landscape zoom on the portrait page: the layout is right but shown zoomed
+ * out, the page filling half the screen until a scroll makes it recompute. Capping the
+ * viewport scale for a frame snaps it back to 1; restoring the original tag keeps pinch
+ * zoom. The 1px scroll nudge is the recompute a reader's own scroll would trigger.
+ */
+function resetViewportZoom() {
+	const meta = document.querySelector<HTMLMetaElement>('meta[name="viewport"]');
+	const original = meta?.getAttribute("content");
+	if (meta && original) {
+		meta.setAttribute("content", `${original}, maximum-scale=1`);
+		requestAnimationFrame(() => requestAnimationFrame(() => meta.setAttribute("content", original)));
+	}
+	window.scrollBy(0, 1);
+	requestAnimationFrame(() => window.scrollBy(0, -1));
+}
+
+/** Runs `fn` once the screen has turned back (or after `fallbackMs`, where no change event comes). */
+function afterOrientationSettles(fn: () => void, fallbackMs = 700) {
+	let done = false;
+	const run = () => {
+		if (done) return;
+		done = true;
+		screen.orientation?.removeEventListener?.("change", run);
+		// One more frame so the portrait layout is in place before the reset.
+		requestAnimationFrame(fn);
+	};
+	screen.orientation?.addEventListener?.("change", run);
+	window.setTimeout(run, fallbackMs);
+}
+
 function initLandscapeViewers() {
 	document.querySelectorAll<HTMLElement>("[data-landscape-host]").forEach((host) => {
 		if (host.dataset.landscapeReady === "true") return;
@@ -132,6 +164,8 @@ function initLandscapeViewers() {
 
 			(screen.orientation as LockableOrientation)?.unlock?.();
 			if (wentFullscreen && currentFullscreenElement()) exitFullscreen();
+			// Only a real fullscreen + lock can leave the zoom stranded (see resetViewportZoom).
+			if (wentFullscreen) afterOrientationSettles(resetViewportZoom);
 			wentFullscreen = false;
 
 			host.hidden = true;
