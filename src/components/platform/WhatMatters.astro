@@ -5,7 +5,8 @@
  * account stats, platform-specific to the filters with creators. The active point is
  * lit and its mockup shown, stepping on its own and on click
  * (scripts/linked-showcase.ts). Mockups are Figma exports at the design's offsets.
- * Without JS the first pairing shows, as drawn. Below lg the panel zooms to fit.
+ * Without JS the first pairing shows, as drawn. Below lg the panel zooms to fit and the
+ * points become a one-at-a-time slider with arrows, like the example briefs.
  */
 import { Image } from "astro:assets";
 import TwoTone from "../compare/TwoTone.astro";
@@ -40,10 +41,10 @@ const tiles = [
 	</h2>
 
 	<div
-		class="mx-auto mt-10 flex max-w-[98.25rem] flex-col gap-10 rounded-[1.75rem] bg-white/10 p-5 lg:mt-[3.9375rem] lg:h-[37.5rem] lg:flex-row lg:items-start lg:justify-between lg:gap-0 lg:p-0 lg:pt-[1.4375rem] lg:pr-[1.1875rem]"
+		class="relative mx-auto mt-10 flex max-w-[98.25rem] flex-col gap-10 rounded-[1.75rem] bg-white/10 px-7 py-5 lg:mt-[3.9375rem] lg:h-[37.5rem] lg:flex-row lg:items-start lg:justify-between lg:gap-0 lg:p-0 lg:pt-[1.4375rem] lg:pr-[1.1875rem]"
 		data-showcase
 	>
-		<div class="w-full lg:mt-[3.3125rem] lg:ml-[9.25rem] lg:w-[33.0625rem]" role="tablist" aria-orientation="vertical" aria-label="What matters">
+		<div class="point-list w-full lg:mt-[3.3125rem] lg:ml-[9.25rem] lg:w-[33.0625rem]" role="tablist" aria-orientation="vertical" aria-label="What matters">
 			{
 				points.map((point, i) => (
 					<button
@@ -58,10 +59,10 @@ const tiles = [
 						class:list={["point relative block w-full cursor-pointer text-left", i > 0 && "mt-8 border-t border-white/20 pt-8 lg:w-[31rem]"]}
 					>
 						<span class="flex items-center gap-4">
-							<img src={ICON_ASSETS[point.icon].src} alt="" width="48" height="48" class="size-12 shrink-0 rounded-sm" loading="lazy" />
-							<span class="text-[1.25rem] capitalize leading-7 text-white lg:text-md lg:leading-7.5">{point.title}</span>
+							<img src={ICON_ASSETS[point.icon].src} alt="" width="48" height="48" class="size-7.5 shrink-0 rounded-sm lg:size-12" loading="lazy" />
+							<span class="text-[1.125rem] capitalize leading-[normal] text-white lg:text-md lg:leading-7.5">{point.title}</span>
 						</span>
-						<span class="mt-3 block pl-16 text-[0.9375rem] leading-6 text-white lg:w-[33.0625rem] lg:pr-0 lg:pl-[4.0625rem] lg:text-xs lg:leading-6.5 lg:[text-box:trim-both_cap_alphabetic]">
+						<span class="mt-3 block pl-12 text-[0.875rem] leading-6.5 text-white lg:w-[33.0625rem] lg:pr-0 lg:pl-[4.0625rem] lg:text-xs lg:leading-6.5 lg:[text-box:trim-both_cap_alphabetic]">
 							{point.body}
 						</span>
 					</button>
@@ -129,6 +130,27 @@ const tiles = [
 				</div>
 			</div>
 		</div>
+		{/* Below lg a slider like the "found with AI" section: one point at a time, arrows centred on the whole panel, half outside its edges. */}
+		<button
+			type="button"
+			data-showcase-prev
+			aria-label="Previous point"
+			class="point-arrow absolute top-1/2 z-10 hidden size-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-white/25 bg-white/10 text-white backdrop-blur-sm transition-colors hover:border-brand-primary hover:text-brand-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary -left-px -translate-x-1/2"
+		>
+			<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+				<path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+			</svg>
+		</button>
+		<button
+			type="button"
+			data-showcase-next
+			aria-label="Next point"
+			class="point-arrow absolute top-1/2 z-10 hidden size-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-white/25 bg-white/10 text-white backdrop-blur-sm transition-colors hover:border-brand-primary hover:text-brand-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary -right-px translate-x-1/2"
+		>
+			<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+				<path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+			</svg>
+		</button>
 	</div>
 </section>
 
@@ -177,6 +199,34 @@ const tiles = [
 	.mock[data-active] :global(.mock-late),
 	.mock[data-active] > div:nth-child(n + 4) {
 		transition-delay: 0.15s;
+	}
+
+	/*
+	 * Below lg the points share one grid cell and only the active one shows, stepped by
+	 * the arrows and the auto-advance — the briefs' slider. Gated on motion like it: with
+	 * reduced motion nothing advances, so the full list stays stacked instead.
+	 */
+	@media (max-width: 1023px) and (prefers-reduced-motion: no-preference) {
+		.point-list {
+			display: grid;
+		}
+
+		.point {
+			grid-area: 1 / 1;
+			margin-top: 0;
+			padding-top: 0;
+			border-top: 0;
+		}
+
+		/* Not gated on the script: the server renders point one active, so no-JS shows it alone. */
+		.point:not([data-active]) {
+			opacity: 0;
+			visibility: hidden;
+		}
+
+		.point-arrow {
+			display: flex;
+		}
 	}
 
 	@media (prefers-reduced-motion: reduce) {

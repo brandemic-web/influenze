@@ -4,7 +4,8 @@
  * the app's Creator Location field over them, at the design's offsets on a 1189×552
  * stage. The active brief is outlined green and its set shown; the section steps through
  * them on its own and on click (scripts/linked-showcase.ts), sets cross-fading in place.
- * Without JS the first pairing shows, as drawn. Below lg the stage stacks.
+ * Without JS the first pairing shows, as drawn. Below lg the stage stacks and the briefs
+ * become a one-at-a-time slider with arrows, like the "found with AI" section.
  */
 import { Image } from "astro:assets";
 import Icon from "../app/common/Icon.astro";
@@ -61,7 +62,7 @@ const panelId = (id: string) => `brief-panel-${id}`;
 		data-showcase
 	>
 		<div
-			class="flex flex-col gap-3 rounded-[1.25rem] bg-[#010101]/40 p-3 lg:absolute lg:top-[0.0625rem] lg:left-(--l) lg:w-[32.5625rem] lg:gap-[0.875rem] lg:px-[1.125rem] lg:pt-[1.3125rem] lg:pb-5"
+			class="brief-list flex flex-col gap-3 rounded-[1.25rem] bg-[#010101]/40 p-3 lg:absolute lg:top-[0.0625rem] lg:left-(--l) lg:w-[32.5625rem] lg:gap-[0.875rem] lg:px-[1.125rem] lg:pt-[1.3125rem] lg:pb-5"
 			role="tablist"
 			aria-orientation="vertical"
 			aria-label="Example briefs"
@@ -131,6 +132,27 @@ const panelId = (id: string) => `brief-panel-${id}`;
 				))
 			}
 		</div>
+		{/* Below lg a slider like the "found with AI" section: one brief at a time, arrows centred on the whole block (brief and photos), half outside its edges. */}
+		<button
+			type="button"
+			data-showcase-prev
+			aria-label="Previous brief"
+			class="brief-arrow absolute top-1/2 z-10 hidden size-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-white/25 bg-white/10 text-white backdrop-blur-sm transition-colors hover:border-brand-primary hover:text-brand-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary -left-px -translate-x-1/2"
+		>
+			<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+				<path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+			</svg>
+		</button>
+		<button
+			type="button"
+			data-showcase-next
+			aria-label="Next brief"
+			class="brief-arrow absolute top-1/2 z-10 hidden size-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-white/25 bg-white/10 text-white backdrop-blur-sm transition-colors hover:border-brand-primary hover:text-brand-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary -right-px translate-x-1/2"
+		>
+			<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+				<path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+			</svg>
+		</button>
 	</div>
 </section>
 
@@ -210,6 +232,33 @@ const panelId = (id: string) => `brief-panel-${id}`;
 
 	.brief-set[data-active] .set-detail {
 		transition-delay: 0.25s;
+	}
+
+	/*
+	 * Below lg the briefs share one grid cell and only the active one shows, stepped by
+	 * the arrows and the auto-advance. Gated on motion like the "found with AI" section:
+	 * with reduced motion nothing advances, so the full list stays stacked instead.
+	 */
+	@media (max-width: 1023px) and (prefers-reduced-motion: no-preference) {
+		.brief-list {
+			display: grid;
+		}
+
+		.brief {
+			grid-area: 1 / 1;
+			transition:
+				opacity 0.4s ease,
+				box-shadow 0.4s ease;
+		}
+
+		.brief:not([data-active]) {
+			opacity: 0;
+			visibility: hidden;
+		}
+
+		.brief-arrow {
+			display: flex;
+		}
 	}
 
 	@media (prefers-reduced-motion: reduce) {

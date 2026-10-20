@@ -3,8 +3,8 @@
  * The campaign workflow as a timeline: an icon per step on one shared line, a card
  * under each with both platforms' coverage. Five 282px cards 50px apart (1610px) sit
  * centred on the 1728 grid with a 59px inset, so the desktop row fits without
- * scrolling; on narrower screens it is a free-scrolling Swiper (scripts/swiper-rail.ts),
- * and without JS a native sideways scroller.
+ * scrolling; Swiper (scripts/swiper-rail.ts) runs it from lg up. Below lg the steps
+ * stack into a vertical timeline, each card beside its icon on a line down the left.
  */
 import Icon from "../app/common/Icon.astro";
 import TwoTone from "./TwoTone.astro";
@@ -28,8 +28,8 @@ const { competitor } = Astro.props;
 		</p>
 	</div>
 
-	<div class="workflow-swiper swiper mt-10 lg:mt-19" data-swiper-rail data-inset-mobile="1.5" data-inset-desktop="3.6875">
-		<ol class="swiper-wrapper">
+	<div class="workflow-swiper swiper mt-10 lg:mt-19" data-swiper-rail data-rail-from="lg" data-inset-mobile="1.5" data-inset-desktop="3.6875">
+		<ol class="swiper-wrapper max-lg:flex-col">
 			{/*
 				One line through every icon's centre, drawn once so its green-to-white fade
 				runs the whole track as in the design. It sits in the wrapper so it moves
@@ -38,18 +38,23 @@ const { competitor } = Astro.props;
 				only as wide as the viewport.
 			*/}
 			<span
-				class="pointer-events-none absolute top-5.5 left-31 h-px w-[calc(var(--gaps)*17rem)] bg-linear-to-r from-brand-primary/70 from-30% to-white/70 lg:top-6 lg:left-[8.8125rem] lg:w-[calc(var(--gaps)*20.75rem)]"
+				class="pointer-events-none absolute top-5.5 left-31 h-px max-lg:hidden w-[calc(var(--gaps)*17rem)] bg-linear-to-r from-brand-primary/70 from-30% to-white/70 lg:top-6 lg:left-[8.8125rem] lg:w-[calc(var(--gaps)*20.75rem)]"
 				style={`--gaps: ${WORKFLOW_STEPS.length - 1}`}
 				aria-hidden="true"></span>
 			{
 				WORKFLOW_STEPS.map((step) => (
-					// The gap is the slide's own right padding, so Swiper's measured widths include it.
-					<li class="swiper-slide w-auto! pr-6 last:pr-0 lg:pr-12.5">
-						<div class="flex w-62 flex-col items-center lg:w-70.5">
-							<span class="relative grid size-11 place-items-center rounded-sm bg-surface-pill text-brand-primary lg:size-12">
+					// The gap is the slide's own right padding (bottom, below lg), so Swiper's measured widths include it.
+					<li class="swiper-slide w-auto! pb-4 last:pb-0 max-lg:w-full! lg:pr-12.5 lg:pb-0 lg:last:pr-0">
+						{/* Below lg: this step's stretch of the line, icon centre to the next icon's centre (34px down, level with the card heading). */}
+						<span
+							class="pointer-events-none absolute top-8.5 -bottom-8.5 left-5.5 w-px bg-linear-to-b from-brand-primary/70 to-white/40 lg:hidden [li:last-child>&]:hidden"
+							aria-hidden="true"
+						></span>
+						<div class="flex items-start gap-4 lg:w-70.5 lg:flex-col lg:items-center lg:gap-0">
+							<span class="relative z-1 mt-3 grid size-11 shrink-0 place-items-center rounded-sm bg-surface-pill text-brand-primary lg:mt-0 lg:size-12">
 								<Icon name={step.icon} size="1.5rem" />
 							</span>
-							<div class="mt-4 w-full rounded-sm bg-black/40 py-5 pr-4 pl-6 lg:mt-5.75 lg:py-6.25 lg:pl-8.25">
+							<div class="min-w-0 flex-1 rounded-sm bg-black/40 py-5 pr-4 pl-6 lg:mt-5.75 lg:w-full lg:flex-none lg:py-6.25 lg:pl-8.25">
 								<h3 class="text-[1.25rem] leading-7 whitespace-nowrap text-white lg:text-md lg:leading-7.5">
 									{step.title}
 								</h3>
@@ -78,6 +83,13 @@ const { competitor } = Astro.props;
 
 	.workflow-swiper:not(:global(.swiper-initialized))::-webkit-scrollbar {
 		display: none;
+	}
+
+	/* Below lg it is never a rail: the stacked timeline takes the page gutter. */
+	@media (max-width: 1023.98px) {
+		.workflow-swiper {
+			padding-inline: 1.5rem;
+		}
 	}
 
 	@media (min-width: 1024px) {

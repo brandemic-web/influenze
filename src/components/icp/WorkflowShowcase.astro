@@ -1,12 +1,13 @@
 ---
 /**
- * "Built for your workflow" — the app's Analyze screen (a Figma export of the product
- * frame with its creator panel) over five numbered steps on one line, as drawn; below lg
- * the steps stack.
+ * "Built for your workflow" — the homepage hero's product animation (the app rebuilt as
+ * markup and played by GSAP; see components/app/APP-SPEC.md) over five numbered steps on
+ * one line, as drawn; below lg the steps stack.
  */
-import { Image } from "astro:assets";
 import TwoTone from "../compare/TwoTone.astro";
-import screen from "../../assets/images/icp_page/workflow/analyze_screen_mockup.png";
+import WorkflowMockup from "../app/WorkflowMockup.astro";
+import { getHomePage } from "../../sanity/lib/queries";
+import { getPerspectiveCookie } from "../../lib/draft-mode";
 
 interface Props {
 	heading: string;
@@ -14,20 +15,18 @@ interface Props {
 }
 
 const { heading, pills } = Astro.props;
+// Same story as the homepage: its Sanity "Show Shortlist flow" switch drives both.
+const { data: home } = await getHomePage(getPerspectiveCookie(Astro.cookies));
+const shortlistFlow = home?.hero?.showShortlistFlow ?? false;
 ---
 
 <section class="relative px-6 pt-16 lg:w-[108rem] lg:pt-0 lg:mx-[calc(50%-54rem)] lg:px-0" aria-labelledby="workflow-heading">
 	<h2 id="workflow-heading" class="text-center text-[1.875rem] capitalize leading-[1.15] text-white [text-box:trim-both_cap_alphabetic] lg:text-[2.25rem]">
 		<TwoTone text={heading} />
 	</h2>
-	<Image
-		src={screen}
-		alt="Influenze.ai's Analyze screen, with search filters and a creator's profile panel"
-		widths={[1079, 2158]}
-		sizes="(min-width: 1024px) 67.4375rem, 95vw"
-		class="mx-auto mt-10 w-full max-w-[67.4375rem] lg:mt-[4.5rem] lg:ml-[20.3125rem]"
-		loading="lazy"
-	/>
+	<div class="mx-auto mt-10 w-full max-w-[67.4375rem] lg:mt-[4.5rem] lg:ml-[20.3125rem]">
+		<WorkflowMockup shortlistFlow={shortlistFlow} />
+	</div>
 	{/* Below lg the steps run down a line instead of across it. */}
 	<ol class="relative mx-auto mt-12 flex max-w-[20rem] flex-col gap-4 lg:mt-[4.5rem] lg:flex-row lg:w-[92.5625rem] lg:max-w-none lg:justify-between lg:gap-0">
 		<span class="absolute top-6 bottom-6 left-[1.46875rem] w-px bg-linear-to-b from-white/60 to-brand-primary lg:top-[1.4375rem] lg:right-[6.5rem] lg:bottom-auto lg:left-[6.1875rem] lg:h-px lg:w-auto lg:bg-linear-to-r" aria-hidden="true"></span>

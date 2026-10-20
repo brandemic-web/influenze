@@ -1,7 +1,7 @@
 ---
 /**
  * The three floating "at a glance" pills. Below `lg` they sit in a centred row under
- * the frame. From `lg` up, either each takes the absolute position its page draws,
+ * the frame, platforms first, then profiles, then credits. From `lg` up, either each takes the absolute position its page draws,
  * passed in as classes and anchored on the edge that overlaps the frame (so a wider
  * label grows outward rather than over it) — or, with `row`, all three sit in one
  * centred row 15px apart (profiles, platforms, credits), as the features hero draws
@@ -35,7 +35,7 @@ const place = (cls: string | undefined) => (row ? "" : cls);
 	]}
 	aria-label="At a glance"
 >
-	<li class:list={[pill, bigText, "lg:pr-[0.8125rem] lg:pl-[1.0625rem]", place(props.profiles)]}>
+	<li class:list={[pill, bigText, "max-lg:order-2 lg:pr-[0.8125rem] lg:pl-[1.0625rem]", place(props.profiles)]}>
 		<span class={pillIcon}><Icon name="usersRound" size="1rem" /></span>
 		{COMPARE_HERO.pills.profiles}
 	</li>
@@ -43,8 +43,9 @@ const place = (cls: string | undefined) => (row ? "" : cls);
 		class:list={[
 			pill,
 			"text-[0.8125rem] lg:gap-2 lg:pr-[1.5rem] lg:pl-[1.3125rem] lg:text-[0.806rem]",
+			"max-lg:order-1",
 			!row && "lg:absolute",
-			row && "order-2",
+			row && "lg:order-2",
 			place(props.platforms),
 		]}
 	>
@@ -56,7 +57,7 @@ const place = (cls: string | undefined) => (row ? "" : cls);
 		</span>
 		{COMPARE_HERO.pills.platforms}
 	</li>
-	<li class:list={[pill, bigText, "lg:pr-4 lg:pl-[1.0625rem]", row && "order-3", place(props.credits)]}>
+	<li class:list={[pill, bigText, "max-lg:order-3 lg:pr-4 lg:pl-[1.0625rem]", row && "lg:order-3", place(props.credits)]}>
 		<span class={pillIcon}><Icon name="coins" size="1rem" /></span>
 		{COMPARE_HERO.pills.credits}
 	</li>

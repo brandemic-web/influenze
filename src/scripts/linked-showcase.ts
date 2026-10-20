@@ -5,6 +5,7 @@
  *
  * Markup: `data-showcase` on the root (optional `data-interval` in ms), `role="tab"`
  * buttons with `data-showcase-item`, and `data-showcase-panel` visuals in the same order.
+ * Optional `data-showcase-prev` / `data-showcase-next` buttons step back and forward.
  * The server renders item 0 active, so without JS the first pairing shows as drawn. With
  * reduced motion it never advances on its own, and the swap is instant.
  */
@@ -61,6 +62,16 @@ function initShowcases() {
 				items[active].focus();
 				schedule();
 			});
+		});
+
+		// Optional arrows, for layouts that show one item at a time.
+		root.querySelector("[data-showcase-prev]")?.addEventListener("click", () => {
+			show(active - 1);
+			schedule();
+		});
+		root.querySelector("[data-showcase-next]")?.addEventListener("click", () => {
+			show(active + 1);
+			schedule();
 		});
 
 		const pause = () => {

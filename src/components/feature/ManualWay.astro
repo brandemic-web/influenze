@@ -2,7 +2,8 @@
 /**
  * "Without Influenze — the manual way": eyebrow, heading and a bordered text box between
  * the 3D spreadsheet and hashtag icons, at the design's offsets on the 108rem stage.
- * Below lg the icons sit either side of the text, smaller.
+ * Below lg the icons sit in front of the box, smaller, on its corners: each overlaps only
+ * the top or bottom padding band, so no text is covered.
  */
 import { Image } from "astro:assets";
 import TwoTone from "../compare/TwoTone.astro";
@@ -19,7 +20,7 @@ interface Props {
 const { eyebrow, heading, body } = Astro.props;
 ---
 
-<section class="relative px-6 pt-16 pb-10 lg:h-[35.8125rem] lg:w-[108rem] lg:mx-[calc(50%-54rem)] lg:p-0" aria-labelledby="manual-heading">
+<section class="relative px-6 pt-16 pb-14 lg:h-[35.8125rem] lg:w-[108rem] lg:mx-[calc(50%-54rem)] lg:p-0" aria-labelledby="manual-heading">
 	<p
 		class="text-center text-[0.875rem] uppercase text-brand-primary [text-box:trim-both_cap_alphabetic] lg:absolute lg:top-[7.375rem] lg:left-0 lg:w-full lg:text-[1.125rem]"
 	>
@@ -38,11 +39,11 @@ const { eyebrow, heading, body } = Astro.props;
 			alt=""
 			widths={[317, 634]}
 			sizes="(min-width: 1024px) 19.8125rem, 6rem"
-			class="absolute -top-12 -left-3 size-20 lg:top-[7.375rem] lg:left-[20.0625rem] lg:size-[19.8125rem]"
+			class="absolute -top-14 -left-3 size-20 max-lg:z-2 lg:top-[7.375rem] lg:left-[20.0625rem] lg:size-[19.8125rem]"
 			loading="lazy"
 		/>
 		<p
-			class="card-edge relative z-1 w-full rounded-sm px-6 py-8 text-center text-[0.9375rem] leading-6 text-[#cdcdcd]/70 lg:absolute lg:top-[15.875rem] lg:left-[37.3125rem] lg:h-[10.75rem] lg:w-[33.375rem] lg:px-[3.75rem] lg:pt-10 lg:pb-0 lg:text-[1.125rem] lg:leading-6.5"
+			class="card-edge relative z-1 w-full rounded-sm px-6 py-8 text-center text-[0.9375rem] leading-6 text-[#cdcdcd]/70 lg:absolute lg:top-[15.875rem] lg:left-[37.3125rem] lg:min-h-[10.75rem] lg:w-[33.375rem] lg:px-[3.75rem] lg:py-10 lg:text-[1.125rem] lg:leading-6.5"
 		>
 			{plainText(body)}
 		</p>
@@ -51,7 +52,7 @@ const { eyebrow, heading, body } = Astro.props;
 			alt=""
 			widths={[310, 620]}
 			sizes="(min-width: 1024px) 19.375rem, 6rem"
-			class="absolute -right-3 -bottom-10 size-20 lg:top-[13.1875rem] lg:left-[68.0625rem] lg:size-[19.375rem]"
+			class="absolute -right-3 -bottom-14 size-20 max-lg:z-2 lg:top-[13.1875rem] lg:left-[68.0625rem] lg:size-[19.375rem]"
 			loading="lazy"
 		/>
 	</div>

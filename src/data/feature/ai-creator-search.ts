@@ -23,7 +23,7 @@ export const AI_CREATOR_SEARCH: FeaturePage = {
 		freshnessHeading: "How *Fresh and Accurate*\nIs the AI Creator Search Data?",
 		fastestLine1: "*AI Creator Search and Discovery:* The Fastest Way",
 		fastestLine2: "*To Find and Evaluate the* Right Creators",
-		whoForHeading: "Who Uses *AI Creator Search and Discovery?*",
+		whoForHeading: "Who Uses AI Creator Search and Discovery?",
 	},
 	howSteps: {
 		search: {
