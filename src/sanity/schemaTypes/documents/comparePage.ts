@@ -12,7 +12,7 @@ import { UPFLUENCE } from "../../../data/compare/upfluence";
 import { copyField } from "../../lib/copyField";
 
 /**
- * One /compare/<slug> page: the competitor's half of the comparison. Influenze's
+ * One /comparison/<slug> page: the competitor's half of the comparison. Influenze's
  * half (our cells, headings, scenarios) is shared by every compare page and lives
  * in src/data/compare/shared.ts.
  *
@@ -92,8 +92,14 @@ export default defineType({
 			title: "Slug",
 			type: "slug",
 			group: "content",
-			options: { source: "competitorName", maxLength: 96 },
-			description: "The page's address: /compare/<slug>. Changing it breaks existing links.",
+			options: {
+				source: "competitorName",
+				maxLength: 96,
+				// Short URLs pair the brand with the competitor: /comparison/influenze-upfluence/.
+				slugify: (input: string) =>
+					`influenze-${input.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}`,
+			},
+			description: "The page's address: /comparison/<slug>, e.g. influenze-upfluence. Changing it breaks existing links.",
 			validation: (Rule) => Rule.required(),
 		}),
 		defineField({
@@ -108,6 +114,7 @@ export default defineType({
 		headingField("heroEyebrow", "content"),
 		headingField("heroTitle", "content"),
 		headingField("heroQuestion", "content"),
+		headingField("secondaryCta", "content"),
 		defineField({
 			name: "intro",
 			title: "Intro",
@@ -126,6 +133,7 @@ export default defineType({
 			of: [defineArrayMember({ type: "string" })],
 		}),
 		headingField("chooseCompetitorHeading", "content"),
+		headingField("chooseCompetitorNote", "content"),
 		defineField({
 			name: "chooseCompetitor",
 			title: "Choose <competitor> if..",
@@ -226,7 +234,7 @@ export default defineType({
 		select: { name: "competitorName", slug: "slug.current", draft: "draft" },
 		prepare: ({ name, slug, draft }) => ({
 			title: name ? `Influenze.ai vs ${name}` : "New compare page",
-			subtitle: [slug && `/compare/${slug}/`, draft && "Draft"].filter(Boolean).join(" · "),
+			subtitle: [slug && `/comparison/${slug}/`, draft && "Draft"].filter(Boolean).join(" · "),
 		}),
 	},
 });

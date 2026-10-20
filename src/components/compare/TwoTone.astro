@@ -14,8 +14,8 @@ interface Props {
 }
 
 const { text, accentBlock = false, accentClass = "text-brand-primary" } = Astro.props;
-// Headings are `capitalize`d, which would print the brand as "Influenze.Ai".
-const brandSplit = (t: string) => t.split(/(Influenze\.ai)/);
+// Headings are `capitalize`d, which would print "Influenze.Ai" and "Vs"; these two keep their case.
+const brandSplit = (t: string) => t.split(/(Influenze\.ai|\bvs\b)/);
 ---
 
 {

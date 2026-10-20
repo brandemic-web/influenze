@@ -22,7 +22,7 @@ const { copy } = Astro.props.competitor;
 	<HeroBackdrop />
 
 	{/* The 150px gap below the CTAs is the hero's own padding, so its wash fades out over it, as drawn. */}
-	<div class="relative mx-auto flex max-w-370 flex-col items-center px-6 pt-32 pb-16 text-center lg:pt-59 lg:pb-37.5">
+	<div class="relative mx-auto flex max-w-370 flex-col items-center px-6 pt-32 pb-0 text-center lg:pt-59 lg:pb-37.5">
 		<div class="flex flex-col items-center" data-reveal data-reveal-stagger="0.1">
 			<p class="text-[0.875rem] uppercase text-brand-primary lg:text-[1.125rem]">
 				{plainText(copy.heroEyebrow)}

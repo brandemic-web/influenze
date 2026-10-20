@@ -95,9 +95,11 @@ const sectionHeading = "text-center text-[1.875rem] capitalize leading-[1.15] [t
 
 			<div class="lg:pt-[10.1875rem]">
 				<CreatorsAI
+					sectionGap
 					headingText={copy.creatorsAiHeading}
 					button={{ label: plainText(copy.creatorsAiButton), href: APP_URL, newTab: true }}
 					backdrop={false}
+					steps={page.howList.map((step) => ({ icon: step.icon, title: step.title, description: step.body }))}
 				/>
 			</div>
 
@@ -109,7 +111,7 @@ const sectionHeading = "text-center text-[1.875rem] capitalize leading-[1.15] [t
 
 			<IconCardSection id="freshness" heading={copy.freshnessHeading} cards={page.freshnessList} gap={9} cardsGap={3.375} cardHeight={13.375} />
 
-			<div class="pt-16 lg:pt-[10.875rem]">
+			<div class="lg:pt-[10.875rem]">
 				<BlogFaq
 					heading={plainText(copy.faqHeading)}
 					subcopy={plainText(copy.faqSubcopy)}

@@ -4,6 +4,7 @@
  * rules as compare-source.ts: a Sanity document wins field by field over a code file
  * with the same slug; empty fields fall back to it, then to the defaults.
  */
+import { ALTERNATIVE_OVERRIDES } from "../data/alternative/overrides";
 import {
 	ALTERNATIVES,
 	ALT_COPY_FIELDS,
@@ -73,7 +74,9 @@ function finish(c: AlternativeCompetitor, extra?: Pick<ResolvedAlternative, "seo
 }
 
 function fromSanity(doc: AlternativePageDoc, code: AlternativeCompetitor | undefined): ResolvedAlternative {
-	const name = has(doc.competitorName) ? doc.competitorName : (code?.name ?? doc.slug);
+	// Code that must beat Studio for now (data/alternative/overrides.ts).
+	const pin = ALTERNATIVE_OVERRIDES[doc.slug];
+	const name = pin?.name ?? (has(doc.competitorName) ? doc.competitorName : (code?.name ?? doc.slug));
 	const faqs = (doc.faqs ?? []).filter((f): f is Faq => has(f.question) && has(f.answer));
 	const whyCards = (doc.whyCards ?? [])
 		.filter((card) => has(card.title))
@@ -94,7 +97,7 @@ function fromSanity(doc: AlternativePageDoc, code: AlternativeCompetitor | undef
 			features: cells(FEATURE_ROWS, doc.features, code?.features),
 			faqs: faqs.length ? faqs : code?.faqs,
 			headings: { ...code?.headings, ...stripBlank(doc.headings) },
-			whyCards: whyCards.length ? whyCards : code?.whyCards,
+			whyCards: pin?.whyCards ?? (whyCards.length ? whyCards : code?.whyCards),
 			steps: { ...code?.steps, ...doc.steps },
 			useCases: { ...code?.useCases, ...doc.useCases },
 		},

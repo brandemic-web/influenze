@@ -75,7 +75,7 @@ const introParts = competitor.intro.split(BRAND);
 				href="#comparison"
 				class="inline-flex items-center rounded-full bg-button-primary px-4 py-3 text-[0.75rem] leading-none text-button-text transition-colors duration-300 hover:bg-brand-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary lg:px-7.5 lg:py-4 lg:text-xs"
 			>
-				{COMPARE_HERO.secondaryCta}
+				{plainText(copy.secondaryCta)}
 			</a>
 		</div>
 
@@ -114,6 +114,9 @@ const introParts = competitor.intro.split(BRAND);
 						))
 					}
 				</ul>
+				{copy.chooseCompetitorNote && (
+					<p class="mt-5 pl-8 text-[0.8125rem] leading-5 text-white/40 lg:text-[0.875rem]">{plainText(copy.chooseCompetitorNote)}</p>
+				)}
 			</article>
 		</div>
 	</div>

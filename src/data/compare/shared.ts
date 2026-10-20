@@ -64,7 +64,6 @@ export const COMPARE_HERO = {
 		credits: "Self-serve credits, no annual lock-in",
 	},
 	primaryCta: `Start with ${SIGNUP_CREDITS} credits`,
-	secondaryCta: "Jump to comparison",
 };
 
 // ── Feature table ────────────────────────────────────────────────────────────
@@ -83,12 +82,12 @@ export const FEATURE_ROWS = [
 	{
 		id: "platforms",
 		label: "Platform Coverage",
-		influenze: { text: "IG · YT · TikTok", bold: true },
+		influenze: { text: "IG, YT, TikTok", bold: true },
 	},
 	{
 		id: "aiSearch",
 		label: "AI-Driven Search Parameters",
-		influenze: { mark: true, text: "Semantic and parameter-\nled discovery" },
+		influenze: { mark: true, text: "Semantic and parameter-led\ndiscovery" },
 	},
 	{
 		id: "publicPricing",
@@ -97,7 +96,7 @@ export const FEATURE_ROWS = [
 	},
 	{
 		id: "selfServe",
-		label: "Self-Serve · No Annual Lock-In",
+		label: "Self-Serve, No Annual Lock-In",
 		influenze: { mark: true, text: "Self-serve; no mandatory\nannual lock-in" },
 	},
 	{
@@ -113,7 +112,7 @@ export const FEATURE_ROWS = [
 	{
 		id: "outreach",
 		label: "Native Outreach",
-		influenze: { mark: true, text: "No - aggregated contacts for\noutreach elsewhere" },
+		influenze: { mark: true, text: "No; aggregated contacts for\noutreach in your own tools" },
 	},
 ] as const satisfies readonly CompareRow[];
 
@@ -128,14 +127,14 @@ export const PRICING_ROWS = [
 		label: "Pricing Model",
 		hideLabel: true,
 		influenze: {
-			text: `Usage-based credits with transparent\ncosts and ${SIGNUP_CREDITS} signup credits.`,
+			text: `Usage-based credits with transparent\ncosts and ${SIGNUP_CREDITS} signup credits`,
 		},
 	},
 	{
 		id: "creditsPerAction",
 		label: "Credits Per Action",
 		influenze: {
-			text: `Pay per action · ${SIGNUP_CREDITS} credits when\nyou sign up with a work email.`,
+			text: `Pay per action. Get ${SIGNUP_CREDITS} credits when\nyou sign up with a work email.`,
 			credits: true,
 			lead: true,
 		},
@@ -163,7 +162,7 @@ export const PRICING_ROWS = [
 	{
 		id: "whoBenefits",
 		label: "Who Benefits",
-		influenze: { text: "Freelancers, small agencies and\none-off campaign teams." },
+		influenze: { text: "Freelancers, small agencies and\none-off campaign teams" },
 	},
 ] as const satisfies readonly CompareRow[];
 
@@ -176,9 +175,7 @@ export const WORKFLOW_STEPS = [
 	{ id: "analyze", title: "Analyze", icon: "eyeSmall", influenze: "Core" },
 	{ id: "shortlist", title: "Shortlist & Compare", icon: "hourglass", influenze: "Core" },
 	{ id: "share", title: "Share", icon: "share", influenze: "Core" },
-	// "Core" is as drawn, but the feature table says outreach happens elsewhere —
-	// confirm before publishing.
-	{ id: "outreach", title: "Outreach", icon: "mail", influenze: "Core" },
+	{ id: "outreach", title: "Outreach", icon: "mail", influenze: "Contact details" },
 ] as const satisfies readonly { id: string; title: string; icon: WorkflowIconName; influenze: string }[];
 
 export type WorkflowStepId = (typeof WORKFLOW_STEPS)[number]["id"];
@@ -247,9 +244,10 @@ export const SECTION_COPY_FIELDS = [
 	{
 		key: "heroQuestion",
 		title: "Hero — question in the frame",
-		default: "Which *Creator Discovery Platform* Fits Your Team?",
+		default: "Which *Creator Discovery Platform* Fits Your Agency?",
 		twoTone: true,
 	},
+	{ key: "secondaryCta", title: "Hero — second button", default: "See Influenze.ai vs {name}" },
 	{
 		key: "chooseInfluenzeHeading",
 		title: "Card — “Choose Influenze.ai” heading",
@@ -257,6 +255,11 @@ export const SECTION_COPY_FIELDS = [
 		twoTone: true,
 	},
 	{ key: "chooseCompetitorHeading", title: "Card — “Choose competitor” heading", default: "Choose {name} if.." },
+	{
+		key: "chooseCompetitorNote",
+		title: "Card — small print under the “Choose competitor” points",
+		default: "",
+	},
 	{ key: "featureHeading", title: "Feature table — heading", default: "How Influenze *Compares*", twoTone: true },
 	{
 		key: "featureSubcopy",

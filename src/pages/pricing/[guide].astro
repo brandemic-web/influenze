@@ -72,7 +72,7 @@ const schema = [
 		<CreditEstimator copy={copy} />
 		<PricingPlans
 			embedded
-			class="pt-16 pb-12 lg:pt-[7.25rem] lg:pb-[3.375rem]"
+			class="pt-16 pb-0 lg:pt-[7.25rem] lg:pb-[3.375rem]"
 			heading={{ lead: `${plainText(copy.plansHeading)} `, accent: plainText(copy.plansAccent) }}
 			includedLabel={plainText(copy.plansIncluded)}
 		/>
@@ -92,7 +92,7 @@ const schema = [
 			/>
 		</div>
 		{/* The backdrop's stops are desktop distances; below lg its last band lands on the FAQ, so cover it. */}
-		<div class="bg-background-primary pt-16 lg:bg-transparent lg:pt-[10.75rem]">
+		<div class="bg-background-primary lg:bg-transparent lg:pt-[10.75rem]">
 			<BlogFaq heading={plainText(copy.faqHeading)} subcopy={plainText(copy.faqSubcopy)} faqs={faqs} align="wide" size="section" transparent />
 		</div>
 	</main>

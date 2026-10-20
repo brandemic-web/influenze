@@ -2,7 +2,7 @@
 /**
  * Post FAQ: the homepage section's layout, driven by scripts/faq.ts via `data-faq-*` (one list per page).
  * `align="page"` must match the container in pages/blog/[slug].astro; "section" is Faq.astro's gutter;
- * "wide" is the compare page's 116px design inset. `size="section"` sets the homepage's 55px heading,
+ * "wide" is the landing pages' 116px design inset, with their 64px section gap on phones. `size="section"` sets the homepage's 55px heading,
  * and `transparent` drops the black fill so a background behind the section shows through.
  */
 import type { BlogFaqItem } from "../../data/blog";
@@ -25,7 +25,7 @@ const CONTAINER = {
 ---
 
 <section
-	class:list={["pb-20.5 max-lg:pt-11 max-lg:pb-8", !transparent && "bg-background-primary"]}
+	class:list={["pb-20.5 max-lg:pb-8", align === "wide" ? "max-lg:pt-16" : "max-lg:pt-11", !transparent && "bg-background-primary"]}
 	aria-labelledby="blog-faq-heading"
 >
 	<div

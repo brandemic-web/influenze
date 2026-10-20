@@ -2,6 +2,7 @@ import { defineArrayMember, defineField, defineType } from "sanity";
 import {
 	BRIEFS,
 	FRESHNESS_CARDS,
+	HOW_STEPS,
 	ICON_TILES,
 	MATTERS_POINTS,
 	MATTERS_STATS,
@@ -137,6 +138,15 @@ export default defineType({
 		}),
 
 		...copyFields("creatorsAi"),
+		defineField({
+			name: "howSteps",
+			title: "Steps",
+			type: "object",
+			group: "creatorsAi",
+			options: { collapsible: false },
+			description: "Leave a field empty to keep the default shown in it. The icons stay as designed.",
+			fields: slotFields(HOW_STEPS, "Step"),
+		}),
 
 		...copyFields("whoFor"),
 		defineField({

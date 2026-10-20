@@ -18,7 +18,7 @@ const total = ESTIMATOR_FIELDS.reduce((sum, f) => sum + f.unit * f.value, 0);
 const fits = total <= SIGNUP_CREDITS;
 ---
 
-<section class="relative px-6 pt-20 lg:h-[26.25rem] lg:w-[108rem] lg:mx-[calc(50%-54rem)] lg:px-0 lg:pt-0" aria-labelledby="estimator-heading" data-estimator data-allowance={SIGNUP_CREDITS} data-fits={plainText(copy.estimatorFits)} data-over={plainText(copy.estimatorOver)}>
+<section class="relative px-6 pt-16 lg:h-[26.25rem] lg:w-[108rem] lg:mx-[calc(50%-54rem)] lg:px-0 lg:pt-0" aria-labelledby="estimator-heading" data-estimator data-allowance={SIGNUP_CREDITS} data-fits={plainText(copy.estimatorFits)} data-over={plainText(copy.estimatorOver)}>
 	<h2 id="estimator-heading" class="text-[1.875rem] capitalize leading-[1.15] text-white [text-box:trim-both_cap_alphabetic] lg:absolute lg:top-[3.8125rem] lg:left-[9.625rem] lg:text-[3.4375rem]">
 		<TwoTone text={copy.estimatorHeading} />
 	</h2>

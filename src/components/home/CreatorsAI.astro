@@ -45,9 +45,11 @@ interface Props {
 	backdrop?: boolean;
 	/** Four steps in place of the homepage's — each drives the panel at its position. */
 	steps?: CreatorAIFeature[];
+	/** Landing pages space every section 64px apart on phones; the homepage keeps its own rhythm. */
+	sectionGap?: boolean;
 }
 
-const { headingText, button, backdrop = true, steps } = Astro.props;
+const { headingText, button, backdrop = true, steps, sectionGap = false } = Astro.props;
 
 const { data: home } = await getHomePage(getPerspectiveCookie(Astro.cookies));
 const creatorsAI = home?.creatorsAI;
@@ -93,7 +95,10 @@ const features =
 		)
 	}
 	<div
-		class="relative z-10 mx-auto flex w-full max-w-393 flex-col items-center pb-7 pt-10 max-lg:px-6 lg:px-4 lg:pt-12 lg:pb-0"
+		class:list={[
+			"relative z-10 mx-auto flex w-full max-w-393 flex-col items-center max-lg:px-6 lg:px-4 lg:pt-12 lg:pb-0",
+			sectionGap ? "pt-16 pb-0" : "pb-7 pt-10",
+		]}
 		data-creators-tabs
 	>
 		<h2

@@ -5,22 +5,12 @@
  * The cards it shares with the platform page come from there, so the two match.
  */
 import type { CopyField } from "../compare/shared";
-import { CREATORS_AI_FEATURES } from "../creatorsAI";
 import { FAQ_HEADING, FAQ_SUBCOPY } from "../faqs";
 import { FRESHNESS_CARDS, WHO_FOR_CARDS, type IconTile } from "../platform/shared";
 
 export { plainText, twoTone } from "../compare/shared";
 export { resolveSlots, type CardText } from "../alternative/shared";
-export { FRESHNESS_CARDS, WHO_FOR_CARDS, type IconCardText, type IconTile } from "../platform/shared";
-
-/** "How it works" — the four steps beside the filters mockup; the homepage's text by default. */
-export const HOW_STEPS = [
-	{ id: "search", icon: "search", title: "Search & Discover Globally", body: CREATORS_AI_FEATURES[0].description },
-	{ id: "analyze", icon: "users", title: "Analyze The Profile", body: CREATORS_AI_FEATURES[1].description },
-	{ id: "shortlist", icon: "square-check", title: "Build Your Shortlists", body: CREATORS_AI_FEATURES[2].description },
-	{ id: "reach", icon: "scaling", title: "Reach Out Directly", body: CREATORS_AI_FEATURES[3].description },
-] as const;
-export type HowStepId = (typeof HOW_STEPS)[number]["id"];
+export { FRESHNESS_CARDS, HOW_STEPS, WHO_FOR_CARDS, type HowStepId, type IconCardText, type IconTile } from "../platform/shared";
 
 export const NUMBERS_CARDS = [
 	{

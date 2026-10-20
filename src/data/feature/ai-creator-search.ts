@@ -2,7 +2,7 @@ import type { FeaturePage } from "./types";
 
 // Copy from the "Influenze - LP" doc, Features LP. Anything not set here uses shared.ts.
 export const AI_CREATOR_SEARCH: FeaturePage = {
-	slug: "ai-creator-search",
+	slug: "ai-search",
 	name: "AI Creator Search",
 	draft: true,
 	seo: {

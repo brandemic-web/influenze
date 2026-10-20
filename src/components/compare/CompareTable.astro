@@ -141,7 +141,12 @@ const leadText = "text-[0.8125rem] leading-5 whitespace-pre-line lg:text-[1.125r
 
 <section
 	id={id}
-	class:list={["relative scroll-mt-24 overflow-hidden py-16 lg:pt-37.5", v.bottom]}
+	class:list={[
+		"relative scroll-mt-24 overflow-hidden pt-16 pb-16 lg:pt-37.5",
+		// Below lg the section ends at its content: the rail, or the raised column's 24px overhang when there is none.
+		twoColumn ? "max-lg:pb-6" : "max-lg:pb-0",
+		v.bottom,
+	]}
 	style={`background: ${background ?? v.background}`}
 	aria-labelledby={`${id}-heading`}
 >

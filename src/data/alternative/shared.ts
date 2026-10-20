@@ -50,7 +50,7 @@ export const WHY_CARDS: CardText[] = [
  */
 export const NETWORK_STEPS = [
 	{ id: "keep", icon: "users", title: "Keep Your Network", body: "Export or retain the creators you already\nwork with." },
-	{ id: "gaps", icon: "search", title: "Search The Gaps", body: "Run niche, location and lookalike searches\nbeyond the network." },
+	{ id: "gaps", icon: "search", title: "Search The Gaps", body: "Run niche, location and lookalike searches\nbeyond your existing network." },
 	{ id: "evaluate", icon: "squareCheckBig", title: "Evaluate", body: "Unlock analytics on the candidates that matter." },
 	{ id: "build", icon: "scaling", title: "Build A New List", body: "Save the shortlist by campaign or client." },
 ] as const satisfies readonly { id: string; icon: string; title: string; body: string }[];
@@ -59,9 +59,9 @@ export type NetworkStepId = (typeof NETWORK_STEPS)[number]["id"];
 
 export const USE_CASES = [
 	{ id: "agencies", title: "Agencies", body: "Move from client brief to shareable shortlist." },
-	{ id: "talentManagers", title: "Talent Managers", body: "See beyond the existing network" },
+	{ id: "talentManagers", title: "Talent Managers", body: "See beyond your existing roster." },
 	{ id: "brands", title: "Brands", body: "Build an independent view of the creator market." },
-	{ id: "freelancers", title: "Freelancers", body: "Research professionally without enterprise software." },
+	{ id: "freelancers", title: "Freelancers", body: "Research professionally without enterprise software or annual contracts." },
 ] as const satisfies readonly { id: string; title: string; body: string }[];
 
 export type UseCaseId = (typeof USE_CASES)[number]["id"];
@@ -133,7 +133,7 @@ export const ALT_COPY_FIELDS = [
 		key: "useCasesHeading",
 		group: "useCases",
 		title: "Heading",
-		default: "Use Cases For *Brands And Agencies*",
+		default: "{name} Alternative Use Cases For *Brands And Agencies*",
 		twoTone: true,
 	},
 	{ key: "faqHeading", group: "faq", title: "Heading", default: FAQ_HEADING },

@@ -73,6 +73,7 @@ const schema = [
 			<ManualWay eyebrow={copy.manualEyebrow} heading={copy.manualHeading} body={copy.manualBody} />
 
 			<CreatorsAI
+				sectionGap
 				headingText={copy.howHeading}
 				button={{ label: plainText(copy.howButton), href: APP_URL, newTab: true }}
 				backdrop={false}
@@ -86,7 +87,7 @@ const schema = [
 
 			<WhoForSection heading={copy.whoForHeading} cards={page.whoForList} gap={12} />
 
-			<div class="pt-16 lg:pt-[12.875rem]">
+			<div class="lg:pt-[12.875rem]">
 				<BlogFaq
 					heading={plainText(copy.faqHeading)}
 					subcopy={plainText(copy.faqSubcopy)}

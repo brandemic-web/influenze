@@ -479,6 +479,7 @@ export const platformPagesQuery = groq`*[_type == "platformPage" && defined(slug
 	searchByCards[]{ icon, title, body },
 	whoForCards[]{ title, body },
 	briefs,
+	howSteps,
 	mattersPoints,
 	mattersStats,
 	freshness,
@@ -498,6 +499,7 @@ export interface PlatformPageDoc {
 	searchByCards?: { icon?: string; title?: string; body?: string }[];
 	whoForCards?: { title?: string; body?: string }[];
 	briefs?: TextSlots;
+	howSteps?: TextSlots;
 	mattersPoints?: TextSlots;
 	mattersStats?: Record<string, { label?: string; value?: string; note?: string } | undefined>;
 	freshness?: TextSlots;

@@ -4,9 +4,11 @@
  * compare-source.ts: a Sanity document wins field by field over a code file with the
  * same slug; empty fields fall back to it, then to the defaults in shared.ts.
  */
+import { PLATFORM_OVERRIDES } from "../data/platform/overrides";
 import {
 	BRIEFS,
 	FRESHNESS_CARDS,
+	HOW_STEPS,
 	ICON_TILES,
 	MATTERS_POINTS,
 	MATTERS_STATS,
@@ -31,6 +33,7 @@ import { getPlatformPages, type PlatformPageDoc, type ScriptsDoc, type SeoDoc } 
 export interface ResolvedPlatform extends PlatformPage {
 	copy: PlatformCopy;
 	searchByList: IconCardText[];
+	howList: ReturnType<typeof resolveSlots<(typeof HOW_STEPS)[number]>>;
 	whoForList: CardText[];
 	briefList: ReturnType<typeof resolveSlots<(typeof BRIEFS)[number]>>;
 	mattersList: ReturnType<typeof resolveSlots<(typeof MATTERS_POINTS)[number]>>;
@@ -59,6 +62,7 @@ function finish(p: PlatformPage, extra?: Pick<ResolvedPlatform, "seoOverrides" |
 		...p,
 		copy: resolvePlatformCopy(p.headings, p.name),
 		searchByList: (searchBy.length ? searchBy : SEARCH_BY_CARDS).map((c) => fillCard(c, p.name)),
+		howList: resolveSlots(HOW_STEPS, p.howSteps).map((c) => fillCard(c, p.name)),
 		whoForList: (whoFor.length ? whoFor : WHO_FOR_CARDS).map((c) => fillCard(c, p.name)),
 		briefList: resolveSlots(BRIEFS, p.briefs).map((c) => fillCard(c, p.name)),
 		mattersList: resolveSlots(MATTERS_POINTS, p.mattersPoints).map((c) => fillCard(c, p.name)),
@@ -77,7 +81,17 @@ const isPlatformKey = (value: string | undefined): value is PlatformKey =>
 	PLATFORM_KEYS.includes(value as PlatformKey);
 const isIconTile = (value: string | undefined): value is IconTile => ICON_TILES.includes(value as IconTile);
 
+/** Merges pinned slot fields over the resolved ones, field by field. */
+function pinSlots<T extends Record<string, object | undefined>>(slots: T, pinned: Partial<T> | undefined): T {
+	if (!pinned) return slots;
+	const out: Record<string, object | undefined> = { ...slots };
+	for (const [id, fields] of Object.entries(pinned)) out[id] = { ...slots[id], ...fields };
+	return out as T;
+}
+
 function fromSanity(doc: PlatformPageDoc, code: PlatformPage | undefined): ResolvedPlatform {
+	// Code that must beat Studio for now (data/platform/overrides.ts).
+	const pin = PLATFORM_OVERRIDES[doc.slug];
 	const name = has(doc.platformName) ? doc.platformName : (code?.name ?? doc.slug);
 	const faqs = (doc.faqs ?? []).filter((f): f is Faq => has(f.question) && has(f.answer));
 	const searchByCards = (doc.searchByCards ?? [])
@@ -101,9 +115,10 @@ function fromSanity(doc: PlatformPageDoc, code: PlatformPage | undefined): Resol
 				description: has(doc.seo?.description) ? doc.seo.description : (code?.seo.description ?? heroBody),
 			},
 			headings: { ...code?.headings, ...stripBlank(doc.headings) },
-			searchByCards: searchByCards.length ? searchByCards : code?.searchByCards,
+			searchByCards: pin?.searchByCards ?? (searchByCards.length ? searchByCards : code?.searchByCards),
 			whoForCards: whoForCards.length ? whoForCards : code?.whoForCards,
-			briefs: { ...code?.briefs, ...doc.briefs },
+			briefs: pinSlots({ ...code?.briefs, ...doc.briefs }, pin?.briefs),
+			howSteps: { ...code?.howSteps, ...doc.howSteps },
 			mattersPoints: { ...code?.mattersPoints, ...doc.mattersPoints },
 			mattersStats: { ...code?.mattersStats, ...doc.mattersStats },
 			freshness: { ...code?.freshness, ...doc.freshness },

@@ -11,7 +11,7 @@ export const COMPETITORS: Competitor[] = [UPFLUENCE];
 // PR previews but never a production deploy.
 export const SHOW_DRAFTS = import.meta.env.DEV || Boolean(import.meta.env.PUBLIC_DEV_GA_ID);
 
-export const compareHref = (slug: string) => `/compare/${slug}/`;
+export const compareHref = (slug: string) => `/comparison/${slug}/`;
 
 export type { Competitor, CompetitorCell } from "./types";
 export * from "./shared";

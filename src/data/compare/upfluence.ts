@@ -4,7 +4,7 @@ import type { Competitor } from "./types";
 // Cells marked "as on the homepage" repeat Upfluence's column in data/comparison.ts;
 // the rest are TBC in the design and need sourcing from upfluence.com.
 export const UPFLUENCE: Competitor = {
-	slug: "upfluence",
+	slug: "influenze-upfluence",
 	name: "Upfluence",
 	draft: true,
 	seo: {

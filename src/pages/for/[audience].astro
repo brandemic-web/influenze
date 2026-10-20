@@ -73,7 +73,7 @@ const SMARTER_ICON = { search: "search", users: "users", squareCheckBig: "square
 		>
 			<WorkflowShowcase heading={copy.workflowHeading} pills={page.pills} />
 
-			<section class="relative px-6 pt-20 lg:px-0 lg:pt-[9.75rem]" aria-labelledby="slows-heading">
+			<section class="relative px-6 pt-16 lg:px-0 lg:pt-[9.75rem]" aria-labelledby="slows-heading">
 				<h2 id="slows-heading" class:list={["text-center text-[1.875rem] capitalize leading-[1.15] text-white lg:text-[2.25rem]", trim]}>
 					<TwoTone text={copy.slowsHeading} />
 				</h2>
@@ -107,6 +107,7 @@ const SMARTER_ICON = { search: "search", users: "users", squareCheckBig: "square
 			*/}
 			<div class="lg:pt-[6.375rem]">
 				<CreatorsAI
+					sectionGap
 					headingText={copy.smarterHeading}
 					button={false}
 					backdrop={false}
@@ -120,11 +121,11 @@ const SMARTER_ICON = { search: "search", users: "users", squareCheckBig: "square
 
 			<ExampleBriefs heading={copy.briefsHeading} briefs={page.briefList} gap={9.375} headingSize={2.25} panelGap={4} left={15.8125} />
 
-			<div class="pt-20 lg:pt-[9.25rem]">
+			<div class="lg:pt-[9.25rem]">
 				<BriefCost heading={copy.costHeading} subcopy={copy.costSubcopy} total={copy.costTotal} lines={page.costList} />
 			</div>
 
-			<div class="pt-16 lg:pt-[2.875rem]">
+			<div class="lg:pt-[2.875rem]">
 				<BlogFaq heading={plainText(copy.faqHeading)} subcopy={plainText(copy.faqSubcopy)} faqs={faqs} align="wide" size="section" transparent />
 			</div>
 		</div>

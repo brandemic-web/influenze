@@ -3,6 +3,7 @@ import type {
 	BriefId,
 	CardText,
 	FreshnessId,
+	HowStepId,
 	IconCardText,
 	MattersPointId,
 	MattersStatId,
@@ -26,6 +27,7 @@ export interface PlatformPage {
 	seo: { title: string; description: string };
 	headings?: Partial<PlatformCopy>;
 	searchByCards?: IconCardText[];
+	howSteps?: Partial<Record<HowStepId, Partial<CardText>>>;
 	whoForCards?: CardText[];
 	briefs?: Partial<Record<BriefId, Partial<CardText> & { location?: string }>>;
 	mattersPoints?: Partial<Record<MattersPointId, Partial<CardText>>>;

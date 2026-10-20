@@ -19,7 +19,8 @@ const { heading, cards, gap } = Astro.props;
 const trim = "lg:[text-box:trim-both_cap_alphabetic]";
 ---
 
-<section class="relative pt-20 lg:pt-(--gap)" style={`--gap:${gap}rem`} aria-labelledby="who-for-heading">
+{/* -mb-1 cancels the marquee's pb-1 (kept so the cards' bottom border isn't clipped), keeping the 64px gap below lg. */}
+<section class="relative pt-16 max-lg:-mb-1 lg:pt-(--gap)" style={`--gap:${gap}rem`} aria-labelledby="who-for-heading">
 	<h2
 		id="who-for-heading"
 		class="px-6 text-center text-[1.875rem] capitalize leading-[1.15] text-brand-primary [text-box:trim-both_cap_alphabetic] lg:text-[2.25rem]"

@@ -5,6 +5,7 @@
  * platform ("Instagram"), `{an}` is "a" or "an" to suit it, and `*stars*` mark
  * brand-green words.
  */
+import { CREATORS_AI_FEATURES } from "../creatorsAI";
 import type { CopyField } from "../compare/shared";
 import { FAQ_HEADING, FAQ_SUBCOPY } from "../faqs";
 import { SIGNUP_CREDITS } from "../compare/shared";
@@ -84,11 +85,20 @@ export const WHO_FOR_CARDS = [
  * them (ExampleBriefs.astro); the section cycles through them. Locations are as drawn.
  */
 export const BRIEFS = [
-	{ id: "first", title: "Skincare micro-creators in Pune", body: "Reels-first, strong women 18–34 audience.", location: "Pune", photos: "skincare" },
+	{ id: "first", title: "Skincare micro-creators in Pune", body: "Reels-first, strong women 18-34 audience.", location: "Pune", photos: "skincare" },
 	{ id: "second", title: "Home-cooking creators in Bengaluru", body: "Under 50K followers, high saves.", location: "Bengaluru", photos: "cooking" },
 	{ id: "third", title: "Fitness creators for a supplement launch", body: "Tier-2 Indian cities, Hindi and English.", location: "Bengaluru", photos: "fitness" },
 ] as const;
 export type BriefId = (typeof BRIEFS)[number]["id"];
+
+/** The four steps beside the filters mockup ("found with AI" / "how it works"); the homepage's text by default. */
+export const HOW_STEPS = [
+	{ id: "search", icon: "search", title: "Search & Discover Globally", body: CREATORS_AI_FEATURES[0].description },
+	{ id: "analyze", icon: "users", title: "Analyze The Profile", body: CREATORS_AI_FEATURES[1].description },
+	{ id: "shortlist", icon: "square-check", title: "Build Your Shortlists", body: CREATORS_AI_FEATURES[2].description },
+	{ id: "reach", icon: "scaling", title: "Reach Out Directly", body: CREATORS_AI_FEATURES[3].description },
+] as const;
+export type HowStepId = (typeof HOW_STEPS)[number]["id"];
 
 export const MATTERS_POINTS = [
 	{

@@ -18,7 +18,7 @@ export interface PricingGuidePage {
 
 export const PRICING_GUIDES: PricingGuidePage[] = [
 	{
-		slug: "how-credits-work",
+		slug: "credits",
 		name: "How Credits Work",
 		draft: true,
 		seo: {
