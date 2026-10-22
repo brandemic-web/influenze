@@ -86,7 +86,7 @@ function fromSanity(doc: AlternativePageDoc, code: AlternativeCompetitor | undef
 		{
 			slug: doc.slug,
 			name,
-			draft: doc.draft ?? true,
+			draft: pin?.draft ?? doc.draft ?? true,
 			seo: {
 				title: has(doc.seo?.title) ? doc.seo.title : (code?.seo.title ?? `${name} Alternative for Creator Discovery | Influenze.ai`),
 				description: has(doc.seo?.description)
