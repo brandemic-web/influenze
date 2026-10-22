@@ -1,0 +1,66 @@
+---
+/**
+ * "Which fits your scenario?" — three glass cards, each a product UI crop over an
+ * icon, title and line of copy. The crops are Figma exports of the app screens.
+ */
+import { Image } from "astro:assets";
+import Icon from "../app/common/Icon.astro";
+import agency from "../../assets/images/compare_page/scenarios/add_to_list_dialog.png";
+import d2c from "../../assets/images/compare_page/scenarios/share_to_mail_modal.png";
+import talent from "../../assets/images/compare_page/scenarios/lookalike_filters_panel.png";
+import TwoTone from "./TwoTone.astro";
+import type { ResolvedScenario } from "../../data/compare";
+
+interface Props {
+	heading: string;
+	cards: ResolvedScenario[];
+}
+
+const { heading, cards } = Astro.props;
+
+const images = { agency, d2c, talent } as const;
+---
+
+<section class="relative px-6 pt-16 pb-0 lg:px-28.5 lg:pt-37.5 lg:pb-37.5" aria-labelledby="scenarios-heading">
+	<h2 id="scenarios-heading" class="text-center text-[1.875rem] capitalize leading-[1.15] text-white lg:text-[2.25rem]">
+		<TwoTone text={heading} />
+	</h2>
+
+	<ul
+		class="mx-auto mt-10 grid max-w-375 gap-5 lg:mt-16 lg:grid-cols-3 lg:gap-7"
+		data-reveal
+		data-reveal-stagger="0.15"
+	>
+		{
+			cards.map((s) => (
+				<li
+					class="flex flex-col rounded-[1.75rem] border border-white/10 bg-black/25 p-5 backdrop-blur-xl lg:px-7 lg:pt-8.5 lg:pb-10"
+					data-reveal-item
+				>
+					<div class="grid h-52 place-items-center lg:h-74">
+						<Image
+							src={images[s.imageKey]}
+							alt={s.imageAlt}
+							widths={[432, 864]}
+							sizes="(min-width: 1024px) 27rem, 90vw"
+							class="max-h-full w-auto max-w-full object-contain"
+						/>
+					</div>
+					<span class="mt-6 grid size-11 place-items-center rounded-sm bg-surface-pill text-brand-primary lg:mt-7">
+						<Icon name={s.icon} size="1.5rem" />
+					</span>
+					<h3 class="mt-5 text-[1.25rem] capitalize leading-7 text-white lg:text-md lg:leading-7.5">
+						{s.title}
+					</h3>
+					<p class="mt-3 text-[0.9375rem] leading-6 text-white/80 lg:mt-5 lg:text-[1.125rem] lg:leading-6.5">
+						{s.description}
+					</p>
+				</li>
+			))
+		}
+	</ul>
+</section>
+
+<script>
+	import "../../scripts/reveals";
+</script>

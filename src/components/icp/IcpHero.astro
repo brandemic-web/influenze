@@ -1,0 +1,55 @@
+---
+/**
+ * ICP hero: eyebrow, two-line title, the framed intro with its three floating pills, and
+ * the CTA — the alternative hero's layout at the positions this frame draws (box 478×176
+ * at 573,493). Backdrop and pills are the compare family's shared pieces.
+ */
+import HeroBackdrop from "../compare/HeroBackdrop.astro";
+import HeroPills from "../compare/HeroPills.astro";
+import TwoTone from "../compare/TwoTone.astro";
+import { APP_URL } from "../../data/site";
+import { plainText, type IcpCopy } from "../../data/icp";
+
+interface Props {
+	copy: IcpCopy;
+}
+
+const { copy } = Astro.props;
+---
+
+<section class="relative overflow-hidden" aria-labelledby="icp-title">
+	<HeroBackdrop fade="#010101" />
+
+	<div class="relative mx-auto flex max-w-370 flex-col items-center px-6 pt-32 pb-0 text-center lg:pt-[14.75rem] lg:pb-[9.375rem]">
+		<p class="text-[0.875rem] uppercase text-brand-primary [text-box:trim-both_cap_alphabetic] lg:text-[1.125rem]">
+			{plainText(copy.heroEyebrow)}
+		</p>
+		<h1
+			id="icp-title"
+			class="mt-4 text-[2.125rem] leading-[1.1] lg:whitespace-pre-line text-white [text-box:trim-both_cap_alphabetic] lg:mt-[2.9375rem] lg:text-9xl lg:leading-[4.375rem] lg:tracking-[-0.08rem]"
+		>
+			<TwoTone text={copy.heroTitle} />
+		</h1>
+
+		{/* The frame sits 52px left of centre, as drawn; its pills move with it, the third riding its bottom edge as the copy grows. */}
+		<div class="relative mt-10 w-full max-w-[29.875rem] lg:mt-[4.8125rem] lg:-translate-x-[3.25rem]">
+			<p class="card-edge rounded-sm px-6 py-8 text-[1rem] leading-6.5 text-white [background:linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5))_padding-box,linear-gradient(90deg,#19123a,#575757)_border-box] lg:min-h-[11rem] lg:px-[2.625rem] lg:py-[2.875rem] lg:text-[1.125rem] lg:leading-7">
+				<TwoTone text={copy.heroBody} accentClass="font-semibold text-brand-primary" />
+			</p>
+			<HeroPills
+				profiles="lg:top-[1.875rem] lg:right-[calc(100%-1.5rem)]"
+				credits="lg:top-[1.4375rem] lg:left-[calc(100%-1.0625rem)]"
+				platforms="lg:bottom-0 lg:left-[22.75rem] lg:translate-y-[calc(100%-1.375rem)]"
+			/>
+		</div>
+
+		<a
+			href={APP_URL}
+			target="_blank"
+			rel="noopener noreferrer"
+			class="hover-dark-pill mt-8 inline-flex h-[3.25rem] items-center rounded-full border border-brand-primary bg-button-primary px-[1.875rem] text-[1rem] leading-none text-[#010101] [--ring-out:1px] lg:mt-[6.5rem]"
+		>
+			{plainText(copy.heroCta)}
+		</a>
+	</div>
+</section>

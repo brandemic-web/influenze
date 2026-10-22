@@ -37,6 +37,12 @@ interface Props {
 	 * siteSettings, so every page gets the global scripts for free.
 	 */
 	scripts?: { header?: string; footer?: string };
+	/**
+	 * Scale the whole desktop layout with the window down to 1024px, with no 12px floor
+	 * on the root size — the landing-page templates are drawn at fixed design positions,
+	 * so they stay an exact scaled copy of the 1728 frame at every desktop width.
+	 */
+	fluidRem?: boolean;
 }
 
 const {
@@ -50,6 +56,7 @@ const {
 	structuredDataOverride,
 	canonicalUrl,
 	scripts,
+	fluidRem = false,
 } = Astro.props;
 
 const site = Astro.site ?? new URL(Astro.url.origin);
@@ -123,7 +130,7 @@ const inlineFooterScripts = [settings?.scripts?.footer, scripts?.footer].filter(
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" class:list={[fluidRem && "fluid-rem"]}>
 	<head>
 		<meta name="saashub-verification" content="nfzi8lh09rn2" />
 		<meta charset="utf-8" />

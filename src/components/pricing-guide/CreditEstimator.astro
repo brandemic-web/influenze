@@ -1,0 +1,65 @@
+---
+/**
+ * "Estimate your credits" — three counts, each × its per-action cost, totalled beside
+ * them. The default total renders server-side; scripts/credit-estimator.ts recomputes
+ * on input. Sizes are the design's (1572×235 panel, 329px fields, 421×200 result).
+ */
+import Icon from "../app/common/Icon.astro";
+import TwoTone from "../compare/TwoTone.astro";
+import { ESTIMATOR_FIELDS, plainText, type PricingGuideCopy } from "../../data/pricing-guide";
+import { SIGNUP_CREDITS } from "../../data/compare/shared";
+
+interface Props {
+	copy: PricingGuideCopy;
+}
+
+const { copy } = Astro.props;
+const total = ESTIMATOR_FIELDS.reduce((sum, f) => sum + f.unit * f.value, 0);
+const fits = total <= SIGNUP_CREDITS;
+---
+
+<section class="relative px-6 pt-16 lg:h-[26.25rem] lg:w-[108rem] lg:mx-[calc(50%-54rem)] lg:px-0 lg:pt-0" aria-labelledby="estimator-heading" data-estimator data-allowance={SIGNUP_CREDITS} data-fits={plainText(copy.estimatorFits)} data-over={plainText(copy.estimatorOver)}>
+	<h2 id="estimator-heading" class="text-[1.875rem] capitalize leading-[1.15] text-white [text-box:trim-both_cap_alphabetic] lg:absolute lg:top-[3.8125rem] lg:left-[9.625rem] lg:text-[3.4375rem]">
+		<TwoTone text={copy.estimatorHeading} />
+	</h2>
+
+	<div class="relative mt-8 flex flex-col gap-6 rounded-[1.75rem] bg-white/10 p-5 backdrop-blur-md lg:absolute lg:top-[9.3125rem] lg:left-[4.875rem] lg:mt-0 lg:h-[14.6875rem] lg:w-[98.25rem] lg:p-0">
+		<div class="grid gap-4 sm:grid-cols-3 lg:absolute lg:top-[3.875rem] lg:left-[4.75rem] lg:w-[63.5625rem] lg:gap-[0.9375rem]">
+			{
+				ESTIMATOR_FIELDS.map((f) => (
+					<label class="block">
+						<span class="block text-[1rem] capitalize leading-none text-white [text-box:trim-both_cap_alphabetic]">{f.label}</span>
+						<span class="mt-[0.5625rem] block text-[0.75rem] leading-none text-white/60 [text-box:trim-both_cap_alphabetic]">x {f.unit} credits</span>
+						<input
+							type="number"
+							min="0"
+							inputmode="numeric"
+							value={f.value}
+							data-unit={f.unit}
+							class="mt-[0.875rem] block h-[3.625rem] w-full rounded-[0.625rem] border border-[#75737a] bg-white/5 px-[1.3125rem] text-[1.25rem] text-white outline-none focus:border-brand-primary [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+						/>
+					</label>
+				))
+			}
+		</div>
+		<span class="flex w-fit items-center gap-2 rounded-full bg-[#0a0718]/40 py-2 pr-4 pl-3 text-[1rem] capitalize text-white lg:absolute lg:top-[10.875rem] lg:left-[4.6875rem] lg:h-[2.9375rem] lg:w-[16.9375rem] lg:py-0 lg:pl-4">
+			<Icon name="load" size="1.875rem" class="text-brand-primary" />
+			{plainText(copy.rollover)}
+		</span>
+		<div class="relative rounded-[0.9375rem] bg-[#0a0718]/40 p-6 lg:absolute lg:top-[1.0625rem] lg:left-[71.0rem] lg:h-[12.5rem] lg:w-[26.3125rem] lg:p-0" aria-live="polite">
+			<span class="block text-[0.75rem] uppercase leading-none text-white [text-box:trim-both_cap_alphabetic] lg:absolute lg:top-[2.75rem] lg:left-[3.1875rem]">
+				{plainText(copy.estimatorResultLabel)}
+			</span>
+			<output class="mt-3 block text-[3.625rem] leading-[4.5rem] text-brand-primary lg:absolute lg:top-[3.875rem] lg:left-[3.1875rem] lg:mt-0" data-estimate-total>
+				{total}
+			</output>
+			<span class="block text-[1rem] leading-5 text-brand-primary lg:absolute lg:top-[8.625rem] lg:left-[3.1875rem]" data-estimate-note>
+				{plainText(fits ? copy.estimatorFits : copy.estimatorOver)}
+			</span>
+		</div>
+	</div>
+</section>
+
+<script>
+	import "../../scripts/credit-estimator";
+</script>

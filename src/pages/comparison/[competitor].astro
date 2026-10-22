@@ -1,0 +1,101 @@
+---
+/**
+ * /comparison/<slug>: Influenze.ai against one competitor. The competitor's half comes
+ * from its Sanity "Compare Page" document, falling back to its file in data/compare
+ * (see lib/compare-source.ts); Influenze's half is data/compare/shared.ts. A new
+ * page reaches the site through the same publish-triggered rebuild as the blog.
+ */
+import type { GetStaticPaths } from "astro";
+import Layout from "../../layouts/Layout.astro";
+import CompareHero from "../../components/compare/CompareHero.astro";
+import CompareTable from "../../components/compare/CompareTable.astro";
+import WorkflowCoverage from "../../components/compare/WorkflowCoverage.astro";
+import ScenarioCards from "../../components/compare/ScenarioCards.astro";
+import BlogFaq from "../../components/blog/BlogFaq.astro";
+import { FAQS } from "../../data/faqs";
+import { FEATURE_ROWS, PRICING_ROWS, SHOW_DRAFTS, plainText } from "../../data/compare";
+import { getCompetitor, getCompetitors } from "../../lib/compare-source";
+import { getPerspectiveCookie } from "../../lib/draft-mode";
+import { parseStructuredDataOverride } from "../../sanity/lib/customSchema";
+
+// Built once per slug in production. In dev it renders on request instead: Astro's
+// dev server caches getStaticPaths, so a renamed or new slug would 404 until restart.
+export const prerender = import.meta.env.PROD;
+
+export const getStaticPaths = (async () => {
+	const competitors = await getCompetitors();
+	return competitors
+		.filter((c) => !c.draft || SHOW_DRAFTS)
+		.map((c) => ({ params: { competitor: c.slug } }));
+}) satisfies GetStaticPaths;
+
+// Looked up here rather than passed through getStaticPaths' props, so the page always
+// renders the latest published content (and drafts in Sanity's Presentation preview).
+const competitor = await getCompetitor(Astro.params.competitor, getPerspectiveCookie(Astro.cookies));
+if (!competitor || (competitor.draft && !SHOW_DRAFTS)) return Astro.rewrite("/404");
+const overrides = competitor.seoOverrides;
+const faqs = competitor.faqs ?? FAQS;
+
+// Built from the same list the page renders, so the JSON-LD can't drift from the
+// visible answers — Google's condition for FAQ rich results.
+const schema = [
+	{
+		"@type": "FAQPage",
+		mainEntity: faqs.map((faq) => ({
+			"@type": "Question",
+			name: faq.question,
+			acceptedAnswer: { "@type": "Answer", text: faq.answer },
+		})),
+	},
+];
+---
+
+<Layout
+	title={competitor.seo.title}
+	description={competitor.seo.description}
+	noindex={competitor.draft || (overrides?.noindex ?? false)}
+	canonicalUrl={overrides?.canonicalUrl}
+	schema={schema}
+	structuredDataOverride={parseStructuredDataOverride(overrides?.customSchema)}
+	scripts={competitor.scripts}
+	fluidRem
+>
+	<main>
+		<CompareHero competitor={competitor} />
+		<CompareTable
+			id="comparison"
+			variant="feature"
+			background="radial-gradient(28% 34% at 0% 46%, rgba(118, 77, 255, 0.95), transparent), radial-gradient(28% 34% at 100% 46%, rgba(118, 77, 255, 0.95), transparent), radial-gradient(60% 40% at 50% 46%, rgba(103, 56, 255, 0.85), transparent), linear-gradient(180deg, #26195A 0%, #24185A 45%, #120C2C 70%, #010101 84%)"
+			heading={competitor.copy.featureHeading}
+			subcopy={competitor.copy.featureSubcopy}
+			competitorName={competitor.name}
+			rows={FEATURE_ROWS}
+			cells={competitor.features}
+		/>
+		<CompareTable
+			id="pricing-models"
+			variant="pricing"
+			heading={competitor.copy.pricingHeading}
+			subcopy={competitor.copy.pricingSubcopy}
+			competitorName={competitor.name}
+			rows={PRICING_ROWS}
+			cells={competitor.pricing}
+		/>
+		{/*
+			One purple band behind the last three sections, as drawn: it starts just under
+			the workflow heading, peaks behind the scenarios and fades to black inside the
+			FAQ. Stops are the design's distances from this wrapper's top, in rem, so the
+			band stays put however tall the FAQ grows; the FAQ itself is transparent.
+		*/}
+		<div
+			class="bg-[linear-gradient(180deg,#010101_0rem,#010101_14.1875rem,#21144B_23.75rem,#8058FF_53.75rem,#241949_82.8125rem,#000000_104.5rem)]"
+		>
+			<WorkflowCoverage competitor={competitor} />
+			<ScenarioCards heading={competitor.copy.scenariosHeading} cards={competitor.scenarioCards} />
+			<BlogFaq
+				heading={plainText(competitor.copy.faqHeading)}
+				subcopy={plainText(competitor.copy.faqSubcopy)}
+				faqs={faqs} align="wide" size="section" transparent />
+		</div>
+	</main>
+</Layout>

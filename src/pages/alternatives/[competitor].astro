@@ -1,0 +1,144 @@
+---
+/**
+ * /alternatives/<slug>: Influenze.ai as an alternative to one competitor, from the
+ * Figma "Alternative" frame. The competitor's half comes from its Sanity "Alternative
+ * Page" document, falling back to data/alternative (see lib/alternative-source.ts).
+ */
+import type { GetStaticPaths } from "astro";
+import Layout from "../../layouts/Layout.astro";
+import AlternativeHero from "../../components/alternative/AlternativeHero.astro";
+import WhyCards from "../../components/alternative/WhyCards.astro";
+import CreatorsAI from "../../components/home/CreatorsAI.astro";
+import UseCaseGrid from "../../components/alternative/UseCaseGrid.astro";
+import CompareTable from "../../components/compare/CompareTable.astro";
+import BlogFaq from "../../components/blog/BlogFaq.astro";
+import { FAQS } from "../../data/faqs";
+import { SHOW_DRAFTS } from "../../data/compare";
+import { FEATURE_ROWS, FIT_CORNER_LABEL, FIT_ROWS, plainText } from "../../data/alternative";
+import { getAlternative, getAlternatives } from "../../lib/alternative-source";
+import { getPerspectiveCookie } from "../../lib/draft-mode";
+import { parseStructuredDataOverride } from "../../sanity/lib/customSchema";
+
+// Built once per slug in production; rendered on request in dev, where Astro caches
+// getStaticPaths and a renamed or new slug would otherwise 404 until restart.
+export const prerender = import.meta.env.PROD;
+
+export const getStaticPaths = (async () => {
+	const competitors = await getAlternatives();
+	return competitors.filter((c) => !c.draft || SHOW_DRAFTS).map((c) => ({ params: { competitor: c.slug } }));
+}) satisfies GetStaticPaths;
+
+const competitor = await getAlternative(Astro.params.competitor, getPerspectiveCookie(Astro.cookies));
+if (!competitor || (competitor.draft && !SHOW_DRAFTS)) return Astro.rewrite("/404");
+const { copy } = competitor;
+/** The homepage section's tile names for this page's step icons. */
+const NETWORK_ICON = { users: "users", search: "search", squareCheckBig: "square-check", scaling: "scaling" } as const;
+const overrides = competitor.seoOverrides;
+const faqs = competitor.faqs ?? FAQS;
+
+// Built from the same list the page renders, so the JSON-LD can't drift from it.
+const schema = [
+	{
+		"@type": "FAQPage",
+		mainEntity: faqs.map((faq) => ({
+			"@type": "Question",
+			name: faq.question,
+			acceptedAnswer: { "@type": "Answer", text: faq.answer },
+		})),
+	},
+];
+---
+
+<Layout
+	title={competitor.seo.title}
+	description={competitor.seo.description}
+	noindex={competitor.draft || (overrides?.noindex ?? false)}
+	canonicalUrl={overrides?.canonicalUrl}
+	schema={schema}
+	structuredDataOverride={parseStructuredDataOverride(overrides?.customSchema)}
+	scripts={competitor.scripts}
+	fluidRem
+>
+	<main>
+		<AlternativeHero competitor={competitor} />
+		{/*
+			Everything below the hero shares one backdrop, as drawn: side glows behind the
+			fit table, then the purple band behind the feature table and again behind the
+			use cases. Stops are the design's distances from this wrapper's top (the "why"
+			heading, 962px down the frame), in rem — see the style block below.
+		*/}
+		<div class="alt-backdrop isolate lg:isolation-auto">
+			<WhyCards heading={copy.whyHeading} cards={competitor.whyCardList} />
+			<CompareTable
+				id="fit"
+				variant="fit"
+				background="transparent"
+				cornerLabel={FIT_CORNER_LABEL}
+				heading={copy.fitHeading}
+				subcopy={copy.fitSubcopy}
+				competitorName={competitor.name}
+				rows={FIT_ROWS}
+				cells={competitor.fit}
+			/>
+			<CompareTable
+				id="comparison"
+				variant="feature"
+				background="transparent"
+				heading={copy.featureHeading}
+				subcopy={copy.featureSubcopy}
+				competitorName={competitor.name}
+				rows={FEATURE_ROWS}
+				cells={competitor.features}
+			/>
+			{/*
+				"Keep your network" is the homepage's animated "found with AI" section with this
+				page's heading and four steps: each step plays the product panel at its position.
+				48px of that section's own top padding plus 102px here makes the 150px gap drawn.
+			*/}
+			<div class="lg:pt-[6.375rem]">
+				<CreatorsAI
+					sectionGap
+					headingText={copy.networkHeading}
+					button={false}
+					backdrop={false}
+					steps={competitor.stepList.map((step) => ({
+						icon: NETWORK_ICON[step.icon],
+						title: step.title,
+						description: step.body.replaceAll("\n", " "),
+					}))}
+				/>
+			</div>
+			<UseCaseGrid heading={copy.useCasesHeading} cards={competitor.useCaseList} />
+			<BlogFaq
+				heading={plainText(copy.faqHeading)}
+				subcopy={plainText(copy.faqSubcopy)}
+				faqs={faqs}
+				align="wide"
+				size="section"
+				transparent
+			/>
+		</div>
+	</main>
+</Layout>
+
+<style>
+	/* Below lg the page is shorter than the design, so the use cases' band would land on
+	   the FAQ; there UseCaseGrid draws its own (which needs `isolate`) and this one stops. */
+	.alt-backdrop {
+		background:
+			radial-gradient(ellipse 30% 45rem at 0% 64.875rem, rgba(101, 57, 244, 0.95), transparent),
+			radial-gradient(ellipse 30% 45rem at 100% 64.875rem, rgba(101, 57, 244, 0.95), transparent),
+			radial-gradient(ellipse 48% 36rem at 50% 64.875rem, rgba(103, 56, 255, 0.8), transparent),
+			linear-gradient(180deg, #010101 0rem, #010101 121.125rem, #21144B 132.125rem, #8058FF 177.375rem, #241949 200.025rem, #010101 224.875rem);
+	}
+
+	@media (min-width: 1024px) {
+		.alt-backdrop {
+			background:
+				radial-gradient(ellipse 30% 45rem at 0% 64.875rem, rgba(101, 57, 244, 0.95), transparent),
+				radial-gradient(ellipse 30% 45rem at 100% 64.875rem, rgba(101, 57, 244, 0.95), transparent),
+				radial-gradient(ellipse 48% 36rem at 50% 64.875rem, rgba(103, 56, 255, 0.8), transparent),
+				linear-gradient(180deg, #010101 0rem, #010101 121.125rem, #21144B 132.125rem, #8058FF 177.375rem, #241949 200.025rem, #010101 224.875rem, #010101 237.375rem, #21144B 245.925rem, #8058FF 283.625rem, #241949 298.625rem, #010101 318.025rem);
+		}
+	}
+</style>

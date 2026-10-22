@@ -51,6 +51,24 @@ import {
   formatAmount,
 } from "../../scripts/pricing-page/pricingModel";
 
+/**
+ * The pricing guide reuses this panel as one section of a longer page: its own h1
+ * already exists, its "How credits work" list sits higher up, and it draws its own
+ * backdrop. The pricing page passes nothing.
+ */
+interface Props {
+  embedded?: boolean;
+  /** Section padding in place of the pricing page's, e.g. "pt-16 pb-12 lg:pt-[8rem] lg:pb-0". */
+  class?: string;
+  /** The guide's own wording for the heading and the features label; the pricing page's when omitted. */
+  heading?: { lead: string; accent: string };
+  includedLabel?: string;
+}
+
+const { embedded = false, class: sectionClass, heading = PRICING_HEADING, includedLabel = "Included in every plan" } = Astro.props;
+const HeadingTag = embedded ? "h2" : "h1";
+const brandSplit = (t: string) => t.split(/(Influenze\.ai)/);
+
 const tiersJson = JSON.stringify(PRICING_TIERS);
 const stops = stopPositions();
 
@@ -72,29 +90,32 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
 ---
 
 <section
-  class="relative overflow-hidden pt-26 pb-12 lg:pt-50 lg:pb-32"
+  class:list={["relative overflow-hidden", sectionClass ?? "pt-26 pb-12 lg:pt-50 lg:pb-32"]}
   aria-labelledby="pricing-heading"
   data-plan-panel
   data-cta-location="pricing_plans"
   data-tiers={tiersJson}
   data-default-spend={DEFAULT_SPEND}
 >
-  <img
-    src={wave.src}
-    alt=""
-    class="pointer-events-none absolute inset-x-0 inset-y-0 top-0 h-[60%] w-full object-cover opacity-80 lg:-top-10 lg:h-auto"
-    loading="lazy"
-  />
+  {!embedded && (
+    <img
+      src={wave.src}
+      alt=""
+      class="pointer-events-none absolute inset-x-0 inset-y-0 top-0 h-[60%] w-full object-cover opacity-80 lg:-top-10 lg:h-auto"
+      loading="lazy"
+    />
+  )}
 
   {/* ── Heading ───────────────────────────────────────────────────── */}
-  <h1
+  <HeadingTag
     id="pricing-heading"
     class="relative mx-auto max-w-225 px-6 text-center text-9xl capitalize leading-[1.1] max-lg:text-4xl max-md:text-[1.875rem] max-md:leading-[1.2] max-md:tracking-[-0.0375rem] lg:mx-auto"
   >
-    <span class="block text-white">{PRICING_HEADING.lead}</span><span
-      class="block text-brand-primary">{PRICING_HEADING.accent}</span
+    {/* The guide's heading names the brand, which `capitalize` would print as "Influenze.Ai". */}
+    <span class="block text-white">{brandSplit(heading.lead).map((part, i) => (i % 2 ? <span class="normal-case">{part}</span> : part))}</span><span
+      class="block text-brand-primary">{brandSplit(heading.accent).map((part, i) => (i % 2 ? <span class="normal-case">{part}</span> : part))}</span
     >
-  </h1>
+  </HeadingTag>
   <p
     class="relative mt-1.25 text-center text-[1rem] capitalize text-white lg:text-[1.125rem]"
   >
@@ -355,7 +376,11 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
           href={APP_URL}
           target="_blank"
           rel="noopener noreferrer"
-          class="mt-5 flex w-full items-center justify-center gap-2.5 rounded-full bg-button-primary px-6 py-3.75 text-[0.75rem] leading-none text-button-text transition-colors duration-300 hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary lg:mt-5.5 lg:gap-1 lg:py-2.5 lg:text-[1rem]"
+          class:list={[
+            "mt-5 flex w-full items-center justify-center gap-2.5 rounded-full bg-button-primary px-6 py-3.75 text-[0.75rem] leading-none text-button-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary lg:mt-5.5 lg:gap-1 lg:py-2.5 lg:text-[1rem]",
+            // The landing-page templates hover into the dark pill; the pricing page keeps its own.
+            embedded ? "hover-dark-pill" : "transition-colors duration-300 hover:bg-white",
+          ]}
         >
           {SUBSCRIBE_LABEL}
           <svg
@@ -464,7 +489,11 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
         {/* Same button as Subscribe, in the same place, to a mailto */}
         <a
           href={`mailto:${CUSTOM_PLAN.contactEmail}?subject=${encodeURIComponent(CUSTOM_PLAN.contactSubject)}`}
-          class="mt-5 flex w-full items-center justify-center gap-2.5 rounded-full bg-button-primary px-6 py-3.75 text-[0.75rem] leading-none text-button-text transition-colors duration-300 hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary lg:mt-5.5 lg:gap-1 lg:py-2.5 lg:text-[1rem]"
+          class:list={[
+            "mt-5 flex w-full items-center justify-center gap-2.5 rounded-full bg-button-primary px-6 py-3.75 text-[0.75rem] leading-none text-button-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary lg:mt-5.5 lg:gap-1 lg:py-2.5 lg:text-[1rem]",
+            // The landing-page templates hover into the dark pill; the pricing page keeps its own.
+            embedded ? "hover-dark-pill" : "transition-colors duration-300 hover:bg-white",
+          ]}
         >
           {CUSTOM_PLAN.ctaLabel}
           <svg
@@ -485,8 +514,8 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
 
     {/* ── Included in every plan ───────────────────────────────── */}
     <div class="mt-7.5 px-2.25 lg:mt-14 lg:px-16.5">
-      <h2 class="text-[1rem] text-brand-primary lg:text-[1.125rem]">
-        INCLUDED IN EVERY PLAN
+      <h2 class="text-[1rem] uppercase text-brand-primary lg:text-[1.125rem]">
+        {includedLabel}
       </h2>
       <ul
         class="mt-5 grid grid-cols-1 gap-x-10 gap-y-3.5 sm:grid-cols-2 lg:mt-6 lg:gap-x-20 lg:gap-y-5.5"
@@ -516,6 +545,8 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
       </ul>
     </div>
 
+    {!embedded && (
+    <>
     <span
       class="mt-9 block h-px w-full bg-white/30 lg:mx-6 lg:mt-12 lg:w-[calc(100%-3rem)]"
     ></span>
@@ -592,6 +623,8 @@ const initialCredits = creditsFor(DEFAULT_SPEND, initialTier);
         }
       </ul>
     </div>
+    </>
+    )}
   </div>
 
   <script>

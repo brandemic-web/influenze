@@ -1,7 +1,7 @@
 ---
 import Button from "../common/Button.astro";
 import { FEATURES_URL } from "../../data/site";
-import { CREATORS_AI_FEATURES, CREATORS_AI_BUTTON, CREATORS_AI_HEADING } from "../../data/creatorsAI";
+import { CREATORS_AI_FEATURES, CREATORS_AI_BUTTON, CREATORS_AI_HEADING, type CreatorAIFeature } from "../../data/creatorsAI";
 import { getHomePage } from "../../sanity/lib/queries";
 import { getPerspectiveCookie } from "../../lib/draft-mode";
 import { resolveIcon } from "../../sanity/lib/icon";
@@ -16,10 +16,12 @@ import CompareCreatorColumn from "../app/elements/CompareCreatorColumn.astro";
 import AddToListDialog from "../app/elements/AddToListDialog.astro";
 import AnalyzedCreator from "../app/elements/CreatorDetailPanel.astro";
 import DemoCursor from "../app/story/DemoCursor.astro";
+import TwoTone from "../compare/TwoTone.astro";
 import iconSearch from "../../assets/images/common/icons/search.svg";
 import iconUsers from "../../assets/images/common/icons/users.svg";
 import iconSquareCheck from "../../assets/images/common/icons/square_check_big.svg";
 import iconScaling from "../../assets/images/common/icons/scaling.svg";
+import iconShare from "../../assets/images/common/icons/share.svg";
 import shareIcon from "../../assets/images/common/logos_and_icons/share_icon_with_gradient.svg";
 
 const featureIcons: Record<string, ImageMetadata> = {
@@ -27,7 +29,27 @@ const featureIcons: Record<string, ImageMetadata> = {
 	users: iconUsers,
 	"square-check": iconSquareCheck,
 	scaling: iconScaling,
+	share: iconShare,
 };
+
+/**
+ * Other pages reuse this section (platform, features, alternative) with their own
+ * heading, steps and button, and without the purple band, which they draw themselves.
+ * The homepage passes nothing.
+ */
+interface Props {
+	/** `*starred*` words green, `\n` a line break; replaces the homepage heading. */
+	headingText?: string;
+	/** `false` drops the pill above the panel, as the alternative page draws it. */
+	button?: { label: string; href: string; newTab?: boolean } | false;
+	backdrop?: boolean;
+	/** Four steps in place of the homepage's — each drives the panel at its position. */
+	steps?: CreatorAIFeature[];
+	/** Landing pages space every section 64px apart on phones; the homepage keeps its own rhythm. */
+	sectionGap?: boolean;
+}
+
+const { headingText, button, backdrop = true, steps, sectionGap = false } = Astro.props;
 
 const { data: home } = await getHomePage(getPerspectiveCookie(Astro.cookies));
 const creatorsAI = home?.creatorsAI;
@@ -35,9 +57,10 @@ const heading = {
 	lead: creatorsAI?.heading?.lead || CREATORS_AI_HEADING.lead,
 	accent: creatorsAI?.heading?.accent || CREATORS_AI_HEADING.accent,
 };
-const buttonLabel = creatorsAI?.button?.label || CREATORS_AI_BUTTON;
-const buttonHref = creatorsAI?.button?.href || FEATURES_URL;
-const buttonNewTab = creatorsAI?.button?.newTab ?? false;
+const pill = button || undefined;
+const buttonLabel = pill?.label || creatorsAI?.button?.label || CREATORS_AI_BUTTON;
+const buttonHref = pill?.href || creatorsAI?.button?.href || FEATURES_URL;
+const buttonNewTab = pill ? Boolean(pill.newTab) : (creatorsAI?.button?.newTab ?? false);
 
 // The icon draws at 48px from lg up, so 96 covers it at 2x DPR.
 const featureIcon = (feature: Parameters<typeof resolveIcon>[0]) => resolveIcon(feature, featureIcons, 96);
@@ -47,9 +70,11 @@ const featureIcon = (feature: Parameters<typeof resolveIcon>[0]) => resolveIcon(
 // only the title/description/icon per slot. Anything else falls back.
 const sanityFeatures = creatorsAI?.features ?? [];
 const features =
-	sanityFeatures.length === CREATORS_AI_FEATURES.length && sanityFeatures.every((f) => featureIcon(f))
-		? sanityFeatures
-		: CREATORS_AI_FEATURES;
+	steps?.length === CREATORS_AI_FEATURES.length
+		? steps
+		: sanityFeatures.length === CREATORS_AI_FEATURES.length && sanityFeatures.every((f) => featureIcon(f))
+			? sanityFeatures
+			: CREATORS_AI_FEATURES;
 
 /**
  * The visuals are real UI element components at design size on a fixed 668 x 680 stage,
@@ -61,29 +86,51 @@ const features =
 ---
 
 <section class="relative" aria-labelledby="creators-ai-heading">
+	{
+		backdrop && (
+			<div
+				class="pointer-events-none absolute inset-x-0 top-[-35%] lg:top-[-40%] h-[150%] lg:h-400 bg-[linear-gradient(178.32deg,#010101_1.67%,#21144B_11.9%,#8058FF_43.98%,#251949_75.14%,#000000_98.38%)] z-0"
+				aria-hidden="true"
+			/>
+		)
+	}
 	<div
-		class="pointer-events-none absolute inset-x-0 top-[-35%] lg:top-[-40%] h-[150%] lg:h-400 bg-[linear-gradient(178.32deg,#010101_1.67%,#21144B_11.9%,#8058FF_43.98%,#251949_75.14%,#000000_98.38%)] z-0"
-		aria-hidden="true"
-	>
-	</div>
-	<div
-		class="relative z-10 mx-auto flex w-full max-w-393 flex-col items-center pb-7 pt-10 max-lg:px-6 lg:px-4 lg:pt-12 lg:pb-0"
+		class:list={[
+			"relative z-10 mx-auto flex w-full max-w-393 flex-col items-center max-lg:px-6 lg:px-4 lg:pt-12 lg:pb-0",
+			sectionGap ? "pt-16 pb-0" : "pb-7 pt-10",
+		]}
 		data-creators-tabs
 	>
 		<h2
 			id="creators-ai-heading"
 			class="mb-2 w-full max-w-222.25 text-center text-md lg:mb-6 lg:text-3xl capitalize leading-[1.2] text-white lg:text-[3.4375rem] lg:leading-[normal] lg:[text-box:trim-both_cap_alphabetic]"
 		>
-			{heading.lead}<br /><span class="text-brand-primary">{heading.accent}</span>
+			{
+				headingText ? (
+					<span class="whitespace-pre-line">
+						<TwoTone text={headingText} />
+					</span>
+				) : (
+					<>
+						{heading.lead}
+						<br />
+						<span class="text-brand-primary">{heading.accent}</span>
+					</>
+				)
+			}
 		</h2>
 
 		{/* outer glass panel */}
 		<div
 			class="relative mt-8 flex w-full flex-col items-center gap-4 rounded-[1.75rem] border border-white/15 bg-white/10 shadow-[0_0.5rem_2rem_rgba(0,0,0,0.18),inset_0_0.0625rem_0_rgba(255,255,255,0.18)] backdrop-blur-md backdrop-saturate-150 px-6 pb-8 pt-12 lg:h-199.25 lg:gap-8 lg:flex-row lg:items-center lg:justify-between lg:py-5.75 lg:pl-[min(9.25rem,8%)] lg:pr-4.75"
 		>
-			<div class="absolute -top-6 left-0 right-0 mx-auto w-max">
-				<Button href={buttonHref} newTab={buttonNewTab}>{buttonLabel}</Button>
-			</div>
+			{
+				button !== false && (
+					<div class="absolute -top-6 left-0 right-0 mx-auto w-max">
+						<Button href={buttonHref} newTab={buttonNewTab}>{buttonLabel}</Button>
+					</div>
+				)
+			}
 
 			{/*
 				Feature list — doubles as the tab list for the visuals on the right. Four

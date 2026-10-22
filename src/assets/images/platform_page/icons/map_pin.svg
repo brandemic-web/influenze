@@ -1,0 +1,9 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="lucide/map-pin">
+<rect width="48" height="48" rx="9.6" fill="#242433"/>
+<g id="Vector">
+<path d="M24.7512 36.2487C27.0763 34.2412 34 27.7412 34 21.5C34 18.8478 32.9464 16.3043 31.0711 14.4289C29.1957 12.5536 26.6522 11.5 24 11.5C21.3478 11.5 18.8043 12.5536 16.9289 14.4289C15.0536 16.3043 14 18.8478 14 21.5C14 27.7412 20.9238 34.2412 23.2488 36.2487C23.4653 36.4116 23.729 36.4997 24 36.4997C24.271 36.4997 24.5347 36.4116 24.7512 36.2487Z" stroke="#3AFF98" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M24 25.25C26.0711 25.25 27.75 23.5711 27.75 21.5C27.75 19.4289 26.0711 17.75 24 17.75C21.9289 17.75 20.25 19.4289 20.25 21.5C20.25 23.5711 21.9289 25.25 24 25.25Z" stroke="#3AFF98" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+</g>
+</svg>

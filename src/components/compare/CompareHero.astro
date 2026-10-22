@@ -1,0 +1,127 @@
+---
+/**
+ * Compare-page hero: the "vs" title, the framed question with its three floating
+ * pills, the intro and CTAs, then the two "Choose …" cards. Below `lg` the pills
+ * drop out of their absolute positions into a centred row under the frame.
+ */
+import Button from "../common/Button.astro";
+import Icon from "../app/common/Icon.astro";
+import { APP_URL } from "../../data/site";
+import TwoTone from "./TwoTone.astro";
+import HeroBackdrop from "./HeroBackdrop.astro";
+import HeroPills from "./HeroPills.astro";
+import { COMPARE_HERO, plainText } from "../../data/compare";
+import type { ResolvedCompetitor } from "../../lib/compare-source";
+import infoCircle from "../../assets/images/compare_page/choose_cards/info_circle.svg";
+
+interface Props {
+	competitor: ResolvedCompetitor;
+}
+
+const { competitor } = Astro.props;
+const { copy } = competitor;
+// The brand name is green wherever the intro mentions it, as drawn.
+const BRAND = "Influenze.ai";
+const introParts = competitor.intro.split(BRAND);
+---
+
+<section class="relative overflow-hidden" aria-labelledby="compare-title">
+	{/* Ends on the feature table's opening purple, so the two meet without a seam. */}
+	<HeroBackdrop fade="#26195A" />
+
+	<div class="relative mx-auto flex max-w-370 flex-col items-center px-6 pt-32 pb-0 text-center lg:pt-59">
+		<div class="flex flex-col items-center" data-reveal data-reveal-stagger="0.1">
+			<p class="text-[0.875rem] uppercase text-brand-primary lg:text-[1.125rem]">
+				{plainText(copy.heroEyebrow)}
+			</p>
+			<h1 id="compare-title" class="mt-2 text-[2.125rem] leading-[1.1] text-white lg:mt-4 lg:text-9xl">
+				{plainText(copy.heroTitle)}
+			</h1>
+		</div>
+
+		{/*
+			The framed question. From lg up the side pills hang off its edges, each anchored
+			on the edge that overlaps the frame (24px left, 34px right, as drawn) so a wider
+			label grows outward rather than over the question.
+		*/}
+		<div class="relative mt-10 w-full max-w-143.5 lg:mt-18">
+			<p
+				class="rounded-sm border border-white/20 bg-[#010101]/50 px-5 py-10 text-[1.625rem] capitalize leading-tight text-white lg:px-4 lg:py-14.25 lg:text-2xl"
+			>
+				<TwoTone text={copy.heroQuestion} />
+			</p>
+
+			<HeroPills
+				profiles="lg:top-[56%] lg:right-[calc(100%-1.5rem)]"
+				credits="lg:top-9.75 lg:left-[calc(100%-2.125rem)]"
+				platforms="lg:-bottom-8.75 lg:left-1/2 lg:-translate-x-1/2"
+			/>
+		</div>
+
+		<p class="mt-8 max-w-146 text-[1rem] leading-6.5 text-white lg:mt-24 lg:text-[1.125rem] lg:leading-7">
+			{
+				introParts.map((part, i) => (
+					<>
+						{i > 0 && <span class="text-brand-primary">{BRAND}</span>}
+						{part}
+					</>
+				))
+			}
+		</p>
+
+		<div class="mt-8 flex flex-wrap justify-center gap-4 lg:mt-17.5 lg:gap-5.5">
+			<Button href={APP_URL} newTab>{COMPARE_HERO.primaryCta}</Button>
+			<a
+				href="#comparison"
+				class="hover-dark-pill inline-flex items-center rounded-full bg-button-primary px-4 py-3 text-[0.75rem] leading-none text-button-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary lg:px-7.5 lg:py-4 lg:text-xs"
+			>
+				{plainText(copy.secondaryCta)}
+			</a>
+		</div>
+
+		<div
+			class="mt-14 grid w-full max-w-296 gap-4 text-left lg:mt-22.75 lg:grid-cols-2 lg:gap-10.5"
+			data-reveal
+			data-reveal-stagger="0.15"
+		>
+			<article class="rounded-[0.9375rem] border border-white/15 bg-surface-dark/70 px-6 py-7 backdrop-blur-md lg:py-11 lg:pr-8 lg:pl-11" data-reveal-item>
+				<h2 class="text-[1.25rem] leading-7 text-white lg:text-md">
+					<TwoTone text={copy.chooseInfluenzeHeading} />
+				</h2>
+				<ul class="mt-6 flex flex-col gap-2 lg:mt-8">
+					{
+						competitor.chooseInfluenze.map((point) => (
+							<li class="flex items-start gap-3 text-[0.9375rem] leading-7 text-white/50 lg:text-xs">
+								<Icon name="circleCheck" size="1.25rem" class="mt-1 text-brand-primary" />
+								{point}
+							</li>
+						))
+					}
+				</ul>
+			</article>
+
+			<article class="rounded-[0.9375rem] border border-white/15 bg-surface-dark/70 px-6 py-7 backdrop-blur-md lg:py-11 lg:pr-8 lg:pl-11" data-reveal-item>
+				<h2 class="text-[1.25rem] leading-7 text-white lg:text-md">
+					{plainText(copy.chooseCompetitorHeading)}
+				</h2>
+				<ul class="mt-6 flex flex-col gap-2 lg:mt-8">
+					{
+						competitor.chooseCompetitor.map((point) => (
+							<li class="flex items-start gap-3 text-[0.9375rem] leading-7 text-white/50 lg:text-xs">
+								<img src={infoCircle.src} alt="" width={infoCircle.width} height={infoCircle.height} class="mt-1 size-5 shrink-0" />
+								<span class="whitespace-pre-line">{point}</span>
+							</li>
+						))
+					}
+				</ul>
+				{copy.chooseCompetitorNote && (
+					<p class="mt-5 pl-8 text-[0.8125rem] leading-5 text-white/40 lg:text-[0.875rem]">{plainText(copy.chooseCompetitorNote)}</p>
+				)}
+			</article>
+		</div>
+	</div>
+</section>
+
+<script>
+	import "../../scripts/reveals";
+</script>

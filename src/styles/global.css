@@ -138,6 +138,14 @@
        middle of a large monitor. No upper cap on purpose (widest container is
        108rem, so this can never overflow); `100vh / 45` is a backstop for short or
        ultra-wide viewports. Both rules meet at exactly 16px, so no jump. */
+    /* Opt-in (Layout's fluidRem): below 1728 the root follows the window with no 12px
+       floor, so pages laid out at design positions never outgrow a 1024–1296px screen. */
+    @media (min-width: 1024px) and (max-width: 1727.98px) {
+        html.fluid-rem {
+            font-size: calc(100vw / 108);
+        }
+    }
+
     @media (min-width: 1728px) {
         html {
             font-size: max(16px, min(calc(100vw / 108), calc(100vh / 45)));
@@ -159,4 +167,55 @@
     h4 {
         @apply text-sm font-semibold;
     }
+}
+/* The landing-page card edge: a 1px border fading #19123a → #575757 left to right
+   over a black fill, as the compare-family designs draw every outlined card. */
+/*
+ * A green-filled button that hovers into the dark pill (common/Button.astro): dark fill,
+ * white text, its 1.5px mint → deep-green ring. The ring is an overlay faded in, so the
+ * button never changes size. `--ring-out` widens it over a button's own border.
+ * Landing-page templates only; the rest of the site keeps its own hovers.
+ */
+@utility hover-dark-pill {
+    position: relative;
+    isolation: isolate;
+    transition:
+        background-color 0.3s,
+        color 0.3s,
+        border-color 0.3s;
+
+    &::before {
+        content: "";
+        position: absolute;
+        inset: calc(-1 * var(--ring-out, 0px));
+        z-index: -1;
+        padding: 1.5px;
+        border-radius: inherit;
+        background: linear-gradient(90deg, var(--color-brand-primary), #0f5b33);
+        mask:
+            linear-gradient(#000 0 0) content-box exclude,
+            linear-gradient(#000 0 0);
+        opacity: 0;
+        transition: opacity 0.3s;
+        pointer-events: none;
+    }
+
+    &:hover,
+    &:focus-visible {
+        background-color: var(--color-surface-pill);
+        border-color: transparent;
+        color: #fff;
+    }
+
+    &:hover::before,
+    &:focus-visible::before {
+        opacity: 1;
+    }
+}
+
+@utility card-edge {
+    border: 1px solid transparent;
+    background:
+        linear-gradient(#010101, #010101) padding-box,
+        linear-gradient(90deg, #19123a, #575757) border-box;
 }

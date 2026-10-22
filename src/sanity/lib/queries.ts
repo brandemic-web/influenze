@@ -1,5 +1,11 @@
 import groq from "groq";
 import { loadQuery } from "./loadQuery";
+import { SECTION_COPY_FIELDS } from "../../data/compare/shared";
+import { ALT_COPY_FIELDS } from "../../data/alternative/shared";
+import { PLATFORM_COPY_FIELDS } from "../../data/platform/shared";
+import { FEATURE_COPY_FIELDS } from "../../data/feature/shared";
+import { PRICING_GUIDE_COPY_FIELDS } from "../../data/pricing-guide/shared";
+import { ICP_COPY_FIELDS } from "../../data/icp/shared";
 import type { Image } from "sanity";
 
 const SEO_PROJECTION = groq`seo { title, description, ogImage, noindex, canonicalUrl, customSchema }`;
@@ -382,4 +388,225 @@ export interface BlogIndexDoc {
 
 export async function getBlogIndex(perspectiveCookie?: string) {
 	return loadQuery<BlogIndexDoc | null>({ query: blogIndexQuery, perspectiveCookie });
+}
+
+/** Every compare page with a slug — see lib/compare-source.ts, which merges these with the code fallbacks. */
+export const comparePagesQuery = groq`*[_type == "comparePage" && defined(slug.current)]{
+	"slug": slug.current,
+	competitorName,
+	draft,
+	intro,
+	chooseInfluenze,
+	chooseCompetitor,
+	features,
+	pricing,
+	workflow,
+	faqs[]{ question, answer },
+	"headings": { ${SECTION_COPY_FIELDS.map((f) => f.key).join(", ")} },
+	scenarios,
+	${SEO_PROJECTION},
+	${SCRIPTS_PROJECTION},
+}`;
+
+export interface CompareCellDoc {
+	text?: string;
+	mark?: boolean;
+}
+
+export interface ComparePageDoc {
+	slug: string;
+	competitorName?: string;
+	draft?: boolean;
+	intro?: string;
+	chooseInfluenze?: string[];
+	chooseCompetitor?: string[];
+	features?: Record<string, CompareCellDoc | undefined>;
+	pricing?: Record<string, CompareCellDoc | undefined>;
+	workflow?: Record<string, string | undefined>;
+	faqs?: { question?: string; answer?: string }[];
+	headings?: Record<string, string | undefined>;
+	scenarios?: Record<string, { title?: string; description?: string } | undefined>;
+	seo?: SeoDoc;
+	scripts?: ScriptsDoc;
+}
+
+export async function getComparePages(perspectiveCookie?: string) {
+	return loadQuery<ComparePageDoc[]>({ query: comparePagesQuery, perspectiveCookie });
+}
+
+/** Every alternative page with a slug — see lib/alternative-source.ts. */
+export const alternativePagesQuery = groq`*[_type == "alternativePage" && defined(slug.current)]{
+	"slug": slug.current,
+	competitorName,
+	draft,
+	"headings": { ${ALT_COPY_FIELDS.map((f) => f.key).join(", ")} },
+	whyCards[]{ title, body },
+	fit,
+	features,
+	steps,
+	useCases,
+	faqs[]{ question, answer },
+	${SEO_PROJECTION},
+	${SCRIPTS_PROJECTION},
+}`;
+
+export interface AlternativePageDoc {
+	slug: string;
+	competitorName?: string;
+	draft?: boolean;
+	headings?: Record<string, string | undefined>;
+	whyCards?: { title?: string; body?: string }[];
+	fit?: Record<string, CompareCellDoc | undefined>;
+	features?: Record<string, CompareCellDoc | undefined>;
+	steps?: Record<string, { title?: string; body?: string } | undefined>;
+	useCases?: Record<string, { title?: string; body?: string } | undefined>;
+	faqs?: { question?: string; answer?: string }[];
+	seo?: SeoDoc;
+	scripts?: ScriptsDoc;
+}
+
+export async function getAlternativePages(perspectiveCookie?: string) {
+	return loadQuery<AlternativePageDoc[]>({ query: alternativePagesQuery, perspectiveCookie });
+}
+
+/** Every platform page with a slug — see lib/platform-source.ts. */
+export const platformPagesQuery = groq`*[_type == "platformPage" && defined(slug.current)]{
+	"slug": slug.current,
+	platformName,
+	platform,
+	draft,
+	"headings": { ${PLATFORM_COPY_FIELDS.map((f) => f.key).join(", ")} },
+	searchByCards[]{ icon, title, body },
+	whoForCards[]{ title, body },
+	briefs,
+	howSteps,
+	mattersPoints,
+	mattersStats,
+	freshness,
+	faqs[]{ question, answer },
+	${SEO_PROJECTION},
+	${SCRIPTS_PROJECTION},
+}`;
+
+type TextSlots = Record<string, { title?: string; body?: string; location?: string } | undefined>;
+
+export interface PlatformPageDoc {
+	slug: string;
+	platformName?: string;
+	platform?: string;
+	draft?: boolean;
+	headings?: Record<string, string | undefined>;
+	searchByCards?: { icon?: string; title?: string; body?: string }[];
+	whoForCards?: { title?: string; body?: string }[];
+	briefs?: TextSlots;
+	howSteps?: TextSlots;
+	mattersPoints?: TextSlots;
+	mattersStats?: Record<string, { label?: string; value?: string; note?: string } | undefined>;
+	freshness?: TextSlots;
+	faqs?: { question?: string; answer?: string }[];
+	seo?: SeoDoc;
+	scripts?: ScriptsDoc;
+}
+
+export async function getPlatformPages(perspectiveCookie?: string) {
+	return loadQuery<PlatformPageDoc[]>({ query: platformPagesQuery, perspectiveCookie });
+}
+
+/** Every feature landing page with a slug — see lib/feature-source.ts. */
+export const featureLandingPagesQuery = groq`*[_type == "featureLandingPage" && defined(slug.current)]{
+	"slug": slug.current,
+	name,
+	draft,
+	"headings": { ${FEATURE_COPY_FIELDS.map((f) => f.key).join(", ")} },
+	howSteps,
+	numbers,
+	freshness,
+	whoForCards[]{ title, body },
+	faqs[]{ question, answer },
+	${SEO_PROJECTION},
+	${SCRIPTS_PROJECTION},
+}`;
+
+export interface FeatureLandingPageDoc {
+	slug: string;
+	name?: string;
+	draft?: boolean;
+	headings?: Record<string, string | undefined>;
+	howSteps?: Record<string, { title?: string; body?: string } | undefined>;
+	numbers?: Record<string, { title?: string; body?: string } | undefined>;
+	freshness?: Record<string, { title?: string; body?: string } | undefined>;
+	whoForCards?: { title?: string; body?: string }[];
+	faqs?: { question?: string; answer?: string }[];
+	seo?: SeoDoc;
+	scripts?: ScriptsDoc;
+}
+
+export async function getFeatureLandingPages(perspectiveCookie?: string) {
+	return loadQuery<FeatureLandingPageDoc[]>({ query: featureLandingPagesQuery, perspectiveCookie });
+}
+
+/** Every pricing guide with a slug — see lib/pricing-guide-source.ts. */
+export const pricingGuidePagesQuery = groq`*[_type == "pricingGuidePage" && defined(slug.current)]{
+	"slug": slug.current,
+	name,
+	draft,
+	"headings": { ${PRICING_GUIDE_COPY_FIELDS.map((f) => f.key).join(", ")} },
+	creditRows[]{ label, detail, cost },
+	quote,
+	faqs[]{ question, answer },
+	${SEO_PROJECTION},
+	${SCRIPTS_PROJECTION},
+}`;
+
+export interface PricingGuidePageDoc {
+	slug: string;
+	name?: string;
+	draft?: boolean;
+	headings?: Record<string, string | undefined>;
+	creditRows?: { label?: string; detail?: string; cost?: string }[];
+	quote?: Record<string, { label?: string; ours?: string; theirs?: string } | undefined>;
+	faqs?: { question?: string; answer?: string }[];
+	seo?: SeoDoc;
+	scripts?: ScriptsDoc;
+}
+
+export async function getPricingGuidePages(perspectiveCookie?: string) {
+	return loadQuery<PricingGuidePageDoc[]>({ query: pricingGuidePagesQuery, perspectiveCookie });
+}
+
+/** Every ICP page with a slug — see lib/icp-source.ts. */
+export const icpPagesQuery = groq`*[_type == "icpPage" && defined(slug.current)]{
+	"slug": slug.current,
+	name,
+	draft,
+	"headings": { ${ICP_COPY_FIELDS.map((f) => f.key).join(", ")} },
+	workflowPills,
+	slows,
+	beforeAfter,
+	smarter,
+	briefs,
+	costLines,
+	faqs[]{ question, answer },
+	${SEO_PROJECTION},
+	${SCRIPTS_PROJECTION},
+}`;
+
+export interface IcpPageDoc {
+	slug: string;
+	name?: string;
+	draft?: boolean;
+	headings?: Record<string, string | undefined>;
+	workflowPills?: string[];
+	slows?: Record<string, { title?: string; body?: string } | undefined>;
+	beforeAfter?: Record<string, { before?: string; after?: string } | undefined>;
+	smarter?: Record<string, { title?: string; body?: string } | undefined>;
+	briefs?: Record<string, { title?: string; body?: string; location?: string } | undefined>;
+	costLines?: string[];
+	faqs?: { question?: string; answer?: string }[];
+	seo?: SeoDoc;
+	scripts?: ScriptsDoc;
+}
+
+export async function getIcpPages(perspectiveCookie?: string) {
+	return loadQuery<IcpPageDoc[]>({ query: icpPagesQuery, perspectiveCookie });
 }
