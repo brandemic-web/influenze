@@ -400,6 +400,8 @@ export const comparePagesQuery = groq`*[_type == "comparePage" && defined(slug.c
 	chooseCompetitor,
 	features,
 	pricing,
+	influenzeFeatures,
+	influenzePricing,
 	workflow,
 	faqs[]{ question, answer },
 	"headings": { ${SECTION_COPY_FIELDS.map((f) => f.key).join(", ")} },
@@ -422,6 +424,8 @@ export interface ComparePageDoc {
 	chooseCompetitor?: string[];
 	features?: Record<string, CompareCellDoc | undefined>;
 	pricing?: Record<string, CompareCellDoc | undefined>;
+	influenzeFeatures?: Record<string, CompareCellDoc | undefined>;
+	influenzePricing?: Record<string, CompareCellDoc | undefined>;
 	workflow?: Record<string, string | undefined>;
 	faqs?: { question?: string; answer?: string }[];
 	headings?: Record<string, string | undefined>;
@@ -443,6 +447,8 @@ export const alternativePagesQuery = groq`*[_type == "alternativePage" && define
 	whyCards[]{ title, body },
 	fit,
 	features,
+	influenzeFit,
+	influenzeFeatures,
 	steps,
 	useCases,
 	faqs[]{ question, answer },
@@ -458,6 +464,8 @@ export interface AlternativePageDoc {
 	whyCards?: { title?: string; body?: string }[];
 	fit?: Record<string, CompareCellDoc | undefined>;
 	features?: Record<string, CompareCellDoc | undefined>;
+	influenzeFit?: Record<string, CompareCellDoc | undefined>;
+	influenzeFeatures?: Record<string, CompareCellDoc | undefined>;
 	steps?: Record<string, { title?: string; body?: string } | undefined>;
 	useCases?: Record<string, { title?: string; body?: string } | undefined>;
 	faqs?: { question?: string; answer?: string }[];

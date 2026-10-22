@@ -1,11 +1,12 @@
 /**
- * Defaults for every /for/<audience> page, drawn from the Figma "ICP" frame
+ * Defaults for every /icp/<audience> page, drawn from the Figma "ICP" frame
  * (Influenze.ai Branding – Web UI, node 2194:3352). A Sanity "ICP Page" overrides any of
  * it; empty fields keep these. `*stars*` mark brand-green words.
  */
+import { APP_URL } from "../site";
 import type { CompareRow, CopyField } from "../compare/shared";
 import { FAQ_HEADING, FAQ_SUBCOPY } from "../faqs";
-import { BRIEFS } from "../platform/shared";
+import { BRIEFS, type IconTile } from "../platform/shared";
 
 export { plainText, twoTone } from "../compare/shared";
 export { resolveSlots, type CardText } from "../alternative/shared";
@@ -15,10 +16,10 @@ export { BRIEFS, type BriefId } from "../platform/shared";
 export const WORKFLOW_PILLS = ["Brief", "Search", "Analyze", "Shortlist", "Client Review"];
 
 export const SLOWS_CARDS = [
-	{ id: "restarts", title: "Every Brief Restarts Research", body: "The same manual platform searches, one client at a time." },
-	{ id: "spreadsheets", title: "Lists Live In Spreadsheets", body: "Saved posts and old sheets drift out of date between campaigns." },
-	{ id: "screenshots", title: "Approvals Run On Screenshots", body: "Clients review inconsistent evidence, so approvals slow down." },
-] as const;
+	{ id: "restarts", icon: "searchRestart", title: "Every Brief Restarts Research", body: "The same manual platform searches, one client at a time." },
+	{ id: "spreadsheets", icon: "sheetClock", title: "Lists Live In Spreadsheets", body: "Saved posts and old sheets drift out of date between campaigns." },
+	{ id: "screenshots", icon: "images", title: "Approvals Run On Screenshots", body: "Clients review inconsistent evidence, so approvals slow down." },
+] as const satisfies readonly { id: string; icon: IconTile; title: string; body: string }[];
 export type SlowsId = (typeof SLOWS_CARDS)[number]["id"];
 
 /** "Before and after" — Before is the label column; Influenze's half is the raised column. */
@@ -55,6 +56,7 @@ export const ICP_COPY_FIELDS = [
 		long: true,
 	},
 	{ key: "heroCta", group: "hero", title: "Button label", default: "Build Your First Agency Shortlist" },
+	{ key: "heroCtaLink", group: "hero", title: "Button link", default: APP_URL, url: true },
 	{ key: "workflowHeading", group: "workflow", title: "Heading", default: "Built For Your Workflow", twoTone: true },
 	{ key: "slowsHeading", group: "slows", title: "Heading", default: "What Slows Creator Discovery", twoTone: true },
 	{ key: "beforeAfterHeading", group: "beforeAfter", title: "Heading", default: "Before And After Influenze.ai", twoTone: true },

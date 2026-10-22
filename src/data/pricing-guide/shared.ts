@@ -4,6 +4,7 @@
  * overrides any of it; empty fields keep these. `*stars*` mark brand-green words.
  * The plans panel is the pricing page's own (data/pricing.ts), so prices stay in one place.
  */
+import { APP_URL } from "../site";
 import type { CompareRow, CopyField } from "../compare/shared";
 import { FAQ_HEADING, FAQ_SUBCOPY } from "../faqs";
 import { SIGNUP_CREDITS } from "../compare/shared";
@@ -50,6 +51,7 @@ export const PRICING_GUIDE_COPY_FIELDS = [
 		long: true,
 	},
 	{ key: "heroCta", group: "hero", title: "Button label", default: `Start With ${SIGNUP_CREDITS} Credits` },
+	{ key: "heroCtaLink", group: "hero", title: "Button link", default: APP_URL, url: true },
 	{ key: "creditsEyebrow", group: "hero", title: "“How credits work” label", default: "How Credits Work" },
 	{ key: "estimatorHeading", group: "estimator", title: "Heading", default: "Estimate Your Credits", twoTone: true },
 	{ key: "estimatorResultLabel", group: "estimator", title: "Result label", default: "Estimated Credits" },

@@ -13,8 +13,11 @@ import {
 	PRICING_ROWS,
 	TBC,
 	WORKFLOW_STEPS,
+	resolveInfluenzeRows,
 	resolveScenarios,
 	resolveSectionCopy,
+	type FeatureRowId,
+	type PricingRowId,
 	type ResolvedScenario,
 	type SectionCopy,
 	type Competitor,
@@ -29,6 +32,9 @@ export interface ResolvedCompetitor extends Competitor {
 	copy: SectionCopy;
 	/** The three scenario cards with this page's text. */
 	scenarioCards: ResolvedScenario[];
+	/** The table rows with Studio's edits to the Influenze.ai column. */
+	featureRows: CompareRow<FeatureRowId>[];
+	pricingRows: CompareRow<PricingRowId>[];
 	/** Sanity's SEO overrides — canonical URL, noindex, custom JSON-LD. */
 	seoOverrides?: SeoDoc;
 	scripts?: ScriptsDoc;
@@ -92,6 +98,8 @@ function fromSanity(doc: ComparePageDoc, code: Competitor | undefined): Resolved
 		// A Sanity heading wins, then the code file's, then the default.
 		copy: resolveSectionCopy({ ...code?.headings, ...stripBlank(doc.headings), ...pin?.headings }, name),
 		scenarioCards: resolveScenarios({ ...code?.scenarios, ...doc.scenarios }, name),
+		featureRows: resolveInfluenzeRows(FEATURE_ROWS, doc.influenzeFeatures),
+		pricingRows: resolveInfluenzeRows(PRICING_ROWS, doc.influenzePricing),
 		seoOverrides: doc.seo,
 		scripts: doc.scripts,
 	};
@@ -108,6 +116,8 @@ export async function getCompetitors(perspectiveCookie?: string): Promise<Resolv
 		...c,
 		copy: resolveSectionCopy(c.headings, c.name),
 		scenarioCards: resolveScenarios(c.scenarios, c.name),
+		featureRows: [...FEATURE_ROWS],
+		pricingRows: [...PRICING_ROWS],
 	}));
 	return [...fromCms, ...codeOnly];
 }

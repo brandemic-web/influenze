@@ -9,6 +9,7 @@ import {
 	type CompareRow,
 } from "../../../data/alternative/shared";
 import { copyField } from "../../lib/copyField";
+import { influenzeColumnField } from "../../lib/influenzeColumn";
 
 /**
  * One /alternatives/<slug> page: "an alternative to <competitor>". Influenze's half
@@ -140,6 +141,7 @@ export default defineType({
 			options: { collapsible: false },
 			fields: cellFields(FIT_ROWS),
 		}),
+		influenzeColumnField("influenzeFit", "Influenze.ai column", "fit", FIT_ROWS),
 
 		...copyFields("features"),
 		defineField({
@@ -150,6 +152,7 @@ export default defineType({
 			options: { collapsible: false },
 			fields: cellFields(FEATURE_ROWS),
 		}),
+		influenzeColumnField("influenzeFeatures", "Influenze.ai column", "features", FEATURE_ROWS),
 
 		...copyFields("network"),
 		defineField({

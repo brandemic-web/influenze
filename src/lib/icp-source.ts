@@ -1,5 +1,5 @@
 /**
- * Resolves every /for/<audience> page from Sanity's icpPage documents and the code
+ * Resolves every /icp/<audience> page from Sanity's icpPage documents and the code
  * pages in data/icp. Same rules as the other sources: Sanity wins field by field.
  */
 import {

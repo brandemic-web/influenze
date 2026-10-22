@@ -14,7 +14,7 @@ import bubbleOne from "../../assets/images/platform_page/hero/creator_bubble_one
 import bubbleTwo from "../../assets/images/platform_page/hero/creator_bubble_two.png";
 import bubbleThree from "../../assets/images/platform_page/hero/creator_bubble_three.png";
 import bubbleFour from "../../assets/images/platform_page/hero/creator_bubble_four.png";
-import { APP_URL } from "../../data/site";
+import { opensNewTab } from "../../data/site";
 import { plainText } from "../../data/platform";
 import type { ResolvedPlatform } from "../../lib/platform-source";
 
@@ -73,7 +73,7 @@ const rem = (px: number) => `${px / 16}rem`;
 			</div>
 
 			<div class="relative mt-8 lg:mt-0">
-				<Button href={APP_URL} newTab>{plainText(copy.heroCta)}</Button>
+				<Button href={copy.heroCtaLink} newTab={opensNewTab(copy.heroCtaLink)}>{plainText(copy.heroCta)}</Button>
 			</div>
 		</div>
 

@@ -15,7 +15,7 @@ import WhatMatters from "../../components/platform/WhatMatters.astro";
 import CreatorsAI from "../../components/home/CreatorsAI.astro";
 import TwoTone from "../../components/compare/TwoTone.astro";
 import BlogFaq from "../../components/blog/BlogFaq.astro";
-import { APP_URL } from "../../data/site";
+import { opensNewTab } from "../../data/site";
 import { FAQS } from "../../data/faqs";
 import { SHOW_DRAFTS } from "../../data/compare";
 import { plainText } from "../../data/platform";
@@ -100,7 +100,7 @@ const sectionHeading = "text-center text-[1.875rem] capitalize leading-[1.15] [t
 				<CreatorsAI
 					sectionGap
 					headingText={copy.creatorsAiHeading}
-					button={{ label: plainText(copy.creatorsAiButton), href: APP_URL, newTab: true }}
+					button={{ label: plainText(copy.creatorsAiButton), href: copy.creatorsAiButtonLink, newTab: opensNewTab(copy.creatorsAiButtonLink) }}
 					backdrop={false}
 					steps={page.howList.map((step) => ({ icon: step.icon, title: step.title, description: step.body }))}
 				/>

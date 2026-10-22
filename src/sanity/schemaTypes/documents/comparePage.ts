@@ -10,6 +10,7 @@ import {
 } from "../../../data/compare/shared";
 import { UPFLUENCE } from "../../../data/compare/upfluence";
 import { copyField } from "../../lib/copyField";
+import { influenzeColumnField } from "../../lib/influenzeColumn";
 
 /**
  * One /comparison/<slug> page: the competitor's half of the comparison. Influenze's
@@ -115,6 +116,7 @@ export default defineType({
 		headingField("heroTitle", "content"),
 		headingField("heroQuestion", "content"),
 		headingField("secondaryCta", "content"),
+		headingField("secondaryCtaLink", "content"),
 		defineField({
 			name: "intro",
 			title: "Intro",
@@ -153,6 +155,7 @@ export default defineType({
 			options: { collapsible: false },
 			fields: cellFields(FEATURE_ROWS),
 		}),
+		influenzeColumnField("influenzeFeatures", "Feature table — Influenze.ai column", "features", FEATURE_ROWS),
 		headingField("pricingHeading", "pricing"),
 		headingField("pricingSubcopy", "pricing"),
 		defineField({
@@ -163,6 +166,7 @@ export default defineType({
 			options: { collapsible: false },
 			fields: cellFields(PRICING_ROWS),
 		}),
+		influenzeColumnField("influenzePricing", "Pricing table — Influenze.ai column", "pricing", PRICING_ROWS),
 		headingField("workflowHeading", "workflow"),
 		headingField("workflowSubcopy", "workflow"),
 		defineField({

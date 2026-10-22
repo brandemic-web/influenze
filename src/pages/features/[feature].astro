@@ -13,7 +13,7 @@ import IconCardSection from "../../components/platform/IconCardSection.astro";
 import WhoForSection from "../../components/platform/WhoForSection.astro";
 import CreatorsAI from "../../components/home/CreatorsAI.astro";
 import BlogFaq from "../../components/blog/BlogFaq.astro";
-import { APP_URL } from "../../data/site";
+import { opensNewTab } from "../../data/site";
 import { FAQS } from "../../data/faqs";
 import { SHOW_DRAFTS } from "../../data/compare";
 import { plainText } from "../../data/feature";
@@ -75,7 +75,7 @@ const schema = [
 			<CreatorsAI
 				sectionGap
 				headingText={copy.howHeading}
-				button={{ label: plainText(copy.howButton), href: APP_URL, newTab: true }}
+				button={{ label: plainText(copy.howButton), href: copy.howButtonLink, newTab: opensNewTab(copy.howButtonLink) }}
 				backdrop={false}
 				steps={page.howList.map((step) => ({ icon: step.icon, title: step.title, description: step.body }))}
 			/>

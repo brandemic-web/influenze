@@ -49,6 +49,37 @@ export interface CompareRow<Id extends string = string> {
 	influenze: InfluenzeCell;
 }
 
+/** A Studio edit to one Influenze.ai cell. Blank text and an unset tick keep the row's default. */
+export interface InfluenzeCellEdit {
+	text?: string;
+	mark?: boolean;
+}
+
+/** A cell's default as Studio shows it: the green accent wrapped in `*stars*`. */
+export const influenzeCellText = (cell: InfluenzeCell) => [cell.accent && `*${cell.accent}*`, cell.text].filter(Boolean).join(" ");
+
+/**
+ * The rows with Studio's edits to the Influenze.ai column applied. A leading `*word*`
+ * in edited text becomes the green accent; styling flags (credits, bold, lead) stay.
+ */
+export function resolveInfluenzeRows<Id extends string>(
+	rows: readonly CompareRow<Id>[],
+	edits: Partial<Record<string, InfluenzeCellEdit | undefined>> | undefined,
+): CompareRow<Id>[] {
+	return rows.map((row) => {
+		const edit = edits?.[row.id];
+		const text = edit?.text?.trim();
+		if (!text && typeof edit?.mark !== "boolean") return row;
+		const accent = text?.match(/^\*([^*]+)\*\s*([\s\S]*)$/);
+		const influenze: InfluenzeCell = {
+			...row.influenze,
+			...(text ? (accent ? { accent: accent[1], text: accent[2] } : { accent: undefined, text }) : {}),
+			...(typeof edit?.mark === "boolean" ? { mark: edit.mark } : {}),
+		};
+		return { ...row, influenze };
+	});
+}
+
 /** The 5 / 50 / 5 chips, read off the pricing page's costs so the two can't drift. */
 export const CREDIT_CHIPS = CREDIT_COSTS.map((c) => ({
 	cost: c.cost.replace(/\D+/g, ""),
@@ -248,6 +279,7 @@ export const SECTION_COPY_FIELDS = [
 		twoTone: true,
 	},
 	{ key: "secondaryCta", title: "Hero — second button", default: "See Influenze.ai vs {name}" },
+	{ key: "secondaryCtaLink", title: "Hero — second button link", default: "#comparison", url: true },
 	{
 		key: "chooseInfluenzeHeading",
 		title: "Card — “Choose Influenze.ai” heading",
@@ -303,6 +335,8 @@ export interface CopyField {
 	twoTone?: boolean;
 	/** A multi-line field in Studio. */
 	long?: boolean;
+	/** A link, not text: Studio offers a URL field and the default is where the button goes today. */
+	url?: boolean;
 }
 
 /** Any copy-field list's overrides layered on its defaults, `{name}` filled in. Blank keeps the default. */
