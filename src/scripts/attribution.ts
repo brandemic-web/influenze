@@ -25,6 +25,9 @@ const PARAMS = [
 	"utm_campaign",
 	"utm_term",
 	"utm_content",
+	// Google Ads ValueTrack tags on marketing's ad URLs.
+	"device",
+	"placement",
 ];
 const ROOT_DOMAIN = "influenze.ai";
 const APP_HOST = new URL(APP_URL).host;
