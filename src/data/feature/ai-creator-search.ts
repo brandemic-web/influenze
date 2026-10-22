@@ -4,7 +4,7 @@ import type { FeaturePage } from "./types";
 export const AI_CREATOR_SEARCH: FeaturePage = {
 	slug: "ai-search",
 	name: "AI Creator Search",
-	draft: true,
+	draft: false,
 	seo: {
 		title: "AI Creator Search and Discovery | Influenze.ai",
 		description:

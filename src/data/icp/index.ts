@@ -21,7 +21,7 @@ export const ICP_PAGES: IcpPage[] = [
 	{
 		slug: "agencies",
 		name: "Agencies",
-		draft: true,
+		draft: false,
 		seo: {
 			title: "Creator Discovery Platform for Agencies | Influenze.ai",
 			description:

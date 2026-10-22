@@ -20,7 +20,7 @@ export const PRICING_GUIDES: PricingGuidePage[] = [
 	{
 		slug: "credits",
 		name: "How Credits Work",
-		draft: true,
+		draft: false,
 		seo: {
 			title: "Influenze.ai Pricing: Plans, Credits and Costs",
 			description:
