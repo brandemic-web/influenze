@@ -5,8 +5,9 @@ import type { LegalDoc } from "./legal";
  * Privacy Policy, transcribed verbatim from the counsel-issued draft dated
  * 18 August 2026. Clause order and wording are the lawyers' — only the blanks
  * left in that draft are filled here, from the constants in ./legal.ts.
- * Exception: the last three Cookies clauses (Clarity and Google Analytics,
- * 7 October 2026) are ours, not counsel's.
+ * Exceptions, ours rather than counsel's: the last three Cookies clauses
+ * (Clarity and Google Analytics, 7 October 2026) and the Advertising and
+ * Measurement section (24 October 2026, pending counsel's review).
  */
 export const PRIVACY: LegalDoc = {
 	eyebrow: "Legal",
@@ -122,6 +123,16 @@ export const PRIVACY: LegalDoc = {
 				{ text: "The Company uses analytics services provided by third-parties, including Microsoft Clarity (provided by Microsoft Corporation) and Google Analytics (provided by Google LLC), to understand how users access and interact with the Platform. These services may collect Usage Information through first-party and third-party cookies and similar tracking technologies, including the pages and screens you visit, your clicks, taps, mouse movements and scrolling, the time spent on the Platform, and information about your device and browser. The Company uses this information to analyse Platform traffic, diagnose technical problems, identify usability issues, and improve the features, functionality and performance of the Platform." },
 				{ text: "Microsoft Clarity provides behavioural metrics, heatmaps and session replay. Session replay reconstructs how a user navigated and interacted with the Platform and, on the Platform's web application, includes periodic images of the screen as displayed to the user. The Company may associate such recordings with an identifier of your account. Fields containing contact and billing details, including e-mail addresses, telephone numbers, billing names, addresses and tax identification numbers, are obscured before such images leave your device, and payment card and bank details entered in the payment provider's checkout are not captured. Information collected through these services is processed by Microsoft and Google on the Company's behalf and in accordance with their respective privacy statements, available at https://privacy.microsoft.com/privacystatement and https://policies.google.com/privacy." },
 				{ text: "You may decline or delete cookies through your browser settings as described above, and may opt out of Google Analytics by using the browser add-on available at https://tools.google.com/dlpage/gaoptout. To request access to, or deletion of, information collected through these services, you may write to the Company as per paragraph 9 of this Policy." },
+			],
+		},
+		{
+			id: "advertising-and-measurement",
+			title: "Advertising and Measurement",
+			clauses: [
+				{ text: "The Company advertises the Platform on third-party services, including Google Ads (provided by Google LLC) and Meta's Facebook and Instagram (provided by Meta Platforms, Inc.). To learn which advertisements lead people to register on and use the Platform, and to show its advertisements to people more likely to find the Platform useful, the Company uses Google tags and the Meta Pixel on its website and records how you arrived at the Platform: the campaign tags and advertisement click identifiers in the link you followed, the device type and placement reported by the advertising service, the page you landed on, the website that referred you and the button you clicked to register. If you register, this information is stored with your account." },
+				{ text: "When you register on, sign in to or use the Platform, the Company informs Google and Meta of the actions you take, such as registering, signing in, viewing pages, searching, unlocking creator analytics or contact details, using credits, and purchasing or cancelling a subscription. These notifications are sent from the Company's servers. They include an identifier of your account, the identifiers set by these services' cookies and details of the action, such as the social media platform searched, the credits used or the plan purchased. They do not include the names or handles of the creators you search for or view, or the query strings of the pages you visit." },
+				{ text: "So that Meta can match these actions to its users, the notifications sent to Meta also include your e-mail address, telephone number, city and country, each converted into a one-way hashed form before it leaves the Company's servers, together with your IP address and browser information. The Company does not send your e-mail address, telephone number or name to Google. Google and Meta use this information to measure and improve the Company's advertisements, and process it in accordance with their respective privacy policies, available at https://policies.google.com/privacy and https://www.facebook.com/privacy/policy." },
+				{ text: `Because these notifications are sent from the Company's servers, browser settings or extensions that block tracking may not prevent them, and the Platform does not currently respond to "Do Not Track" signals. You may ask the Company to stop sharing your information with advertising services by writing to the Company at ${LEGAL_CONTACT_EMAIL}, after which the Company shall stop doing so for your account. You may also manage the advertisements you are shown through your Google and Meta settings, at https://myadcenter.google.com and https://www.facebook.com/adpreferences.` },
 			],
 		},
 		{
