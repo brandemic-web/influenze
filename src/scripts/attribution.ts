@@ -71,8 +71,17 @@ function captureLanding() {
 
 	if (referrer) touch.referrer = referrer.slice(0, MAX_VALUE);
 	touch.landing_url = `${location.origin}${location.pathname}`.slice(0, MAX_VALUE);
+	// A reload or Back on the same ad URL is the same touch: keep the CTA it led to.
+	const saved = savedTouch();
+	if (sameTouch(saved, touch)) {
+		for (const key of CTA_KEYS) if (saved[key] !== undefined) touch[key] = saved[key] as string;
+	}
 	touch.captured_at = Date.now();
 	writeTouch(touch);
+}
+
+function sameTouch(a: Record<string, unknown>, b: Record<string, unknown>): boolean {
+	return [...PARAMS, "referrer", "landing_url"].every((key) => a[key] === b[key]);
 }
 
 function writeTouch(touch: Record<string, unknown>) {
