@@ -20,9 +20,11 @@ import {
 	type AlternativeCompetitor,
 	type CardText,
 	type CompareRow,
+	type FeatureRowId,
+	type FitRowId,
 } from "../data/alternative";
 import type { CompetitorCell } from "../data/compare";
-import { resolveCopy } from "../data/compare/shared";
+import { resolveCopy, resolveInfluenzeRows } from "../data/compare/shared";
 import type { Faq } from "../data/faqs";
 import {
 	getAlternativePages,
@@ -37,6 +39,9 @@ export interface ResolvedAlternative extends AlternativeCompetitor {
 	whyCardList: CardText[];
 	stepList: ReturnType<typeof resolveSlots<(typeof NETWORK_STEPS)[number]>>;
 	useCaseList: ReturnType<typeof resolveSlots<(typeof USE_CASES)[number]>>;
+	/** The table rows with Studio's edits to the Influenze.ai column. */
+	fitRows: CompareRow<FitRowId>[];
+	featureRows: CompareRow<FeatureRowId>[];
 	seoOverrides?: SeoDoc;
 	scripts?: ScriptsDoc;
 }
@@ -61,7 +66,10 @@ function cells<Id extends string>(
 }
 
 /** Everything derived from defaults + overrides, shared by Sanity and code-only pages. */
-function finish(c: AlternativeCompetitor, extra?: Pick<ResolvedAlternative, "seoOverrides" | "scripts">) {
+function finish(
+	c: AlternativeCompetitor,
+	extra?: Partial<Pick<ResolvedAlternative, "seoOverrides" | "scripts" | "fitRows" | "featureRows">>,
+) {
 	const cards = (c.whyCards ?? []).filter((card) => has(card.title));
 	return {
 		...c,
@@ -69,6 +77,8 @@ function finish(c: AlternativeCompetitor, extra?: Pick<ResolvedAlternative, "seo
 		whyCardList: cards.length ? cards : WHY_CARDS,
 		stepList: resolveSlots(NETWORK_STEPS, c.steps),
 		useCaseList: resolveSlots(USE_CASES, c.useCases),
+		fitRows: [...FIT_ROWS],
+		featureRows: [...FEATURE_ROWS],
 		...extra,
 	} satisfies ResolvedAlternative;
 }
@@ -101,7 +111,12 @@ function fromSanity(doc: AlternativePageDoc, code: AlternativeCompetitor | undef
 			steps: { ...code?.steps, ...doc.steps },
 			useCases: { ...code?.useCases, ...doc.useCases },
 		},
-		{ seoOverrides: doc.seo, scripts: doc.scripts },
+		{
+			seoOverrides: doc.seo,
+			scripts: doc.scripts,
+			fitRows: resolveInfluenzeRows(FIT_ROWS, doc.influenzeFit),
+			featureRows: resolveInfluenzeRows(FEATURE_ROWS, doc.influenzeFeatures),
+		},
 	);
 }
 

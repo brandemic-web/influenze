@@ -52,7 +52,8 @@ const { copy } = Astro.props.competitor;
 		<div class="mt-8 flex flex-wrap justify-center gap-4 lg:mt-27.25 lg:gap-5.5">
 			<Button href={APP_URL} newTab>{ALTERNATIVE_HERO.primaryCta}</Button>
 			<a
-				href="#comparison"
+				href={copy.secondaryCtaLink}
+				data-scroll-link={copy.secondaryCtaLink.startsWith("#") || undefined}
 				class="hover-dark-pill inline-flex items-center rounded-full bg-button-primary px-4 py-3 text-[0.75rem] leading-none text-button-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary lg:px-7.5 lg:py-4 lg:text-xs"
 			>
 				{plainText(copy.secondaryCta)}
@@ -63,4 +64,5 @@ const { copy } = Astro.props.competitor;
 
 <script>
 	import "../../scripts/reveals";
+	import "../../scripts/scroll-link";
 </script>

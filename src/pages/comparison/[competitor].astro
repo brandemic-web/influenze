@@ -13,7 +13,7 @@ import WorkflowCoverage from "../../components/compare/WorkflowCoverage.astro";
 import ScenarioCards from "../../components/compare/ScenarioCards.astro";
 import BlogFaq from "../../components/blog/BlogFaq.astro";
 import { FAQS } from "../../data/faqs";
-import { FEATURE_ROWS, PRICING_ROWS, SHOW_DRAFTS, plainText } from "../../data/compare";
+import { SHOW_DRAFTS, plainText } from "../../data/compare";
 import { getCompetitor, getCompetitors } from "../../lib/compare-source";
 import { getPerspectiveCookie } from "../../lib/draft-mode";
 import { parseStructuredDataOverride } from "../../sanity/lib/customSchema";
@@ -69,7 +69,7 @@ const schema = [
 			heading={competitor.copy.featureHeading}
 			subcopy={competitor.copy.featureSubcopy}
 			competitorName={competitor.name}
-			rows={FEATURE_ROWS}
+			rows={competitor.featureRows}
 			cells={competitor.features}
 		/>
 		<CompareTable
@@ -78,7 +78,7 @@ const schema = [
 			heading={competitor.copy.pricingHeading}
 			subcopy={competitor.copy.pricingSubcopy}
 			competitorName={competitor.name}
-			rows={PRICING_ROWS}
+			rows={competitor.pricingRows}
 			cells={competitor.pricing}
 		/>
 		{/*

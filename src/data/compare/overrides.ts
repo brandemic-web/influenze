@@ -8,8 +8,6 @@ import type { Competitor } from "./types";
 export const COMPARE_OVERRIDES: Record<string, Partial<Pick<Competitor, "slug" | "chooseCompetitor" | "headings">>> = {
 	// Studio has the "Verified on…" line as a fourth point; the LP doc sets it as small print.
 	"influenze-ai-vs-qoruz": {
-		// The short URL, /comparison/influenze-qoruz/.
-		slug: "influenze-qoruz",
 		chooseCompetitor: [
 			"You want outreach, campaign management and reporting in one suite",
 			"You are comfortable booking a demo for paid plan pricing",

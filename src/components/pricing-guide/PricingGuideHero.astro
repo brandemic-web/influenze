@@ -10,7 +10,7 @@ import Button from "../common/Button.astro";
 import Icon from "../app/common/Icon.astro";
 import TwoTone from "../compare/TwoTone.astro";
 import logo3d from "../../assets/images/pricing_guide_page/common/influenze_logo_3d.png";
-import { APP_URL } from "../../data/site";
+import { opensNewTab } from "../../data/site";
 import { plainText, type CreditRow, type PricingGuideCopy } from "../../data/pricing-guide";
 
 interface Props {
@@ -68,7 +68,7 @@ const panel = "rounded-[1.25rem] bg-[#0a0718]/40 backdrop-blur-md";
 			</div>
 
 			<div class="relative mt-8 lg:absolute lg:top-[58rem] lg:left-0 lg:mt-0 lg:flex lg:w-full lg:justify-center">
-				<Button href={APP_URL} newTab>{plainText(copy.heroCta)}</Button>
+				<Button href={copy.heroCtaLink} newTab={opensNewTab(copy.heroCtaLink)}>{plainText(copy.heroCta)}</Button>
 			</div>
 		</div>
 

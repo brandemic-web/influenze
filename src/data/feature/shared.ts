@@ -4,6 +4,7 @@
  * overrides any of it; empty fields keep these. `*stars*` mark brand-green words.
  * The cards it shares with the platform page come from there, so the two match.
  */
+import { APP_URL } from "../site";
 import type { CopyField } from "../compare/shared";
 import { FAQ_HEADING, FAQ_SUBCOPY } from "../faqs";
 import { FRESHNESS_CARDS, WHO_FOR_CARDS, type IconTile } from "../platform/shared";
@@ -92,6 +93,7 @@ export const FEATURE_COPY_FIELDS = [
 		twoTone: true,
 	},
 	{ key: "heroCta", group: "hero", title: "Button label", default: "Run your First Parameter Search" },
+	{ key: "heroCtaLink", group: "hero", title: "Button link", default: APP_URL, url: true },
 	{
 		key: "heroBody",
 		group: "hero",
@@ -113,6 +115,7 @@ export const FEATURE_COPY_FIELDS = [
 	},
 	{ key: "howHeading", group: "how", title: "Heading", default: "How It Works", twoTone: true, long: true },
 	{ key: "howButton", group: "how", title: "Button label", default: "Sign Up" },
+	{ key: "howButtonLink", group: "how", title: "Button link", default: APP_URL, url: true },
 	{ key: "numbersHeading", group: "numbers", title: "Heading", default: "What The *Numbers Mean*", twoTone: true },
 	{
 		key: "freshnessHeading",

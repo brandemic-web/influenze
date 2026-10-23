@@ -1,4 +1,4 @@
-/** Every /for/<audience> page. Pages normally live in Sanity ("ICP Page"); a page here is a code fallback. */
+/** Every /icp/<audience> page. Pages normally live in Sanity ("ICP Page"); a page here is a code fallback. */
 import type { Faq } from "../faqs";
 import type { BeforeAfterId, BriefId, CardText, IcpCopy, SlowsId, SmarterId } from "./shared";
 
@@ -93,6 +93,6 @@ export const ICP_PAGES: IcpPage[] = [
 	},
 ];
 
-export const icpHref = (slug: string) => `/for/${slug}/`;
+export const icpHref = (slug: string) => `/icp/${slug}/`;
 
 export * from "./shared";

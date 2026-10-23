@@ -6,6 +6,7 @@
  * brand-green words.
  */
 import { CREATORS_AI_FEATURES } from "../creatorsAI";
+import { APP_URL } from "../site";
 import type { CopyField } from "../compare/shared";
 import { FAQ_HEADING, FAQ_SUBCOPY } from "../faqs";
 import { SIGNUP_CREDITS } from "../compare/shared";
@@ -35,6 +36,9 @@ export const ICON_TILES = [
 	"refreshCcw",
 	"circleUserRound",
 	"circleDollarSign",
+	"searchRestart",
+	"sheetClock",
+	"images",
 ] as const;
 export type IconTile = (typeof ICON_TILES)[number];
 
@@ -166,6 +170,7 @@ export const PLATFORM_COPY_FIELDS = [
 		long: true,
 	},
 	{ key: "heroCta", group: "hero", title: "Button label", default: `Start {an} {name} Search with ${SIGNUP_CREDITS} Credits` },
+	{ key: "heroCtaLink", group: "hero", title: "Button link", default: APP_URL, url: true },
 	{
 		key: "heroBody",
 		group: "hero",
@@ -190,6 +195,7 @@ export const PLATFORM_COPY_FIELDS = [
 		long: true,
 	},
 	{ key: "creatorsAiButton", group: "creatorsAi", title: "Button label", default: "Sign Up" },
+	{ key: "creatorsAiButtonLink", group: "creatorsAi", title: "Button link", default: APP_URL, url: true },
 	{ key: "whoForHeading", group: "whoFor", title: "Heading", default: "Who Is It *For?*", twoTone: true },
 	{ key: "briefsHeading", group: "briefs", title: "Heading", default: "Example Briefs", twoTone: true },
 	{ key: "mattersHeading", group: "matters", title: "Heading", default: "*What Matters* On This Platform", twoTone: true },
