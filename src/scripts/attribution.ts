@@ -118,11 +118,16 @@ function trackCtaClicks() {
 			if (!(link instanceof HTMLAnchorElement)) return;
 			if (link.host !== APP_HOST) return;
 			carryTouch(link);
-			const params = {
+			const params: Record<string, string> = {
 				cta_text: (link.textContent || "").trim().replace(/\s+/g, " ").slice(0, 100),
 				cta_location: ctaLocation(link),
 				page_path: location.pathname,
+				// Which landing page the click came from, under marketing's name.
+				page_source: location.pathname,
 			};
+			// Marketing's name for the button, on the landing pages' hero (data/ctaIds.ts).
+			const ctaId = link.dataset.ctaId;
+			if (ctaId) params.cta_id = ctaId;
 			if (window.izDirectGa && window.gtag) {
 				window.gtag("event", "signup_cta_click", params);
 				return;

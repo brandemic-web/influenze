@@ -20,6 +20,7 @@ import logoButton from "../../assets/images/feature_page/hero/search_logo_button
 import { opensNewTab } from "../../data/site";
 import { plainText } from "../../data/feature";
 import type { ResolvedFeature } from "../../lib/feature-source";
+import { heroCtaId } from "../../data/ctaIds";
 
 interface Props {
 	page: ResolvedFeature;
@@ -91,7 +92,7 @@ const longTitle = Math.max(...plainText(copy.heroTitle).split("\n").map((l) => l
 			</div>
 
 			<div class="relative mt-8 lg:absolute lg:top-[60.625rem] lg:left-0 lg:mt-0 lg:flex lg:w-full lg:justify-center">
-				<Button href={copy.heroCtaLink} newTab={opensNewTab(copy.heroCtaLink)}>{plainText(copy.heroCta)}</Button>
+				<Button href={copy.heroCtaLink} newTab={opensNewTab(copy.heroCtaLink)} ctaId={heroCtaId(Astro.url.pathname)}>{plainText(copy.heroCta)}</Button>
 			</div>
 		</div>
 
