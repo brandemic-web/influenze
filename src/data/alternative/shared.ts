@@ -104,6 +104,7 @@ export const ALT_COPY_FIELDS = [
 		long: true,
 	},
 	{ key: "secondaryCta", group: "hero", title: "Second button label", default: "Jump to comparison" },
+	{ key: "secondaryCtaLink", group: "hero", title: "Second button link", default: "#comparison", url: true },
 	{ key: "whyHeading", group: "why", title: "Heading", default: "Why *Influenze* Is An Alternative", twoTone: true },
 	{ key: "fitHeading", group: "fit", title: "Heading", default: "Find The Right Fit", twoTone: true },
 	{

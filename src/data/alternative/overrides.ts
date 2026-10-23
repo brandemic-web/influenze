@@ -5,9 +5,11 @@
  */
 import type { AlternativeCompetitor } from "./types";
 
-export const ALTERNATIVE_OVERRIDES: Record<string, Partial<Pick<AlternativeCompetitor, "name" | "whyCards">>> = {
+export const ALTERNATIVE_OVERRIDES: Record<string, Partial<Pick<AlternativeCompetitor, "name" | "draft" | "whyCards">>> = {
 	// Studio has the name in capitals and a sixth card the LP doc doesn't have.
 	qoruz: {
+		// Live: Studio still has Draft switched on.
+		draft: false,
 		name: "Qoruz",
 		whyCards: [
 			{ title: "No Annual Commitment", body: "Start with 500 credits. No long-term contracts." },

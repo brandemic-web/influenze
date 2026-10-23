@@ -11,7 +11,7 @@ import {
 import { copyField } from "../../lib/copyField";
 
 /**
- * One /for/<audience> page — Influenze.ai for one kind of customer, e.g. agencies.
+ * One /icp/<audience> page — Influenze.ai for one kind of customer, e.g. agencies.
  * Defaults live in src/data/icp/shared.ts; empty fields keep them. Tabs follow the
  * page top to bottom, each section's headings first.
  */
@@ -72,7 +72,7 @@ export default defineType({
 			type: "slug",
 			group: "hero",
 			options: { source: "name", maxLength: 96 },
-			description: "The page's address: /for/<slug>. Changing it breaks existing links.",
+			description: "The page's address: /icp/<slug>. Changing it breaks existing links.",
 			validation: (Rule) => Rule.required(),
 		}),
 		defineField({
@@ -170,7 +170,7 @@ export default defineType({
 		select: { name: "name", slug: "slug.current", draft: "draft" },
 		prepare: ({ name, slug, draft }) => ({
 			title: name ? `For ${name}` : "New ICP page",
-			subtitle: [slug && `/for/${slug}/`, draft && "Draft"].filter(Boolean).join(" · "),
+			subtitle: [slug && `/icp/${slug}/`, draft && "Draft"].filter(Boolean).join(" · "),
 		}),
 	},
 });

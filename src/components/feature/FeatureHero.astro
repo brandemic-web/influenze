@@ -17,7 +17,7 @@ import bubbleFour from "../../assets/images/feature_page/hero/creator_bubble_fou
 import bubbleFive from "../../assets/images/feature_page/hero/creator_bubble_five.png";
 import bubbleSix from "../../assets/images/feature_page/hero/creator_bubble_six.png";
 import logoButton from "../../assets/images/feature_page/hero/search_logo_button.png";
-import { APP_URL } from "../../data/site";
+import { opensNewTab } from "../../data/site";
 import { plainText } from "../../data/feature";
 import type { ResolvedFeature } from "../../lib/feature-source";
 
@@ -91,7 +91,7 @@ const longTitle = Math.max(...plainText(copy.heroTitle).split("\n").map((l) => l
 			</div>
 
 			<div class="relative mt-8 lg:absolute lg:top-[60.625rem] lg:left-0 lg:mt-0 lg:flex lg:w-full lg:justify-center">
-				<Button href={APP_URL} newTab>{plainText(copy.heroCta)}</Button>
+				<Button href={copy.heroCtaLink} newTab={opensNewTab(copy.heroCtaLink)}>{plainText(copy.heroCta)}</Button>
 			</div>
 		</div>
 

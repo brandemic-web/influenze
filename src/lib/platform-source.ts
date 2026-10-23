@@ -107,7 +107,7 @@ function fromSanity(doc: PlatformPageDoc, code: PlatformPage | undefined): Resol
 			slug: doc.slug,
 			name,
 			platform: isPlatformKey(doc.platform) ? doc.platform : (code?.platform ?? "instagram"),
-			draft: doc.draft ?? true,
+			draft: pin?.draft ?? doc.draft ?? true,
 			seo: {
 				title: has(doc.seo?.title)
 					? doc.seo.title

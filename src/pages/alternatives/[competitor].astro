@@ -14,7 +14,7 @@ import CompareTable from "../../components/compare/CompareTable.astro";
 import BlogFaq from "../../components/blog/BlogFaq.astro";
 import { FAQS } from "../../data/faqs";
 import { SHOW_DRAFTS } from "../../data/compare";
-import { FEATURE_ROWS, FIT_CORNER_LABEL, FIT_ROWS, plainText } from "../../data/alternative";
+import { FIT_CORNER_LABEL, plainText } from "../../data/alternative";
 import { getAlternative, getAlternatives } from "../../lib/alternative-source";
 import { getPerspectiveCookie } from "../../lib/draft-mode";
 import { parseStructuredDataOverride } from "../../sanity/lib/customSchema";
@@ -77,7 +77,7 @@ const schema = [
 				heading={copy.fitHeading}
 				subcopy={copy.fitSubcopy}
 				competitorName={competitor.name}
-				rows={FIT_ROWS}
+				rows={competitor.fitRows}
 				cells={competitor.fit}
 			/>
 			<CompareTable
@@ -87,7 +87,7 @@ const schema = [
 				heading={copy.featureHeading}
 				subcopy={copy.featureSubcopy}
 				competitorName={competitor.name}
-				rows={FEATURE_ROWS}
+				rows={competitor.featureRows}
 				cells={competitor.features}
 			/>
 			{/*

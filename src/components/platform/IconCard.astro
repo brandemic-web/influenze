@@ -3,7 +3,8 @@
  * The platform page's outlined card: an icon tile beside the title, a line of copy
  * under it — 60/40px padding round a 331px column, as drawn. Tiles are the Figma
  * exports (48px, #242433 with the glyph in green); search, users and square-check
- * are the site's existing copies of the same tiles. As drawn, the title and text run
+ * are the site's existing copies of the same tiles; the icp_page ones follow the same
+ * recipe (Lucide glyph, 1.8 stroke) for the ICP page. As drawn, the title and text run
  * past the 331px column rather than wrap.
  */
 import search from "../../assets/images/common/icons/search.svg";
@@ -16,6 +17,9 @@ import heart from "../../assets/images/platform_page/icons/heart.svg";
 import refreshCcw from "../../assets/images/platform_page/icons/refresh_ccw.svg";
 import circleUserRound from "../../assets/images/platform_page/icons/circle_user_round.svg";
 import circleDollarSign from "../../assets/images/platform_page/icons/circle_dollar_sign.svg";
+import searchRestart from "../../assets/images/icp_page/icons/search_restart.svg";
+import sheetClock from "../../assets/images/icp_page/icons/sheet_clock.svg";
+import images from "../../assets/images/icp_page/icons/images.svg";
 import type { IconTile } from "../../data/platform";
 
 export const ICON_ASSETS: Record<IconTile, ImageMetadata> = {
@@ -29,6 +33,9 @@ export const ICON_ASSETS: Record<IconTile, ImageMetadata> = {
 	refreshCcw,
 	circleUserRound,
 	circleDollarSign,
+	searchRestart,
+	sheetClock,
+	images,
 };
 
 interface Props {

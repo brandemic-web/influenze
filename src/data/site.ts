@@ -13,5 +13,9 @@ export const SITE = {
 // PR previews point at the dev app instead (PUBLIC_APP_URL in preview.yml).
 export const APP_URL = import.meta.env.PUBLIC_APP_URL || "https://app.influenze.ai/";
 
+/** True for a link that leaves this site, so its button opens in a new tab. Relative and own-domain links stay put. */
+export const opensNewTab = (href: string) =>
+	/^https?:\/\//i.test(href) && new URL(href).hostname.replace(/^www\./, "") !== SITE.domain;
+
 /** Internal route for the features page — the "Learn More" destination. */
 export const FEATURES_URL = "/features/";

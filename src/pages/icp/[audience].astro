@@ -1,6 +1,6 @@
 ---
 /**
- * /for/<audience>: Influenze.ai for one kind of customer, from the Figma "ICP" frame.
+ * /icp/<audience>: Influenze.ai for one kind of customer, from the Figma "ICP" frame.
  * Content comes from the slug's Sanity "ICP Page", falling back to data/icp
  * (see lib/icp-source.ts).
  */
@@ -11,6 +11,7 @@ import WorkflowShowcase from "../../components/icp/WorkflowShowcase.astro";
 import BriefCost from "../../components/icp/BriefCost.astro";
 import CreatorsAI from "../../components/home/CreatorsAI.astro";
 import ExampleBriefs from "../../components/platform/ExampleBriefs.astro";
+import { ICON_ASSETS } from "../../components/platform/IconCard.astro";
 import CompareTable from "../../components/compare/CompareTable.astro";
 import TwoTone from "../../components/compare/TwoTone.astro";
 import BlogFaq from "../../components/blog/BlogFaq.astro";
@@ -77,16 +78,35 @@ const SMARTER_ICON = { search: "search", users: "users", squareCheckBig: "square
 				<h2 id="slows-heading" class:list={["text-center text-[1.875rem] capitalize leading-[1.15] text-white lg:text-[2.25rem]", trim]}>
 					<TwoTone text={copy.slowsHeading} />
 				</h2>
-				<ul class="mx-auto mt-10 grid max-w-[84.4375rem] gap-4 lg:mt-[4rem] lg:grid-cols-3 lg:gap-[1.3125rem]">
-					{
-						page.slowsList.map((card) => (
-							<li class="card-edge flex flex-col justify-center gap-5 rounded-sm px-6 py-7 lg:h-[10.375rem] lg:gap-7 lg:px-[2.375rem]">
-								<h3 class:list={["text-[1.25rem] capitalize leading-7 text-white lg:text-md lg:leading-7.5 lg:whitespace-nowrap", trim]}>{card.title}</h3>
-								<p class:list={["text-[0.9375rem] leading-6 text-[#cdcdcd]/70 lg:w-[20.875rem] lg:text-[1.125rem] lg:leading-6.5", trim]}>{card.body}</p>
-							</li>
-						))
-					}
-				</ul>
+				{/* Mobile: the homepage's ticker — fixed-width cards, rendered twice for a gapless loop, stretched to one height.
+				    Desktop: equal 1fr columns that widen together to fit the longest icon + title line. */}
+				<div class="-mx-6 mt-10 overflow-x-auto overscroll-x-contain lg:mx-0 lg:mt-16 lg:overflow-visible" data-marquee>
+					<ul
+						class="flex w-max gap-3 px-6 lg:mx-auto lg:grid lg:min-w-337.75 lg:max-w-full lg:grid-cols-3 lg:gap-5.25 lg:px-0"
+						data-marquee-track
+					>
+						{
+							[...page.slowsList, ...page.slowsList].map((card, i) => {
+								const clone = i >= page.slowsList.length;
+								return (
+									<li
+										class:list={["w-[22rem] lg:w-auto", clone && "hidden"]}
+										data-marquee-clone={clone ? "" : undefined}
+										aria-hidden={clone ? "true" : undefined}
+									>
+										<div class="card-edge flex h-full flex-col justify-start gap-5 rounded-sm px-6 py-7 lg:min-h-41.5 lg:gap-7 lg:px-9.5">
+											<div class="flex items-center gap-2 lg:gap-4">
+												<img src={ICON_ASSETS[card.icon].src} alt="" width="48" height="48" class="size-10 shrink-0 rounded-sm lg:size-12" loading="lazy" />
+												<h3 class:list={["text-[1rem] capitalize leading-7 text-white lg:text-md lg:leading-7.5 lg:whitespace-nowrap", trim]}>{card.title}</h3>
+											</div>
+											<p class:list={["text-[0.85rem] leading-6 text-[#cdcdcd]/70 lg:w-83.5 lg:text-[1.125rem] lg:leading-6.5", trim]}>{card.body}</p>
+										</div>
+									</li>
+								);
+							})
+						}
+					</ul>
+				</div>
 			</section>
 
 			<CompareTable
@@ -131,3 +151,7 @@ const SMARTER_ICON = { search: "search", users: "users", squareCheckBig: "square
 		</div>
 	</main>
 </Layout>
+
+<script>
+	import "../../scripts/home-page/marquee";
+</script>
