@@ -7,7 +7,8 @@ import { APP_URL } from "../data/site";
  *
  * 1. Landing: ad click IDs, UTMs and an outside referrer go into `iz_attr` on
  *    `.influenze.ai`, so app.influenze.ai can read them.
- * 2. CTA click: a `signup_cta_click` dataLayer event, for GTM to forward to GA4.
+ * 2. CTA click: a `signup_cta_click` dataLayer event, for GTM to forward to GA4,
+ *    and the button's cta_id with its page into `iz_attr`, so the signup records it.
  *    On PR previews (dev GA, no GTM) it goes to GA directly, and the saved tags
  *    ride along in the link, since the dev app can't read this site's cookies.
  */
@@ -71,7 +72,10 @@ function captureLanding() {
 	if (referrer) touch.referrer = referrer.slice(0, MAX_VALUE);
 	touch.landing_url = `${location.origin}${location.pathname}`.slice(0, MAX_VALUE);
 	touch.captured_at = Date.now();
+	writeTouch(touch);
+}
 
+function writeTouch(touch: Record<string, unknown>) {
 	// Without the Domain attribute (localhost, preview URLs) the cookie stays
 	// on this host, which is all a test needs.
 	const domain = isOwnHost(location.hostname) ? `; Domain=.${ROOT_DOMAIN}` : "";
@@ -79,6 +83,27 @@ function captureLanding() {
 	document.cookie =
 		`${COOKIE}=${encodeURIComponent(JSON.stringify(touch))}` +
 		`; Path=/; Max-Age=${MAX_AGE_S}; SameSite=Lax${domain}${secure}`;
+}
+
+/** Fields the CTA click adds to `iz_attr`, so the signup says which button led to it. */
+const CTA_KEYS = ["cta_id", "cta_page"];
+
+/**
+ * The button the visitor is signing up through. A Sign up without a cta_id
+ * (the header, say) clears an earlier one, so the signup names the button
+ * actually used.
+ */
+function rememberCta(ctaId: string | undefined) {
+	const touch = savedTouch();
+	if (ctaId) {
+		touch.cta_id = ctaId.slice(0, MAX_VALUE);
+		touch.cta_page = `${location.origin}${location.pathname}`.slice(0, MAX_VALUE);
+	} else if (!touch.cta_id) {
+		return;
+	} else {
+		for (const key of CTA_KEYS) delete touch[key];
+	}
+	writeTouch(touch);
 }
 
 function savedTouch(): Record<string, unknown> {
@@ -95,7 +120,7 @@ function carryTouch(link: HTMLAnchorElement) {
 	if (isOwnHost(link.hostname)) return;
 	const touch = savedTouch();
 	const url = new URL(link.href);
-	for (const key of PARAMS) {
+	for (const key of [...PARAMS, ...CTA_KEYS]) {
 		const value = touch[key];
 		if (typeof value === "string" && !url.searchParams.has(key)) {
 			url.searchParams.set(key, value);
@@ -117,6 +142,7 @@ function trackCtaClicks() {
 			const link = (event.target as Element | null)?.closest?.("a[href]");
 			if (!(link instanceof HTMLAnchorElement)) return;
 			if (link.host !== APP_HOST) return;
+			rememberCta(link.dataset.ctaId);
 			carryTouch(link);
 			const params: Record<string, string> = {
 				cta_text: (link.textContent || "").trim().replace(/\s+/g, " ").slice(0, 100),
