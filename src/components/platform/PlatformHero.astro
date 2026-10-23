@@ -17,6 +17,7 @@ import bubbleFour from "../../assets/images/platform_page/hero/creator_bubble_fo
 import { opensNewTab } from "../../data/site";
 import { plainText } from "../../data/platform";
 import type { ResolvedPlatform } from "../../lib/platform-source";
+import { heroCtaId } from "../../data/ctaIds";
 
 interface Props {
 	page: ResolvedPlatform;
@@ -73,7 +74,7 @@ const rem = (px: number) => `${px / 16}rem`;
 			</div>
 
 			<div class="relative mt-8 lg:mt-0">
-				<Button href={copy.heroCtaLink} newTab={opensNewTab(copy.heroCtaLink)}>{plainText(copy.heroCta)}</Button>
+				<Button href={copy.heroCtaLink} newTab={opensNewTab(copy.heroCtaLink)} ctaId={heroCtaId(Astro.url.pathname)}>{plainText(copy.heroCta)}</Button>
 			</div>
 		</div>
 

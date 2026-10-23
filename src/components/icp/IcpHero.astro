@@ -9,6 +9,7 @@ import HeroPills from "../compare/HeroPills.astro";
 import TwoTone from "../compare/TwoTone.astro";
 import { opensNewTab } from "../../data/site";
 import { plainText, type IcpCopy } from "../../data/icp";
+import { heroCtaId } from "../../data/ctaIds";
 
 interface Props {
 	copy: IcpCopy;
@@ -46,6 +47,7 @@ const newTab = opensNewTab(copy.heroCtaLink);
 
 		<a
 			href={copy.heroCtaLink}
+			data-cta-id={heroCtaId(Astro.url.pathname)}
 			target={newTab ? "_blank" : undefined}
 			rel={newTab ? "noopener noreferrer" : undefined}
 			class="hover-dark-pill mt-8 inline-flex h-[3.25rem] items-center rounded-full border border-brand-primary bg-button-primary px-[1.875rem] text-[1rem] leading-none text-[#010101] [--ring-out:1px] lg:mt-[6.5rem]"
