@@ -21,6 +21,7 @@ import { plainText } from "../../data/icp";
 import { NO_CELLS, getIcp, getIcps } from "../../lib/icp-source";
 import { getPerspectiveCookie } from "../../lib/draft-mode";
 import { parseStructuredDataOverride } from "../../sanity/lib/customSchema";
+import { productSchema } from "../../lib/product-schema";
 
 // Built once per slug in production; rendered on request in dev, where Astro caches
 // getStaticPaths and a renamed or new slug would otherwise 404 until restart.
@@ -46,6 +47,7 @@ const schema = [
 			acceptedAnswer: { "@type": "Answer", text: faq.answer },
 		})),
 	},
+	await productSchema(Astro.site ?? new URL(Astro.url.origin), page.seo.description),
 ];
 const trim = "[text-box:trim-both_cap_alphabetic]";
 /** The homepage section's tile names for this page's step icons. */
@@ -113,7 +115,7 @@ const SMARTER_ICON = { search: "search", users: "users", squareCheckBig: "square
 				id="before-after"
 				variant="beforeAfter"
 				background="transparent"
-				cornerLabel="Before"
+				cornerLabel={copy.beforeAfterLabel}
 				heading={copy.beforeAfterHeading}
 				subcopy={copy.beforeAfterSubcopy}
 				competitorName=""

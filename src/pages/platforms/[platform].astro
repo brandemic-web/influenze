@@ -22,6 +22,7 @@ import { plainText } from "../../data/platform";
 import { getPlatform, getPlatforms } from "../../lib/platform-source";
 import { getPerspectiveCookie } from "../../lib/draft-mode";
 import { parseStructuredDataOverride } from "../../sanity/lib/customSchema";
+import { productSchema } from "../../lib/product-schema";
 
 // Built once per slug in production; rendered on request in dev, where Astro caches
 // getStaticPaths and a renamed or new slug would otherwise 404 until restart.
@@ -48,6 +49,7 @@ const schema = [
 			acceptedAnswer: { "@type": "Answer", text: faq.answer },
 		})),
 	},
+	await productSchema(Astro.site ?? new URL(Astro.url.origin), page.seo.description),
 ];
 
 const sectionHeading = "text-center text-[1.875rem] capitalize leading-[1.15] [text-box:trim-both_cap_alphabetic] lg:text-[2.25rem]";

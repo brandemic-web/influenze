@@ -18,6 +18,7 @@ import { FIT_CORNER_LABEL, plainText } from "../../data/alternative";
 import { getAlternative, getAlternatives } from "../../lib/alternative-source";
 import { getPerspectiveCookie } from "../../lib/draft-mode";
 import { parseStructuredDataOverride } from "../../sanity/lib/customSchema";
+import { productSchema } from "../../lib/product-schema";
 
 // Built once per slug in production; rendered on request in dev, where Astro caches
 // getStaticPaths and a renamed or new slug would otherwise 404 until restart.
@@ -46,6 +47,7 @@ const schema = [
 			acceptedAnswer: { "@type": "Answer", text: faq.answer },
 		})),
 	},
+	await productSchema(Astro.site ?? new URL(Astro.url.origin), competitor.seo.description),
 ];
 ---
 
