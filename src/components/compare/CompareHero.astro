@@ -13,6 +13,7 @@ import HeroPills from "./HeroPills.astro";
 import { COMPARE_HERO, plainText } from "../../data/compare";
 import type { ResolvedCompetitor } from "../../lib/compare-source";
 import infoCircle from "../../assets/images/compare_page/choose_cards/info_circle.svg";
+import { heroCtaId } from "../../data/ctaIds";
 
 interface Props {
 	competitor: ResolvedCompetitor;
@@ -70,7 +71,7 @@ const introParts = competitor.intro.split(BRAND);
 		</p>
 
 		<div class="mt-8 flex flex-wrap justify-center gap-4 lg:mt-17.5 lg:gap-5.5">
-			<Button href={APP_URL} newTab>{COMPARE_HERO.primaryCta}</Button>
+			<Button href={APP_URL} newTab ctaId={heroCtaId(Astro.url.pathname)}>{COMPARE_HERO.primaryCta}</Button>
 			<a
 				href={copy.secondaryCtaLink}
 				data-scroll-link={copy.secondaryCtaLink.startsWith("#") || undefined}

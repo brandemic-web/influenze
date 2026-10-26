@@ -10,6 +10,7 @@ import HeroPills from "../compare/HeroPills.astro";
 import { APP_URL } from "../../data/site";
 import { ALTERNATIVE_HERO, plainText } from "../../data/alternative";
 import type { ResolvedAlternative } from "../../lib/alternative-source";
+import { heroCtaId } from "../../data/ctaIds";
 
 interface Props {
 	competitor: ResolvedAlternative;
@@ -50,7 +51,7 @@ const { copy } = Astro.props.competitor;
 		</div>
 
 		<div class="mt-8 flex flex-wrap justify-center gap-4 lg:mt-27.25 lg:gap-5.5">
-			<Button href={APP_URL} newTab>{ALTERNATIVE_HERO.primaryCta}</Button>
+			<Button href={APP_URL} newTab ctaId={heroCtaId(Astro.url.pathname)}>{ALTERNATIVE_HERO.primaryCta}</Button>
 			<a
 				href={copy.secondaryCtaLink}
 				data-scroll-link={copy.secondaryCtaLink.startsWith("#") || undefined}
