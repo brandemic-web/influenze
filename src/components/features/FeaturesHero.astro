@@ -8,6 +8,8 @@ import creatorSix from "../../assets/images/featured_page/hero_section/creator_s
 import { getFeaturesPage } from "../../sanity/lib/queries";
 import { getPerspectiveCookie } from "../../lib/draft-mode";
 import { urlFor } from "../../sanity/lib/image";
+import Button from "../common/Button.astro";
+import { APP_URL, opensNewTab } from "../../data/site";
 
 const { data: features } = await getFeaturesPage(getPerspectiveCookie(Astro.cookies));
 
@@ -103,6 +105,7 @@ const displacementDataUri = `data:image/svg+xml;base64,${btoa(displacementMap)}`
 				>{subcopy.highlight}</span
 			>{subcopy.trail}
 		</p>
+		<Button href={APP_URL} newTab={opensNewTab(APP_URL)} class="mt-4 lg:mt-0">Free Trial</Button>
 	</div>
 
 	{/* full-bleed creator photo strip; the liquid-glass lens overlays it (prototype) */}

@@ -17,6 +17,7 @@ import { SHOW_DRAFTS, plainText } from "../../data/compare";
 import { getCompetitor, getCompetitors } from "../../lib/compare-source";
 import { getPerspectiveCookie } from "../../lib/draft-mode";
 import { parseStructuredDataOverride } from "../../sanity/lib/customSchema";
+import { productSchema } from "../../lib/product-schema";
 
 // Built once per slug in production. In dev it renders on request instead: Astro's
 // dev server caches getStaticPaths, so a renamed or new slug would 404 until restart.
@@ -47,6 +48,7 @@ const schema = [
 			acceptedAnswer: { "@type": "Answer", text: faq.answer },
 		})),
 	},
+	await productSchema(Astro.site ?? new URL(Astro.url.origin), competitor.seo.description),
 ];
 ---
 

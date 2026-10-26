@@ -34,7 +34,8 @@ export const ICP_PAGES: IcpPage[] = [
 				"A creator discovery platform for agencies that turns every brief into a shortlist. Discover, evaluate and shortlist creators from *450M+* profiles, share lists and streamline client approvals.",
 			workflowHeading: "A Creator Discovery Platform\nBuilt for *Agency Workflows*",
 			slowsHeading: "What Slows Creator Discovery *for Agencies*",
-			beforeAfterHeading: "Before and After a Creator Discovery\nPlatform for Agencies",
+			beforeAfterHeading: "Other Platforms vs Influenze.ai\na Creator Discovery Platform for Agencies",
+			beforeAfterLabel: "Other Platforms",
 			beforeAfterSubcopy:
 				"Not just another data platform. Influenze.ai verifies, scores and surfaces what matters to agency teams.",
 			smarterHeading: "A Smarter Way for Agencies\n*to Discover Creators*",

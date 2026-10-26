@@ -67,6 +67,7 @@ export const ICP_COPY_FIELDS = [
 		default: "Not just another data platform — we verify, score, and surface only what matters.",
 		long: true,
 	},
+	{ key: "beforeAfterLabel", group: "beforeAfter", title: "Left column header", default: "Before" },
 	{ key: "smarterHeading", group: "smarter", title: "Heading", default: "A Smarter Way\n*To Discover Creators*", twoTone: true, long: true },
 	{ key: "briefsHeading", group: "briefs", title: "Heading", default: "A Live Brief, Start To Finish", twoTone: true },
 	{ key: "costHeading", group: "cost", title: "Heading", default: "What One Client Brief Takes", twoTone: true },
