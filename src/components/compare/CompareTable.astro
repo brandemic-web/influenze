@@ -10,6 +10,7 @@ import logo from "../../assets/images/common/logos_and_icons/influenze_logo_nav.
 import CreditChips from "./CreditChips.astro";
 import TwoTone from "./TwoTone.astro";
 import { plainText, type CompareRow, type CompetitorCell } from "../../data/compare";
+import type { CompetitorLogo } from "../../lib/competitor-logo";
 
 interface Props {
 	/** Anchor and rail id; also names the heading `<id>-heading`. */
@@ -27,6 +28,8 @@ interface Props {
 	cornerLabel?: string;
 	/** The pricing guide draws the other column at full white, not dimmed. */
 	competitorTone?: "muted" | "bright";
+	/** Replaces the competitor name in the header; the name returns if it fails to load. */
+	competitorLogo?: CompetitorLogo;
 }
 
 const VARIANTS = {
@@ -129,7 +132,7 @@ const VARIANTS = {
 	},
 };
 
-const { id, heading, subcopy, competitorName, rows, cells, variant, background, cornerLabel, competitorTone = "muted" } = Astro.props;
+const { id, heading, subcopy, competitorName, rows, cells, variant, background, cornerLabel, competitorTone = "muted", competitorLogo } = Astro.props;
 const v = VARIANTS[variant];
 /** Before/after draws only two columns: the label and Influenze's, with "With" over the logo. */
 const twoColumn = variant === "beforeAfter";
@@ -230,7 +233,22 @@ const leadText = "text-[0.8125rem] leading-5 whitespace-pre-line lg:text-[1.125r
 						class:list={["relative z-2 col-start-3 row-start-1 flex items-center justify-center px-4 py-8", v.headerPad]}
 						role="columnheader"
 					>
-						<span class="text-[1.125rem] font-medium text-white lg:text-md lg:leading-7.5">{competitorName}</span>
+						{competitorLogo && (
+							<img
+								src={competitorLogo.src}
+								alt={competitorName}
+								width={competitorLogo.w}
+								height={competitorLogo.h}
+								class="h-6 max-w-full object-contain lg:h-10.75"
+								loading="lazy"
+								data-compare-logo
+							/>
+						)}
+						{/* Shown directly with no logo; hidden until the logo fails to load otherwise. */}
+						<span
+							class:list={["text-[1.125rem] font-medium text-white lg:text-md lg:leading-7.5", competitorLogo && "hidden"]}
+							data-compare-logo-name={competitorLogo ? "" : undefined}
+						>{competitorName}</span>
 					</div>
 				)}
 			</div>
@@ -345,4 +363,5 @@ const leadText = "text-[0.8125rem] leading-5 whitespace-pre-line lg:text-[1.125r
 
 <script>
 	import "../../scripts/comparison-rail";
+	import "../../scripts/comparison-logos";
 </script>

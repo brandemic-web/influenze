@@ -12,6 +12,7 @@ import {
 	WHO_FOR_CARDS,
 } from "../../../data/platform/shared";
 import { copyField } from "../../lib/copyField";
+import { briefPhotoFields } from "../objects/briefPhotoFields";
 
 /**
  * One /platforms/<slug> page — creator search on one social platform. Defaults for
@@ -24,7 +25,11 @@ const copyFields = (group: string) =>
 	PLATFORM_COPY_FIELDS.filter((f) => f.group === group).map((f) => copyField(f, group));
 
 /** A fixed set of slots — the page always draws these; blank fields keep the default. */
-const slotFields = (slots: readonly { id: string; title: string; body: string; location?: string }[], label: string) =>
+const slotFields = (
+	slots: readonly { id: string; title: string; body: string; location?: string }[],
+	label: string,
+	withPhotos = false,
+) =>
 	slots.map((slot, i) =>
 		defineField({
 			name: slot.id,
@@ -44,6 +49,7 @@ const slotFields = (slots: readonly { id: string; title: string; body: string; l
 							}),
 						]
 					: []),
+				...(withPhotos ? briefPhotoFields() : []),
 			],
 		}),
 	);
@@ -109,6 +115,21 @@ export default defineType({
 				"While on, the page is built only for previews and kept out of search engines — never on the live site.",
 		}),
 		...copyFields("hero"),
+		defineField({
+			name: "heroBubbles",
+			title: "Hero creator photos",
+			description: "Each slot is a fixed, hand-positioned spot under the hero, left to right. Upload a replacement photo per slot; an empty slot keeps the default photo. Slots can't be added or removed.",
+			type: "object",
+			group: "hero",
+			fields: (["a", "b", "c", "d"] as const).map((letter) =>
+				defineField({
+					name: `bubble${letter.toUpperCase()}`,
+					title: `Photo ${letter.toUpperCase()}`,
+					type: "image",
+					options: { hotspot: true },
+				}),
+			),
+		}),
 
 		...copyFields("searchBy"),
 		defineField({
@@ -175,11 +196,31 @@ export default defineType({
 			type: "object",
 			group: "briefs",
 			options: { collapsible: false },
-			description: "Leave a field empty to keep the default shown in it. The photos stay as designed.",
-			fields: slotFields(BRIEFS, "Brief"),
+			description: "Leave a field empty to keep the default shown in it, photos included.",
+			fields: slotFields(BRIEFS, "Brief", true),
 		}),
 
 		...copyFields("matters"),
+		defineField({
+			name: "mattersImages",
+			title: "Right-side images (optional, one per tab)",
+			type: "object",
+			group: "matters",
+			options: { collapsible: false },
+			description:
+				"One complete image for each point's tab, replacing that tab's built-in mockup. Leave a tab empty to keep its mockup. Best at 1380 × 1110 px (the 690 × 555 panel at 2x); other ratios are fitted whole inside the panel, with 25px of padding around them.",
+			fields: (["a", "b", "c"] as const).map((letter, i) =>
+				defineField({
+					name: `image${letter.toUpperCase()}`,
+					title: `Tab ${i + 1} image`,
+					type: "image",
+					options: { hotspot: true },
+					fields: [
+						defineField({ name: "alt", title: "Alt text", type: "string", description: "Describe the image for screen readers." }),
+					],
+				}),
+			),
+		}),
 		defineField({
 			name: "mattersPoints",
 			title: "Points",

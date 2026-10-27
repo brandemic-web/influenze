@@ -25,6 +25,7 @@ import {
 	type CompareRow,
 } from "../data/compare";
 import type { Faq } from "../data/faqs";
+import { resolveCompetitorLogo, type CompetitorLogo } from "./competitor-logo";
 import { getComparePages, type CompareCellDoc, type ComparePageDoc, type ScriptsDoc, type SeoDoc } from "../sanity/lib/queries";
 
 export interface ResolvedCompetitor extends Competitor {
@@ -35,6 +36,8 @@ export interface ResolvedCompetitor extends Competitor {
 	/** The table rows with Studio's edits to the Influenze.ai column. */
 	featureRows: CompareRow<FeatureRowId>[];
 	pricingRows: CompareRow<PricingRowId>[];
+	/** Optional upload for the feature table's header; the name is shown without one. */
+	competitorLogo?: CompetitorLogo;
 	/** Sanity's SEO overrides — canonical URL, noindex, custom JSON-LD. */
 	seoOverrides?: SeoDoc;
 	scripts?: ScriptsDoc;
@@ -100,6 +103,7 @@ function fromSanity(doc: ComparePageDoc, code: Competitor | undefined): Resolved
 		scenarioCards: resolveScenarios({ ...code?.scenarios, ...doc.scenarios }, name),
 		featureRows: resolveInfluenzeRows(FEATURE_ROWS, doc.influenzeFeatures),
 		pricingRows: resolveInfluenzeRows(PRICING_ROWS, doc.influenzePricing),
+		competitorLogo: resolveCompetitorLogo(doc.competitorLogo, doc.competitorLogoSize),
 		seoOverrides: doc.seo,
 		scripts: doc.scripts,
 	};
