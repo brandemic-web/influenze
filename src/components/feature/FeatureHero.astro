@@ -62,8 +62,11 @@ const longTitle = Math.max(...plainText(copy.heroTitle).split("\n").map((l) => l
 			<h1
 				id="feature-title"
 				class:list={[
-					"relative mt-4 text-[2.125rem] leading-[1.1] lg:whitespace-pre-line text-white [text-box:trim-both_cap_alphabetic] lg:absolute lg:left-[28.25rem] lg:mt-0 lg:w-[51.5rem] lg:tracking-[-0.08rem]",
-					longTitle ? "lg:top-[20.75rem] lg:text-[3rem] lg:leading-[3.5rem]" : "lg:top-[19.75rem] lg:text-9xl lg:leading-[4.5rem]",
+					"relative mt-4 text-[2.125rem] leading-[1.1] lg:whitespace-pre-line text-white [text-box:trim-both_cap_alphabetic] lg:absolute lg:mt-0 lg:tracking-[-0.08rem] lg:text-balance",
+					// A long title also takes the panel's full inner width, so an unbroken one still sets in two lines clear of the pills.
+					longTitle
+						? "lg:top-[20.75rem] lg:left-[24.375rem] lg:w-[59.25rem] lg:text-[3rem] lg:leading-[3.5rem]"
+						: "lg:top-[19.75rem] lg:left-[28.25rem] lg:w-[51.5rem] lg:text-9xl lg:leading-[4.5rem]",
 				]}
 			>
 				<TwoTone text={copy.heroTitle} />
