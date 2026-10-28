@@ -32,7 +32,7 @@ const bubbles = [
 	{ src: bubbleTwo, x: 555, y: 1193, w: 200, h: 204 },
 	{ src: bubbleThree, x: 888, y: 1186, w: 224, h: 228 },
 	{ src: bubbleFour, x: 1192, y: 1071, w: 225, h: 229 },
-];
+].map((b, i) => ({ ...b, upload: page.heroBubbles?.[i] }));
 const rem = (px: number) => `${px / 16}rem`;
 ---
 
@@ -91,7 +91,11 @@ const rem = (px: number) => `${px / 16}rem`;
 						class="size-18 shrink-0 lg:absolute lg:size-auto"
 						style={`--x:${rem(b.x)};--y:${rem(b.y)};--w:${rem(b.w)};--h:${rem(b.h)}`}
 					>
-						<Image src={b.src} alt="" class="bubble h-full w-full object-contain" loading="lazy" />
+						{b.upload ? (
+							<img src={b.upload} alt="" class="bubble h-full w-full object-contain" loading="lazy" />
+						) : (
+							<Image src={b.src} alt="" class="bubble h-full w-full object-contain" loading="lazy" />
+						)}
 					</li>
 				))
 			}

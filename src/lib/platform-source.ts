@@ -28,6 +28,8 @@ import {
 	type PlatformPage,
 } from "../data/platform";
 import type { Faq } from "../data/faqs";
+import { urlFor } from "../sanity/lib/image";
+import { resolveBriefPhotos, type BriefPhotos } from "./brief-photos";
 import { getPlatformPages, type PlatformPageDoc, type ScriptsDoc, type SeoDoc } from "../sanity/lib/queries";
 
 export interface ResolvedPlatform extends PlatformPage {
@@ -39,6 +41,11 @@ export interface ResolvedPlatform extends PlatformPage {
 	mattersList: ReturnType<typeof resolveSlots<(typeof MATTERS_POINTS)[number]>>;
 	statList: { id: string; label: string; value: string; note: string }[];
 	freshnessList: ReturnType<typeof resolveSlots<(typeof FRESHNESS_CARDS)[number]>>;
+	/** CDN URLs of the four uploaded hero photos, in slot order; undefined keeps the bundled photo. */
+	heroBubbles?: (string | undefined)[];
+	/** Uploaded image per "What matters" tab, in tab order; undefined keeps that tab's built-in mockup. */
+	mattersImages?: ({ src: string; alt: string } | undefined)[];
+	briefPhotos?: BriefPhotos;
 	seoOverrides?: SeoDoc;
 	scripts?: ScriptsDoc;
 }
@@ -55,7 +62,10 @@ const fillCard = <T extends { title: string; body: string }>(card: T, name: stri
 	body: fillPlatform(card.body, name),
 });
 
-function finish(p: PlatformPage, extra?: Pick<ResolvedPlatform, "seoOverrides" | "scripts">): ResolvedPlatform {
+function finish(
+	p: PlatformPage,
+	extra?: Pick<ResolvedPlatform, "seoOverrides" | "scripts" | "heroBubbles" | "mattersImages" | "briefPhotos">,
+): ResolvedPlatform {
 	const searchBy = (p.searchByCards ?? []).filter((c) => has(c.title));
 	const whoFor = (p.whoForCards ?? []).filter((c) => has(c.title));
 	return {
@@ -124,7 +134,21 @@ function fromSanity(doc: PlatformPageDoc, code: PlatformPage | undefined): Resol
 			freshness: { ...code?.freshness, ...doc.freshness },
 			faqs: faqs.length ? faqs : code?.faqs,
 		},
-		{ seoOverrides: doc.seo, scripts: doc.scripts },
+		{
+			// Twice the largest slot (225px design width), for sharpness on large windows.
+			heroBubbles: (["bubbleA", "bubbleB", "bubbleC", "bubbleD"] as const).map((slot) => {
+				const image = doc.heroBubbles?.[slot];
+				return image?.asset ? urlFor(image).width(460).url() : undefined;
+			}),
+			briefPhotos: resolveBriefPhotos(doc.briefs),
+			// 2x the 690px panel.
+			mattersImages: (["imageA", "imageB", "imageC"] as const).map((slot) => {
+				const image = doc.mattersImages?.[slot];
+				return image?.asset ? { src: urlFor(image).width(1380).url(), alt: image.alt?.trim() ?? "" } : undefined;
+			}),
+			seoOverrides: doc.seo,
+			scripts: doc.scripts,
+		},
 	);
 }
 

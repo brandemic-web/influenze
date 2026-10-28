@@ -26,6 +26,7 @@ import {
 import type { CompetitorCell } from "../data/compare";
 import { resolveCopy, resolveInfluenzeRows } from "../data/compare/shared";
 import type { Faq } from "../data/faqs";
+import { resolveCompetitorLogo, type CompetitorLogo } from "./competitor-logo";
 import {
 	getAlternativePages,
 	type AlternativePageDoc,
@@ -42,6 +43,8 @@ export interface ResolvedAlternative extends AlternativeCompetitor {
 	/** The table rows with Studio's edits to the Influenze.ai column. */
 	fitRows: CompareRow<FitRowId>[];
 	featureRows: CompareRow<FeatureRowId>[];
+	/** Optional upload for the feature table's header; the name is shown without one. */
+	competitorLogo?: CompetitorLogo;
 	seoOverrides?: SeoDoc;
 	scripts?: ScriptsDoc;
 }
@@ -68,7 +71,7 @@ function cells<Id extends string>(
 /** Everything derived from defaults + overrides, shared by Sanity and code-only pages. */
 function finish(
 	c: AlternativeCompetitor,
-	extra?: Partial<Pick<ResolvedAlternative, "seoOverrides" | "scripts" | "fitRows" | "featureRows">>,
+	extra?: Partial<Pick<ResolvedAlternative, "seoOverrides" | "scripts" | "competitorLogo" | "fitRows" | "featureRows">>,
 ) {
 	const cards = (c.whyCards ?? []).filter((card) => has(card.title));
 	return {
@@ -112,6 +115,7 @@ function fromSanity(doc: AlternativePageDoc, code: AlternativeCompetitor | undef
 			useCases: { ...code?.useCases, ...doc.useCases },
 		},
 		{
+			competitorLogo: resolveCompetitorLogo(doc.competitorLogo, doc.competitorLogoSize),
 			seoOverrides: doc.seo,
 			scripts: doc.scripts,
 			fitRows: resolveInfluenzeRows(FIT_ROWS, doc.influenzeFit),

@@ -18,6 +18,7 @@ import {
 } from "../data/icp";
 import type { CompareRow, CompetitorCell } from "../data/compare";
 import type { Faq } from "../data/faqs";
+import { resolveBriefPhotos, type BriefPhotos } from "./brief-photos";
 import { getIcpPages, type IcpPageDoc, type ScriptsDoc, type SeoDoc } from "../sanity/lib/queries";
 
 export interface ResolvedIcp extends IcpPage {
@@ -28,6 +29,7 @@ export interface ResolvedIcp extends IcpPage {
 	smarterList: ReturnType<typeof resolveSlots<(typeof SMARTER_STEPS)[number]>>;
 	briefList: ReturnType<typeof resolveSlots<(typeof BRIEFS)[number]>>;
 	costList: string[];
+	briefPhotos?: BriefPhotos;
 	seoOverrides?: SeoDoc;
 	scripts?: ScriptsDoc;
 }
@@ -40,7 +42,7 @@ const cleanList = (items: string[] | undefined) => (items ?? []).map((s) => s.tr
 /** The before/after table draws no competitor column; its cells are left empty. */
 export const NO_CELLS: Record<string, CompetitorCell> = {};
 
-function finish(p: IcpPage, extra?: Pick<ResolvedIcp, "seoOverrides" | "scripts">): ResolvedIcp {
+function finish(p: IcpPage, extra?: Pick<ResolvedIcp, "seoOverrides" | "scripts" | "briefPhotos">): ResolvedIcp {
 	const pills = cleanList(p.workflowPills);
 	const cost = cleanList(p.costLines);
 	return {
@@ -84,7 +86,11 @@ function fromSanity(doc: IcpPageDoc, code: IcpPage | undefined): ResolvedIcp {
 			costLines: cleanList(doc.costLines).length ? doc.costLines : code?.costLines,
 			faqs: faqs.length ? faqs : code?.faqs,
 		},
-		{ seoOverrides: doc.seo, scripts: doc.scripts },
+		{
+			briefPhotos: resolveBriefPhotos(doc.briefs),
+			seoOverrides: doc.seo,
+			scripts: doc.scripts,
+		},
 	);
 }
 

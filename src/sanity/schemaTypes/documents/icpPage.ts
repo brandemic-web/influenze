@@ -9,6 +9,7 @@ import {
 	WORKFLOW_PILLS,
 } from "../../../data/icp/shared";
 import { copyField } from "../../lib/copyField";
+import { briefPhotoFields } from "../objects/briefPhotoFields";
 
 /**
  * One /icp/<audience> page — Influenze.ai for one kind of customer, e.g. agencies.
@@ -17,7 +18,11 @@ import { copyField } from "../../lib/copyField";
  */
 const copyFields = (group: string) => ICP_COPY_FIELDS.filter((f) => f.group === group).map((f) => copyField(f, group));
 
-const slotFields = (slots: readonly { id: string; title: string; body: string; location?: string }[], label: string) =>
+const slotFields = (
+	slots: readonly { id: string; title: string; body: string; location?: string }[],
+	label: string,
+	withPhotos = false,
+) =>
 	slots.map((slot, i) =>
 		defineField({
 			name: slot.id,
@@ -37,6 +42,7 @@ const slotFields = (slots: readonly { id: string; title: string; body: string; l
 							}),
 						]
 					: []),
+				...(withPhotos ? briefPhotoFields() : []),
 			],
 		}),
 	);
@@ -138,7 +144,8 @@ export default defineType({
 			type: "object",
 			group: "briefs",
 			options: { collapsible: false },
-			fields: slotFields(BRIEFS, "Brief"),
+			description: "Leave a field empty to keep the default shown in it, photos included.",
+			fields: slotFields(BRIEFS, "Brief", true),
 		}),
 		...copyFields("cost"),
 		defineField({

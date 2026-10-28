@@ -21,9 +21,13 @@ interface Props {
 	heading: string;
 	points: { icon: IconTile; title: string; body: string }[];
 	stats: { label: string; value: string; note: string }[];
+	/** An uploaded image per tab, in tab order; a tab without one keeps its built-in mockup. */
+	images?: ({ src: string; alt: string } | undefined)[];
 }
 
-const { heading, points, stats } = Astro.props;
+const { heading, points, stats, images = [] } = Astro.props;
+// 25px of design padding on every side, so the whole image shows inside the panel.
+const uploadClass = "absolute inset-0 h-full w-full object-contain p-[1.5625rem]";
 /** Stat tile left offsets in the panel, and widths, as drawn. */
 const tiles = [
 	{ left: "9.625rem", width: "10.232rem" },
@@ -73,6 +77,9 @@ const tiles = [
 		<div class="mx-auto shrink-0 max-lg:[zoom:0.38] min-[420px]:max-lg:[zoom:0.45] sm:max-lg:[zoom:0.8] lg:mx-0">
 			<div class="relative h-[34.6875rem] w-[43.125rem] overflow-hidden rounded-[1.25rem] bg-white/20">
 				<div role="tabpanel" id="matters-panel-0" aria-labelledby="matters-tab-0" aria-hidden="false" data-showcase-panel data-active class="mock absolute inset-0">
+				{images[0] ? (
+					<img src={images[0].src} alt={images[0].alt} width="1380" height="1110" class={`mock-piece ${uploadClass}`} loading="lazy" />
+				) : (<Fragment>
 				{
 					stats.map((stat, i) => (
 						<div
@@ -99,8 +106,12 @@ const tiles = [
 						loading="lazy"
 					/>
 				</div>
+				</Fragment>)}
 				</div>
 				<div role="tabpanel" id="matters-panel-1" aria-labelledby="matters-tab-1" aria-hidden="true" data-showcase-panel class="mock absolute inset-0">
+					{images[1] ? (
+						<img src={images[1].src} alt={images[1].alt} width="1380" height="1110" class={`mock-piece ${uploadClass}`} loading="lazy" />
+					) : (
 					<Image
 						src={accountStats}
 						alt=""
@@ -108,9 +119,12 @@ const tiles = [
 						sizes="38.1875rem"
 						class="mock-piece absolute top-[2.9375rem] left-[2.5625rem] w-[38.1875rem] max-w-none"
 						loading="lazy"
-					/>
+					/>)}
 				</div>
 				<div role="tabpanel" id="matters-panel-2" aria-labelledby="matters-tab-2" aria-hidden="true" data-showcase-panel class="mock absolute inset-0">
+					{images[2] ? (
+						<img src={images[2].src} alt={images[2].alt} width="1380" height="1110" class={`mock-piece ${uploadClass}`} loading="lazy" />
+					) : (<Fragment>
 					<Image
 						src={filtersCard}
 						alt=""
@@ -126,7 +140,7 @@ const tiles = [
 						sizes="23.25rem"
 						class="mock-piece mock-late absolute top-[11.0625rem] left-[1.9375rem] w-[23.25rem] max-w-none"
 						loading="lazy"
-					/>
+					/></Fragment>)}
 				</div>
 			</div>
 		</div>

@@ -17,6 +17,7 @@ import cookingDetail from "../../assets/images/platform_page/example_briefs/cook
 import fitnessMain from "../../assets/images/platform_page/example_briefs/fitness_main.png";
 import fitnessDetail from "../../assets/images/platform_page/example_briefs/fitness_detail.png";
 import type { CardText } from "../../data/platform";
+import type { BriefPhotos } from "../../lib/brief-photos";
 
 type Brief = CardText & { id: string; location?: string; photos: "skincare" | "cooking" | "fitness" };
 
@@ -26,13 +27,15 @@ interface Props {
 	/** lg gap above the heading, in rem; heading size in rem. The ICP page draws it smaller and nearer. */
 	gap?: number;
 	headingSize?: number;
+	/** Uploaded photos per brief id; a brief without one keeps its bundled photo. */
+	photos?: BriefPhotos;
 	/** Gap from the heading to the panel, in rem. */
 	panelGap?: number;
 	/** lg left edge of the panel on the 108rem stage, in rem. */
 	left?: number;
 }
 
-const { heading, briefs, gap = 15.0625, headingSize = 3.4375, panelGap = 4.375, left = 18.3125 } = Astro.props;
+const { heading, briefs, photos = {}, gap = 15.0625, headingSize = 3.4375, panelGap = 4.375, left = 18.3125 } = Astro.props;
 /** Everything right of the brief list sits a fixed distance from its left edge, as drawn. */
 const at = (offset: number) => `${left + offset}rem`;
 const PHOTOS = {
@@ -40,6 +43,11 @@ const PHOTOS = {
 	cooking: { main: cookingMain, detail: cookingDetail },
 	fitness: { main: fitnessMain, detail: fitnessDetail },
 } as const;
+/** Shared by the bundled and the uploaded photo, so the two can't drift apart. */
+const mainClass =
+	"set-main absolute top-0 left-0 h-[88%] w-[80%] rounded-[0.9375rem] object-cover lg:top-0 lg:left-(--l-hand) lg:h-[34.5rem] lg:w-[29.875rem]";
+const detailClass =
+	"set-detail absolute right-0 bottom-0 size-[45%] rounded-[1.19rem] object-cover lg:top-[10.375rem] lg:left-(--l-face) lg:size-[15.3125rem]";
 const tabId = (id: string) => `brief-tab-${id}`;
 const panelId = (id: string) => `brief-panel-${id}`;
 ---
@@ -103,14 +111,23 @@ const panelId = (id: string) => `brief-panel-${id}`;
 						data-active={i === 0 ? "" : undefined}
 						class="brief-set pointer-events-none absolute inset-0"
 					>
+						{photos[brief.id]?.main ? (
+							<img
+								src={photos[brief.id].main}
+								alt=""
+								class={mainClass}
+								loading="lazy"
+							/>
+						) : (
 						<Image
 							src={PHOTOS[brief.photos].main}
 							alt=""
 							widths={[478, 956]}
 							sizes="(min-width: 1024px) 29.875rem, 80vw"
-							class="set-main absolute top-0 left-0 h-[88%] w-[80%] rounded-[0.9375rem] object-cover lg:top-0 lg:left-(--l-hand) lg:h-[34.5rem] lg:w-[29.875rem]"
+							class={mainClass}
 							loading="lazy"
 						/>
+						)}
 						<div class="set-location absolute top-4 right-0 w-[60%] rounded-[0.919rem] bg-[#121214] px-4 py-5 lg:top-[1.375rem] lg:left-(--l-loc) lg:w-[22.875rem]">
 							<span class="block text-[0.85rem] font-medium leading-none text-[#d0c2ff] [text-box:trim-both_cap_alphabetic] lg:text-[0.997rem]">
 								Creator Location
@@ -120,14 +137,23 @@ const panelId = (id: string) => `brief-panel-${id}`;
 								{brief.location}
 							</span>
 						</div>
+						{photos[brief.id]?.detail ? (
+							<img
+								src={photos[brief.id].detail}
+								alt=""
+								class={detailClass}
+								loading="lazy"
+							/>
+						) : (
 						<Image
 							src={PHOTOS[brief.photos].detail}
 							alt=""
 							widths={[245, 490]}
 							sizes="(min-width: 1024px) 15.3125rem, 40vw"
-							class="set-detail absolute right-0 bottom-0 size-[45%] rounded-[1.19rem] object-cover lg:top-[10.375rem] lg:left-(--l-face) lg:size-[15.3125rem]"
+							class={detailClass}
 							loading="lazy"
 						/>
+						)}
 					</div>
 				))
 			}

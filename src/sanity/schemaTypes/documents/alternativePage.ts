@@ -93,6 +93,14 @@ export default defineType({
 				),
 		}),
 		defineField({
+			name: "competitorLogo",
+			title: "Competitor logo (optional)",
+			type: "image",
+			group: "hero",
+			description:
+				'Shown in place of the name in the "How Influenze Compares" table header. Leave empty and the competitor name is shown instead.',
+		}),
+		defineField({
 			name: "slug",
 			title: "Slug",
 			type: "slug",

@@ -394,6 +394,8 @@ export async function getBlogIndex(perspectiveCookie?: string) {
 export const comparePagesQuery = groq`*[_type == "comparePage" && defined(slug.current)]{
 	"slug": slug.current,
 	competitorName,
+	competitorLogo,
+	"competitorLogoSize": competitorLogo.asset->metadata.dimensions { width, height },
 	draft,
 	intro,
 	chooseInfluenze,
@@ -418,6 +420,8 @@ export interface CompareCellDoc {
 export interface ComparePageDoc {
 	slug: string;
 	competitorName?: string;
+	competitorLogo?: Image;
+	competitorLogoSize?: { width?: number; height?: number };
 	draft?: boolean;
 	intro?: string;
 	chooseInfluenze?: string[];
@@ -442,6 +446,8 @@ export async function getComparePages(perspectiveCookie?: string) {
 export const alternativePagesQuery = groq`*[_type == "alternativePage" && defined(slug.current)]{
 	"slug": slug.current,
 	competitorName,
+	competitorLogo,
+	"competitorLogoSize": competitorLogo.asset->metadata.dimensions { width, height },
 	draft,
 	"headings": { ${ALT_COPY_FIELDS.map((f) => f.key).join(", ")} },
 	whyCards[]{ title, body },
@@ -459,6 +465,8 @@ export const alternativePagesQuery = groq`*[_type == "alternativePage" && define
 export interface AlternativePageDoc {
 	slug: string;
 	competitorName?: string;
+	competitorLogo?: Image;
+	competitorLogoSize?: { width?: number; height?: number };
 	draft?: boolean;
 	headings?: Record<string, string | undefined>;
 	whyCards?: { title?: string; body?: string }[];
@@ -484,17 +492,30 @@ export const platformPagesQuery = groq`*[_type == "platformPage" && defined(slug
 	platform,
 	draft,
 	"headings": { ${PLATFORM_COPY_FIELDS.map((f) => f.key).join(", ")} },
+	heroBubbles,
 	searchByCards[]{ icon, title, body },
 	whoForCards[]{ title, body },
 	briefs,
 	howSteps,
 	mattersPoints,
 	mattersStats,
+	mattersImages,
 	freshness,
 	faqs[]{ question, answer },
 	${SEO_PROJECTION},
 	${SCRIPTS_PROJECTION},
 }`;
+
+/** A brief slot on a platform or ICP page: its text, plus the optional photo uploads. */
+export interface BriefSlotDoc {
+	title?: string;
+	body?: string;
+	location?: string;
+	mainImage?: Image;
+	detailImage?: Image;
+}
+
+type MattersImage = Image & { alt?: string };
 
 type TextSlots = Record<string, { title?: string; body?: string; location?: string } | undefined>;
 
@@ -503,13 +524,15 @@ export interface PlatformPageDoc {
 	platformName?: string;
 	platform?: string;
 	draft?: boolean;
+	heroBubbles?: { bubbleA?: Image; bubbleB?: Image; bubbleC?: Image; bubbleD?: Image };
 	headings?: Record<string, string | undefined>;
 	searchByCards?: { icon?: string; title?: string; body?: string }[];
 	whoForCards?: { title?: string; body?: string }[];
-	briefs?: TextSlots;
+	briefs?: Record<string, BriefSlotDoc | undefined>;
 	howSteps?: TextSlots;
 	mattersPoints?: TextSlots;
 	mattersStats?: Record<string, { label?: string; value?: string; note?: string } | undefined>;
+	mattersImages?: { imageA?: MattersImage; imageB?: MattersImage; imageC?: MattersImage };
 	freshness?: TextSlots;
 	faqs?: { question?: string; answer?: string }[];
 	seo?: SeoDoc;
@@ -608,7 +631,7 @@ export interface IcpPageDoc {
 	slows?: Record<string, { title?: string; body?: string } | undefined>;
 	beforeAfter?: Record<string, { before?: string; after?: string } | undefined>;
 	smarter?: Record<string, { title?: string; body?: string } | undefined>;
-	briefs?: Record<string, { title?: string; body?: string; location?: string } | undefined>;
+	briefs?: Record<string, BriefSlotDoc | undefined>;
 	costLines?: string[];
 	faqs?: { question?: string; answer?: string }[];
 	seo?: SeoDoc;
