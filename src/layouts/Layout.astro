@@ -152,18 +152,33 @@ const inlineFooterScripts = [settings?.scripts?.footer, scripts?.footer].filter(
 				</>
 			) : (
 				<>
-					<!-- Google Tag Manager -->
+					<!-- Google Tag Manager, deferred: its tags (GA4, Meta, Clarity, Factors) cost
+					     mobile 400–800 ms of blocking time and pushed LCP to 7–10 s in Lighthouse.
+					     The container loads on the first interaction, or 3 s after `load`. Events
+					     pushed before then (signup_cta_click) wait in dataLayer and replay. -->
 					<script is:inline>
-						(function (w, d, s, l, i) {
+						(function (w, d, l, i) {
 							w[l] = w[l] || [];
 							w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
-							var f = d.getElementsByTagName(s)[0],
-								j = d.createElement(s),
-								dl = l != "dataLayer" ? "&l=" + l : "";
-							j.async = true;
-							j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
-							f.parentNode.insertBefore(j, f);
-						})(window, document, "script", "dataLayer", "GTM-TTJDWGW3");
+							var done = false;
+							var cues = ["pointerdown", "keydown", "touchstart", "scroll", "wheel"];
+							function boot() {
+								if (done) return;
+								done = true;
+								cues.forEach(function (e) {
+									w.removeEventListener(e, boot, true);
+								});
+								var j = d.createElement("script");
+								j.async = true;
+								j.src = "https://www.googletagmanager.com/gtm.js?id=" + i;
+								d.head.appendChild(j);
+							}
+							cues.forEach(function (e) {
+								w.addEventListener(e, boot, { capture: true, passive: true, once: true });
+							});
+							if (d.readyState === "complete") setTimeout(boot, 3000);
+							else w.addEventListener("load", function () { setTimeout(boot, 3000); });
+						})(window, document, "dataLayer", "GTM-TTJDWGW3");
 					</script>
 					<!-- End Google Tag Manager -->
 				</>

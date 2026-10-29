@@ -14,6 +14,8 @@ export const WHY_INFLUENZE_HEADING = {
 };
 
 export const WHY_INFLUENZE_BUTTON = "Learn More";
+/** What screen readers and search engines hear for the default button, which "Learn More" alone doesn't say. */
+export const WHY_INFLUENZE_BUTTON_ARIA = "Learn more about Influenze.ai features";
 
 export const WHY_INFLUENZE_STEPS: WhyInfluenzeStep[] = [
 	{
