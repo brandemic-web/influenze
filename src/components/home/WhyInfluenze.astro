@@ -4,6 +4,7 @@ import {
 	WHY_INFLUENZE_EYEBROW,
 	WHY_INFLUENZE_HEADING,
 	WHY_INFLUENZE_BUTTON,
+	WHY_INFLUENZE_BUTTON_ARIA,
 	WHY_INFLUENZE_STEPS,
 } from "../../data/whyInfluenze";
 import { getHomePage } from "../../sanity/lib/queries";
@@ -30,6 +31,9 @@ const heading = {
 const buttonLabel = why?.button?.label || WHY_INFLUENZE_BUTTON;
 const buttonHref = why?.button?.href || FEATURES_URL;
 const buttonNewTab = why?.button?.newTab ?? false;
+// Only the default label and link get the longer name; a custom one from Sanity speaks for itself.
+const buttonAria =
+	buttonLabel === WHY_INFLUENZE_BUTTON && buttonHref === FEATURES_URL ? WHY_INFLUENZE_BUTTON_ARIA : undefined;
 
 // The icon draws at 48px from lg up, so 96 covers it at 2x DPR.
 const iconSrc = (step: Parameters<typeof resolveIcon>[0]) => resolveIcon(step, stepIcons, 96);
@@ -89,7 +93,7 @@ const steps = sanitySteps.length && sanitySteps.every((step) => iconSrc(step))
 			</div>
 		</div>
 
-		<Button href={buttonHref} newTab={buttonNewTab} class="mt-6 lg:mt-12">
+		<Button href={buttonHref} newTab={buttonNewTab} ariaLabel={buttonAria} class="mt-6 lg:mt-12">
 			{buttonLabel}
 		</Button>
 	</div>
