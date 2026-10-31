@@ -82,7 +82,12 @@ const steps = sanitySteps.length && sanitySteps.every((step) => iconSrc(step))
 								<div class="flex w-75 max-w-85 lg:w-92 lg:max-w-full flex-col gap-5 text-left">
 									<div class="flex items-center gap-4">
 										<img src={iconSrc(step)} alt="" class="h-10 w-10 rounded-sm object-contain lg:h-12 lg:w-12" loading="lazy" />
-										<h3 class="text-[1.25rem] lg:text-md capitalize leading-[normal] text-white [text-box:trim-both_cap_alphabetic]">{step.title}</h3>
+										{/* The repeat's title is a <p>, so the page outline lists each step once. */}
+										{i >= steps.length ? (
+											<p class="text-[1.25rem] lg:text-md capitalize leading-[normal] text-white [text-box:trim-both_cap_alphabetic]">{step.title}</p>
+										) : (
+											<h3 class="text-[1.25rem] lg:text-md capitalize leading-[normal] text-white [text-box:trim-both_cap_alphabetic]">{step.title}</h3>
+										)}
 									</div>
 									<p class="text-[0.875rem] lg:text-[1.125rem] leading-6.5 text-[#CECECE]/70 [text-box:trim-both_cap_alphabetic]">{step.description}</p>
 								</div>

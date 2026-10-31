@@ -14,9 +14,11 @@ interface Props {
 	align?: "section" | "page" | "wide";
 	size?: "post" | "section";
 	transparent?: boolean;
+	/** The template landing pages set h3; blog posts keep h2. */
+	headingTag?: "h2" | "h3";
 }
 
-const { heading, subcopy, faqs, align = "section", size = "post", transparent = false } = Astro.props;
+const { heading, subcopy, faqs, align = "section", size = "post", transparent = false, headingTag: Heading = "h2" } = Astro.props;
 const CONTAINER = {
 	section: "px-6 lg:px-14",
 	page: "max-w-410.75 px-6 lg:px-25",
@@ -41,7 +43,7 @@ const CONTAINER = {
 				align === "section" ? "px-3" : "",
 			]}
 		>
-			<h2
+			<Heading
 				id="blog-faq-heading"
 				class:list={[
 					"max-w-54 text-md leading-[1.2] capitalize text-white lg:max-w-full",
@@ -49,7 +51,7 @@ const CONTAINER = {
 				]}
 			>
 				{heading}
-			</h2>
+			</Heading>
 			<p class="mt-2 max-w-109 text-[0.875rem] leading-[1.4] text-white/50 lg:mt-3.5 lg:text-[1rem]">
 				{subcopy}
 			</p>
