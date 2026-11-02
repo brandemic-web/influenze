@@ -21,6 +21,8 @@ const PARAMS = [
 	"gbraid",
 	"wbraid",
 	"fbclid",
+	// LinkedIn's click ID, added by Campaign Manager's enhanced conversion tracking.
+	"li_fat_id",
 	"utm_source",
 	"utm_medium",
 	"utm_campaign",
