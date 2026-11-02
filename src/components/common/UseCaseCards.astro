@@ -31,7 +31,12 @@ const useCases = home?.useCases?.cards?.length ? home.useCases.cards : USE_CASES
 						class="w-121.25 max-w-[85vw] shrink-0 rounded-sm bg-linear-to-r from-[#19123A] via-[#19123A] to-[#575757] p-px"
 					>
 						<div class="h-full rounded-sm bg-background-primary px-6 lg:px-14.5 py-6 lg:py-10">
-							<h3 class="text-sm lg:text-md text-white">{useCase.title}</h3>
+							{/* The repeat's title is a <p>, so the page outline lists each card once. */}
+							{i >= useCases.length ? (
+								<p class="text-sm lg:text-md text-white">{useCase.title}</p>
+							) : (
+								<h3 class="text-sm lg:text-md text-white">{useCase.title}</h3>
+							)}
 							<p class="mt-5 text-[0.875rem] lg:text-[1.125rem] leading-6.5 text-[#CECECE]/70 ">
 								{useCase.description}
 							</p>
