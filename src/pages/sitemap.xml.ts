@@ -4,13 +4,9 @@ import { getSiteSettings } from "../sanity/lib/queries";
 
 export const prerender = false;
 
-// Falls back to the @astrojs/sitemap-generated sitemap when no custom one is
-// uploaded. @astrojs/sitemap always wraps its output in an index file, even
-// for the single sub-sitemap this site has, so that sub-sitemap's content is
-// served here directly — /sitemap.xml must be the canonical 200, not a
-// redirect to /sitemap-index.xml. If the page count ever grows enough that
-// @astrojs/sitemap splits into more than one sub-sitemap, this needs to serve
-// /sitemap-index.xml instead.
+// A Sanity upload replaces the generated main-pages sitemap. The generated one
+// is a static file at this same path (see astro.config.mjs); wrangler.jsonc's
+// run_worker_first sends requests here first so the upload can win.
 export const GET: APIRoute = async ({ url }) => {
 	const { data: siteSettings } = await getSiteSettings();
 
@@ -23,7 +19,7 @@ export const GET: APIRoute = async ({ url }) => {
 		}
 	}
 
-	const generated = await env.ASSETS.fetch(new URL("/sitemap-0.xml", url));
+	const generated = await env.ASSETS.fetch(new URL("/sitemap.xml", url));
 	return new Response(await generated.text(), {
 		headers: { "Content-Type": "application/xml; charset=utf-8" },
 	});
