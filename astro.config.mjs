@@ -5,7 +5,7 @@ import sitemap from "@astrojs/sitemap";
 import sanity from "@sanity/astro";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
-import { writeFile } from "node:fs/promises";
+import { readFile, rename, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { loadEnv } from "vite";
 
@@ -24,7 +24,7 @@ const isPrivatePage = (/** @type {string} */ url) => /\/(studio|qc)\/?$/.test(ur
 /** @type {string[]} */
 const mainPageUrls = [];
 
-/// Writes the non-landing pages to /sitemap.xml; must run after @astrojs/sitemap.
+/// Renames the landing-page sitemap to /lp-sitemap.xml and writes the rest to /sitemap.xml; must run after @astrojs/sitemap.
 /** @returns {import("astro").AstroIntegration} */
 function mainPagesSitemap() {
   const escapeXml = (/** @type {string} */ s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -35,6 +35,11 @@ function mainPagesSitemap() {
         const urls = [...new Set(mainPageUrls)].map((u) => `<url><loc>${escapeXml(u)}</loc></url>`).join("");
         const xml = `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}</urlset>`;
         await writeFile(new URL("sitemap.xml", dir), xml);
+
+        await rename(new URL("sitemap-0.xml", dir), new URL("lp-sitemap.xml", dir));
+        const indexFile = new URL("sitemap-index.xml", dir);
+        const index = await readFile(indexFile, "utf8");
+        await writeFile(indexFile, index.replace("/sitemap-0.xml<", "/lp-sitemap.xml<"));
       },
     },
   };
@@ -50,7 +55,7 @@ export default defineConfig({
   // Live draft preview on the production site is given up for this; editors
   // did not use it.
 
-  // Two sitemaps under /sitemap-index.xml: landing pages in /sitemap-0.xml,
+  // Two sitemaps under /sitemap-index.xml: landing pages in /lp-sitemap.xml,
   // every other page in /sitemap.xml (written by mainPagesSitemap below and
   // served through src/pages/sitemap.xml.ts, which honours a Sanity upload).
 
