@@ -37,6 +37,8 @@ User-agent: Bingbot
 Allow: /
 
 Sitemap: https://influenze.ai/sitemap-index.xml
+Sitemap: https://influenze.ai/sitemap.xml
+Sitemap: https://influenze.ai/lp-sitemap.xml
 `;
 
 // No draft-mode wiring here — crawlers only ever see published content, same

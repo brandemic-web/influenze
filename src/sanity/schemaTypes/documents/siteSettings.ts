@@ -120,6 +120,8 @@ Disallow: /api/
 Disallow: /qc
 
 Sitemap: https://influenze.ai/sitemap-index.xml
+Sitemap: https://influenze.ai/sitemap.xml
+Sitemap: https://influenze.ai/lp-sitemap.xml
 `,
 		}),
 		defineField({
