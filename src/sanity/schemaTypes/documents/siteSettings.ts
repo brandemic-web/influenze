@@ -129,7 +129,7 @@ Sitemap: https://influenze.ai/sitemap-index.xml
 			fieldset: "sitemap",
 			options: { accept: ".xml" },
 			description:
-				"Served at influenze.ai/sitemap.xml. Upload a sitemap to override the automatically generated one, which lists every page except the landing pages (those stay in sitemap-0.xml, so leave them out of the upload). Leave blank to keep the generated one.",
+				"Served at influenze.ai/sitemap.xml. Upload a sitemap to override the automatically generated one, which lists every page except the landing pages (those stay in lp-sitemap.xml, so leave them out of the upload). Leave blank to keep the generated one.",
 		}),
 	],
 	preview: {
