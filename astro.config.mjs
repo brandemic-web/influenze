@@ -1,19 +1,44 @@
 // @ts-check
-import { defineConfig } from 'astro/config';
-import { loadEnv } from "vite";
-import { fileURLToPath } from "node:url";
-import tailwindcss from "@tailwindcss/vite";
+import cloudflare from "@astrojs/cloudflare";
+import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
 import sanity from "@sanity/astro";
-
-import react from "@astrojs/react";
-
-import cloudflare from "@astrojs/cloudflare";
+import tailwindcss from "@tailwindcss/vite";
+import { defineConfig } from "astro/config";
+import { writeFile } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
+import { loadEnv } from "vite";
 
 // astro.config.mjs runs before Astro loads .env into process.env, so the
 // Sanity project ID has to be read explicitly here.
 const env = loadEnv(process.env.NODE_ENV ?? "development", process.cwd(), "PUBLIC_");
 const siteOrigin = env.PUBLIC_SITE_ORIGIN ?? "http://localhost:1234";
+
+/// The SEO landing pages: one page per competitor, audience, feature, platform and pricing guide.
+const isLandingPage = (/** @type {string} */ url) =>
+  /\/(alternatives|comparison|features|icp|platforms|pricing)\/[^/]+\/?$/.test(new URL(url).pathname);
+/// Neither is a public page: /qc 404s on production, /studio is the CMS.
+const isPrivatePage = (/** @type {string} */ url) => /\/(studio|qc)\/?$/.test(url);
+
+/// Filled by the sitemap filter, so these URLs match @astrojs/sitemap's exactly.
+/** @type {string[]} */
+const mainPageUrls = [];
+
+/// Writes the non-landing pages to /sitemap.xml; must run after @astrojs/sitemap.
+/** @returns {import("astro").AstroIntegration} */
+function mainPagesSitemap() {
+  const escapeXml = (/** @type {string} */ s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  return {
+    name: "main-pages-sitemap",
+    hooks: {
+      "astro:build:done": async ({ dir }) => {
+        const urls = [...new Set(mainPageUrls)].map((u) => `<url><loc>${escapeXml(u)}</loc></url>`).join("");
+        const xml = `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}</urlset>`;
+        await writeFile(new URL("sitemap.xml", dir), xml);
+      },
+    },
+  };
+}
 
 // https://astro.build/config
 export default defineConfig({
@@ -25,13 +50,18 @@ export default defineConfig({
   // Live draft preview on the production site is given up for this; editors
   // did not use it.
 
-  // /sitemap.xml is now a route (src/pages/sitemap.xml.ts): it checks Site
-  // Settings for a custom upload before falling back to the auto-generated one.
+  // Two sitemaps under /sitemap-index.xml: landing pages in /sitemap-0.xml,
+  // every other page in /sitemap.xml (written by mainPagesSitemap below and
+  // served through src/pages/sitemap.xml.ts, which honours a Sanity upload).
 
   integrations: [sitemap({
-      // Neither is a public page: /qc 404s on production, /studio is the CMS.
-      filter: (page) => !/\/(studio|qc)\/?$/.test(page),
-  }), sanity({
+      filter: (page) => {
+          if (isLandingPage(page)) return true;
+          if (!isPrivatePage(page)) mainPageUrls.push(page);
+          return false;
+      },
+      customSitemaps: ["https://influenze.ai/sitemap.xml"],
+  }), mainPagesSitemap(), sanity({
       projectId: env.PUBLIC_SANITY_PROJECT_ID,
       dataset: env.PUBLIC_SANITY_DATASET ?? "production",
       // Studio is embedded at /studio (see sanity.config.ts) rather than
