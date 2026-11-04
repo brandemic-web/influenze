@@ -162,7 +162,7 @@ export default defineType({
 				direction: "horizontal",
 			},
 			description:
-				"How many “Choose …” cards the hero shows: Influenze.ai’s plus one per competitor. At 3 or 4, fill in a card for each competitor below.",
+				"Influenze.ai plus how many competitors. At 3 or 4, add each competitor under “Competitors” below: its card, and its column in the feature and pricing tables.",
 		}),
 		{ ...headingField("chooseCompetitorHeading", "content"), hidden: isMultiWay },
 		{ ...headingField("chooseCompetitorNote", "content"), hidden: isMultiWay },
@@ -176,17 +176,17 @@ export default defineType({
 			description: "A line break in a point is a line break on the page.",
 		}),
 		defineField({
-			name: "competitorCards",
-			title: "Competitor cards",
+			name: "competitors",
+			title: "Competitors",
 			type: "array",
 			group: "content",
 			hidden: (ctx) => !isMultiWay(ctx),
 			description:
-				"One card per competitor, in the order they should appear after Influenze.ai’s. Until these are filled in, the page keeps the single two-card layout.",
+				"One entry per competitor, in the order they appear after Influenze.ai: in the hero cards and as table columns. Each table switches to one column per competitor once every competitor’s column for it has text; until then it shows the single “their column”.",
 			of: [
 				defineArrayMember({
-					name: "competitorCard",
-					title: "Competitor card",
+					name: "comparedCompetitor",
+					title: "Competitor",
 					type: "object",
 					fields: [
 						defineField({
@@ -195,6 +195,12 @@ export default defineType({
 							type: "string",
 							description: 'Just the name, e.g. "Qoruz".',
 							validation: (Rule) => Rule.required(),
+						}),
+						defineField({
+							name: "logo",
+							title: "Logo (optional)",
+							type: "image",
+							description: "Shown in place of the name at the top of its table columns.",
 						}),
 						defineField({
 							name: "heading",
@@ -216,6 +222,20 @@ export default defineType({
 							type: "string",
 							placeholder: "Verified on qoruz.com, Oct 2026",
 						}),
+						defineField({
+							name: "features",
+							title: "Feature table — this competitor’s column",
+							type: "object",
+							options: { collapsible: true, collapsed: true },
+							fields: cellFields(FEATURE_ROWS),
+						}),
+						defineField({
+							name: "pricing",
+							title: "Pricing table — this competitor’s column",
+							type: "object",
+							options: { collapsible: true, collapsed: true },
+							fields: cellFields(PRICING_ROWS),
+						}),
 					],
 					preview: {
 						select: { title: "name", points: "points" },
@@ -232,7 +252,7 @@ export default defineType({
 					const want = count - 1;
 					const have = Array.isArray(cards) ? cards.length : 0;
 					if (count < 3 || have === want) return true;
-					return `${count} companies means ${want} competitor cards — there ${have === 1 ? "is" : "are"} ${have}.`;
+					return `${count} companies means ${want} competitors here — there ${have === 1 ? "is" : "are"} ${have}.`;
 				}).warning(),
 		}),
 
@@ -243,6 +263,7 @@ export default defineType({
 			title: "Feature table — their column",
 			type: "object",
 			group: "features",
+			description: "On a 3- or 4-company page, used only until every competitor’s own feature column has text.",
 			options: { collapsible: false },
 			fields: cellFields(FEATURE_ROWS),
 		}),
@@ -254,6 +275,7 @@ export default defineType({
 			title: "Pricing table — their column",
 			type: "object",
 			group: "pricing",
+			description: "On a 3- or 4-company page, used only until every competitor’s own pricing column has text.",
 			options: { collapsible: false },
 			fields: cellFields(PRICING_ROWS),
 		}),

@@ -401,7 +401,16 @@ export const comparePagesQuery = groq`*[_type == "comparePage" && defined(slug.c
 	chooseInfluenze,
 	chooseCompetitor,
 	companyCount,
-	competitorCards[]{ name, heading, points, note },
+	competitors[]{
+		name,
+		logo,
+		"logoSize": logo.asset->metadata.dimensions { width, height },
+		heading,
+		points,
+		note,
+		features,
+		pricing,
+	},
 	features,
 	pricing,
 	influenzeFeatures,
@@ -419,6 +428,18 @@ export interface CompareCellDoc {
 	mark?: boolean;
 }
 
+/** One competitor on a three- or four-way compare page: its card and its table columns. */
+export interface ComparedCompetitorDoc {
+	name?: string;
+	logo?: Image;
+	logoSize?: { width?: number; height?: number };
+	heading?: string;
+	points?: string[];
+	note?: string;
+	features?: Record<string, CompareCellDoc | undefined>;
+	pricing?: Record<string, CompareCellDoc | undefined>;
+}
+
 export interface ComparePageDoc {
 	slug: string;
 	competitorName?: string;
@@ -430,7 +451,7 @@ export interface ComparePageDoc {
 	chooseCompetitor?: string[];
 	/** 2, 3 or 4: Influenze.ai plus this many minus one competitor cards. */
 	companyCount?: number;
-	competitorCards?: { name?: string; heading?: string; points?: string[]; note?: string }[];
+	competitors?: ComparedCompetitorDoc[];
 	features?: Record<string, CompareCellDoc | undefined>;
 	pricing?: Record<string, CompareCellDoc | undefined>;
 	influenzeFeatures?: Record<string, CompareCellDoc | undefined>;

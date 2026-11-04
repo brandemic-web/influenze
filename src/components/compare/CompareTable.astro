@@ -1,6 +1,7 @@
 ---
 /**
- * A two-way table — label, raised Influenze column, competitor — on the same grid
+ * A comparison table — label, raised Influenze column, then one column per competitor
+ * (one, or two to three on a multi-way compare page) — on the same grid
  * technique as common/ComparisonTable.astro (see its notes on the raised column,
  * `display: contents` rows and the sideways scroll below `lg`). Used for the compare
  * page's feature and pricing tables and the alternative page's "find the right fit";
@@ -11,6 +12,7 @@ import CreditChips from "./CreditChips.astro";
 import TwoTone from "./TwoTone.astro";
 import { plainText, type CompareRow, type CompetitorCell } from "../../data/compare";
 import type { CompetitorLogo } from "../../lib/competitor-logo";
+import type { TableColumn } from "../../lib/compare-source";
 
 interface Props {
 	/** Anchor and rail id; also names the heading `<id>-heading`. */
@@ -30,6 +32,8 @@ interface Props {
 	competitorTone?: "muted" | "bright";
 	/** Replaces the competitor name in the header; the name returns if it fails to load. */
 	competitorLogo?: CompetitorLogo;
+	/** Several competitor columns; replaces competitorName, competitorLogo and cells. */
+	columns?: TableColumn[];
 }
 
 const VARIANTS = {
@@ -132,10 +136,30 @@ const VARIANTS = {
 	},
 };
 
-const { id, heading, subcopy, competitorName, rows, cells, variant, background, cornerLabel, competitorTone = "muted", competitorLogo } = Astro.props;
+const { id, heading, subcopy, competitorName, rows, cells, variant, background, cornerLabel, competitorTone = "muted", competitorLogo, columns } = Astro.props;
 const v = VARIANTS[variant];
 /** Before/after draws only two columns: the label and Influenze's, with "With" over the logo. */
 const twoColumn = variant === "beforeAfter";
+const others: TableColumn[] = twoColumn ? [] : (columns ?? [{ name: competitorName, logo: competitorLogo, cells }]);
+
+/*
+ * Two or three competitors: the design's single-competitor widths don't apply, so the
+ * columns are set here, the label narrowing as columns are added and the page widening
+ * up to the 1728 frame's edges. Each competitor takes the same share.
+ */
+const MULTI = {
+	feature: { 2: [330, 470, 420], 3: [290, 420, 360] },
+	pricing: { 2: [300, 560, 400], 3: [270, 500, 350] },
+} as const;
+const multi = others.length > 1 && (variant === "feature" || variant === "pricing")
+	? MULTI[variant][others.length as 2 | 3]
+	: undefined;
+// Below lg every column is 2/5 of the phone's width and the row scrolls sideways, as before.
+const phoneCol = "calc((100vw - 3rem) / 2.5)";
+const gridStyle = multi
+	? `--cols-sm: ${phoneCol} minmax(${phoneCol}, min-content) repeat(${others.length}, ${phoneCol}); --cols-lg: ${multi[0]}fr ${multi[1]}fr repeat(${others.length}, ${multi[2]}fr)`
+	: undefined;
+const names = others.map((c) => c.name).join(", ").replace(/, ([^,]*)$/, " and $1");
 // `pre-line` honours the line breaks written into the data, so cells wrap where the design does.
 const cellText = "text-[0.75rem] capitalize leading-4.5 whitespace-pre-line lg:text-xs lg:leading-5";
 // A lead-in sentence the design sets larger and in sentence case.
@@ -177,11 +201,15 @@ const leadText = "text-[0.8125rem] leading-5 whitespace-pre-line lg:text-[1.125r
 				// Two columns fit a phone, so only the three-column tables scroll. 
 				twoColumn
 					? "grid-cols-[1fr_1fr_1rem]"
-					: "w-max grid-cols-[calc((100vw-3rem)/2.5)_minmax(calc((100vw-3rem)/2.5),min-content)_calc((100vw-3rem)/2.5)]",
-				v.grid,
+					: multi
+						? "w-max grid-cols-(--cols-sm) lg:max-w-[102rem] lg:grid-cols-(--cols-lg)"
+						: "w-max grid-cols-[calc((100vw-3rem)/2.5)_minmax(calc((100vw-3rem)/2.5),min-content)_calc((100vw-3rem)/2.5)]",
+				!multi && v.grid,
 			]}
+			style={gridStyle}
 			role="table"
-			aria-label={`Influenze.ai compared with ${competitorName}`}
+			aria-label={`Influenze.ai compared with ${twoColumn ? competitorName : names}`}
+			data-compare-columns={others.length || undefined}
 		>
 			{/*
 				The table's own panel, as a sibling rather than styles on the grid: a backdrop
@@ -189,7 +217,7 @@ const leadText = "text-[0.8125rem] leading-5 whitespace-pre-line lg:text-[1.125r
 				column's blur could not reach the panel's border and that line showed through.
 			*/}
 			<div
-				class="col-span-3 col-start-1 row-start-1 rounded-[1.25rem] border border-white/15 bg-surface-dark/40 backdrop-blur-md"
+				class="col-span-full row-start-1 rounded-[1.25rem] border border-white/15 bg-surface-dark/40 backdrop-blur-md"
 				style={`grid-row-end: ${rows.length + 2}`}
 				aria-hidden="true"
 			>
@@ -228,17 +256,18 @@ const leadText = "text-[0.8125rem] leading-5 whitespace-pre-line lg:text-[1.125r
 						/>
 					</span>
 				</div>
-				{!twoColumn && (
+				{others.map((other, c) => (
 					<div
-						class:list={["relative z-2 col-start-3 row-start-1 flex items-center justify-center px-4 py-8", v.headerPad]}
+						class:list={["relative z-2 row-start-1 flex items-center justify-center px-4 py-8 text-center", v.headerPad]}
+						style={`grid-column: ${c + 3}`}
 						role="columnheader"
 					>
-						{competitorLogo && (
+						{other.logo && (
 							<img
-								src={competitorLogo.src}
-								alt={competitorName}
-								width={competitorLogo.w}
-								height={competitorLogo.h}
+								src={other.logo.src}
+								alt={other.name}
+								width={other.logo.w}
+								height={other.logo.h}
 								class="h-6 max-w-full object-contain lg:h-10.75"
 								loading="lazy"
 								data-compare-logo
@@ -246,17 +275,16 @@ const leadText = "text-[0.8125rem] leading-5 whitespace-pre-line lg:text-[1.125r
 						)}
 						{/* Shown directly with no logo; hidden until the logo fails to load otherwise. */}
 						<span
-							class:list={["text-[1.125rem] font-medium text-white lg:text-md lg:leading-7.5", competitorLogo && "hidden"]}
-							data-compare-logo-name={competitorLogo ? "" : undefined}
-						>{competitorName}</span>
+							class:list={["text-[1.125rem] font-medium text-white lg:text-md lg:leading-7.5", other.logo && "hidden"]}
+							data-compare-logo-name={other.logo ? "" : undefined}
+						>{other.name}</span>
 					</div>
-				)}
+				))}
 			</div>
 
 			{
 				rows.map((row, r) => {
 					const { influenze } = row;
-					const theirs = cells[row.id];
 					// The header divider and the rest can differ in strength, as drawn.
 					const line = ["border-t", r === 0 ? v.headerLine : v.rowLine];
 					return (
@@ -303,13 +331,16 @@ const leadText = "text-[0.8125rem] leading-5 whitespace-pre-line lg:text-[1.125r
 								// The panel's right edge, past the raised column: dividers stop at the column, as drawn.
 								<div class="relative z-2" style={`grid-column: 3; grid-row: ${r + 2}`} aria-hidden="true" />
 							) : (
+							others.map((other, c) => {
+							const theirs = other.cells[row.id];
+							return (
 							<div
 								class:list={[
 									"relative z-2 flex flex-col items-center justify-center gap-1.5 px-3 py-5 text-center lg:px-5",
 									v.rowPad,
 									...line,
 								]}
-								style={`grid-column: 3; grid-row: ${r + 2}`}
+								style={`grid-column: ${c + 3}; grid-row: ${r + 2}`}
 								role="cell"
 							>
 								{theirs?.mark && (
@@ -330,6 +361,8 @@ const leadText = "text-[0.8125rem] leading-5 whitespace-pre-line lg:text-[1.125r
 									<span class:list={[cellText, "max-w-87", competitorTone === "bright" ? "text-white" : "text-white/60"]}>{theirs.text}</span>
 								)}
 							</div>
+							);
+							})
 							)}
 						</div>
 					);
