@@ -400,6 +400,8 @@ export const comparePagesQuery = groq`*[_type == "comparePage" && defined(slug.c
 	intro,
 	chooseInfluenze,
 	chooseCompetitor,
+	companyCount,
+	competitorCards[]{ name, heading, points, note },
 	features,
 	pricing,
 	influenzeFeatures,
@@ -426,6 +428,9 @@ export interface ComparePageDoc {
 	intro?: string;
 	chooseInfluenze?: string[];
 	chooseCompetitor?: string[];
+	/** 2, 3 or 4: Influenze.ai plus this many minus one competitor cards. */
+	companyCount?: number;
+	competitorCards?: { name?: string; heading?: string; points?: string[]; note?: string }[];
 	features?: Record<string, CompareCellDoc | undefined>;
 	pricing?: Record<string, CompareCellDoc | undefined>;
 	influenzeFeatures?: Record<string, CompareCellDoc | undefined>;

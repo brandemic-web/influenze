@@ -1,7 +1,7 @@
 ---
 /**
  * Compare-page hero: the "vs" title, the framed question with its three floating
- * pills, the intro and CTAs, then the two "Choose …" cards. Below `lg` the pills
+ * pills, the intro and CTAs, then the "Choose …" cards: Influenze.ai's and one per competitor. Below `lg` the pills
  * drop out of their absolute positions into a centred row under the frame.
  */
 import Button from "../common/Button.astro";
@@ -24,6 +24,17 @@ const { copy } = competitor;
 // The brand name is green wherever the intro mentions it, as drawn.
 const BRAND = "Influenze.ai";
 const introParts = competitor.intro.split(BRAND);
+
+// Influenze.ai's card plus one per competitor: 2, 3 or 4 across. Wider pages give the
+// extra columns room, so each card keeps roughly the two-way card's measure.
+const columns = 1 + competitor.chooseCards.length;
+const GRID = {
+	2: "max-w-296 lg:grid-cols-2 lg:gap-10.5",
+	3: "max-w-340 lg:grid-cols-3 lg:gap-6",
+	4: "max-w-370 md:grid-cols-2 lg:grid-cols-4 lg:gap-5",
+}[columns as 2 | 3 | 4];
+const cardPad = columns === 2 ? "lg:py-11 lg:pr-8 lg:pl-11" : "lg:px-8 lg:py-10";
+const cardHeading = columns === 4 ? "text-[1.25rem] leading-7 lg:text-[1.375rem] lg:leading-8" : "text-[1.25rem] leading-7 lg:text-md";
 ---
 
 <section class="relative overflow-hidden" aria-labelledby="compare-title">
@@ -82,12 +93,13 @@ const introParts = competitor.intro.split(BRAND);
 		</div>
 
 		<div
-			class="mt-14 grid w-full max-w-296 gap-4 text-left lg:mt-22.75 lg:grid-cols-2 lg:gap-10.5"
+			class:list={["mt-14 grid w-full gap-4 text-left lg:mt-22.75", GRID]}
 			data-reveal
 			data-reveal-stagger="0.15"
+			data-choose-columns={columns}
 		>
-			<article class="rounded-[0.9375rem] border border-white/15 bg-surface-dark/70 px-6 py-7 backdrop-blur-md lg:py-11 lg:pr-8 lg:pl-11" data-reveal-item>
-				<h2 class="text-[1.25rem] leading-7 text-white lg:text-md">
+			<article class:list={["rounded-[0.9375rem] border border-white/15 bg-surface-dark/70 px-6 py-7 backdrop-blur-md", cardPad]} data-reveal-item>
+				<h2 class:list={["text-white", cardHeading]}>
 					<TwoTone text={copy.chooseInfluenzeHeading} />
 				</h2>
 				<ul class="mt-6 flex flex-col gap-2 lg:mt-8">
@@ -102,24 +114,22 @@ const introParts = competitor.intro.split(BRAND);
 				</ul>
 			</article>
 
-			<article class="rounded-[0.9375rem] border border-white/15 bg-surface-dark/70 px-6 py-7 backdrop-blur-md lg:py-11 lg:pr-8 lg:pl-11" data-reveal-item>
-				<h2 class="text-[1.25rem] leading-7 text-white lg:text-md">
-					{plainText(copy.chooseCompetitorHeading)}
-				</h2>
-				<ul class="mt-6 flex flex-col gap-2 lg:mt-8">
-					{
-						competitor.chooseCompetitor.map((point) => (
-							<li class="flex items-start gap-3 text-[0.9375rem] leading-7 text-white/50 lg:text-xs">
-								<img src={infoCircle.src} alt="" width={infoCircle.width} height={infoCircle.height} class="mt-1 size-5 shrink-0" />
-								<span class="whitespace-pre-line">{point}</span>
-							</li>
-						))
-					}
-				</ul>
-				{copy.chooseCompetitorNote && (
-					<p class="mt-5 pl-8 text-[0.8125rem] leading-5 text-white/40 lg:text-[0.875rem]">{plainText(copy.chooseCompetitorNote)}</p>
-				)}
-			</article>
+			{
+				competitor.chooseCards.map((card) => (
+					<article class:list={["rounded-[0.9375rem] border border-white/15 bg-surface-dark/70 px-6 py-7 backdrop-blur-md", cardPad]} data-reveal-item>
+						<h2 class:list={["text-white", cardHeading]}>{plainText(card.heading)}</h2>
+						<ul class="mt-6 flex flex-col gap-2 lg:mt-8">
+							{card.points.map((point) => (
+								<li class="flex items-start gap-3 text-[0.9375rem] leading-7 text-white/50 lg:text-xs">
+									<img src={infoCircle.src} alt="" width={infoCircle.width} height={infoCircle.height} class="mt-1 size-5 shrink-0" />
+									<span class="whitespace-pre-line">{point}</span>
+								</li>
+							))}
+						</ul>
+						{card.note && <p class="mt-5 pl-8 text-[0.8125rem] leading-5 text-white/40 lg:text-[0.875rem]">{plainText(card.note)}</p>}
+					</article>
+				))
+			}
 		</div>
 	</div>
 </section>

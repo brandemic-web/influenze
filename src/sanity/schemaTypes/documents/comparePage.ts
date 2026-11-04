@@ -59,6 +59,10 @@ const template = () => ({
 	workflow: Object.fromEntries(WORKFLOW_STEPS.map((step) => [step.id, ""])),
 });
 
+/** Three- and four-way pages swap the single competitor card for one card each. */
+const isMultiWay = ({ document }: { document?: Record<string, unknown> }) =>
+	((document?.companyCount as number | undefined) ?? 2) >= 3;
+
 export default defineType({
 	name: "comparePage",
 	title: "Compare Page",
@@ -142,15 +146,94 @@ export default defineType({
 			group: "content",
 			of: [defineArrayMember({ type: "string" })],
 		}),
-		headingField("chooseCompetitorHeading", "content"),
-		headingField("chooseCompetitorNote", "content"),
+		defineField({
+			name: "companyCount",
+			title: "Companies compared",
+			type: "number",
+			group: "content",
+			initialValue: 2,
+			options: {
+				list: [
+					{ title: "2 — Influenze.ai vs one", value: 2 },
+					{ title: "3", value: 3 },
+					{ title: "4", value: 4 },
+				],
+				layout: "radio",
+				direction: "horizontal",
+			},
+			description:
+				"How many “Choose …” cards the hero shows: Influenze.ai’s plus one per competitor. At 3 or 4, fill in a card for each competitor below.",
+		}),
+		{ ...headingField("chooseCompetitorHeading", "content"), hidden: isMultiWay },
+		{ ...headingField("chooseCompetitorNote", "content"), hidden: isMultiWay },
 		defineField({
 			name: "chooseCompetitor",
 			title: "Choose <competitor> if..",
 			type: "array",
 			group: "content",
+			hidden: isMultiWay,
 			of: [defineArrayMember({ type: "text", rows: 2 })],
 			description: "A line break in a point is a line break on the page.",
+		}),
+		defineField({
+			name: "competitorCards",
+			title: "Competitor cards",
+			type: "array",
+			group: "content",
+			hidden: (ctx) => !isMultiWay(ctx),
+			description:
+				"One card per competitor, in the order they should appear after Influenze.ai’s. Until these are filled in, the page keeps the single two-card layout.",
+			of: [
+				defineArrayMember({
+					name: "competitorCard",
+					title: "Competitor card",
+					type: "object",
+					fields: [
+						defineField({
+							name: "name",
+							title: "Competitor name",
+							type: "string",
+							description: 'Just the name, e.g. "Qoruz".',
+							validation: (Rule) => Rule.required(),
+						}),
+						defineField({
+							name: "heading",
+							title: "Heading",
+							type: "string",
+							placeholder: "Choose {name} if..",
+							description: "Leave empty for “Choose <name> if..”.",
+						}),
+						defineField({
+							name: "points",
+							title: "Points",
+							type: "array",
+							of: [defineArrayMember({ type: "text", rows: 2 })],
+							description: "A line break in a point is a line break on the page.",
+						}),
+						defineField({
+							name: "note",
+							title: "Small print under the points",
+							type: "string",
+							placeholder: "Verified on qoruz.com, Oct 2026",
+						}),
+					],
+					preview: {
+						select: { title: "name", points: "points" },
+						prepare: ({ title, points }) => ({
+							title: title || "Untitled competitor",
+							subtitle: `${Array.isArray(points) ? points.length : 0} points`,
+						}),
+					},
+				}),
+			],
+			validation: (Rule) =>
+				Rule.custom((cards, ctx) => {
+					const count = (ctx.document?.companyCount as number | undefined) ?? 2;
+					const want = count - 1;
+					const have = Array.isArray(cards) ? cards.length : 0;
+					if (count < 3 || have === want) return true;
+					return `${count} companies means ${want} competitor cards — there ${have === 1 ? "is" : "are"} ${have}.`;
+				}).warning(),
 		}),
 
 		headingField("featureHeading", "features"),

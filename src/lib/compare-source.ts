@@ -9,6 +9,7 @@
 import { COMPARE_OVERRIDES } from "../data/compare/overrides";
 import {
 	COMPETITORS,
+	SECTION_COPY_FIELDS,
 	FEATURE_ROWS,
 	PRICING_ROWS,
 	TBC,
@@ -24,6 +25,7 @@ import {
 	type CompetitorCell,
 	type CompareRow,
 } from "../data/compare";
+import type { ChooseCard } from "../data/compare/types";
 import type { Faq } from "../data/faqs";
 import { resolveCompetitorLogo, type CompetitorLogo } from "./competitor-logo";
 import { getComparePages, type CompareCellDoc, type ComparePageDoc, type ScriptsDoc, type SeoDoc } from "../sanity/lib/queries";
@@ -38,10 +40,14 @@ export interface ResolvedCompetitor extends Competitor {
 	pricingRows: CompareRow<PricingRowId>[];
 	/** Optional upload for the feature table's header; the name is shown without one. */
 	competitorLogo?: CompetitorLogo;
+	/** The "Choose … if.." cards beside Influenze.ai's: one on a two-way page, two or three on a multi-way one. */
+	chooseCards: ResolvedChooseCard[];
 	/** Sanity's SEO overrides — canonical URL, noindex, custom JSON-LD. */
 	seoOverrides?: SeoDoc;
 	scripts?: ScriptsDoc;
 }
+
+export type ResolvedChooseCard = Required<Omit<ChooseCard, "note">> & Pick<ChooseCard, "note">;
 
 const has = (text: string | undefined): text is string => Boolean(text?.trim());
 
@@ -74,6 +80,9 @@ function fromSanity(doc: ComparePageDoc, code: Competitor | undefined): Resolved
 		return kept.length ? kept : (fallback ?? []);
 	};
 	const faqs = (doc.faqs ?? []).filter((f): f is Faq => has(f.question) && has(f.answer));
+	// A Sanity heading wins, then the code file's, then the default.
+	const copy = resolveSectionCopy({ ...code?.headings, ...stripBlank(doc.headings), ...pin?.headings }, name);
+	const chooseCompetitor = pin?.chooseCompetitor ?? list(doc.chooseCompetitor, code?.chooseCompetitor);
 
 	return {
 		slug: pin?.slug ?? doc.slug,
@@ -88,7 +97,13 @@ function fromSanity(doc: ComparePageDoc, code: Competitor | undefined): Resolved
 		},
 		intro,
 		chooseInfluenze: list(doc.chooseInfluenze, code?.chooseInfluenze),
-		chooseCompetitor: pin?.chooseCompetitor ?? list(doc.chooseCompetitor, code?.chooseCompetitor),
+		chooseCompetitor,
+		chooseCards: chooseCards(doc.companyCount, doc.competitorCards, {
+			name,
+			heading: copy.chooseCompetitorHeading,
+			points: chooseCompetitor,
+			note: copy.chooseCompetitorNote || undefined,
+		}),
 		features: cells(FEATURE_ROWS, doc.features, code?.features),
 		pricing: cells(PRICING_ROWS, doc.pricing, code?.pricing),
 		workflow: Object.fromEntries(
@@ -98,8 +113,7 @@ function fromSanity(doc: ComparePageDoc, code: Competitor | undefined): Resolved
 			}),
 		) as Competitor["workflow"],
 		faqs: faqs.length ? faqs : code?.faqs,
-		// A Sanity heading wins, then the code file's, then the default.
-		copy: resolveSectionCopy({ ...code?.headings, ...stripBlank(doc.headings), ...pin?.headings }, name),
+		copy,
 		scenarioCards: resolveScenarios({ ...code?.scenarios, ...doc.scenarios }, name),
 		featureRows: resolveInfluenzeRows(FEATURE_ROWS, doc.influenzeFeatures),
 		pricingRows: resolveInfluenzeRows(PRICING_ROWS, doc.influenzePricing),
@@ -109,6 +123,29 @@ function fromSanity(doc: ComparePageDoc, code: Competitor | undefined): Resolved
 	};
 }
 
+const CHOOSE_HEADING = SECTION_COPY_FIELDS.find((f) => f.key === "chooseCompetitorHeading")!.default;
+
+/**
+ * The competitor cards. A page set to 3 or 4 companies with its cards filled in gets one
+ * card each (at most three); otherwise the single two-way card, so a page switched over
+ * before its cards are written keeps rendering as it did.
+ */
+function chooseCards(
+	count: number | undefined,
+	cards: ComparePageDoc["competitorCards"],
+	single: ResolvedChooseCard,
+): ResolvedChooseCard[] {
+	const filled = (cards ?? [])
+		.filter((c): c is ChooseCard => has(c?.name))
+		.map((c) => ({
+			name: c.name.trim(),
+			heading: has(c.heading) ? c.heading : CHOOSE_HEADING.replaceAll("{name}", c.name.trim()),
+			points: (c.points ?? []).filter(has),
+			note: has(c.note) ? c.note : undefined,
+		}));
+	return (count ?? 2) >= 3 && filled.length ? filled.slice(0, 3) : [single];
+}
+
 /** Every compare page, Sanity's first, then code-only competitors. Drafts included. */
 export async function getCompetitors(perspectiveCookie?: string): Promise<ResolvedCompetitor[]> {
 	const { data } = await getComparePages(perspectiveCookie);
@@ -116,13 +153,19 @@ export async function getCompetitors(perspectiveCookie?: string): Promise<Resolv
 	const bySlug = new Map(COMPETITORS.map((c) => [c.slug, c]));
 	const fromCms = docs.map((doc) => fromSanity(doc, bySlug.get(doc.slug)));
 	const cmsSlugs = new Set(fromCms.map((c) => c.slug));
-	const codeOnly = COMPETITORS.filter((c) => !cmsSlugs.has(c.slug)).map((c) => ({
-		...c,
-		copy: resolveSectionCopy(c.headings, c.name),
-		scenarioCards: resolveScenarios(c.scenarios, c.name),
-		featureRows: [...FEATURE_ROWS],
-		pricingRows: [...PRICING_ROWS],
-	}));
+	const codeOnly = COMPETITORS.filter((c) => !cmsSlugs.has(c.slug)).map((c) => {
+		const copy = resolveSectionCopy(c.headings, c.name);
+		return {
+			...c,
+			copy,
+			chooseCards: [
+				{ name: c.name, heading: copy.chooseCompetitorHeading, points: c.chooseCompetitor, note: copy.chooseCompetitorNote || undefined },
+			],
+			scenarioCards: resolveScenarios(c.scenarios, c.name),
+			featureRows: [...FEATURE_ROWS],
+			pricingRows: [...PRICING_ROWS],
+		};
+	});
 	return [...fromCms, ...codeOnly];
 }
 
