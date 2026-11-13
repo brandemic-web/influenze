@@ -1,0 +1,82 @@
+---
+/**
+ * /in/<hub>/<page>/: one Top creators list page, built from the backend
+ * snapshot. Pages that failed the quality gate (fewer creators than wanted)
+ * are built but marked noindex, so the SEO team can see them.
+ *
+ * First cut: noindex everywhere, plain markup, no design. The data pipeline
+ * is being checked end to end before the pages get designed and opened to
+ * Google.
+ */
+import type { GetStaticPaths } from "astro";
+import Layout from "../../../layouts/Layout.astro";
+import { TOP_CREATORS_COPY as COPY, formatCount, formatDate, signupUrl } from "../../../data/top-creators";
+import { getSnapshot, splitPath } from "../../../lib/top-creators";
+
+export const prerender = true;
+
+export const getStaticPaths = (async () => {
+	const snapshot = await getSnapshot();
+	return snapshot.pages.map((page) => {
+		const { hub, page: slug } = splitPath(page.path);
+		return { params: { hub, page: slug } };
+	});
+}) satisfies GetStaticPaths;
+
+const snapshot = await getSnapshot();
+const page = snapshot.pages.find((p) => {
+	const { hub, page: slug } = splitPath(p.path);
+	return hub === Astro.params.hub && slug === Astro.params.page;
+});
+if (!page) return Astro.rewrite("/404");
+
+const followersLabel = COPY.followersLabel[page.plat];
+const platformName = COPY.platformNames[page.plat];
+const location = (c: (typeof page.creators)[number]) =>
+	[c.location?.city, c.location?.state].filter(Boolean).join(", ") || c.location?.country || "";
+---
+
+<Layout title={page.title} description={page.meta} noindex hideCta>
+	<main>
+		<p><em>{COPY.draft}</em></p>
+		<h1>{page.heading}</h1>
+		<p>{page.meta}</p>
+		<p>
+			{COPY.ranked}
+			{page.stats.total_results != null && ` ${formatCount(page.stats.total_results)} ${COPY.totalMatches} ${platformName}.`}
+			{page.stats.average_engagement != null && ` Average engagement of this list: ${page.stats.average_engagement}%.`}
+		</p>
+		{!page.passed && <p><strong>Quality gate:</strong> {page.fail_reason}.</p>}
+
+		<table>
+			<thead>
+				<tr>
+					{COPY.columns.map((column, i) => <th>{i === 3 ? followersLabel : column}</th>)}
+				</tr>
+			</thead>
+			<tbody>
+				{page.creators.map((c) => (
+					<tr>
+						<td>{c.rank}</td>
+						<td>{c.photo_url && <img src={c.photo_url} alt="" width="48" height="48" loading="lazy" />}</td>
+						<td>
+							{c.url ? <a href={c.url} rel="nofollow noopener" target="_blank">@{c.handle}</a> : `@${c.handle}`}
+							{c.name && ` ${c.name}`}
+							{c.is_verified && " ✓"}
+						</td>
+						<td>{formatCount(c.followers)}</td>
+						<td>{c.engagement_rate != null ? `${c.engagement_rate}%` : "–"}</td>
+						<td>{COPY.tierNames[c.tier]}</td>
+						<td>{location(c)}</td>
+					</tr>
+				))}
+			</tbody>
+		</table>
+
+		<p>
+			{COPY.cta}: <a href={signupUrl(page.path)}>{COPY.ctaButton}</a>
+		</p>
+		<p>{COPY.refreshed} {formatDate(page.refreshed_at)}.</p>
+		<p><a href={`/${splitPath(page.path).country}/${page.hub}/`}>All {platformName} lists</a></p>
+	</main>
+</Layout>
