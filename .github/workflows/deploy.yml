@@ -44,6 +44,9 @@ jobs:
           PUBLIC_SANITY_DATASET: ${{ secrets.PUBLIC_SANITY_DATASET }}
           SANITY_API_READ_TOKEN: ${{ secrets.SANITY_API_READ_TOKEN }}
           PUBLIC_SITE_ORIGIN: https://influenze.ai
+          # The backend's public Top creators snapshot (…/website/top-creators/snapshot.json).
+          # Unset or unreachable, the build simply has no Top creators pages.
+          TOP_CREATORS_SNAPSHOT_URL: ${{ secrets.TOP_CREATORS_SNAPSHOT_URL }}
         run: npm run build
 
       - name: Deploy to production
