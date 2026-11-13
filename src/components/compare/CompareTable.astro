@@ -1,6 +1,7 @@
 ---
 /**
- * A two-way table — label, raised Influenze column, competitor — on the same grid
+ * A two-way table — label, raised Influenze column, competitor (plus `moreColumns` for a
+ * three-way one) — on the same grid
  * technique as common/ComparisonTable.astro (see its notes on the raised column,
  * `display: contents` rows and the sideways scroll below `lg`). Used for the compare
  * page's feature and pricing tables and the alternative page's "find the right fit";
@@ -30,6 +31,8 @@ interface Props {
 	competitorTone?: "muted" | "bright";
 	/** Replaces the competitor name in the header; the name returns if it fails to load. */
 	competitorLogo?: CompetitorLogo;
+	/** Further columns after the competitor's, for a three-way table. Only `quote` sizes for one. */
+	moreColumns?: { name: string; cells: Record<string, CompetitorCell> }[];
 }
 
 const VARIANTS = {
@@ -100,6 +103,10 @@ const VARIANTS = {
 		subcopy: "",
 		tableGap: "lg:mt-[6.3125rem]",
 		grid: "max-w-[73.5625rem] lg:grid-cols-[390fr_340fr_447fr]",
+		// Three-way: the same width, the label column narrowed and the two others split the rest,
+		// with the label's inset cut to match so the four columns read evenly spaced.
+		gridWide: "max-w-[73.5625rem] lg:grid-cols-[250fr_300fr_313fr_313fr]",
+		labelPadWide: "lg:pr-6 lg:pl-[3.5rem]",
 		raised: "lg:-mt-[2.4375rem] lg:-mb-[2.4375rem]",
 		bottom: "lg:pb-[2.4375rem]",
 		label: "lg:text-xs lg:leading-5",
@@ -132,10 +139,17 @@ const VARIANTS = {
 	},
 };
 
-const { id, heading, subcopy, competitorName, rows, cells, variant, background, cornerLabel, competitorTone = "muted", competitorLogo } = Astro.props;
+const { id, heading, subcopy, competitorName, rows, cells, variant, background, cornerLabel, competitorTone = "muted", competitorLogo, moreColumns = [] } = Astro.props;
 const v = VARIANTS[variant];
 /** Before/after draws only two columns: the label and Influenze's, with "With" over the logo. */
 const twoColumn = variant === "beforeAfter";
+/** Every column after Influenze's: the competitor (with its logo), then any extras. */
+const others = twoColumn ? [] : [{ name: competitorName, cells, logo: competitorLogo }, ...moreColumns.map((c) => ({ ...c, logo: undefined }))];
+const wide = others.length > 1;
+const otherNames = others.map((o) => o.name).join(" and ");
+const labelPad = wide && "labelPadWide" in v ? v.labelPadWide : v.labelPad;
+// Three-way columns are narrower, so their text keeps clear of the dividers and the panel's edge.
+const otherPad = wide ? "lg:px-8" : "lg:px-5";
 // `pre-line` honours the line breaks written into the data, so cells wrap where the design does.
 const cellText = "text-[0.75rem] capitalize leading-4.5 whitespace-pre-line lg:text-xs lg:leading-5";
 // A lead-in sentence the design sets larger and in sentence case.
@@ -177,11 +191,13 @@ const leadText = "text-[0.8125rem] leading-5 whitespace-pre-line lg:text-[1.125r
 				// Two columns fit a phone, so only the three-column tables scroll. 
 				twoColumn
 					? "grid-cols-[1fr_1fr_1rem]"
-					: "w-max grid-cols-[calc((100vw-3rem)/2.5)_minmax(calc((100vw-3rem)/2.5),min-content)_calc((100vw-3rem)/2.5)]",
-				v.grid,
+					: wide
+						? "w-max grid-cols-[calc((100vw-3rem)/2.5)_minmax(calc((100vw-3rem)/2.5),min-content)_calc((100vw-3rem)/2.5)_calc((100vw-3rem)/2.5)]"
+						: "w-max grid-cols-[calc((100vw-3rem)/2.5)_minmax(calc((100vw-3rem)/2.5),min-content)_calc((100vw-3rem)/2.5)]",
+				wide && "gridWide" in v ? v.gridWide : v.grid,
 			]}
 			role="table"
-			aria-label={`Influenze.ai compared with ${competitorName}`}
+			aria-label={`Influenze.ai compared with ${twoColumn ? competitorName : otherNames}`}
 		>
 			{/*
 				The table's own panel, as a sibling rather than styles on the grid: a backdrop
@@ -189,7 +205,7 @@ const leadText = "text-[0.8125rem] leading-5 whitespace-pre-line lg:text-[1.125r
 				column's blur could not reach the panel's border and that line showed through.
 			*/}
 			<div
-				class="col-span-3 col-start-1 row-start-1 rounded-[1.25rem] border border-white/15 bg-surface-dark/40 backdrop-blur-md"
+				class="col-[1/-1] row-start-1 rounded-[1.25rem] border border-white/15 bg-surface-dark/40 backdrop-blur-md"
 				style={`grid-row-end: ${rows.length + 2}`}
 				aria-hidden="true"
 			>
@@ -207,7 +223,7 @@ const leadText = "text-[0.8125rem] leading-5 whitespace-pre-line lg:text-[1.125r
 
 			<div role="row" style="display: contents">
 				<div
-					class:list={["relative z-2 col-start-1 row-start-1 flex items-center px-4 text-left", v.labelPad]}
+					class:list={["relative z-2 col-start-1 row-start-1 flex items-center px-4 text-left", labelPad]}
 					role="columnheader"
 				>
 					{cornerLabel && <span class:list={["text-[0.75rem] leading-4.5 text-white", v.label]}>{cornerLabel}</span>}
@@ -228,17 +244,18 @@ const leadText = "text-[0.8125rem] leading-5 whitespace-pre-line lg:text-[1.125r
 						/>
 					</span>
 				</div>
-				{!twoColumn && (
+				{others.map((o, c) => (
 					<div
-						class:list={["relative z-2 col-start-3 row-start-1 flex items-center justify-center px-4 py-8", v.headerPad]}
+						class:list={["relative z-2 row-start-1 flex items-center justify-center px-4 py-8 text-center", otherPad, v.headerPad]}
+						style={`grid-column: ${c + 3}`}
 						role="columnheader"
 					>
-						{competitorLogo && (
+						{o.logo && (
 							<img
-								src={competitorLogo.src}
-								alt={competitorName}
-								width={competitorLogo.w}
-								height={competitorLogo.h}
+								src={o.logo.src}
+								alt={o.name}
+								width={o.logo.w}
+								height={o.logo.h}
 								class="h-6 max-w-full object-contain lg:h-10.75"
 								loading="lazy"
 								data-compare-logo
@@ -246,23 +263,22 @@ const leadText = "text-[0.8125rem] leading-5 whitespace-pre-line lg:text-[1.125r
 						)}
 						{/* Shown directly with no logo; hidden until the logo fails to load otherwise. */}
 						<span
-							class:list={["text-[1.125rem] font-medium text-white lg:text-md lg:leading-7.5", competitorLogo && "hidden"]}
-							data-compare-logo-name={competitorLogo ? "" : undefined}
-						>{competitorName}</span>
+							class:list={["text-[1.125rem] font-medium text-balance text-white lg:text-md lg:leading-7.5", o.logo && "hidden"]}
+							data-compare-logo-name={o.logo ? "" : undefined}
+						>{o.name}</span>
 					</div>
-				)}
+				))}
 			</div>
 
 			{
 				rows.map((row, r) => {
 					const { influenze } = row;
-					const theirs = cells[row.id];
 					// The header divider and the rest can differ in strength, as drawn.
 					const line = ["border-t", r === 0 ? v.headerLine : v.rowLine];
 					return (
 						<div role="row" style="display: contents">
 							<div
-								class:list={["relative z-2 flex items-center px-4 py-5 text-left", v.rowPad, v.labelPad, ...line]}
+								class:list={["relative z-2 flex items-center px-4 py-5 text-left", v.rowPad, labelPad, ...line]}
 								style={`grid-column: 1; grid-row: ${r + 2}`}
 								role="rowheader"
 							>
@@ -303,33 +319,39 @@ const leadText = "text-[0.8125rem] leading-5 whitespace-pre-line lg:text-[1.125r
 								// The panel's right edge, past the raised column: dividers stop at the column, as drawn.
 								<div class="relative z-2" style={`grid-column: 3; grid-row: ${r + 2}`} aria-hidden="true" />
 							) : (
-							<div
-								class:list={[
-									"relative z-2 flex flex-col items-center justify-center gap-1.5 px-3 py-5 text-center lg:px-5",
-									v.rowPad,
-									...line,
-								]}
-								style={`grid-column: 3; grid-row: ${r + 2}`}
-								role="cell"
-							>
-								{theirs?.mark && (
-									<svg
-										class="size-5 shrink-0 text-white/60 lg:size-6"
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="currentColor"
-										stroke-width="2"
-										stroke-linecap="round"
-										aria-label="Not included"
-										role="img"
-									>
-										<path d="M5 12h14" />
-									</svg>
-								)}
-								{theirs?.text && (
-									<span class:list={[cellText, "max-w-87", competitorTone === "bright" ? "text-white" : "text-white/60"]}>{theirs.text}</span>
-								)}
-							</div>
+								others.map((o, c) => {
+									const theirs = o.cells[row.id];
+									return (
+										<div
+											class:list={[
+												"relative z-2 flex flex-col items-center justify-center gap-1.5 px-3 py-5 text-center",
+												otherPad,
+												v.rowPad,
+												...line,
+											]}
+											style={`grid-column: ${c + 3}; grid-row: ${r + 2}`}
+											role="cell"
+										>
+											{theirs?.mark && (
+												<svg
+													class="size-5 shrink-0 text-white/60 lg:size-6"
+													viewBox="0 0 24 24"
+													fill="none"
+													stroke="currentColor"
+													stroke-width="2"
+													stroke-linecap="round"
+													aria-label="Not included"
+													role="img"
+												>
+													<path d="M5 12h14" />
+												</svg>
+											)}
+											{theirs?.text && (
+												<span class:list={[cellText, "max-w-87", competitorTone === "bright" ? "text-white" : "text-white/60"]}>{theirs.text}</span>
+											)}
+										</div>
+									);
+								})
 							)}
 						</div>
 					);

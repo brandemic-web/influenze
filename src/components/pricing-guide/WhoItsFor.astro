@@ -1,0 +1,74 @@
+---
+/**
+ * "Who this makes sense for" — one card per team (title, green body, typical monthly
+ * credits) in the alternative page's marquee: rendered as repeated sets for a seamless
+ * right-to-left loop that pauses on hover (scripts/use-case-cards.ts). With reduced
+ * motion, or without JS, the strip scrolls sideways by hand instead.
+ */
+import TwoTone from "../compare/TwoTone.astro";
+import { plainText, type FitCard } from "../../data/pricing-guide";
+
+interface Props {
+	heading: string;
+	subheading: string;
+	cards: FitCard[];
+}
+
+const { heading, subheading, cards } = Astro.props;
+// Enough sets that one always spans the widest screen, even when an editor lists only a card or two.
+const sets = Math.max(2, Math.ceil(10 / cards.length));
+const strip = Array.from({ length: sets }, () => cards).flat();---
+
+{/* Opaque from lg: the page backdrop under this spot is the table's glow, which now travels with the table. */}
+<section class="relative pt-16 pb-10 lg:bg-[#010101] lg:pt-[9.375rem] lg:pb-0" aria-labelledby="fit-heading">
+	<h2 id="fit-heading" class="px-6 text-center text-[1.875rem] capitalize leading-[1.15] text-white lg:whitespace-pre-line lg:text-[2.25rem] lg:leading-[2.75rem]">
+		<TwoTone text={heading} />
+	</h2>
+	<p class="mx-auto mt-4 max-w-[26.3125rem] px-6 text-center [text-wrap:balance] lg:px-0 text-[1rem] leading-6 text-[#cdcdcd] lg:mt-5 lg:text-[1.125rem] lg:leading-7">
+		{plainText(subheading)}
+	</p>
+
+	<div class="use-case-marquee fit-marquee relative mt-10 overflow-hidden pb-1 lg:mt-14.5">
+		<ul class="use-case-track flex w-max gap-3 lg:gap-[1.375rem]">
+			{
+				strip.map((card, i) => (
+					<li aria-hidden={i >= cards.length ? "true" : undefined} class="shrink-0">
+						<article class="flex h-full w-72 flex-col rounded-[1rem] border border-[#1d1e2c] bg-[#0a0b10] px-6 py-7 lg:w-[37.1875rem] lg:rounded-[1.125rem] lg:px-[2.1875rem] lg:pt-[2.375rem] lg:pb-[2.5rem]">
+							{/* Two lines' room for every title below lg, so the dividers line up; the wide desktop cards fit titles on one. The repeats' titles are <p>s, so the outline lists each card once. */}
+							{i >= cards.length ? (
+								<p class="min-h-[4rem] text-[1.375rem] leading-8 font-semibold text-white lg:min-h-0 lg:text-[1.75rem] lg:leading-[2.1875rem]">{card.title}</p>
+							) : (
+								<h3 class="min-h-[4rem] text-[1.375rem] leading-8 font-semibold text-white lg:min-h-0 lg:text-[1.75rem] lg:leading-[2.1875rem]">{card.title}</h3>
+							)}
+							<div class="mt-5 border-t border-[#1d1e2c] pt-5 lg:mt-[1.875rem] lg:pt-[1.875rem]">
+								{card.body && (
+									<p class="text-[1rem] leading-6 whitespace-pre-line text-brand-primary lg:text-[1.25rem] lg:leading-[1.875rem]">{card.body}</p>
+								)}
+								{/* One paragraph: the estimate runs straight into "Best fit", even if the editor broke the line. */}
+								{card.credits.trim() && (
+									<p class="mt-2 text-[0.9375rem] leading-6 text-[#9b9ca5] lg:mt-[0.625rem] lg:text-[1.125rem] lg:leading-[1.875rem]">
+										{card.credits.replace(/\s*\n\s*/g, " ").trim()}
+									</p>
+								)}
+							</div>
+						</article>
+					</li>
+				))
+			}
+		</ul>
+	</div>
+</section>
+
+<style>
+	/* Reduced motion leaves the loop off, so the strip scrolls by hand instead. */
+	@media (prefers-reduced-motion: reduce) {
+		.fit-marquee {
+			overflow-x: auto;
+			scrollbar-width: none;
+		}
+	}
+</style>
+
+<script>
+	import "../../scripts/use-case-cards";
+</script>

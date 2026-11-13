@@ -10,6 +10,7 @@ import Layout from "../../layouts/Layout.astro";
 import PricingGuideHero from "../../components/pricing-guide/PricingGuideHero.astro";
 import CreditEstimator from "../../components/pricing-guide/CreditEstimator.astro";
 import OneTimeCampaign from "../../components/pricing-guide/OneTimeCampaign.astro";
+import WhoItsFor from "../../components/pricing-guide/WhoItsFor.astro";
 import PricingPlans from "../../components/pricing/PricingPlans.astro";
 import CompareTable from "../../components/compare/CompareTable.astro";
 import BlogFaq from "../../components/blog/BlogFaq.astro";
@@ -60,7 +61,8 @@ const schema = [
 	{/*
 		One backdrop for the whole page, as drawn: a purple band behind the hero, a second
 		behind the plans, then glows either side of the comparison table. Stops are the
-		design's distances from the top of the frame, in rem.
+		design's distances from the top of the frame, in rem. From lg the table's glows are
+		repainted by .guide-tail, so an optional section above it can't push them off it.
 	*/}
 	<main
 		style="background:
@@ -77,28 +79,46 @@ const schema = [
 			includedLabel={plainText(copy.plansIncluded)}
 		/>
 		<OneTimeCampaign heading={copy.oneTimeHeading} body={copy.oneTimeBody} />
-		<div class="quote-band">
-			<CompareTable
-				id="quote-led"
-				variant="quote"
-				background="transparent"
-				cornerLabel={plainText(copy.quoteCorner)}
-				competitorTone="bright"
-				heading={copy.quoteHeading}
-				subcopy=""
-				competitorName={plainText(copy.quoteThem)}
-				rows={page.quoteRows}
-				cells={page.quoteCells}
-			/>
-		</div>
-		{/* The backdrop's stops are desktop distances; below lg its last band lands on the FAQ, so cover it. */}
-		<div class="bg-background-primary lg:bg-transparent lg:pt-[10.75rem]">
-			<BlogFaq headingTag="h3" heading={plainText(copy.faqHeading)} subcopy={plainText(copy.faqSubcopy)} faqs={faqs} align="wide" size="section" transparent />
+		{
+			page.fitList.length > 0 && (
+				<WhoItsFor heading={copy.fitHeading} subheading={copy.fitSubheading} cards={page.fitList} />
+			)
+		}
+		<div class="guide-tail">
+			<div class="quote-band">
+				<CompareTable
+					id="quote-led"
+					variant="quote"
+					background="transparent"
+					cornerLabel={plainText(copy.quoteCorner)}
+					competitorTone="bright"
+					heading={copy.quoteHeading}
+					subcopy=""
+					competitorName={plainText(copy.quoteThem)}
+					rows={page.quoteRows}
+					cells={page.quoteCells}
+					moreColumns={page.quoteCells2 ? [{ name: plainText(copy.quoteThem2), cells: page.quoteCells2 }] : []}
+				/>
+			</div>
+			{/* The backdrop's stops are desktop distances; below lg its last band lands on the FAQ, so cover it. */}
+			<div class="bg-background-primary lg:bg-transparent lg:pt-[10.75rem]">
+				<BlogFaq headingTag="h3" heading={plainText(copy.faqHeading)} subcopy={plainText(copy.faqSubcopy)} faqs={faqs} align="wide" size="section" transparent />
+			</div>
 		</div>
 	</main>
 </Layout>
 
 <style>
+	/* From lg, the backdrop's 268.75–356.25rem band and its side glows, rebased to the top
+	   of the table (259.67rem as drawn) so they follow it down when a section sits above. */
+	@media (min-width: 1024px) {
+		.guide-tail {
+			background:
+				radial-gradient(ellipse 22% 22rem at 0% 50.33rem, rgba(104, 56, 252, 0.95), transparent),
+				radial-gradient(ellipse 22% 22rem at 100% 50.33rem, rgba(104, 56, 252, 0.95), transparent),
+				linear-gradient(180deg, #010101 0rem, #010101 9.08rem, #1b162d 34.08rem, #271c4b 40.33rem, #3c238d 46.58rem, #5332b7 59.08rem, #2c244b 65.33rem, #1f1a30 71.58rem, #171322 77.83rem, #0e0c15 84.08rem, #030304 96.58rem);
+		}
+	}
 	/* Below lg, the backdrop's 268.75–356.25rem band and its side glows, re-stopped as
 	   percentages of the table section; from lg up the backdrop itself sits behind it. */
 	@media (max-width: 1023.98px) {

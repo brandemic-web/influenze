@@ -29,7 +29,7 @@ export const PRICING_HEADING = {
 	sub: "Tier updates as you drag",
 };
 
-/** Slider bounds in ₹. "Rs. 1,000" → "Rs 100,000+". */
+/** Slider bounds in ₹. "₹1,000" → "₹1,00,000+". */
 export const SLIDER_MIN = 1_000;
 export const SLIDER_MAX = 100_000;
 
@@ -40,7 +40,7 @@ export const SLIDER_MAX = 100_000;
 export const DEFAULT_SPEND = SLIDER_MIN;
 
 /** Extra credits granted for paying annually, as a percentage. */
-export const ANNUAL_BONUS_PCT = 5;
+export const ANNUAL_BONUS_PCT = 7;
 
 export const PRICING_TIERS: PricingTier[] = [
 	// Starter covers ₹1,000–₹20,000 (up to Growth's floor) at +5%.
