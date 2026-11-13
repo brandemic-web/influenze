@@ -351,7 +351,8 @@ const leadText = "text-[0.8125rem] leading-5 whitespace-pre-line lg:text-[1.125r
 								style={`grid-column: ${c + 3}; grid-row: ${r + 2}`}
 								role="cell"
 							>
-								{theirs?.mark && (
+								{/* The "not included" dash only stands in for an empty cell; above a caption it read as clutter. */}
+								{theirs?.mark && !theirs.text?.trim() && (
 									<svg
 										class="size-5 shrink-0 text-white/60 lg:size-6"
 										viewBox="0 0 24 24"
