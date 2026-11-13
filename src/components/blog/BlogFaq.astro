@@ -14,11 +14,9 @@ interface Props {
 	align?: "section" | "page" | "wide";
 	size?: "post" | "section";
 	transparent?: boolean;
-	/** The template landing pages set h3; blog posts keep h2. */
-	headingTag?: "h2" | "h3";
 }
 
-const { heading, subcopy, faqs, align = "section", size = "post", transparent = false, headingTag: Heading = "h2" } = Astro.props;
+const { heading, subcopy, faqs, align = "section", size = "post", transparent = false } = Astro.props;
 const CONTAINER = {
 	section: "px-6 lg:px-14",
 	page: "max-w-410.75 px-6 lg:px-25",
@@ -43,7 +41,7 @@ const CONTAINER = {
 				align === "section" ? "px-3" : "",
 			]}
 		>
-			<Heading
+			<h2
 				id="blog-faq-heading"
 				class:list={[
 					"max-w-54 text-md leading-[1.2] capitalize text-white lg:max-w-full",
@@ -51,7 +49,7 @@ const CONTAINER = {
 				]}
 			>
 				{heading}
-			</Heading>
+			</h2>
 			<p class="mt-2 max-w-109 text-[0.875rem] leading-[1.4] text-white/50 lg:mt-3.5 lg:text-[1rem]">
 				{subcopy}
 			</p>
@@ -62,9 +60,9 @@ const CONTAINER = {
 				faqs.map((faq, i) => (
 					<details class="group rounded-sm" open={i === 0} data-faq>
 						<summary class="flex cursor-pointer list-none items-center justify-between gap-2.5 rounded-sm bg-[#131212] p-4 lg:p-7.5 [&::-webkit-details-marker]:hidden">
-							<span class="text-[0.875rem] leading-[normal] font-semibold text-white [text-box:trim-both_cap_alphabetic] lg:text-[1.125rem]">
+							<h3 class="text-[0.875rem] leading-[normal] font-semibold text-white [text-box:trim-both_cap_alphabetic] lg:text-[1.125rem]">
 								{faq.question}
-							</span>
+							</h3>
 							<svg
 								class="h-1.5 w-3 shrink-0 text-white transition-transform group-open:rotate-180"
 								viewBox="0 0 12 6"

@@ -74,6 +74,7 @@ const schema = [
 			competitorLogo={competitor.competitorLogo}
 			rows={competitor.featureRows}
 			cells={competitor.features}
+			columns={competitor.featureColumns}
 		/>
 		<CompareTable
 			id="pricing-models"
@@ -84,6 +85,7 @@ const schema = [
 			competitorLogo={competitor.competitorLogo}
 			rows={competitor.pricingRows}
 			cells={competitor.pricing}
+			columns={competitor.pricingColumns}
 		/>
 		{/*
 			One purple band behind the last three sections, as drawn: it starts just under
@@ -96,7 +98,7 @@ const schema = [
 		>
 			<WorkflowCoverage competitor={competitor} />
 			<ScenarioCards heading={competitor.copy.scenariosHeading} cards={competitor.scenarioCards} />
-			<BlogFaq headingTag="h3"
+			<BlogFaq
 				heading={plainText(competitor.copy.faqHeading)}
 				subcopy={plainText(competitor.copy.faqSubcopy)}
 				faqs={faqs} align="wide" size="section" transparent />

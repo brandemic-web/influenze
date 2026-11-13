@@ -59,6 +59,10 @@ const template = () => ({
 	workflow: Object.fromEntries(WORKFLOW_STEPS.map((step) => [step.id, ""])),
 });
 
+/** Three- and four-way pages swap the single competitor card for one card each. */
+const isMultiWay = ({ document }: { document?: Record<string, unknown> }) =>
+	((document?.companyCount as number | undefined) ?? 2) >= 3;
+
 export default defineType({
 	name: "comparePage",
 	title: "Compare Page",
@@ -142,15 +146,114 @@ export default defineType({
 			group: "content",
 			of: [defineArrayMember({ type: "string" })],
 		}),
-		headingField("chooseCompetitorHeading", "content"),
-		headingField("chooseCompetitorNote", "content"),
+		defineField({
+			name: "companyCount",
+			title: "Companies compared",
+			type: "number",
+			group: "content",
+			initialValue: 2,
+			options: {
+				list: [
+					{ title: "2 — Influenze.ai vs one", value: 2 },
+					{ title: "3", value: 3 },
+					{ title: "4", value: 4 },
+				],
+				layout: "radio",
+				direction: "horizontal",
+			},
+			description:
+				"Influenze.ai plus how many competitors. At 3 or 4, add each competitor under “Competitors” below: its card, and its column in the feature and pricing tables.",
+		}),
+		{ ...headingField("chooseCompetitorHeading", "content"), hidden: isMultiWay },
+		{ ...headingField("chooseCompetitorNote", "content"), hidden: isMultiWay },
 		defineField({
 			name: "chooseCompetitor",
 			title: "Choose <competitor> if..",
 			type: "array",
 			group: "content",
+			hidden: isMultiWay,
 			of: [defineArrayMember({ type: "text", rows: 2 })],
 			description: "A line break in a point is a line break on the page.",
+		}),
+		defineField({
+			name: "competitors",
+			title: "Competitors",
+			type: "array",
+			group: "content",
+			hidden: (ctx) => !isMultiWay(ctx),
+			description:
+				"One entry per competitor, in the order they appear after Influenze.ai: in the hero cards and as table columns. Each table switches to one column per competitor once every competitor’s column for it has text; until then it shows the single “their column”.",
+			of: [
+				defineArrayMember({
+					name: "comparedCompetitor",
+					title: "Competitor",
+					type: "object",
+					fields: [
+						defineField({
+							name: "name",
+							title: "Competitor name",
+							type: "string",
+							description: 'Just the name, e.g. "Qoruz".',
+							validation: (Rule) => Rule.required(),
+						}),
+						defineField({
+							name: "logo",
+							title: "Logo (optional)",
+							type: "image",
+							description: "Shown in place of the name at the top of its table columns.",
+						}),
+						defineField({
+							name: "heading",
+							title: "Heading",
+							type: "string",
+							placeholder: "Choose {name} if..",
+							description: "Leave empty for “Choose <name> if..”.",
+						}),
+						defineField({
+							name: "points",
+							title: "Points",
+							type: "array",
+							of: [defineArrayMember({ type: "text", rows: 2 })],
+							description: "A line break in a point is a line break on the page.",
+						}),
+						defineField({
+							name: "note",
+							title: "Small print under the points",
+							type: "string",
+							placeholder: "Verified on qoruz.com, Oct 2026",
+						}),
+						defineField({
+							name: "features",
+							title: "Feature table — this competitor’s column",
+							type: "object",
+							options: { collapsible: true, collapsed: true },
+							fields: cellFields(FEATURE_ROWS),
+						}),
+						defineField({
+							name: "pricing",
+							title: "Pricing table — this competitor’s column",
+							type: "object",
+							options: { collapsible: true, collapsed: true },
+							fields: cellFields(PRICING_ROWS),
+						}),
+					],
+					preview: {
+						select: { title: "name", points: "points" },
+						prepare: ({ title, points }) => ({
+							title: title || "Untitled competitor",
+							subtitle: `${Array.isArray(points) ? points.length : 0} points`,
+						}),
+					},
+				}),
+			],
+			validation: (Rule) =>
+				Rule.custom((cards, ctx) => {
+					const count = (ctx.document?.companyCount as number | undefined) ?? 2;
+					const want = count - 1;
+					const have = Array.isArray(cards) ? cards.length : 0;
+					if (count < 3 || have === want) return true;
+					return `${count} companies means ${want} competitors here — there ${have === 1 ? "is" : "are"} ${have}.`;
+				}).warning(),
 		}),
 
 		headingField("featureHeading", "features"),
@@ -160,6 +263,7 @@ export default defineType({
 			title: "Feature table — their column",
 			type: "object",
 			group: "features",
+			description: "On a 3- or 4-company page, used only until every competitor’s own feature column has text.",
 			options: { collapsible: false },
 			fields: cellFields(FEATURE_ROWS),
 		}),
@@ -171,6 +275,7 @@ export default defineType({
 			title: "Pricing table — their column",
 			type: "object",
 			group: "pricing",
+			description: "On a 3- or 4-company page, used only until every competitor’s own pricing column has text.",
 			options: { collapsible: false },
 			fields: cellFields(PRICING_ROWS),
 		}),

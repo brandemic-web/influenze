@@ -1,6 +1,16 @@
 import type { Faq } from "../faqs";
 import type { FeatureRowId, PricingRowId, ScenarioId, ScenarioText, SectionCopy, WorkflowStepId } from "./shared";
 
+/** One "Choose … if.." card on a three- or four-way page. */
+export interface ChooseCard {
+	name: string;
+	/** Defaults to "Choose {name} if..". */
+	heading?: string;
+	points: string[];
+	/** Small print under the points, e.g. where the facts were verified. */
+	note?: string;
+}
+
 export interface CompetitorCell {
 	text: string;
 	/** A dash above the text: they lack the capability, and `text` says what they do instead. */

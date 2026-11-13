@@ -97,12 +97,17 @@ const schema = [
 					competitorName={plainText(copy.quoteThem)}
 					rows={page.quoteRows}
 					cells={page.quoteCells}
-					moreColumns={page.quoteCells2 ? [{ name: plainText(copy.quoteThem2), cells: page.quoteCells2 }] : []}
+					columns={page.quoteCells2
+						? [
+								{ name: plainText(copy.quoteThem), cells: page.quoteCells },
+								{ name: plainText(copy.quoteThem2), cells: page.quoteCells2 },
+							]
+						: undefined}
 				/>
 			</div>
 			{/* The backdrop's stops are desktop distances; below lg its last band lands on the FAQ, so cover it. */}
 			<div class="bg-background-primary lg:bg-transparent lg:pt-[10.75rem]">
-				<BlogFaq headingTag="h3" heading={plainText(copy.faqHeading)} subcopy={plainText(copy.faqSubcopy)} faqs={faqs} align="wide" size="section" transparent />
+				<BlogFaq heading={plainText(copy.faqHeading)} subcopy={plainText(copy.faqSubcopy)} faqs={faqs} align="wide" size="section" transparent />
 			</div>
 		</div>
 	</main>

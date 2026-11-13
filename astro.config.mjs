@@ -114,6 +114,14 @@ export default defineConfig({
               "gsap/SplitText",
               "swiper",
               "swiper/modules",
+              // The embedded Studio's entry points, for the same reason: found late,
+              // they re-bundle deps under the same browser hash, and a tab that
+              // already loaded /studio caches chunk names that no longer exist
+              // (blank Studio until the browser cache is cleared).
+              "sanity",
+              "sanity/structure",
+              "sanity/presentation",
+              "@sanity/vision",
           ],
       },
       // The server side of the same problem: a package first imported at request

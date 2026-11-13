@@ -9,6 +9,7 @@
 import { COMPARE_OVERRIDES } from "../data/compare/overrides";
 import {
 	COMPETITORS,
+	SECTION_COPY_FIELDS,
 	FEATURE_ROWS,
 	PRICING_ROWS,
 	TBC,
@@ -24,9 +25,17 @@ import {
 	type CompetitorCell,
 	type CompareRow,
 } from "../data/compare";
+import type { ChooseCard } from "../data/compare/types";
 import type { Faq } from "../data/faqs";
 import { resolveCompetitorLogo, type CompetitorLogo } from "./competitor-logo";
-import { getComparePages, type CompareCellDoc, type ComparePageDoc, type ScriptsDoc, type SeoDoc } from "../sanity/lib/queries";
+import {
+	getComparePages,
+	type CompareCellDoc,
+	type ComparedCompetitorDoc,
+	type ComparePageDoc,
+	type ScriptsDoc,
+	type SeoDoc,
+} from "../sanity/lib/queries";
 
 export interface ResolvedCompetitor extends Competitor {
 	/** Every section heading, defaults filled in and `{name}` replaced. */
@@ -38,9 +47,23 @@ export interface ResolvedCompetitor extends Competitor {
 	pricingRows: CompareRow<PricingRowId>[];
 	/** Optional upload for the feature table's header; the name is shown without one. */
 	competitorLogo?: CompetitorLogo;
+	/** The "Choose … if.." cards beside Influenze.ai's: one on a two-way page, two or three on a multi-way one. */
+	chooseCards: ResolvedChooseCard[];
+	/** The competitor columns of each table: one on a two-way page, two or three on a multi-way one. */
+	featureColumns: TableColumn<FeatureRowId>[];
+	pricingColumns: TableColumn<PricingRowId>[];
 	/** Sanity's SEO overrides — canonical URL, noindex, custom JSON-LD. */
 	seoOverrides?: SeoDoc;
 	scripts?: ScriptsDoc;
+}
+
+export type ResolvedChooseCard = Required<Omit<ChooseCard, "note">> & Pick<ChooseCard, "note">;
+
+/** One competitor's column in a compare table. */
+export interface TableColumn<Id extends string = string> {
+	name: string;
+	logo?: CompetitorLogo;
+	cells: Record<Id, CompetitorCell>;
 }
 
 const has = (text: string | undefined): text is string => Boolean(text?.trim());
@@ -74,6 +97,13 @@ function fromSanity(doc: ComparePageDoc, code: Competitor | undefined): Resolved
 		return kept.length ? kept : (fallback ?? []);
 	};
 	const faqs = (doc.faqs ?? []).filter((f): f is Faq => has(f.question) && has(f.answer));
+	// A Sanity heading wins, then the code file's, then the default.
+	const copy = resolveSectionCopy({ ...code?.headings, ...stripBlank(doc.headings), ...pin?.headings }, name);
+	const chooseCompetitor = pin?.chooseCompetitor ?? list(doc.chooseCompetitor, code?.chooseCompetitor);
+	const multiWay = multiWayCompetitors(doc);
+	const competitorLogo = resolveCompetitorLogo(doc.competitorLogo, doc.competitorLogoSize);
+	const features = cells(FEATURE_ROWS, doc.features, code?.features);
+	const pricing = cells(PRICING_ROWS, doc.pricing, code?.pricing);
 
 	return {
 		slug: pin?.slug ?? doc.slug,
@@ -88,9 +118,17 @@ function fromSanity(doc: ComparePageDoc, code: Competitor | undefined): Resolved
 		},
 		intro,
 		chooseInfluenze: list(doc.chooseInfluenze, code?.chooseInfluenze),
-		chooseCompetitor: pin?.chooseCompetitor ?? list(doc.chooseCompetitor, code?.chooseCompetitor),
-		features: cells(FEATURE_ROWS, doc.features, code?.features),
-		pricing: cells(PRICING_ROWS, doc.pricing, code?.pricing),
+		chooseCompetitor,
+		chooseCards: chooseCards(multiWay, {
+			name,
+			heading: copy.chooseCompetitorHeading,
+			points: chooseCompetitor,
+			note: copy.chooseCompetitorNote || undefined,
+		}),
+		features,
+		pricing,
+		featureColumns: tableColumns(FEATURE_ROWS, multiWay, (c) => c.features, { name, logo: competitorLogo, cells: features }),
+		pricingColumns: tableColumns(PRICING_ROWS, multiWay, (c) => c.pricing, { name, logo: competitorLogo, cells: pricing }),
 		workflow: Object.fromEntries(
 			WORKFLOW_STEPS.map((step) => {
 				const value = doc.workflow?.[step.id];
@@ -98,15 +136,62 @@ function fromSanity(doc: ComparePageDoc, code: Competitor | undefined): Resolved
 			}),
 		) as Competitor["workflow"],
 		faqs: faqs.length ? faqs : code?.faqs,
-		// A Sanity heading wins, then the code file's, then the default.
-		copy: resolveSectionCopy({ ...code?.headings, ...stripBlank(doc.headings), ...pin?.headings }, name),
+		copy,
 		scenarioCards: resolveScenarios({ ...code?.scenarios, ...doc.scenarios }, name),
 		featureRows: resolveInfluenzeRows(FEATURE_ROWS, doc.influenzeFeatures),
 		pricingRows: resolveInfluenzeRows(PRICING_ROWS, doc.influenzePricing),
-		competitorLogo: resolveCompetitorLogo(doc.competitorLogo, doc.competitorLogoSize),
+		competitorLogo,
 		seoOverrides: doc.seo,
 		scripts: doc.scripts,
 	};
+}
+
+const CHOOSE_HEADING = SECTION_COPY_FIELDS.find((f) => f.key === "chooseCompetitorHeading")!.default;
+
+/**
+ * The competitor cards. A page set to 3 or 4 companies with its cards filled in gets one
+ * card each (at most three); otherwise the single two-way card, so a page switched over
+ * before its cards are written keeps rendering as it did.
+ */
+function chooseCards(multiWay: NamedCompetitor[], single: ResolvedChooseCard): ResolvedChooseCard[] {
+	if (!multiWay.length) return [single];
+	return multiWay.map((c) => ({
+		name: c.name,
+		heading: has(c.heading) ? c.heading : CHOOSE_HEADING.replaceAll("{name}", c.name),
+		points: (c.points ?? []).filter(has),
+		note: has(c.note) ? c.note : undefined,
+	}));
+}
+
+type NamedCompetitor = ComparedCompetitorDoc & { name: string };
+
+/** The named competitors of a page set to 3 or 4 companies (at most three); none on a two-way page. */
+function multiWayCompetitors(doc: ComparePageDoc): NamedCompetitor[] {
+	if ((doc.companyCount ?? 2) < 3) return [];
+	return (doc.competitors ?? [])
+		.filter((c): c is NamedCompetitor => has(c?.name))
+		.map((c) => ({ ...c, name: c.name.trim() }))
+		.slice(0, 3);
+}
+
+/**
+ * A table's competitor columns. Multi-way only once every competitor has written
+ * something in this table, so a page mid-migration keeps its single filled-in column
+ * instead of showing placeholder columns.
+ */
+function tableColumns<Id extends string>(
+	rows: readonly CompareRow<Id>[],
+	multiWay: NamedCompetitor[],
+	pick: (c: NamedCompetitor) => Record<string, CompareCellDoc | undefined> | undefined,
+	single: TableColumn<Id>,
+): TableColumn<Id>[] {
+	const written = (c: NamedCompetitor) => rows.some((row) => has(pick(c)?.[row.id]?.text));
+	if (!multiWay.length || !multiWay.every(written)) return [single];
+	return multiWay.map((c) => ({
+		name: c.name,
+		logo: resolveCompetitorLogo(c.logo, c.logoSize),
+		cells: cells(rows, pick(c), undefined),
+	}));
 }
 
 /** Every compare page, Sanity's first, then code-only competitors. Drafts included. */
@@ -116,13 +201,21 @@ export async function getCompetitors(perspectiveCookie?: string): Promise<Resolv
 	const bySlug = new Map(COMPETITORS.map((c) => [c.slug, c]));
 	const fromCms = docs.map((doc) => fromSanity(doc, bySlug.get(doc.slug)));
 	const cmsSlugs = new Set(fromCms.map((c) => c.slug));
-	const codeOnly = COMPETITORS.filter((c) => !cmsSlugs.has(c.slug)).map((c) => ({
-		...c,
-		copy: resolveSectionCopy(c.headings, c.name),
-		scenarioCards: resolveScenarios(c.scenarios, c.name),
-		featureRows: [...FEATURE_ROWS],
-		pricingRows: [...PRICING_ROWS],
-	}));
+	const codeOnly = COMPETITORS.filter((c) => !cmsSlugs.has(c.slug)).map((c) => {
+		const copy = resolveSectionCopy(c.headings, c.name);
+		return {
+			...c,
+			copy,
+			chooseCards: [
+				{ name: c.name, heading: copy.chooseCompetitorHeading, points: c.chooseCompetitor, note: copy.chooseCompetitorNote || undefined },
+			],
+			featureColumns: [{ name: c.name, cells: c.features }],
+			pricingColumns: [{ name: c.name, cells: c.pricing }],
+			scenarioCards: resolveScenarios(c.scenarios, c.name),
+			featureRows: [...FEATURE_ROWS],
+			pricingRows: [...PRICING_ROWS],
+		};
+	});
 	return [...fromCms, ...codeOnly];
 }
 
