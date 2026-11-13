@@ -6,9 +6,11 @@ on:
   workflow_dispatch:
   # Pages are prerendered, so published Sanity content only reaches the site by
   # a rebuild. A Sanity webhook POSTs to /repos/<owner>/<repo>/dispatches with
-  # {"event_type": "sanity-publish"} to trigger one.
+  # {"event_type": "sanity-publish"} to trigger one. The backend's Top creators
+  # refresh sends "top-creators-refresh" the same way after writing a new
+  # snapshot.
   repository_dispatch:
-    types: [sanity-publish]
+    types: [sanity-publish, top-creators-refresh]
 concurrency:
   group: deploy-production
   cancel-in-progress: false
