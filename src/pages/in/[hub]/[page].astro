@@ -51,13 +51,14 @@ const location = (c: (typeof page.creators)[number]) =>
 		<table>
 			<thead>
 				<tr>
-					{COPY.columns.map((column, i) => <th>{i === 2 ? followersLabel : column}</th>)}
+					{COPY.columns.map((column, i) => <th>{i === 3 ? followersLabel : column}</th>)}
 				</tr>
 			</thead>
 			<tbody>
 				{page.creators.map((c) => (
 					<tr>
 						<td>{c.rank}</td>
+						<td>{c.photo_url && <img src={c.photo_url} alt="" width="48" height="48" loading="lazy" />}</td>
 						<td>
 							{c.url ? <a href={c.url} rel="nofollow noopener" target="_blank">@{c.handle}</a> : `@${c.handle}`}
 							{c.name && ` ${c.name}`}

@@ -21,7 +21,7 @@ export const TOP_CREATORS_COPY = {
 	platformNames: { IG: "Instagram", YT: "YouTube" } as const,
 	followersLabel: { IG: "Followers", YT: "Subscribers" } as const,
 	tierNames: { nano: "Nano", micro: "Micro", mid_tier: "Mid-tier", macro: "Macro", mega: "Mega" } as const,
-	columns: ["#", "Creator", "Followers", "Engagement", "Tier", "Location"],
+	columns: ["#", "Photo", "Creator", "Followers", "Engagement", "Tier", "Location"],
 	ranked: "Ranked by followers. Every creator on this list beats the average engagement rate for their tier.",
 	refreshed: "Numbers refreshed on",
 	totalMatches: "creators match this search on",

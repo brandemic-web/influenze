@@ -14,7 +14,10 @@ export interface TopCreator {
 	external_id: string | null;
 	name: string | null;
 	url: string | null;
+	/** The platform's own photo link; expires within days on Instagram. */
 	image_url: string | null;
+	/** Our copy of the photo in the public website bucket; null when the copy failed. */
+	photo_url: string | null;
 	is_verified: boolean;
 	followers: number | null;
 	/** Percentage, e.g. 1.87. */
