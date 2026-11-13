@@ -40,6 +40,8 @@ jobs:
           # production. deploy.yml sets neither, so live builds don't carry them.
           PUBLIC_DEV_GA_ID: G-5SZFPZGLPY
           PUBLIC_APP_URL: https://influenze-dev.web.app/login
+          # Same snapshot as the live build; without it the preview has no Top creators pages.
+          TOP_CREATORS_SNAPSHOT_URL: ${{ secrets.TOP_CREATORS_SNAPSHOT_URL }}
         run: npm run build
 
       - name: Upload version
