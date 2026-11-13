@@ -5,12 +5,14 @@
  */
 import {
 	CREDIT_ROWS,
+	FIT_CARDS,
 	PRICING_GUIDES,
 	QUOTE_ROWS,
 	QUOTE_THEIRS,
 	plainText,
 	resolvePricingGuideCopy,
 	type CreditRow,
+	type FitCard,
 	type PricingGuideCopy,
 	type PricingGuidePage,
 } from "../data/pricing-guide";
@@ -23,6 +25,10 @@ export interface ResolvedPricingGuide extends PricingGuidePage {
 	creditList: CreditRow[];
 	quoteRows: CompareRow[];
 	quoteCells: Record<string, CompetitorCell>;
+	/** The third column's cells, present only when the page is set to three-way. */
+	quoteCells2?: Record<string, CompetitorCell>;
+	/** The "who this makes sense for" cards, or an empty list when the section is off. */
+	fitList: FitCard[];
 	seoOverrides?: SeoDoc;
 	scripts?: ScriptsDoc;
 }
@@ -38,6 +44,7 @@ function finish(p: PricingGuidePage, extra?: Pick<ResolvedPricingGuide, "seoOver
 		...p,
 		copy: resolvePricingGuideCopy(p.headings),
 		creditList: rows.length ? rows : CREDIT_ROWS,
+		fitList: p.showFit ? (p.fitCards?.length ? p.fitCards : FIT_CARDS) : [],
 		quoteRows: QUOTE_ROWS.map((row) => ({
 			...row,
 			label: p.quote?.[row.id]?.label?.trim() || row.label,
@@ -46,6 +53,10 @@ function finish(p: PricingGuidePage, extra?: Pick<ResolvedPricingGuide, "seoOver
 		quoteCells: Object.fromEntries(
 			QUOTE_ROWS.map((row) => [row.id, { text: p.quote?.[row.id]?.theirs?.trim() || QUOTE_THEIRS[row.id] }]),
 		),
+		// No default wording exists for a third column, so an empty cell stays empty.
+		quoteCells2: p.quoteThreeWay
+			? Object.fromEntries(QUOTE_ROWS.map((row): [string, CompetitorCell] => [row.id, { text: p.quote?.[row.id]?.theirs2?.trim() ?? "" }]))
+			: undefined,
 		...extra,
 	};
 }
@@ -56,6 +67,9 @@ function fromSanity(doc: PricingGuidePageDoc, code: PricingGuidePage | undefined
 	const creditRows = (doc.creditRows ?? [])
 		.filter((r) => has(r.label) && has(r.cost))
 		.map((r) => ({ label: r.label!.trim(), detail: r.detail?.trim() ?? "", cost: r.cost!.trim() }));
+	const fitCards = (doc.fitCards ?? [])
+		.filter((c) => has(c.title))
+		.map((c) => ({ title: c.title!.trim(), body: c.body?.trim() ?? "", credits: c.credits?.trim() ?? "" }));
 	const headings = { ...code?.headings, ...stripBlank(doc.headings) };
 	return finish(
 		{
@@ -71,6 +85,10 @@ function fromSanity(doc: PricingGuidePageDoc, code: PricingGuidePage | undefined
 			headings,
 			creditRows: creditRows.length ? creditRows : code?.creditRows,
 			quote: { ...code?.quote, ...doc.quote },
+			quoteThreeWay: doc.quoteThreeWay ?? code?.quoteThreeWay ?? false,
+			// The Studio switch decides on its own: an untouched one reads as off, so the page must agree.
+			showFit: doc.showFit ?? false,
+			fitCards: fitCards.length ? fitCards : code?.fitCards,
 			faqs: faqs.length ? faqs : code?.faqs,
 		},
 		{ seoOverrides: doc.seo, scripts: doc.scripts },

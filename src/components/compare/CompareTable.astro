@@ -108,6 +108,8 @@ const VARIANTS = {
 		bottom: "lg:pb-[2.4375rem]",
 		label: "lg:text-xs lg:leading-5",
 		labelPad: "lg:pr-6 lg:pl-[6.125rem]",
+		// Multi-way: the label's inset cut to match its narrower column, so the columns read evenly spaced.
+		labelPadWide: "lg:pr-6 lg:pl-[3.5rem]",
 		headerPad: "lg:py-[2.625rem]",
 		rowPad: "lg:py-[2.4375rem]",
 		headerLine: "border-white/15",
@@ -150,8 +152,10 @@ const others: TableColumn[] = twoColumn ? [] : (columns ?? [{ name: competitorNa
 const MULTI = {
 	feature: { 2: [330, 470, 420], 3: [290, 420, 360] },
 	pricing: { 2: [300, 560, 400], 3: [270, 500, 350] },
+	// The pricing guide's table keeps its own width; the label narrows to make room.
+	quote: { 2: [250, 300, 313], 3: [210, 270, 260] },
 } as const;
-const multi = others.length > 1 && (variant === "feature" || variant === "pricing")
+const multi = others.length > 1 && (variant === "feature" || variant === "pricing" || variant === "quote")
 	? MULTI[variant][others.length as 2 | 3]
 	: undefined;
 // Below lg every column is 2/5 of the phone's width and the row scrolls sideways, as before.
@@ -160,6 +164,9 @@ const gridStyle = multi
 	? `--cols-sm: ${phoneCol} minmax(${phoneCol}, min-content) repeat(${others.length}, ${phoneCol}); --cols-lg: ${multi[0]}fr ${multi[1]}fr repeat(${others.length}, ${multi[2]}fr)`
 	: undefined;
 const names = others.map((c) => c.name).join(", ").replace(/, ([^,]*)$/, " and $1");
+const labelPad = multi && "labelPadWide" in v ? v.labelPadWide : v.labelPad;
+// The quote table's multi-way columns are narrower, so their text keeps clear of the dividers and the panel's edge.
+const otherPad = multi && variant === "quote" ? "lg:px-8" : "lg:px-5";
 // `pre-line` honours the line breaks written into the data, so cells wrap where the design does.
 const cellText = "text-[0.75rem] capitalize leading-4.5 whitespace-pre-line lg:text-xs lg:leading-5";
 // A lead-in sentence the design sets larger and in sentence case.
@@ -202,7 +209,7 @@ const leadText = "text-[0.8125rem] leading-5 whitespace-pre-line lg:text-[1.125r
 				twoColumn
 					? "grid-cols-[1fr_1fr_1rem]"
 					: multi
-						? "w-max grid-cols-(--cols-sm) lg:max-w-[102rem] lg:grid-cols-(--cols-lg)"
+						? ["w-max grid-cols-(--cols-sm) lg:grid-cols-(--cols-lg)", variant === "quote" ? "lg:max-w-[73.5625rem]" : "lg:max-w-[102rem]"]
 						: "w-max grid-cols-[calc((100vw-3rem)/2.5)_minmax(calc((100vw-3rem)/2.5),min-content)_calc((100vw-3rem)/2.5)]",
 				!multi && v.grid,
 			]}
@@ -235,7 +242,7 @@ const leadText = "text-[0.8125rem] leading-5 whitespace-pre-line lg:text-[1.125r
 
 			<div role="row" style="display: contents">
 				<div
-					class:list={["relative z-2 col-start-1 row-start-1 flex items-center px-4 text-left", v.labelPad]}
+					class:list={["relative z-2 col-start-1 row-start-1 flex items-center px-4 text-left", labelPad]}
 					role="columnheader"
 				>
 					{cornerLabel && <span class:list={["text-[0.75rem] leading-4.5 text-white", v.label]}>{cornerLabel}</span>}
@@ -258,7 +265,7 @@ const leadText = "text-[0.8125rem] leading-5 whitespace-pre-line lg:text-[1.125r
 				</div>
 				{others.map((other, c) => (
 					<div
-						class:list={["relative z-2 row-start-1 flex items-center justify-center px-4 py-8 text-center", v.headerPad]}
+						class:list={["relative z-2 row-start-1 flex items-center justify-center px-4 py-8 text-center", otherPad, v.headerPad]}
 						style={`grid-column: ${c + 3}`}
 						role="columnheader"
 					>
@@ -275,7 +282,7 @@ const leadText = "text-[0.8125rem] leading-5 whitespace-pre-line lg:text-[1.125r
 						)}
 						{/* Shown directly with no logo; hidden until the logo fails to load otherwise. */}
 						<span
-							class:list={["text-[1.125rem] font-medium text-white lg:text-md lg:leading-7.5", other.logo && "hidden"]}
+							class:list={["text-[1.125rem] font-medium text-balance text-white lg:text-md lg:leading-7.5", other.logo && "hidden"]}
 							data-compare-logo-name={other.logo ? "" : undefined}
 						>{other.name}</span>
 					</div>
@@ -290,7 +297,7 @@ const leadText = "text-[0.8125rem] leading-5 whitespace-pre-line lg:text-[1.125r
 					return (
 						<div role="row" style="display: contents">
 							<div
-								class:list={["relative z-2 flex items-center px-4 py-5 text-left", v.rowPad, v.labelPad, ...line]}
+								class:list={["relative z-2 flex items-center px-4 py-5 text-left", v.rowPad, labelPad, ...line]}
 								style={`grid-column: 1; grid-row: ${r + 2}`}
 								role="rowheader"
 							>
@@ -336,14 +343,16 @@ const leadText = "text-[0.8125rem] leading-5 whitespace-pre-line lg:text-[1.125r
 							return (
 							<div
 								class:list={[
-									"relative z-2 flex flex-col items-center justify-center gap-1.5 px-3 py-5 text-center lg:px-5",
+									"relative z-2 flex flex-col items-center justify-center gap-1.5 px-3 py-5 text-center",
+									otherPad,
 									v.rowPad,
 									...line,
 								]}
 								style={`grid-column: ${c + 3}; grid-row: ${r + 2}`}
 								role="cell"
 							>
-								{theirs?.mark && (
+								{/* The "not included" dash only stands in for an empty cell; above a caption it read as clutter. */}
+								{theirs?.mark && !theirs.text?.trim() && (
 									<svg
 										class="size-5 shrink-0 text-white/60 lg:size-6"
 										viewBox="0 0 24 24"

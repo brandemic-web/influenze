@@ -610,6 +610,9 @@ export const pricingGuidePagesQuery = groq`*[_type == "pricingGuidePage" && defi
 	"headings": { ${PRICING_GUIDE_COPY_FIELDS.map((f) => f.key).join(", ")} },
 	creditRows[]{ label, detail, cost },
 	quote,
+	quoteThreeWay,
+	showFit,
+	fitCards[]{ title, body, credits },
 	faqs[]{ question, answer },
 	${SEO_PROJECTION},
 	${SCRIPTS_PROJECTION},
@@ -621,7 +624,10 @@ export interface PricingGuidePageDoc {
 	draft?: boolean;
 	headings?: Record<string, string | undefined>;
 	creditRows?: { label?: string; detail?: string; cost?: string }[];
-	quote?: Record<string, { label?: string; ours?: string; theirs?: string } | undefined>;
+	quote?: Record<string, { label?: string; ours?: string; theirs?: string; theirs2?: string } | undefined>;
+	quoteThreeWay?: boolean;
+	showFit?: boolean;
+	fitCards?: { title?: string; body?: string; credits?: string }[];
 	faqs?: { question?: string; answer?: string }[];
 	seo?: SeoDoc;
 	scripts?: ScriptsDoc;

@@ -64,7 +64,7 @@ export function isPastLastDot(pos: number): boolean {
 /**
  * Which stop the upper price caption labels. Kept separate from VISIBLE_DOTS so
  * adding or removing a dot does not move the caption: it belongs to Scale, whose
- * "Rs 50,000+" reads as the top of the self-serve range.
+ * "₹50,000+" reads as the top of the self-serve range.
  */
 export const CAPTION_STOP = 2;
 

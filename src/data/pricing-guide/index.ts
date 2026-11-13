@@ -3,7 +3,7 @@
  * a page here is a code fallback. /pricing itself is the separate pricing page.
  */
 import type { Faq } from "../faqs";
-import type { CreditRow, PricingGuideCopy, QuoteRowId } from "./shared";
+import type { CreditRow, FitCard, PricingGuideCopy, QuoteRowId } from "./shared";
 
 export interface PricingGuidePage {
 	slug: string;
@@ -12,7 +12,12 @@ export interface PricingGuidePage {
 	seo: { title: string; description: string };
 	headings?: Partial<PricingGuideCopy>;
 	creditRows?: CreditRow[];
-	quote?: Partial<Record<QuoteRowId, { label?: string; ours?: string; theirs?: string }>>;
+	quote?: Partial<Record<QuoteRowId, { label?: string; ours?: string; theirs?: string; theirs2?: string }>>;
+	/** Adds a third column to the quote-led table, headed by `quoteThem2`. */
+	quoteThreeWay?: boolean;
+	/** Shows the "who this makes sense for" cards; `fitCards` falls back to FIT_CARDS. */
+	showFit?: boolean;
+	fitCards?: FitCard[];
 	faqs?: Faq[];
 }
 
@@ -21,6 +26,7 @@ export const PRICING_GUIDES: PricingGuidePage[] = [
 		slug: "credits",
 		name: "How Credits Work",
 		draft: false,
+		showFit: true,
 		seo: {
 			title: "Influenze.ai Pricing: Plans, Credits and Costs",
 			description:
@@ -55,7 +61,7 @@ export const PRICING_GUIDES: PricingGuidePage[] = [
 			{
 				question: "What Influenze.ai plans are available?",
 				answer:
-					"Influenze.ai pricing runs across Starter, Growth, Scale and Enterprise tiers, billed monthly plus taxes. Paying annually adds 5% more credits. Every plan includes the 450M+ profile database, profile analytics, contact details, sharing, AI-driven parameter search, bulk import and export, custom lists and access to all social platforms.",
+					"Influenze.ai pricing runs across Starter, Growth, Scale and Enterprise tiers, billed monthly plus taxes. Paying annually adds 7% more credits. Every plan includes the 450M+ profile database, profile analytics, contact details, sharing, AI-driven parameter search, bulk import and export, custom lists and access to all social platforms.",
 			},
 			{
 				question: "Do unused credits roll over?",
