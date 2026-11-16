@@ -2,14 +2,15 @@
 /**
  * /in/<hub>/<page>/: one Top creators list page, built from the backend
  * snapshot. Pages that failed the quality gate (fewer creators than wanted)
- * are built but marked noindex, so the SEO team can see them.
- *
- * First cut: noindex everywhere, plain markup, no design. The data pipeline
- * is being checked end to end before the pages get designed and opened to
- * Google.
+ * are built too, so the SEO team can see them. Every page is noindex until
+ * the lists have been checked and opened to Google.
  */
 import type { GetStaticPaths } from "astro";
 import Layout from "../../../layouts/Layout.astro";
+import CreatorList from "../../../components/top-creators/CreatorList.astro";
+import MethodNote from "../../../components/top-creators/MethodNote.astro";
+import MoreLists from "../../../components/top-creators/MoreLists.astro";
+import TopCreatorsHero from "../../../components/top-creators/TopCreatorsHero.astro";
 import { TOP_CREATORS_COPY as COPY, formatCount, formatDate, signupUrl } from "../../../data/top-creators";
 import { getSnapshot, splitPath } from "../../../lib/top-creators";
 
@@ -30,53 +31,40 @@ const page = snapshot.pages.find((p) => {
 });
 if (!page) return Astro.rewrite("/404");
 
-const followersLabel = COPY.followersLabel[page.plat];
 const platformName = COPY.platformNames[page.plat];
-const location = (c: (typeof page.creators)[number]) =>
-	[c.location?.city, c.location?.state].filter(Boolean).join(", ") || c.location?.country || "";
+const signup = signupUrl(page.path);
+const { country } = splitPath(page.path);
+const hubPath = `${country}/${page.hub}`;
+const hub = snapshot.hubs.find((h) => h.path === hubPath);
+
+const chips = [
+	page.stats.total_results != null && `${formatCount(page.stats.total_results)} ${COPY.matches}`,
+	page.stats.average_engagement != null && `${page.stats.average_engagement}% ${COPY.averageEngagement}`,
+	`${COPY.refreshed} ${formatDate(page.refreshed_at)}`,
+].filter((chip): chip is string => Boolean(chip));
+
+const siblings = (hub?.pages ?? [])
+	.filter((path) => path !== page.path)
+	.map((path) => snapshot.pages.find((p) => p.path === path))
+	.filter((p) => p != null)
+	.map((p) => ({ href: `/${p.path}/`, label: p.heading }));
+const moreLists = hub ? [...siblings, { href: `/${hubPath}/`, label: `${COPY.allLists} →` }] : siblings;
 ---
 
-<Layout title={page.title} description={page.meta} noindex hideCta>
+<Layout title={page.title} description={page.meta} noindex ctaButtonLabel={COPY.ctaButton} ctaHref={signup}>
 	<main>
-		<p><em>{COPY.draft}</em></p>
-		<h1>{page.heading}</h1>
-		<p>{page.meta}</p>
-		<p>
-			{COPY.ranked}
-			{page.stats.total_results != null && ` ${formatCount(page.stats.total_results)} ${COPY.totalMatches} ${platformName}.`}
-			{page.stats.average_engagement != null && ` Average engagement of this list: ${page.stats.average_engagement}%.`}
-		</p>
-		{!page.passed && <p><strong>Quality gate:</strong> {page.fail_reason}.</p>}
-
-		<table>
-			<thead>
-				<tr>
-					{COPY.columns.map((column, i) => <th>{i === 3 ? followersLabel : column}</th>)}
-				</tr>
-			</thead>
-			<tbody>
-				{page.creators.map((c) => (
-					<tr>
-						<td>{c.rank}</td>
-						<td>{c.photo_url && <img src={c.photo_url} alt="" width="48" height="48" loading="lazy" />}</td>
-						<td>
-							{c.url ? <a href={c.url} rel="nofollow noopener" target="_blank">@{c.handle}</a> : `@${c.handle}`}
-							{c.name && ` ${c.name}`}
-							{c.is_verified && " ✓"}
-						</td>
-						<td>{formatCount(c.followers)}</td>
-						<td>{c.engagement_rate != null ? `${c.engagement_rate}%` : "–"}</td>
-						<td>{COPY.tierNames[c.tier]}</td>
-						<td>{location(c)}</td>
-					</tr>
-				))}
-			</tbody>
-		</table>
-
-		<p>
-			{COPY.cta}: <a href={signupUrl(page.path)}>{COPY.ctaButton}</a>
-		</p>
-		<p>{COPY.refreshed} {formatDate(page.refreshed_at)}.</p>
-		<p><a href={`/${splitPath(page.path).country}/${page.hub}/`}>All {platformName} lists</a></p>
+		<TopCreatorsHero
+			eyebrow={`${COPY.eyebrow} · ${platformName} · ${COPY.countryLabel}`}
+			heading={page.heading}
+			intro={page.meta}
+			chips={chips}
+			signupHref={signup}
+			draft
+		>
+			{!page.passed && <p class="px-6 pb-8 text-center text-[0.875rem] text-ui-amber">Quality gate: {page.fail_reason}.</p>}
+			<CreatorList creators={page.creators} followersLabel={COPY.followersLabel[page.plat]} label={`${page.heading}: ${page.creators.length} ${COPY.listLabel}`} />
+		</TopCreatorsHero>
+		<MethodNote />
+		<MoreLists heading={COPY.moreLists} items={moreLists} />
 	</main>
 </Layout>

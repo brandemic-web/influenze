@@ -17,17 +17,33 @@ export function signupUrl(pagePath: string): string {
 }
 
 export const TOP_CREATORS_COPY = {
+	eyebrow: "Top creators",
 	countryLabel: "India",
 	platformNames: { IG: "Instagram", YT: "YouTube" } as const,
 	followersLabel: { IG: "Followers", YT: "Subscribers" } as const,
 	tierNames: { nano: "Nano", micro: "Micro", mid_tier: "Mid-tier", macro: "Macro", mega: "Mega" } as const,
-	columns: ["#", "Photo", "Creator", "Followers", "Engagement", "Tier", "Location"],
-	ranked: "Ranked by followers. Every creator on this list beats the average engagement rate for their tier.",
-	refreshed: "Numbers refreshed on",
-	totalMatches: "creators match this search on",
-	cta: "Find and contact creators like these on Influenze",
+	columns: { rank: "#", creator: "Creator", engagement: "Engagement", tier: "Tier" },
+	listLabel: "creators, ranked",
+	matches: "creators match this search",
+	averageEngagement: "average engagement",
+	refreshed: "Refreshed",
+	verified: "Verified",
+	noPhoto: "No photo",
+	opensProfile: "opens their profile",
+	method: {
+		heading: "How this list is made",
+		points: [
+			"We search public creator profiles in India that fit this list, then rank the matches by followers.",
+			"A creator only makes the list if their engagement rate beats the average for creators of their size.",
+			"The numbers are refreshed every three months, so follower counts and engagement stay current.",
+		],
+	},
+	cta: "Find, filter and contact creators like these on Influenze",
 	ctaButton: "Sign up free",
-	hubIntro: "Pick a list.",
+	moreLists: "More lists",
+	allLists: "All lists",
+	hubIntro: "Ranked lists of creators in India, each one refreshed every three months.",
+	hubCount: "creators",
 	draft: "Draft: this page is being checked and is not listed on Google yet.",
 } as const;
 

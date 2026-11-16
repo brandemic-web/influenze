@@ -1,14 +1,14 @@
 ---
 /**
  * /in/<hub>/: a Top creators hub, one per platform. Links to every list page
- * under it that passed the quality gate. No creators and no search.
- *
- * First cut: noindex, plain markup, no design. The data pipeline is being
- * checked end to end before the pages get designed and opened to Google.
+ * under it that passed the quality gate. No creators and no search. Noindex
+ * until the lists have been checked and opened to Google.
  */
 import type { GetStaticPaths } from "astro";
 import Layout from "../../../layouts/Layout.astro";
-import { TOP_CREATORS_COPY as COPY } from "../../../data/top-creators";
+import MoreLists from "../../../components/top-creators/MoreLists.astro";
+import TopCreatorsHero from "../../../components/top-creators/TopCreatorsHero.astro";
+import { TOP_CREATORS_COPY as COPY, formatDate, signupUrl } from "../../../data/top-creators";
 import { getSnapshot, splitPath } from "../../../lib/top-creators";
 
 export const prerender = true;
@@ -21,22 +21,30 @@ export const getStaticPaths = (async () => {
 const snapshot = await getSnapshot();
 const hub = snapshot.hubs.find((h) => splitPath(h.path).hub === Astro.params.hub);
 if (!hub) return Astro.rewrite("/404");
-const pages = hub.pages.map((path) => snapshot.pages.find((p) => p.path === path)).filter((p) => p != null);
+
+const cards = hub.pages
+	.map((path) => snapshot.pages.find((p) => p.path === path))
+	.filter((p) => p != null)
+	.map((p) => ({
+		href: `/${p.path}/`,
+		label: p.heading,
+		detail: `${p.stats.kept} ${COPY.hubCount}`,
+		photos: p.creators.map((c) => c.photo_url).filter((url): url is string => Boolean(url)).slice(0, 3),
+	}));
+const platformName = hub.plat ? COPY.platformNames[hub.plat] : null;
+const signup = signupUrl(hub.path);
 ---
 
-<Layout title={hub.title} description={hub.meta} noindex hideCta>
+<Layout title={hub.title} description={hub.meta} noindex ctaButtonLabel={COPY.ctaButton} ctaHref={signup}>
 	<main>
-		<p><em>{COPY.draft}</em></p>
-		<h1>{hub.heading}</h1>
-		<p>{COPY.hubIntro}</p>
-		<ul>
-			{pages.map((page) => (
-				<li>
-					<a href={`/${page.path}/`}>{page.heading}</a>
-					{" "}({page.stats.kept} creators)
-				</li>
-			))}
-		</ul>
-		<p>{COPY.refreshed} {snapshot.refreshed_at.slice(0, 10)}.</p>
+		<TopCreatorsHero
+			eyebrow={[COPY.eyebrow, platformName, COPY.countryLabel].filter(Boolean).join(" · ")}
+			heading={hub.heading}
+			intro={COPY.hubIntro}
+			chips={snapshot.refreshed_at ? [`${COPY.refreshed} ${formatDate(snapshot.refreshed_at)}`] : []}
+			draft
+		>
+			<MoreLists items={cards} variant="cards" />
+		</TopCreatorsHero>
 	</main>
 </Layout>
