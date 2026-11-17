@@ -236,6 +236,21 @@ export default defineType({
 							options: { collapsible: true, collapsed: true },
 							fields: cellFields(PRICING_ROWS),
 						}),
+						defineField({
+							name: "workflow",
+							title: "Workflow — this competitor’s coverage per step",
+							type: "object",
+							options: { collapsible: true, collapsed: true },
+							description: 'Shown as "<name> : <this>" on its own line under each step, below Influenze.ai.',
+							fields: WORKFLOW_STEPS.map((step) =>
+								defineField({
+									name: step.id,
+									title: step.title,
+									type: "string",
+									validation: (Rule) => Rule.custom(isFilled(step.title)).warning(),
+								}),
+							),
+						}),
 					],
 					preview: {
 						select: { title: "name", points: "points" },
@@ -282,13 +297,25 @@ export default defineType({
 		influenzeColumnField("influenzePricing", "Pricing table — Influenze.ai column", "pricing", PRICING_ROWS),
 		headingField("workflowHeading", "workflow"),
 		headingField("workflowSubcopy", "workflow"),
+		headingField("workflowNote", "workflow"),
+		defineField({
+			name: "influenzeWorkflow",
+			title: "Workflow — Influenze.ai coverage per step",
+			type: "object",
+			group: "workflow",
+			options: { collapsible: true, collapsed: false },
+			description: "Leave a step empty to keep the text shown in grey.",
+			fields: WORKFLOW_STEPS.map((step) =>
+				defineField({ name: step.id, title: step.title, type: "string", placeholder: step.influenze }),
+			),
+		}),
 		defineField({
 			name: "workflow",
 			title: "Workflow — their coverage per step",
 			type: "object",
 			group: "workflow",
 			options: { collapsible: false },
-			description: 'Shown as "<competitor> : <this>" under each step, e.g. "Core" or "Verify".',
+			description: 'Shown as "<competitor> : <this>" under each step, e.g. "Core" or "Verify". On a 3- or 4-company page, used only until every competitor’s own workflow (Hero & Cards → Competitors) has text.',
 			fields: WORKFLOW_STEPS.map((step) =>
 				defineField({
 					name: step.id,

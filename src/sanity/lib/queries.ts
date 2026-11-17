@@ -410,12 +410,14 @@ export const comparePagesQuery = groq`*[_type == "comparePage" && defined(slug.c
 		note,
 		features,
 		pricing,
+		workflow,
 	},
 	features,
 	pricing,
 	influenzeFeatures,
 	influenzePricing,
 	workflow,
+	influenzeWorkflow,
 	faqs[]{ question, answer },
 	"headings": { ${SECTION_COPY_FIELDS.map((f) => f.key).join(", ")} },
 	scenarios,
@@ -438,6 +440,7 @@ export interface ComparedCompetitorDoc {
 	note?: string;
 	features?: Record<string, CompareCellDoc | undefined>;
 	pricing?: Record<string, CompareCellDoc | undefined>;
+	workflow?: Record<string, string | undefined>;
 }
 
 export interface ComparePageDoc {
@@ -457,6 +460,7 @@ export interface ComparePageDoc {
 	influenzeFeatures?: Record<string, CompareCellDoc | undefined>;
 	influenzePricing?: Record<string, CompareCellDoc | undefined>;
 	workflow?: Record<string, string | undefined>;
+	influenzeWorkflow?: Record<string, string | undefined>;
 	faqs?: { question?: string; answer?: string }[];
 	headings?: Record<string, string | undefined>;
 	scenarios?: Record<string, { title?: string; description?: string } | undefined>;

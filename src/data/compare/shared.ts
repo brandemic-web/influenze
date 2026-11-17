@@ -202,11 +202,11 @@ export type PricingRowId = (typeof PRICING_ROWS)[number]["id"];
 // ── Workflow coverage ────────────────────────────────────────────────────────
 
 export const WORKFLOW_STEPS = [
-	{ id: "search", title: "Search", icon: "search", influenze: "Core" },
-	{ id: "analyze", title: "Analyze", icon: "eyeSmall", influenze: "Core" },
-	{ id: "shortlist", title: "Shortlist & Compare", icon: "hourglass", influenze: "Core" },
-	{ id: "share", title: "Share", icon: "share", influenze: "Core" },
-	{ id: "outreach", title: "Outreach", icon: "mail", influenze: "Contact details" },
+	{ id: "search", title: "Search", icon: "search", influenze: "Semantic search" },
+	{ id: "analyze", title: "Analyze", icon: "eyeSmall", influenze: "12+ fraud signals" },
+	{ id: "shortlist", title: "Shortlist & Compare", icon: "hourglass", influenze: "Lookalike matching" },
+	{ id: "share", title: "Share", icon: "share", influenze: "Client-ready" },
+	{ id: "outreach", title: "Outreach", icon: "mail", influenze: "Contact unlock" },
 ] as const satisfies readonly { id: string; title: string; icon: WorkflowIconName; influenze: string }[];
 
 export type WorkflowStepId = (typeof WORKFLOW_STEPS)[number]["id"];
@@ -316,6 +316,12 @@ export const SECTION_COPY_FIELDS = [
 		key: "workflowSubcopy",
 		title: "Workflow — subheading",
 		default: "Core means the platform does it; Verify means check the vendor's current documentation.",
+		long: true,
+	},
+	{
+		key: "workflowNote",
+		title: "Workflow — note under the cards",
+		default: "*Standard: the platform covers this step with no notable difference from the market norm.",
 		long: true,
 	},
 	{ key: "scenariosHeading", title: "Scenarios — heading", default: "Which Fits Your Scenario?", twoTone: true },

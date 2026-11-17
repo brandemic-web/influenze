@@ -16,6 +16,7 @@ interface Props {
 }
 
 const { competitor } = Astro.props;
+const multi = competitor.workflowColumns.length > 1;
 ---
 
 <section class="relative pt-16 lg:pt-37.5" aria-labelledby="workflow-heading">
@@ -50,20 +51,42 @@ const { competitor } = Astro.props;
 							class="pointer-events-none absolute top-8.5 -bottom-8.5 left-5.5 w-px bg-linear-to-b from-brand-primary/70 to-white/40 lg:hidden [li:last-child>&]:hidden"
 							aria-hidden="true"
 						></span>
-						<div class="flex items-start gap-4 lg:w-70.5 lg:flex-col lg:items-center lg:gap-0">
+						<div class="flex items-start gap-4 lg:h-full lg:w-70.5 lg:flex-col lg:items-center lg:gap-0">
 							<span class="relative z-1 mt-3 grid size-11 shrink-0 place-items-center rounded-sm bg-surface-pill text-brand-primary lg:mt-0 lg:size-12">
 								<Icon name={step.icon} size="1.5rem" />
 							</span>
-							<div class="min-w-0 flex-1 rounded-sm bg-black/40 py-5 pr-4 pl-6 lg:mt-5.75 lg:w-full lg:flex-none lg:py-6.25 lg:pl-8.25">
-								<h3 class="text-[1.25rem] leading-7 whitespace-nowrap text-white lg:text-md lg:leading-7.5">
+							<div
+								class:list={[
+									"min-w-0 flex-1 rounded-sm bg-black/40 lg:mt-5.75 lg:w-full lg:flex-1",
+									multi ? "p-6" : "py-5 pr-4 pl-6 lg:py-6.25 lg:pl-8.25",
+								]}
+							>
+								<h3 class:list={["text-[1.25rem] leading-7 whitespace-nowrap text-white lg:leading-7.5", multi ? "lg:text-[1.375rem]" : "lg:text-md"]}>
 									{step.title}
 								</h3>
-								<p class="mt-1.5 text-[0.9375rem] leading-6 text-white lg:text-[1.125rem] lg:leading-6.5">
-									<span class="text-brand-primary">Influenze.ai</span> : {step.influenze}
-								</p>
-								<p class="mt-1 text-[0.9375rem] leading-6 text-white/54 lg:mt-2 lg:text-[1.125rem] lg:leading-6.5">
-									{competitor.name} : {competitor.workflow[step.id]}
-								</p>
+								{multi ? (
+									<dl class="mt-3 divide-y divide-white/10 border-t border-white/10 lg:mt-4">
+										<div class="py-2.5 lg:py-3">
+											<dt class="text-[0.75rem] leading-4 tracking-wide text-brand-primary uppercase">Influenze.ai</dt>
+											<dd class="mt-0.5 text-[0.9375rem] leading-6 text-white lg:text-[1.125rem] lg:leading-6.5">{competitor.influenzeWorkflow[step.id]}</dd>
+										</div>
+										{competitor.workflowColumns.map((col) => (
+											<div class="py-2.5 last:pb-0 lg:py-3 lg:last:pb-0">
+												<dt class="text-[0.75rem] leading-4 tracking-wide text-white/45 uppercase">{col.name}</dt>
+												<dd class="mt-0.5 text-[0.9375rem] leading-6 text-white/80 lg:text-[1.125rem] lg:leading-6.5">{col.steps[step.id]}</dd>
+											</div>
+										))}
+									</dl>
+								) : (
+									<>
+										<p class="mt-1.5 text-[0.9375rem] leading-6 text-white lg:text-[1.125rem] lg:leading-6.5">
+											<span class="text-brand-primary">Influenze.ai</span> : {competitor.influenzeWorkflow[step.id]}
+										</p>
+										<p class="mt-1 text-[0.9375rem] leading-6 text-white/54 lg:mt-2 lg:text-[1.125rem] lg:leading-6.5">
+											{competitor.name} : {competitor.workflowColumns[0].steps[step.id]}
+										</p>
+									</>
+								)}
 							</div>
 						</div>
 					</li>
@@ -71,6 +94,13 @@ const { competitor } = Astro.props;
 			}
 		</ol>
 	</div>
+	{
+		competitor.copy.workflowNote && (
+			<p class="mx-auto mt-8 max-w-3xl px-6 text-center text-[0.8125rem] leading-5 text-white/60 lg:mt-10 lg:text-[0.9375rem] lg:leading-6">
+				{competitor.copy.workflowNote}
+			</p>
+		)
+	}
 </section>
 
 <style>
