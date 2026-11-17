@@ -8,6 +8,7 @@ import {
 	MATTERS_STATS,
 	PLATFORM_COPY_FIELDS,
 	PLATFORM_KEYS,
+	PLATFORM_LABELS,
 	SEARCH_BY_CARDS,
 	WHO_FOR_CARDS,
 } from "../../../data/platform/shared";
@@ -58,7 +59,7 @@ const ICON_OPTIONS = ICON_TILES.map((value) => ({ title: value.replace(/([A-Z])/
 
 const template = () => ({
 	draft: true,
-	platform: "instagram",
+	platforms: ["instagram"],
 	searchByCards: SEARCH_BY_CARDS.map((card) => ({ _type: "iconCard", ...card })),
 	whoForCards: WHO_FOR_CARDS.map((card) => ({ _type: "textCard", ...card })),
 });
@@ -98,12 +99,25 @@ export default defineType({
 			validation: (Rule) => Rule.required(),
 		}),
 		defineField({
+			name: "platforms",
+			title: "Platforms shown selected in the mockups",
+			description: "Tick every platform the page's search covers.",
+			type: "array",
+			of: [{ type: "string" }],
+			group: "hero",
+			options: { list: PLATFORM_KEYS.map((value) => ({ title: PLATFORM_LABELS[value], value })), layout: "grid" },
+			initialValue: ["instagram"],
+			validation: (Rule) => Rule.unique(),
+		}),
+		defineField({
+			// The old single choice, kept so documents saved with it still load; the page
+			// reads it only while "platforms" is empty.
 			name: "platform",
-			title: "Platform shown selected in the mockups",
+			title: "Platform (old single choice)",
 			type: "string",
 			group: "hero",
-			options: { list: PLATFORM_KEYS.map((value) => ({ title: value, value })), layout: "radio", direction: "horizontal" },
-			initialValue: "instagram",
+			hidden: ({ value }) => !value,
+			description: "Replaced by the checkboxes above. Clear it once those are set.",
 		}),
 		defineField({
 			name: "draft",

@@ -55,7 +55,7 @@ export default defineType({
 					name: "subcopy",
 					title: "Subcopy line",
 					type: "object",
-					description: 'The highlighted phrase renders in brand green — e.g. lead "Get access to the world\'s largest database of ", highlight "450M+ profiles", trail " across Instagram, Youtube, TikTok & LinkedIn".',
+					description: 'The highlighted phrase renders in brand green — e.g. lead "Get access to the world\'s largest database of ", highlight "450M+ profiles", trail " across Instagram, YouTube, TikTok & LinkedIn".',
 					fields: [
 						defineField({ name: "lead", title: "Text before the highlight", type: "string" }),
 						defineField({ name: "highlight", title: "Highlighted phrase", type: "string" }),

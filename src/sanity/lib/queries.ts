@@ -519,6 +519,7 @@ export async function getAlternativePages(perspectiveCookie?: string) {
 export const platformPagesQuery = groq`*[_type == "platformPage" && defined(slug.current)]{
 	"slug": slug.current,
 	platformName,
+	platforms,
 	platform,
 	draft,
 	"headings": { ${PLATFORM_COPY_FIELDS.map((f) => f.key).join(", ")} },
@@ -552,6 +553,8 @@ type TextSlots = Record<string, { title?: string; body?: string; location?: stri
 export interface PlatformPageDoc {
 	slug: string;
 	platformName?: string;
+	platforms?: string[];
+	/** Legacy single choice, read only when `platforms` is empty. */
 	platform?: string;
 	draft?: boolean;
 	heroBubbles?: { bubbleA?: Image; bubbleB?: Image; bubbleC?: Image; bubbleD?: Image };
