@@ -412,6 +412,9 @@ export const comparePagesQuery = groq`*[_type == "comparePage" && defined(slug.c
 		pricing,
 		workflow,
 	},
+	competitorFeatures1, competitorFeatures2, competitorFeatures3,
+	competitorPricing1, competitorPricing2, competitorPricing3,
+	competitorWorkflow1, competitorWorkflow2, competitorWorkflow3,
 	features,
 	pricing,
 	influenzeFeatures,
@@ -430,7 +433,11 @@ export interface CompareCellDoc {
 	mark?: boolean;
 }
 
-/** One competitor on a three- or four-way compare page: its card and its table columns. */
+/**
+ * One competitor on a three- or four-way compare page: its card, and its table columns.
+ * The columns come from the page's competitorFeatures/Pricing/Workflow<n> fields; the nested
+ * `features`/`pricing`/`workflow` here are the legacy location, read only until migrated.
+ */
 export interface ComparedCompetitorDoc {
 	name?: string;
 	logo?: Image;
@@ -455,6 +462,16 @@ export interface ComparePageDoc {
 	/** 2, 3 or 4: Influenze.ai plus this many minus one competitor cards. */
 	companyCount?: number;
 	competitors?: ComparedCompetitorDoc[];
+	/** Per-competitor table columns, one field per slot (1–3), edited in the table's own tab. */
+	competitorFeatures1?: Record<string, CompareCellDoc | undefined>;
+	competitorFeatures2?: Record<string, CompareCellDoc | undefined>;
+	competitorFeatures3?: Record<string, CompareCellDoc | undefined>;
+	competitorPricing1?: Record<string, CompareCellDoc | undefined>;
+	competitorPricing2?: Record<string, CompareCellDoc | undefined>;
+	competitorPricing3?: Record<string, CompareCellDoc | undefined>;
+	competitorWorkflow1?: Record<string, string | undefined>;
+	competitorWorkflow2?: Record<string, string | undefined>;
+	competitorWorkflow3?: Record<string, string | undefined>;
 	features?: Record<string, CompareCellDoc | undefined>;
 	pricing?: Record<string, CompareCellDoc | undefined>;
 	influenzeFeatures?: Record<string, CompareCellDoc | undefined>;
@@ -585,6 +602,9 @@ export const featureLandingPagesQuery = groq`*[_type == "featureLandingPage" && 
 	howSteps,
 	numbers,
 	freshness,
+	heroBubbles,
+	resultImage,
+	manualImages,
 	whoForCards[]{ title, body },
 	faqs[]{ question, answer },
 	${SEO_PROJECTION},
@@ -599,6 +619,9 @@ export interface FeatureLandingPageDoc {
 	howSteps?: Record<string, { title?: string; body?: string } | undefined>;
 	numbers?: Record<string, { title?: string; body?: string } | undefined>;
 	freshness?: Record<string, { title?: string; body?: string } | undefined>;
+	heroBubbles?: string[];
+	resultImage?: Image & { alt?: string };
+	manualImages?: { left?: Image; right?: Image };
 	whoForCards?: { title?: string; body?: string }[];
 	faqs?: { question?: string; answer?: string }[];
 	seo?: SeoDoc;

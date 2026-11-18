@@ -198,10 +198,21 @@ type NamedCompetitor = ComparedCompetitorDoc & { name: string };
 /** The named competitors of a page set to 3 or 4 companies (at most three); none on a two-way page. */
 function multiWayCompetitors(doc: ComparePageDoc): NamedCompetitor[] {
 	if ((doc.companyCount ?? 2) < 3) return [];
+	const slots = [
+		{ features: doc.competitorFeatures1, pricing: doc.competitorPricing1, workflow: doc.competitorWorkflow1 },
+		{ features: doc.competitorFeatures2, pricing: doc.competitorPricing2, workflow: doc.competitorWorkflow2 },
+		{ features: doc.competitorFeatures3, pricing: doc.competitorPricing3, workflow: doc.competitorWorkflow3 },
+	];
 	return (doc.competitors ?? [])
-		.filter((c): c is NamedCompetitor => has(c?.name))
-		.map((c) => ({ ...c, name: c.name.trim() }))
-		.slice(0, 3);
+		.slice(0, 3)
+		.map((c, i) => ({
+			...c,
+			// The tabs' columns win; the card's own nested columns are the pre-migration fallback.
+			features: slots[i].features ?? c?.features,
+			pricing: slots[i].pricing ?? c?.pricing,
+			workflow: slots[i].workflow ?? c?.workflow,
+		}))
+		.flatMap((c) => (has(c?.name) ? [{ ...c, name: c.name.trim() } as NamedCompetitor] : []));
 }
 
 /**

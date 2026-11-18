@@ -31,6 +31,37 @@ export const NUMBERS_CARDS = [
 export type NumbersId = (typeof NUMBERS_CARDS)[number]["id"];
 export type FreshnessId = (typeof FRESHNESS_CARDS)[number]["id"];
 
+/**
+ * The hero's creator bubbles. Each is a file, assets/images/feature_page/hero/creator_bubble_<name>.png;
+ * a page shows BUBBLES_PER_PAGE of them, picked in Studio. A name with no file yet is skipped, so
+ * new images only need dropping into that folder.
+ */
+export const BUBBLE_NAMES = [
+	"one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve",
+] as const;
+export type BubbleName = (typeof BUBBLE_NAMES)[number];
+export const BUBBLES_PER_PAGE = 6;
+/** What a page without a pick shows: the original six. */
+export const DEFAULT_BUBBLES: readonly BubbleName[] = BUBBLE_NAMES.slice(0, BUBBLES_PER_PAGE);
+/** Studio's checkbox labels: the image's file name, so an editor can match a tick to the file. */
+export const BUBBLE_LABELS = Object.fromEntries(BUBBLE_NAMES.map((name) => [name, `creator_bubble_${name}`])) as Record<
+	BubbleName,
+	string
+>;
+
+/**
+ * The bubbles to show, in slot order: the page's picks that have an image, in number order (a
+ * checkbox list has no reliable order of its own), topped up from the defaults then the rest of
+ * the pool if fewer than six are usable, so the row is never short.
+ */
+export function resolveBubbles(chosen: readonly string[] | undefined, available: readonly string[]): BubbleName[] {
+	const has = new Set(available);
+	const usable = BUBBLE_NAMES.filter((name) => has.has(name));
+	const picked = usable.filter((name) => chosen?.includes(name));
+	const fill = [...DEFAULT_BUBBLES, ...usable].filter((name) => has.has(name) && !picked.includes(name));
+	return [...picked, ...[...new Set(fill)]].slice(0, BUBBLES_PER_PAGE);
+}
+
 /** The creator rows under "the fastest way…" — the app's search results, as drawn. */
 export const RESULT_ROWS = [
 	{

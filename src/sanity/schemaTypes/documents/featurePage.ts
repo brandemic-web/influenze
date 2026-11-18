@@ -1,5 +1,8 @@
 import { defineArrayMember, defineField, defineType } from "sanity";
 import {
+	BUBBLE_LABELS,
+	BUBBLE_NAMES,
+	BUBBLES_PER_PAGE,
 	FEATURE_COPY_FIELDS,
 	FRESHNESS_CARDS,
 	HOW_STEPS,
@@ -7,6 +10,7 @@ import {
 	WHO_FOR_CARDS,
 } from "../../../data/feature/shared";
 import { copyField } from "../../lib/copyField";
+import { BubblePicker } from "../../lib/BubblePicker";
 
 /**
  * One /features/<slug> page — a single feature told end to end, e.g. AI creator
@@ -78,7 +82,37 @@ export default defineType({
 			description: "While on, the page is built only for previews and kept out of search engines — never on the live site.",
 		}),
 		...copyFields("hero"),
+		defineField({
+			name: "heroBubbles",
+			title: "Hero creator bubbles",
+			type: "array",
+			group: "hero",
+			of: [defineArrayMember({ type: "string" })],
+			description: `Tick the ${BUBBLES_PER_PAGE} creator photos to show under the hero. They fill the ${BUBBLES_PER_PAGE} spots in number order, whatever order you tick them in. Leave empty for the default 1–${BUBBLES_PER_PAGE}. A photo with no image file yet is skipped.`,
+			options: { list: BUBBLE_NAMES.map((name) => ({ title: BUBBLE_LABELS[name], value: name })) },
+			components: { input: BubblePicker },
+			validation: (Rule) => [
+				Rule.unique(),
+				Rule.custom((picked) =>
+					!picked || (Array.isArray(picked) && picked.length === BUBBLES_PER_PAGE)
+						? true
+						: `Pick exactly ${BUBBLES_PER_PAGE} — the page fills any gap from the defaults.`,
+				).warning(),
+			],
+		}),
 		...copyFields("manual"),
+		defineField({
+			name: "manualImages",
+			title: "Side images",
+			description:
+				"The two images either side of the text box. Upload a replacement per side — a square PNG or WebP with a transparent background works best, since it is shown whole, not cropped. An empty side keeps the default image.",
+			type: "object",
+			group: "manual",
+			fields: [
+				defineField({ name: "left", title: "Left image (default: spreadsheet)", type: "image" }),
+				defineField({ name: "right", title: "Right image (default: hashtag)", type: "image" }),
+			],
+		}),
 		...copyFields("how"),
 		defineField({
 			name: "howSteps",
@@ -110,6 +144,15 @@ export default defineType({
 			fields: slotFields(FRESHNESS_CARDS, "Card"),
 		}),
 		...copyFields("fastest"),
+		defineField({
+			name: "resultImage",
+			title: "Image under the heading",
+			description:
+				"Replaces the three creator rows shown under the heading. Shown whole, at the rows' width (about 880px wide, upload at 2× for sharpness). Leave empty to keep the default creator rows.",
+			type: "image",
+			group: "fastest",
+			fields: [defineField({ name: "alt", title: "Alt text", type: "string", description: "Describe the image for screen readers and search engines." })],
+		}),
 		...copyFields("whoFor"),
 		defineField({
 			name: "whoForCards",

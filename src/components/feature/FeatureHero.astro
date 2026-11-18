@@ -10,15 +10,9 @@ import Icon from "../app/common/Icon.astro";
 import HeroBackdrop from "../compare/HeroBackdrop.astro";
 import HeroPills from "../compare/HeroPills.astro";
 import TwoTone from "../compare/TwoTone.astro";
-import bubbleOne from "../../assets/images/feature_page/hero/creator_bubble_one.png";
-import bubbleTwo from "../../assets/images/feature_page/hero/creator_bubble_two.png";
-import bubbleThree from "../../assets/images/feature_page/hero/creator_bubble_three.png";
-import bubbleFour from "../../assets/images/feature_page/hero/creator_bubble_four.png";
-import bubbleFive from "../../assets/images/feature_page/hero/creator_bubble_five.png";
-import bubbleSix from "../../assets/images/feature_page/hero/creator_bubble_six.png";
 import logoButton from "../../assets/images/feature_page/hero/search_logo_button.png";
 import { APP_URL, opensNewTab } from "../../data/site";
-import { plainText } from "../../data/feature";
+import { plainText, resolveBubbles } from "../../data/feature";
 import type { ResolvedFeature } from "../../lib/feature-source";
 import { heroCtaId } from "../../data/ctaIds";
 
@@ -26,28 +20,51 @@ interface Props {
 	page: ResolvedFeature;
 }
 
-const { copy } = Astro.props.page;
+const { copy, heroBubbles } = Astro.props.page;
 
-/** Design position and size of each creator bubble, in px on the 1728 frame. */
-const bubbles = [
-	{ src: bubbleOne, x: 288, y: 633, w: 187, h: 190 },
-	{ src: bubbleTwo, x: 676, y: 533, w: 167, h: 171 },
-	{ src: bubbleThree, x: 1013, y: 550, w: 162, h: 165 },
-	{ src: bubbleFour, x: 1221, y: 667, w: 186, h: 188 },
-	{ src: bubbleFive, x: 554, y: 808, w: 161, h: 166 },
-	{ src: bubbleSix, x: 902, y: 801, w: 143, h: 146 },
+// Every creator_bubble_<name>.png in the folder is a candidate; the page's pick (Studio, or the code file's)
+// chooses which six, in number order. Dropping a new file in the folder adds it to the pool.
+const bubbleFiles = import.meta.glob<{ default: ImageMetadata }>("../../assets/images/feature_page/hero/creator_bubble_*.png", {
+	eager: true,
+});
+const bubbleImages = Object.fromEntries(
+	Object.entries(bubbleFiles).map(([path, file]) => [path.match(/creator_bubble_([a-z]+)[.]png$/)![1], file.default]),
+);
+const shown = resolveBubbles(heroBubbles, Object.keys(bubbleImages));
+
+/** Design position and size of each creator bubble slot, in px on the 1728 frame. */
+const bubbleSlots = [
+	{ x: 288, y: 633, w: 187, h: 190 },
+	{ x: 676, y: 533, w: 167, h: 171 },
+	{ x: 1013, y: 550, w: 162, h: 165 },
+	{ x: 1221, y: 667, w: 186, h: 188 },
+	{ x: 554, y: 808, w: 161, h: 166 },
+	{ x: 902, y: 801, w: 143, h: 146 },
 ];
+const bubbles = bubbleSlots.flatMap((slot, i) => (shown[i] ? [{ ...slot, src: bubbleImages[shown[i]] }] : []));
 const rem = (px: number) => `${px / 16}rem`;
 /** A title line longer than the design's (25 characters) steps down a size so it still sets in two lines. */
-const longTitle = Math.max(...plainText(copy.heroTitle).split("\n").map((l) => l.length)) > 25;
+const titleLines = plainText(copy.heroTitle).split("\n");
+const longTitle = Math.max(...titleLines.map((l) => l.length)) > 25;
+/** Rough wrapped line count if each line holds `perLine` characters. */
+const wrappedLines = (perLine: number) => titleLines.reduce((n, l) => n + Math.max(1, Math.ceil(l.length / perLine)), 0);
+// A long title keeps its 3rem size. The design fits two lines, so each extra line pushes everything under the
+// title down by one line height and lengthens the panel and the hero to match. Lines are estimated from
+// character counts (about 36 a line at 3rem), so a borderline title may be off by one.
+const TITLE_LINE_REM = 3.5;
+const extraTitleLines = longTitle ? Math.max(0, wrappedLines(36) - 2) : 0;
+const titleShift = `${extraTitleLines * TITLE_LINE_REM}rem`;
+const titleClass = longTitle
+	? "lg:top-[20.75rem] lg:left-[24.375rem] lg:w-[59.25rem] lg:text-[3rem] lg:leading-[3.5rem]"
+	: "lg:top-[19.75rem] lg:left-[28.25rem] lg:w-[51.5rem] lg:text-9xl lg:leading-[4.5rem]";
 ---
 
 <section class="relative overflow-hidden" aria-labelledby="feature-title">
 	<HeroBackdrop fade="#13101c" />
 
-	<div class="relative mx-auto flex flex-col items-center px-6 pt-32 pb-0 text-center lg:block lg:h-[86rem] lg:w-[108rem] lg:mx-[calc(50%-54rem)] lg:p-0">
+	<div style={`--title-shift:${titleShift}`} class="relative mx-auto flex flex-col items-center px-6 pt-32 pb-0 text-center lg:block lg:h-[calc(86rem+var(--title-shift))] lg:w-[108rem] lg:mx-[calc(50%-54rem)] lg:p-0">
 		<div
-			class="pointer-events-none absolute hidden rounded-[1.25rem] border border-white/10 bg-[#0a0718]/40 backdrop-blur-md lg:block lg:inset-auto lg:top-[12.6875rem] lg:left-[22.375rem] lg:h-[49.5625rem] lg:w-[63.3125rem]"
+			class="pointer-events-none absolute hidden rounded-[1.25rem] border border-white/10 bg-[#0a0718]/40 backdrop-blur-md lg:block lg:inset-auto lg:top-[12.6875rem] lg:left-[22.375rem] lg:h-[calc(49.5625rem+var(--title-shift))] lg:w-[63.3125rem]"
 			aria-hidden="true"
 		>
 		</div>
@@ -63,17 +80,14 @@ const longTitle = Math.max(...plainText(copy.heroTitle).split("\n").map((l) => l
 				id="feature-title"
 				class:list={[
 					"relative mt-4 text-[2.125rem] leading-[1.1] lg:whitespace-pre-line text-white [text-box:trim-both_cap_alphabetic] lg:absolute lg:mt-0 lg:tracking-[-0.08rem] lg:text-balance",
-					// A long title also takes the panel's full inner width, so an unbroken one still sets in two lines clear of the pills.
-					longTitle
-						? "lg:top-[20.75rem] lg:left-[24.375rem] lg:w-[59.25rem] lg:text-[3rem] lg:leading-[3.5rem]"
-						: "lg:top-[19.75rem] lg:left-[28.25rem] lg:w-[51.5rem] lg:text-9xl lg:leading-[4.5rem]",
+					titleClass,
 				]}
 			>
 				<TwoTone text={copy.heroTitle} />
 			</h1>
 
 			<div class="relative mt-8 flex w-full justify-center lg:static lg:mt-0">
-				<HeroPills row="lg:top-[29.375rem]" />
+				<HeroPills row="lg:top-[calc(29.375rem+var(--title-shift))]" />
 			</div>
 
 			{/*
@@ -86,7 +100,7 @@ const longTitle = Math.max(...plainText(copy.heroTitle).split("\n").map((l) => l
 				method="get"
 				target="_blank"
 				role="search"
-				class="relative mt-8 flex h-14 w-full max-w-[27.625rem] items-center rounded-full bg-white/10 pr-1.5 pl-4 backdrop-blur-md focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-brand-primary lg:absolute lg:top-[46.125rem] lg:left-[40.1875rem] lg:mt-0 lg:h-[4.375rem] lg:w-[27.625rem] lg:pr-0 lg:pl-[1.0625rem]"
+				class="relative mt-8 flex h-14 w-full max-w-[27.625rem] items-center rounded-full bg-white/10 pr-1.5 pl-4 backdrop-blur-md focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-brand-primary lg:absolute lg:top-[calc(46.125rem+var(--title-shift))] lg:left-[40.1875rem] lg:mt-0 lg:h-[4.375rem] lg:w-[27.625rem] lg:pr-0 lg:pl-[1.0625rem]"
 			>
 				<Icon name="search" size="1.5rem" class="shrink-0 text-white" />
 				<span class="relative ml-2.5 flex h-full min-w-0 flex-1 items-center lg:ml-[0.6875rem] lg:mr-[4.5rem]">
@@ -114,13 +128,13 @@ const longTitle = Math.max(...plainText(copy.heroTitle).split("\n").map((l) => l
 				</button>
 			</form>
 
-			<div class="relative mt-8 lg:absolute lg:top-[60.625rem] lg:left-0 lg:mt-0 lg:flex lg:w-full lg:justify-center">
+			<div class="relative mt-8 lg:absolute lg:top-[calc(60.625rem+var(--title-shift))] lg:left-0 lg:mt-0 lg:flex lg:w-full lg:justify-center">
 				<Button href={copy.heroCtaLink} newTab={opensNewTab(copy.heroCtaLink)} ctaId={heroCtaId(Astro.url.pathname)}>{plainText(copy.heroCta)}</Button>
 			</div>
 		</div>
 
 		<p
-			class="relative mt-10 max-w-[39.3125rem] text-[1rem] leading-6 text-[#cdcdcd] [text-box:trim-both_cap_alphabetic] lg:absolute lg:top-[69.875rem] lg:left-[34.375rem] lg:mt-0 lg:text-[1.125rem] lg:leading-7"
+			class="relative mt-10 max-w-[39.3125rem] text-[1rem] leading-6 text-[#cdcdcd] [text-box:trim-both_cap_alphabetic] lg:absolute lg:top-[calc(69.875rem+var(--title-shift))] lg:left-[34.375rem] lg:mt-0 lg:text-[1.125rem] lg:leading-7"
 		>
 			<TwoTone text={copy.heroBody} accentClass="text-[1.375rem] font-semibold text-brand-primary" />
 		</p>
@@ -129,24 +143,13 @@ const longTitle = Math.max(...plainText(copy.heroTitle).split("\n").map((l) => l
 			{
 				bubbles.map((b) => (
 					<li
-						class="size-16 shrink-0 lg:absolute lg:size-auto"
-						style={`--x:${rem(b.x)};--y:${rem(b.y)};--w:${rem(b.w)};--h:${rem(b.h)}`}
+						class="size-16 shrink-0 lg:absolute lg:top-(--top) lg:left-(--x) lg:size-auto lg:h-(--h) lg:w-(--w)"
+						style={`--x:${rem(b.x)};--y:${rem(b.y)};--top:calc(${rem(b.y)} + var(--title-shift));--w:${rem(b.w)};--h:${rem(b.h)}`}
 					>
-						<Image src={b.src} alt="" class="h-full w-full object-contain" loading="eager" />
+						<Image src={b.src} alt="" width={374} class="h-full w-full object-contain" loading="eager" />
 					</li>
 				))
 			}
 		</ul>
 	</div>
 </section>
-
-<style>
-	@media (min-width: 1024px) {
-		li[style*="--x"] {
-			left: var(--x);
-			top: var(--y);
-			width: var(--w);
-			height: var(--h);
-		}
-	}
-</style>

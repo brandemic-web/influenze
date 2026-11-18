@@ -70,7 +70,7 @@ const schema = [
 		<div
 			style="background: linear-gradient(180deg, #13101c 0rem, #13101c 1.5rem, #1e1833 7.75rem, #2f215a 14rem, #44299a 20.25rem, #5432c0 26.5rem, #5432c0 32.75rem, #3f2a80 39rem, #261d49 45.25rem, #1a1527 51.5rem, #100e18 57.75rem, #0b0910 64rem, #050407 70.25rem, #020203 76.5rem, #050408 82.75rem, #0e0a1a 89rem, #150f2a 95.25rem, #1e153c 101.5rem, #291c52 107.75rem, #3a2873 114rem, #4a3393 120.25rem, #5a3eb4 126.5rem, #6c4ad6 132.75rem, #7c56f6 139rem, #7551ea 145.25rem, #6444c9 151.5rem, #5338aa 157.75rem, #422b8b 164rem, #32216c 170.25rem, #21144b 176.5rem, #100a23 182.75rem, #010101 189rem)"
 		>
-			<ManualWay eyebrow={copy.manualEyebrow} heading={copy.manualHeading} body={copy.manualBody} />
+			<ManualWay eyebrow={copy.manualEyebrow} heading={copy.manualHeading} body={copy.manualBody} images={page.manualImages} />
 
 			<CreatorsAI
 				sectionGap
@@ -83,7 +83,7 @@ const schema = [
 			<IconCardSection id="numbers" heading={copy.numbersHeading} cards={page.numbersList} gap={11} cardsGap={2.625} cardHeight={11.75} />
 			<IconCardSection id="freshness" heading={copy.freshnessHeading} cards={page.freshnessList} gap={10.375} cardsGap={3.375} cardHeight={13.375} />
 
-			<FastestResults line1={copy.fastestLine1} line2={copy.fastestLine2} />
+			<FastestResults line1={copy.fastestLine1} line2={copy.fastestLine2} image={page.resultImage} />
 
 			<WhoForSection heading={copy.whoForHeading} cards={page.whoForList} gap={12} />
 

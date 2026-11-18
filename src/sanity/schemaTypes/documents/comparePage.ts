@@ -63,6 +63,60 @@ const template = () => ({
 const isMultiWay = ({ document }: { document?: Record<string, unknown> }) =>
 	((document?.companyCount as number | undefined) ?? 2) >= 3;
 
+/** A multi-way page has at most three competitor slots; slot n shows only while the company count needs it. */
+const COMPETITOR_SLOTS = [1, 2, 3] as const;
+const slotHidden =
+	(slot: number) =>
+	({ document }: { document?: Record<string, unknown> }) => {
+		const count = (document?.companyCount as number | undefined) ?? 2;
+		return count < 3 || slot > count - 1;
+	};
+
+const slotDescription = (slot: number) =>
+	`Competitor ${slot}: the ${["first", "second", "third"][slot - 1]} card under Hero & Cards → Competitors. Until every competitor's column has text, the page shows the single “their column” instead.`;
+
+/** One table column per competitor slot, shown in the table's own tab. */
+const competitorTableColumns = (
+	label: string,
+	fieldPrefix: string,
+	group: string,
+	rows: readonly { id: string; label: string }[],
+) =>
+	COMPETITOR_SLOTS.map((slot) =>
+		defineField({
+			name: `${fieldPrefix}${slot}`,
+			title: `${label} — Competitor ${slot} column`,
+			type: "object",
+			group,
+			hidden: slotHidden(slot),
+			options: { collapsible: false },
+			description: slotDescription(slot),
+			fields: cellFields(rows),
+		}),
+	);
+
+/** Each competitor slot's coverage per workflow step, shown in the Workflow tab. */
+const competitorWorkflows = () =>
+	COMPETITOR_SLOTS.map((slot) =>
+		defineField({
+			name: `competitorWorkflow${slot}`,
+			title: `Workflow — Competitor ${slot} coverage per step`,
+			type: "object",
+			group: "workflow",
+			hidden: slotHidden(slot),
+			options: { collapsible: false },
+			description: `${slotDescription(slot)} Shown as "<name> : <this>" under each step, below Influenze.ai.`,
+			fields: WORKFLOW_STEPS.map((step) =>
+				defineField({
+					name: step.id,
+					title: step.title,
+					type: "string",
+					validation: (Rule) => Rule.custom(isFilled(step.title)).warning(),
+				}),
+			),
+		}),
+	);
+
 export default defineType({
 	name: "comparePage",
 	title: "Compare Page",
@@ -162,7 +216,7 @@ export default defineType({
 				direction: "horizontal",
 			},
 			description:
-				"Influenze.ai plus how many competitors. At 3 or 4, add each competitor under “Competitors” below: its card, and its column in the feature and pricing tables.",
+				"Influenze.ai plus how many competitors. At 3 or 4, add each competitor's card under “Competitors” below; its columns are then filled in under the Feature Table, Pricing Table and Workflow tabs.",
 		}),
 		{ ...headingField("chooseCompetitorHeading", "content"), hidden: isMultiWay },
 		{ ...headingField("chooseCompetitorNote", "content"), hidden: isMultiWay },
@@ -182,7 +236,7 @@ export default defineType({
 			group: "content",
 			hidden: (ctx) => !isMultiWay(ctx),
 			description:
-				"One entry per competitor, in the order they appear after Influenze.ai: in the hero cards and as table columns. Each table switches to one column per competitor once every competitor’s column for it has text; until then it shows the single “their column”.",
+				"One card per competitor, in the order they appear after Influenze.ai. The order is also the column order: the first card is “Competitor 1” in the Feature Table, Pricing Table and Workflow tabs.",
 			of: [
 				defineArrayMember({
 					name: "comparedCompetitor",
@@ -222,34 +276,16 @@ export default defineType({
 							type: "string",
 							placeholder: "Verified on qoruz.com, Oct 2026",
 						}),
-						defineField({
-							name: "features",
-							title: "Feature table — this competitor’s column",
-							type: "object",
-							options: { collapsible: true, collapsed: true },
-							fields: cellFields(FEATURE_ROWS),
-						}),
-						defineField({
-							name: "pricing",
-							title: "Pricing table — this competitor’s column",
-							type: "object",
-							options: { collapsible: true, collapsed: true },
-							fields: cellFields(PRICING_ROWS),
-						}),
+						// Legacy: these columns now live in the Feature Table, Pricing Table and
+						// Workflow tabs. Kept hidden so unmigrated documents still render; delete
+						// together with the fallback in lib/compare-source.ts once migrated.
+						defineField({ name: "features", type: "object", hidden: true, fields: cellFields(FEATURE_ROWS) }),
+						defineField({ name: "pricing", type: "object", hidden: true, fields: cellFields(PRICING_ROWS) }),
 						defineField({
 							name: "workflow",
-							title: "Workflow — this competitor’s coverage per step",
 							type: "object",
-							options: { collapsible: true, collapsed: true },
-							description: 'Shown as "<name> : <this>" on its own line under each step, below Influenze.ai.',
-							fields: WORKFLOW_STEPS.map((step) =>
-								defineField({
-									name: step.id,
-									title: step.title,
-									type: "string",
-									validation: (Rule) => Rule.custom(isFilled(step.title)).warning(),
-								}),
-							),
+							hidden: true,
+							fields: WORKFLOW_STEPS.map((step) => defineField({ name: step.id, type: "string" })),
 						}),
 					],
 					preview: {
@@ -278,10 +314,11 @@ export default defineType({
 			title: "Feature table — their column",
 			type: "object",
 			group: "features",
-			description: "On a 3- or 4-company page, used only until every competitor’s own feature column has text.",
+			hidden: isMultiWay,
 			options: { collapsible: false },
 			fields: cellFields(FEATURE_ROWS),
 		}),
+		...competitorTableColumns("Feature table", "competitorFeatures", "features", FEATURE_ROWS),
 		influenzeColumnField("influenzeFeatures", "Feature table — Influenze.ai column", "features", FEATURE_ROWS),
 		headingField("pricingHeading", "pricing"),
 		headingField("pricingSubcopy", "pricing"),
@@ -290,10 +327,11 @@ export default defineType({
 			title: "Pricing table — their column",
 			type: "object",
 			group: "pricing",
-			description: "On a 3- or 4-company page, used only until every competitor’s own pricing column has text.",
+			hidden: isMultiWay,
 			options: { collapsible: false },
 			fields: cellFields(PRICING_ROWS),
 		}),
+		...competitorTableColumns("Pricing table", "competitorPricing", "pricing", PRICING_ROWS),
 		influenzeColumnField("influenzePricing", "Pricing table — Influenze.ai column", "pricing", PRICING_ROWS),
 		headingField("workflowHeading", "workflow"),
 		headingField("workflowSubcopy", "workflow"),
@@ -314,8 +352,9 @@ export default defineType({
 			title: "Workflow — their coverage per step",
 			type: "object",
 			group: "workflow",
+			hidden: isMultiWay,
 			options: { collapsible: false },
-			description: 'Shown as "<competitor> : <this>" under each step, e.g. "Core" or "Verify". On a 3- or 4-company page, used only until every competitor’s own workflow (Hero & Cards → Competitors) has text.',
+			description: 'Shown as "<competitor> : <this>" under each step, e.g. "Core" or "Verify".',
 			fields: WORKFLOW_STEPS.map((step) =>
 				defineField({
 					name: step.id,
@@ -325,6 +364,7 @@ export default defineType({
 				}),
 			),
 		}),
+		...competitorWorkflows(),
 
 		headingField("scenariosHeading", "scenarios"),
 		defineField({
