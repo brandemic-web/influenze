@@ -49,6 +49,10 @@ export interface TopCreatorsPage {
 	meta: string;
 	heading: string;
 	refreshed_at: string;
+	/** The admin's Publishing setting: built at all. Missing (older snapshots) means yes. */
+	published?: boolean;
+	/** Open to Google. Missing means no, so nothing is indexed by accident. */
+	indexed?: boolean;
 	passed: boolean;
 	fail_reason: string | null;
 	stats: TopCreatorsPageStats;
@@ -64,8 +68,10 @@ export interface TopCreatorsHub {
 	title: string;
 	meta: string;
 	heading: string;
-	/** Paths of the list pages that passed the quality gate, in path order. */
+	/** Paths of the published list pages, in path order. */
 	pages: string[];
+	/** Open to Google: true once any page it lists is. */
+	indexed?: boolean;
 }
 
 export interface TopCreatorsSnapshot {
@@ -91,6 +97,8 @@ async function load(): Promise<TopCreatorsSnapshot> {
 		if (!res.ok) throw new Error(`HTTP ${res.status}`);
 		const snapshot = (await res.json()) as TopCreatorsSnapshot;
 		if (!Array.isArray(snapshot.pages) || !Array.isArray(snapshot.hubs)) throw new Error("not a snapshot");
+		// Unpublished pages stay in the snapshot (keeping their creators) but are not built.
+		snapshot.pages = snapshot.pages.filter((page) => page.published !== false);
 		console.log(`[top-creators] snapshot ${snapshot.refresh_id}: ${snapshot.pages.length} pages, ${snapshot.hubs.length} hubs`);
 		return snapshot;
 	} catch (err) {

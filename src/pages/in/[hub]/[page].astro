@@ -1,9 +1,8 @@
 ---
 /**
  * /in/<hub>/<page>/: one Top creators list page, built from the backend
- * snapshot. Pages that failed the quality gate (fewer creators than wanted)
- * are built too, so the SEO team can see them. Every page is noindex until
- * the lists have been checked and opened to Google.
+ * snapshot. Whether Google may index it is the admin tool's Publishing
+ * setting for the page (`indexed`).
  */
 import type { GetStaticPaths } from "astro";
 import Layout from "../../../layouts/Layout.astro";
@@ -51,7 +50,7 @@ const siblings = (hub?.pages ?? [])
 const moreLists = hub ? [...siblings, { href: `/${hubPath}/`, label: `${COPY.allLists} →` }] : siblings;
 ---
 
-<Layout title={page.title} description={page.meta} noindex ctaButtonLabel={COPY.ctaButton} ctaHref={signup}>
+<Layout title={page.title} description={page.meta} noindex={!page.indexed} ctaButtonLabel={COPY.ctaButton} ctaHref={signup}>
 	<main>
 		<TopCreatorsHero
 			eyebrow={`${COPY.eyebrow} · ${platformName} · ${COPY.countryLabel}`}
@@ -59,9 +58,8 @@ const moreLists = hub ? [...siblings, { href: `/${hubPath}/`, label: `${COPY.all
 			intro={page.meta}
 			chips={chips}
 			signupHref={signup}
-			draft
+			draft={!page.indexed}
 		>
-			{!page.passed && <p class="px-6 pb-8 text-center text-[0.875rem] text-ui-amber">Quality gate: {page.fail_reason}.</p>}
 			<CreatorList creators={page.creators} followersLabel={COPY.followersLabel[page.plat]} label={`${page.heading}: ${page.creators.length} ${COPY.listLabel}`} />
 		</TopCreatorsHero>
 		<MethodNote />
