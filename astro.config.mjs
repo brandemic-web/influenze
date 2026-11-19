@@ -19,6 +19,8 @@ const isLandingPage = (/** @type {string} */ url) =>
   /\/(alternatives|comparison|features|icp|platforms|pricing)\/[^/]+\/?$/.test(new URL(url).pathname);
 /// Neither is a public page: /qc 404s on production, /studio is the CMS.
 const isPrivatePage = (/** @type {string} */ url) => /\/(studio|qc)\/?$/.test(url);
+/// The Top creators pages (/in/<hub>/...) are noindex while they are checked, so they stay out of every sitemap for now.
+const isTopCreatorsPage = (/** @type {string} */ url) => /^\/in\//.test(new URL(url).pathname);
 
 /// Filled by the sitemap filter, so these URLs match @astrojs/sitemap's exactly.
 /** @type {string[]} */
@@ -62,7 +64,7 @@ export default defineConfig({
   integrations: [sitemap({
       filter: (page) => {
           if (isLandingPage(page)) return true;
-          if (!isPrivatePage(page)) mainPageUrls.push(page);
+          if (!isPrivatePage(page) && !isTopCreatorsPage(page)) mainPageUrls.push(page);
           return false;
       },
       customSitemaps: ["https://influenze.ai/sitemap.xml"],

@@ -1,0 +1,49 @@
+---
+/**
+ * /in/<hub>/: a Top creators hub, one per platform. Links to every published
+ * list page under it. Open to Google once any of those pages is.
+ */
+import type { GetStaticPaths } from "astro";
+import Layout from "../../../layouts/Layout.astro";
+import MoreLists from "../../../components/top-creators/MoreLists.astro";
+import TopCreatorsHero from "../../../components/top-creators/TopCreatorsHero.astro";
+import { TOP_CREATORS_COPY as COPY, signupUrl } from "../../../data/top-creators";
+import { getSnapshot, splitPath } from "../../../lib/top-creators";
+
+export const prerender = true;
+
+export const getStaticPaths = (async () => {
+	const snapshot = await getSnapshot();
+	return snapshot.hubs.map((hub) => ({ params: { hub: splitPath(hub.path).hub } }));
+}) satisfies GetStaticPaths;
+
+const snapshot = await getSnapshot();
+const hub = snapshot.hubs.find((h) => splitPath(h.path).hub === Astro.params.hub);
+if (!hub) return Astro.rewrite("/404");
+
+const cards = hub.pages
+	.map((path) => snapshot.pages.find((p) => p.path === path))
+	.filter((p) => p != null)
+	.map((p) => ({
+		href: `/${p.path}/`,
+		label: p.heading,
+		detail: `${p.stats.kept} ${COPY.hubCount}`,
+		photos: p.creators.map((c) => c.photo_url).filter((url): url is string => Boolean(url)).slice(0, 3),
+	}));
+const signup = signupUrl(hub.path);
+---
+
+<Layout title={hub.title} description={hub.meta} noindex={!hub.indexed} ctaButtonLabel={COPY.ctaButton} ctaHref={signup}>
+	<main>
+		<TopCreatorsHero
+			heading={hub.heading}
+			draft={!hub.indexed}
+		>
+			<MoreLists
+				items={cards}
+				variant="cards"
+				search={{ label: COPY.searchLabel, placeholder: COPY.searchPlaceholder, empty: COPY.noMatches }}
+			/>
+		</TopCreatorsHero>
+	</main>
+</Layout>

@@ -1,0 +1,88 @@
+---
+/**
+ * Links to other Top creators lists, as pills. Used under a list (its
+ * siblings) and as the hub page's whole body (cards, with counts).
+ */
+interface Item {
+	href: string;
+	label: string;
+	/** Under the label on a card, e.g. "10 creators". */
+	detail?: string;
+	/** A few creator photos stacked on the card. */
+	photos?: string[];
+}
+
+interface Props {
+	heading?: string;
+	items: Item[];
+	variant?: "pills" | "cards";
+	/** Cards only: a search box that filters them as you type (shown once the script runs). */
+	search?: { label: string; placeholder: string; empty: string };
+}
+
+const { heading, items, variant = "pills", search } = Astro.props;
+---
+
+{items.length > 0 && (
+	<section class="px-6 pb-20 lg:pb-32" aria-label={heading}>
+		<div class="mx-auto max-w-280">
+			{heading && <h2 class="text-center text-[1.5rem] text-white lg:text-[2.25rem]">{heading}</h2>}
+			{variant === "pills" ? (
+				<ul class:list={["flex flex-wrap justify-center gap-3", heading && "mt-8 lg:mt-10"]}>
+					{items.map((item) => (
+						<li>
+							<a
+								href={item.href}
+								class="inline-block rounded-full border border-white/20 bg-surface-dark/40 px-5 py-2.5 text-[0.875rem] text-white transition-colors hover:border-brand-primary hover:text-brand-primary lg:text-[1rem]"
+							>
+								{item.label}
+							</a>
+						</li>
+					))}
+				</ul>
+			) : (
+				<div data-list-search>
+				{search && (
+					<div class="mx-auto mb-8 max-w-140 lg:mb-10" hidden data-list-search-box>
+						<label class="sr-only" for="list-search">{search.label}</label>
+						<input
+							id="list-search"
+							type="search"
+							placeholder={search.placeholder}
+							autocomplete="off"
+							class="w-full rounded-full border border-white/20 bg-surface-dark/60 px-6 py-3.5 text-[1rem] text-white placeholder:text-white/40 backdrop-blur-md outline-none focus:border-brand-primary"
+						/>
+					</div>
+				)}
+				<ul class:list={["grid gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-6", heading && "mt-8 lg:mt-10"]}>
+					{items.map((item) => (
+						<li data-list-search-item={item.label.toLowerCase()}>
+							<a
+								href={item.href}
+								class="group flex h-full flex-col justify-between gap-6 rounded-[1.25rem] border border-white/15 bg-surface-dark/40 p-6 backdrop-blur-md transition-colors hover:border-brand-primary lg:p-8"
+							>
+								<span class="text-[1.125rem] leading-snug text-white group-hover:text-brand-primary lg:text-[1.25rem]">{item.label}</span>
+								<span class="flex items-center justify-between gap-4">
+									<span class="text-[0.875rem] text-white/60">{item.detail}</span>
+									{item.photos && item.photos.length > 0 && (
+										<span class="flex -space-x-3" aria-hidden="true">
+											{item.photos.map((src) => (
+												<img src={src} alt="" width="36" height="36" loading="lazy" class="size-9 rounded-full border-2 border-surface-dark object-cover" />
+											))}
+										</span>
+									)}
+								</span>
+							</a>
+						</li>
+					))}
+				</ul>
+				{search && <p class="mt-8 text-center text-[1rem] text-white/60" hidden data-list-search-empty>{search.empty}</p>}
+				</div>
+			)}
+		</div>
+	</section>
+)}
+
+<script>
+	import "../../scripts/top-creators-search";
+</script>

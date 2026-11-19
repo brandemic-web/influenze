@@ -1,0 +1,58 @@
+---
+/**
+ * /in/<hub>/<page>/: one Top creators list page, built from the backend
+ * snapshot. Whether Google may index it is the admin tool's Publishing
+ * setting for the page (`indexed`).
+ */
+import type { GetStaticPaths } from "astro";
+import Layout from "../../../layouts/Layout.astro";
+import CreatorList from "../../../components/top-creators/CreatorList.astro";
+import MoreLists from "../../../components/top-creators/MoreLists.astro";
+import TopCreatorsHero from "../../../components/top-creators/TopCreatorsHero.astro";
+import { TOP_CREATORS_COPY as COPY, pageIntro, signupUrl } from "../../../data/top-creators";
+import { getSnapshot, splitPath } from "../../../lib/top-creators";
+
+export const prerender = true;
+
+export const getStaticPaths = (async () => {
+	const snapshot = await getSnapshot();
+	return snapshot.pages.map((page) => {
+		const { hub, page: slug } = splitPath(page.path);
+		return { params: { hub, page: slug } };
+	});
+}) satisfies GetStaticPaths;
+
+const snapshot = await getSnapshot();
+const page = snapshot.pages.find((p) => {
+	const { hub, page: slug } = splitPath(p.path);
+	return hub === Astro.params.hub && slug === Astro.params.page;
+});
+if (!page) return Astro.rewrite("/404");
+
+const signup = signupUrl(page.path);
+const { country } = splitPath(page.path);
+const hubPath = `${country}/${page.hub}`;
+const hub = snapshot.hubs.find((h) => h.path === hubPath);
+
+const siblings = (hub?.pages ?? [])
+	.filter((path) => path !== page.path)
+	.map((path) => snapshot.pages.find((p) => p.path === path))
+	.filter((p) => p != null)
+	.map((p) => ({ href: `/${p.path}/`, label: p.heading }))
+	.slice(0, COPY.moreListsLimit);
+const moreLists = hub ? [...siblings, { href: `/${hubPath}/`, label: `${COPY.allLists} →` }] : siblings;
+---
+
+<Layout title={page.title} description={page.meta} noindex={!page.indexed} ctaButtonLabel={COPY.ctaButton} ctaHref={signup}>
+	<main>
+		<TopCreatorsHero
+			heading={page.heading}
+			intro={pageIntro(page.meta)}
+			signupHref={signup}
+			draft={!page.indexed}
+		>
+			<CreatorList creators={page.creators} plat={page.plat} label={`${page.heading}: ${page.creators.length} ${COPY.listLabel}`} />
+		</TopCreatorsHero>
+		<MoreLists heading={COPY.moreLists} items={moreLists} />
+	</main>
+</Layout>

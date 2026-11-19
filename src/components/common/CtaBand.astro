@@ -22,9 +22,10 @@ import shareIcon from "../../assets/images/common/logos_and_icons/share_icon_wit
 
 interface Props {
 	buttonLabel?: string;
+	href?: string;
 }
 
-const { buttonLabel = "Free Trial" } = Astro.props;
+const { buttonLabel = "Free Trial", href = APP_URL } = Astro.props;
 ---
 
 <section
@@ -173,7 +174,7 @@ const { buttonLabel = "Free Trial" } = Astro.props;
 			Ready to get influenzed?
 		</h2>
 		<div data-cta-button>
-			<Button href={APP_URL} newTab>{buttonLabel}</Button>
+			<Button href={href} newTab>{buttonLabel}</Button>
 		</div>
 	</div>
 </section>

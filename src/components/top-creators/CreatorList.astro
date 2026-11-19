@@ -1,0 +1,106 @@
+---
+/**
+ * The ranked creators, in the compare tables' glass panel. An ordered list so
+ * the ranking reads without styles; from lg each row lines up under the column
+ * labels, below lg it stacks into a card with the numbers on a second line.
+ */
+import { TOP_CREATORS_COPY as COPY, formatCount } from "../../data/top-creators";
+import type { TopCreator } from "../../lib/top-creators";
+
+interface Props {
+	creators: TopCreator[];
+	plat: "IG" | "YT";
+	label: string;
+}
+
+const { creators, plat, label } = Astro.props;
+const followersLabel = COPY.followersLabel[plat];
+const averageLabel = COPY.averageLabel[plat];
+// Likes on Instagram; views on YouTube, falling back to likes if a channel has none.
+const average = (c: TopCreator) => (plat === "YT" ? (c.average_views ?? c.average_likes) : c.average_likes);
+const grid = "lg:grid-cols-[4rem_minmax(0,1fr)_10rem_9rem_8rem]";
+const initial = (c: TopCreator) => (c.name || c.handle).trim().charAt(0).toUpperCase();
+---
+
+<section class="relative px-4 pb-20 lg:px-6 lg:pb-32" aria-label={label}>
+	<div class="mx-auto max-w-280 rounded-[1.25rem] border border-white/15 bg-surface-dark/40 backdrop-blur-md">
+		<div class:list={["hidden px-8 py-5 text-[0.875rem] text-white/60 lg:grid", grid]} aria-hidden="true">
+			<span>{COPY.columns.rank}</span>
+			<span>{COPY.columns.creator}</span>
+			<span class="text-right">{followersLabel}</span>
+			<span class="text-right">{averageLabel}</span>
+			<span class="text-right">{COPY.columns.engagement}</span>
+		</div>
+		<ol>
+			{creators.map((c, i) => (
+				<li
+					class:list={[
+						"grid grid-cols-[2.25rem_3rem_minmax(0,1fr)] items-center gap-x-3 gap-y-2 px-4 py-4 lg:gap-x-0 lg:px-8 lg:py-5",
+						grid,
+						"border-t border-white/10",
+						i === 0 && "max-lg:border-t-0",
+					]}
+				>
+					<span class="text-[1.25rem] text-brand-primary tabular-nums lg:text-md">{c.rank ?? i + 1}</span>
+
+					<div class="col-span-2 flex min-w-0 items-center gap-3 lg:col-span-1 lg:gap-4">
+						{c.photo_url ? (
+							<img
+								src={c.photo_url}
+								alt=""
+								width="56"
+								height="56"
+								loading={i < 4 ? "eager" : "lazy"}
+								class="size-12 shrink-0 rounded-full border border-white/15 object-cover lg:size-14"
+							/>
+						) : (
+							<span
+								class="flex size-12 shrink-0 items-center justify-center rounded-full bg-surface-pill text-[1.125rem] text-white/70 lg:size-14"
+								aria-hidden="true"
+							>
+								{initial(c)}
+							</span>
+						)}
+						<div class="min-w-0">
+							<p class="flex items-center gap-1.5 truncate text-[1rem] text-white lg:text-[1.125rem]">
+								<span class="truncate">{c.name || `@${c.handle}`}</span>
+								{c.is_verified && (
+									<svg class="size-4 shrink-0 text-ui-violet" viewBox="0 0 24 24" fill="currentColor" role="img" aria-label={COPY.verified}>
+										<path d="M12 1.5l2.6 2.1 3.3-.4 1.2 3.1 3.1 1.2-.4 3.3 2.1 2.6-2.1 2.6.4 3.3-3.1 1.2-1.2 3.1-3.3-.4L12 22.5l-2.6-2.1-3.3.4-1.2-3.1-3.1-1.2.4-3.3L.1 12l2.1-2.6-.4-3.3 3.1-1.2 1.2-3.1 3.3.4z" />
+										<path d="M8 12.2l2.6 2.6L16.2 9" fill="none" stroke="#0A0718" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+									</svg>
+								)}
+							</p>
+							{c.url ? (
+								<a
+									href={c.url}
+									rel="nofollow noopener"
+									target="_blank"
+									class="truncate text-[0.875rem] text-white/60 underline-offset-4 hover:text-brand-primary hover:underline"
+									aria-label={`@${c.handle}, ${COPY.opensProfile}`}
+								>@{c.handle}</a>
+							) : (
+								<span class="truncate text-[0.875rem] text-white/60">@{c.handle}</span>
+							)}
+						</div>
+					</div>
+
+					<dl class="col-span-2 col-start-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[0.8125rem] text-white/80 lg:contents">
+						<div class="flex gap-1 lg:block lg:text-right">
+							<dt class="text-white/50 lg:sr-only">{followersLabel}</dt>
+							<dd class="tabular-nums text-white lg:text-[1.125rem]">{formatCount(c.followers)}</dd>
+						</div>
+						<div class="flex gap-1 lg:block lg:text-right">
+							<dt class="text-white/50 lg:sr-only">{averageLabel}</dt>
+							<dd class="tabular-nums text-white lg:text-[1.125rem]">{formatCount(average(c))}</dd>
+						</div>
+						<div class="flex gap-1 lg:block lg:text-right">
+							<dt class="text-white/50 lg:sr-only">{COPY.columns.engagement}</dt>
+							<dd class="tabular-nums text-white lg:text-[1.125rem]">{c.engagement_rate != null ? `${c.engagement_rate}%` : "–"}</dd>
+						</div>
+					</dl>
+				</li>
+			))}
+		</ol>
+	</div>
+</section>

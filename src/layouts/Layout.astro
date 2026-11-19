@@ -20,6 +20,8 @@ interface Props {
 	title?: string;
 	description?: string;
 	ctaButtonLabel?: string;
+	/** The CTA band's link, when a page tags its sign-ups (Top creators). */
+	ctaHref?: string;
 	hideCta?: boolean;
 	/** Keeps a page out of search results. Used by 404. */
 	noindex?: boolean;
@@ -49,6 +51,7 @@ const {
 	title = SITE.title,
 	description = SITE.description,
 	ctaButtonLabel,
+	ctaHref,
 	hideCta = false,
 	noindex = false,
 	dateModified,
@@ -240,7 +243,7 @@ const inlineFooterScripts = [settings?.scripts?.footer, scripts?.footer].filter(
 		}
 		<Header />
 		<slot />
-		{!hideCta && <CtaBand buttonLabel={ctaButtonLabel} />}
+		{!hideCta && <CtaBand buttonLabel={ctaButtonLabel} href={ctaHref} />}
 		<Footer />
 		{
 			draftMode && (
