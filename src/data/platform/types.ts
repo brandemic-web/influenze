@@ -20,8 +20,8 @@ export interface PlatformPage {
 	slug: string;
 	/** "Instagram" — fills {name} in the copy. */
 	name: string;
-	/** Which chip the mockups show selected. */
-	platform: PlatformKey;
+	/** The chips the mockups show selected. */
+	platforms: PlatformKey[];
 	/** Built only in dev and PR previews, and noindexed there, while on. */
 	draft: boolean;
 	seo: { title: string; description: string };

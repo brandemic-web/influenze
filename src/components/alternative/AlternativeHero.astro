@@ -3,6 +3,8 @@
  * Alternative-page hero: eyebrow, two-line title, the framed intro with its three
  * floating pills, then the CTAs. Backdrop and pills are the compare hero's; only the
  * pills' lg-up positions differ, measured off the Figma frame against the 516px box.
+ * The platforms pill hangs off the box's bottom edge, so a longer intro pushes it down
+ * instead of running under it.
  */
 import Button from "../common/Button.astro";
 import HeroBackdrop from "../compare/HeroBackdrop.astro";
@@ -46,7 +48,7 @@ const { copy } = Astro.props.competitor;
 			<HeroPills
 				profiles="lg:top-14 lg:right-[calc(100%-1.0625rem)]"
 				credits="lg:top-2 lg:left-[calc(100%-1.375rem)]"
-				platforms="lg:top-[10.1875rem] lg:left-1/2 lg:-translate-x-1/2"
+				platforms="lg:-bottom-[0.9375rem] lg:left-1/2 lg:-translate-x-1/2"
 			/>
 		</div>
 

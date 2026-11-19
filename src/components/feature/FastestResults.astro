@@ -17,14 +17,18 @@ import { RESULT_ROWS, plainText } from "../../data/feature";
 interface Props {
 	line1: string;
 	line2: string;
+	/** Studio upload that replaces the creator rows below the heading; none keeps the rows. */
+	image?: { src: string; alt: string };
 }
 
-const { line1, line2 } = Astro.props;
+const { line1, line2, image } = Astro.props;
 const avatars = { saloni, justin, placeholder } as const;
 const levelColour = { GOOD: "text-[#3fbd71]", AVERAGE: "text-[#f2994a]" } as const;
 // Below lg the two lines run together as one heading.
 /** Lines longer than the design's (31 characters) step down a size so each still fits its row. */
 const long = Math.max(plainText(line1).length, plainText(line2).length) > 31;
+// Gap from heading to rows: a smaller (long) heading sits a little further off them than the design's.
+const gap = long ? "lg:mt-[2.5rem]" : "lg:mt-[1.5625rem]";
 const line = [
 	"text-[1.875rem] capitalize leading-[1.15] lg:block lg:[text-box:trim-both_cap_alphabetic]",
 	long ? "lg:text-[3rem] lg:leading-[3.5rem]" : "lg:text-9xl lg:leading-[4.375rem]",
@@ -32,13 +36,30 @@ const line = [
 ---
 
 <section class="relative px-6 pt-16 lg:px-0 lg:pt-[11.5625rem]" aria-labelledby="fastest-heading">
-	<h2 id="fastest-heading" class:list={["text-[1.875rem] leading-[1.15] text-white lg:mx-[calc(50%-54rem)] lg:w-[108rem]", long ? "lg:text-[3rem]" : "lg:text-9xl"]}>
-		<span class:list={[...line, "lg:ml-[6.875rem]"]}><TwoTone text={line1} /></span>{" "}
-		<span class:list={[...line, long ? "lg:mt-[2rem]" : "lg:mt-[2.75rem]", "lg:ml-[37.5625rem]"]}><TwoTone text={line2} /></span>
-	</h2>
+	{/* The design staggers two short lines across the whole frame, line 1 left and line 2 right. Longer lines would run wider than the rows, so they set as one centred heading that wraps over them instead. */}
+	{
+		long ? (
+			<h2 id="fastest-heading" class="text-[1.875rem] capitalize leading-[1.15] text-white lg:mx-auto lg:max-w-[80rem] lg:px-6 lg:text-center lg:text-[3rem] lg:leading-[3.5rem]">
+				<TwoTone text={line1} />{" "}
+				<TwoTone text={line2} />
+			</h2>
+		) : (
+				<h2 id="fastest-heading" class:list={["text-[1.875rem] leading-[1.15] text-white lg:mx-[calc(50%-54rem)] lg:w-[108rem]", long ? "lg:text-[3rem]" : "lg:text-9xl"]}>
+					<span class:list={[...line, "lg:ml-[6.875rem]"]}><TwoTone text={line1} /></span>{" "}
+					{/* The design's stagger fixes line 2 at 37.56rem, which suits its short lines only; a longer line runs past the rows, so it right-aligns against line 1's left margin instead. */}
+					<span class:list={[...line, long ? "lg:mt-[0.875rem] lg:pr-[6.875rem] lg:text-right" : "lg:mt-[2.75rem] lg:ml-[37.5625rem]"]}><TwoTone text={line2} /></span>
+				</h2>
+		)
+	}
 
-	{/* 419px from the frame's left, as drawn — not quite centred. Below lg each row stacks. */}
-	<div class="relative mx-auto mt-8 max-w-[54.9375rem] lg:mt-[1.5625rem] lg:ml-[calc(50%-27.8125rem)]" aria-hidden="true">
+	{/* An uploaded image replaces the rows. The rows sit 419px from the frame's left, as drawn — not quite centred; below lg each row stacks. */}
+	{
+		image ? (
+			<div class:list={["mx-auto mt-8 max-w-[54.9375rem] lg:ml-[calc(50%-27.8125rem)]", gap]}>
+				<img src={image.src} alt={image.alt} class="h-auto w-full" loading="lazy" />
+			</div>
+		) : (
+	<div class:list={["relative mx-auto mt-8 max-w-[54.9375rem] lg:ml-[calc(50%-27.8125rem)]", gap]} aria-hidden="true">
 		<ul class="flex flex-col gap-2 font-sans lg:w-[54.9375rem]">
 			{
 				RESULT_ROWS.map((row) => (
@@ -95,4 +116,6 @@ const line = [
 		{/* The design's blurred black ellipse, fading the last rows into the page. */}
 		<div class="pointer-events-none absolute top-[16.75rem] -left-[6.0625rem] h-[12.875rem] w-[67.8125rem] rounded-full bg-black blur-[6.25rem] max-lg:hidden" />
 	</div>
+		)
+	}
 </section>

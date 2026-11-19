@@ -89,8 +89,8 @@ const sectionHeading = "text-center text-[1.875rem] capitalize leading-[1.15] [t
 					<ul class="use-case-track flex w-max gap-5">
 						{
 							[...page.searchByList, ...page.searchByList].map((card, i) => (
-								<li aria-hidden={i >= page.searchByList.length ? "true" : undefined} class="shrink-0">
-									<IconCard icon={card.icon} title={card.title} body={card.body} class="lg:h-[10.125rem]" clone={i >= page.searchByList.length} />
+								<li aria-hidden={i >= page.searchByList.length ? "true" : undefined} class="flex shrink-0">
+									<IconCard icon={card.icon} title={card.title} body={card.body} class="justify-start! lg:min-h-[10.125rem] lg:px-10! lg:py-6!" clone={i >= page.searchByList.length} />
 								</li>
 							))
 						}

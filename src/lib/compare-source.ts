@@ -22,6 +22,7 @@ import {
 	type ResolvedScenario,
 	type SectionCopy,
 	type Competitor,
+	type WorkflowStepId,
 	type CompetitorCell,
 	type CompareRow,
 } from "../data/compare";
@@ -53,8 +54,17 @@ export interface ResolvedCompetitor extends Competitor {
 	featureColumns: TableColumn<FeatureRowId>[];
 	pricingColumns: TableColumn<PricingRowId>[];
 	/** Sanity's SEO overrides — canonical URL, noindex, custom JSON-LD. */
+	/** Each competitor's coverage per workflow step, stacked under Influenze.ai: one on a two-way page, up to three on a multi-way one. */
+	workflowColumns: WorkflowColumn[];
+	/** Influenze.ai's coverage per step, with this page's Studio edits. */
+	influenzeWorkflow: Record<WorkflowStepId, string>;
 	seoOverrides?: SeoDoc;
 	scripts?: ScriptsDoc;
+}
+
+export interface WorkflowColumn {
+	name: string;
+	steps: Record<WorkflowStepId, string>;
 }
 
 export type ResolvedChooseCard = Required<Omit<ChooseCard, "note">> & Pick<ChooseCard, "note">;
@@ -87,6 +97,12 @@ function cells<Id extends string>(
 	) as Record<Id, CompetitorCell>;
 }
 
+function influenzeWorkflow(doc: Record<string, string | undefined> | undefined) {
+	return Object.fromEntries(
+		WORKFLOW_STEPS.map((s) => [s.id, has(doc?.[s.id]) ? doc![s.id]!.trim() : s.influenze]),
+	) as Record<WorkflowStepId, string>;
+}
+
 function fromSanity(doc: ComparePageDoc, code: Competitor | undefined): ResolvedCompetitor {
 	// Code that must beat Studio for now (data/compare/overrides.ts).
 	const pin = COMPARE_OVERRIDES[doc.slug];
@@ -104,6 +120,23 @@ function fromSanity(doc: ComparePageDoc, code: Competitor | undefined): Resolved
 	const competitorLogo = resolveCompetitorLogo(doc.competitorLogo, doc.competitorLogoSize);
 	const features = cells(FEATURE_ROWS, doc.features, code?.features);
 	const pricing = cells(PRICING_ROWS, doc.pricing, code?.pricing);
+	const workflow = Object.fromEntries(
+		WORKFLOW_STEPS.map((step) => {
+			const value = doc.workflow?.[step.id];
+			return [step.id, has(value) ? value : (code?.workflow[step.id] ?? TBC)];
+		}),
+	) as Competitor["workflow"];
+	// Multi-way only once every competitor has written a step, like the tables.
+	const workflowWritten = (c: NamedCompetitor) => WORKFLOW_STEPS.some((s) => has(c.workflow?.[s.id]));
+	const workflowColumns: WorkflowColumn[] =
+		multiWay.length && multiWay.every(workflowWritten)
+			? multiWay.map((c) => ({
+					name: c.name,
+					steps: Object.fromEntries(
+						WORKFLOW_STEPS.map((s) => [s.id, has(c.workflow?.[s.id]) ? c.workflow![s.id]! : TBC]),
+					) as Record<WorkflowStepId, string>,
+				}))
+			: [{ name, steps: workflow }];
 
 	return {
 		slug: pin?.slug ?? doc.slug,
@@ -129,12 +162,9 @@ function fromSanity(doc: ComparePageDoc, code: Competitor | undefined): Resolved
 		pricing,
 		featureColumns: tableColumns(FEATURE_ROWS, multiWay, (c) => c.features, { name, logo: competitorLogo, cells: features }),
 		pricingColumns: tableColumns(PRICING_ROWS, multiWay, (c) => c.pricing, { name, logo: competitorLogo, cells: pricing }),
-		workflow: Object.fromEntries(
-			WORKFLOW_STEPS.map((step) => {
-				const value = doc.workflow?.[step.id];
-				return [step.id, has(value) ? value : (code?.workflow[step.id] ?? TBC)];
-			}),
-		) as Competitor["workflow"],
+		workflow,
+		workflowColumns,
+		influenzeWorkflow: influenzeWorkflow(doc.influenzeWorkflow),
 		faqs: faqs.length ? faqs : code?.faqs,
 		copy,
 		scenarioCards: resolveScenarios({ ...code?.scenarios, ...doc.scenarios }, name),
@@ -168,10 +198,21 @@ type NamedCompetitor = ComparedCompetitorDoc & { name: string };
 /** The named competitors of a page set to 3 or 4 companies (at most three); none on a two-way page. */
 function multiWayCompetitors(doc: ComparePageDoc): NamedCompetitor[] {
 	if ((doc.companyCount ?? 2) < 3) return [];
+	const slots = [
+		{ features: doc.competitorFeatures1, pricing: doc.competitorPricing1, workflow: doc.competitorWorkflow1 },
+		{ features: doc.competitorFeatures2, pricing: doc.competitorPricing2, workflow: doc.competitorWorkflow2 },
+		{ features: doc.competitorFeatures3, pricing: doc.competitorPricing3, workflow: doc.competitorWorkflow3 },
+	];
 	return (doc.competitors ?? [])
-		.filter((c): c is NamedCompetitor => has(c?.name))
-		.map((c) => ({ ...c, name: c.name.trim() }))
-		.slice(0, 3);
+		.slice(0, 3)
+		.map((c, i) => ({
+			...c,
+			// The tabs' columns win; the card's own nested columns are the pre-migration fallback.
+			features: slots[i].features ?? c?.features,
+			pricing: slots[i].pricing ?? c?.pricing,
+			workflow: slots[i].workflow ?? c?.workflow,
+		}))
+		.flatMap((c) => (has(c?.name) ? [{ ...c, name: c.name.trim() } as NamedCompetitor] : []));
 }
 
 /**
@@ -211,6 +252,8 @@ export async function getCompetitors(perspectiveCookie?: string): Promise<Resolv
 			],
 			featureColumns: [{ name: c.name, cells: c.features }],
 			pricingColumns: [{ name: c.name, cells: c.pricing }],
+			workflowColumns: [{ name: c.name, steps: c.workflow }],
+			influenzeWorkflow: influenzeWorkflow(undefined),
 			scenarioCards: resolveScenarios(c.scenarios, c.name),
 			featureRows: [...FEATURE_ROWS],
 			pricingRows: [...PRICING_ROWS],

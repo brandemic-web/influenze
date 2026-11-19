@@ -9,7 +9,8 @@ import PlatformFilter from "../app/elements/PlatformFilter.astro";
 import type { PlatformKey } from "../../data/platform";
 
 interface Props {
-	platform: PlatformKey;
+	/** The chips shown selected in the Platform card. */
+	platforms: PlatformKey[];
 	searchTerm: string;
 	niche: string;
 	audience: string;
@@ -17,7 +18,7 @@ interface Props {
 	class?: string;
 }
 
-const { platform, searchTerm, niche, audience, location, class: className = "" } = Astro.props;
+const { platforms, searchTerm, niche, audience, location, class: className = "" } = Astro.props;
 const tile = "rounded-[0.5625rem] border-[0.056rem] border-[#2d2c3b] bg-[#161425] pt-[1.625rem] pl-[1.92rem]";
 const label = "block text-[0.791rem] leading-none text-[#bfabff] [text-box:trim-both_cap_alphabetic]";
 const value = "mt-[0.6875rem] block text-[0.791rem] leading-none text-white [text-box:trim-both_cap_alphabetic]";
@@ -51,6 +52,6 @@ const value = "mt-[0.6875rem] block text-[0.791rem] leading-none text-white [tex
 	</div>
 
 	<div class="absolute top-0 left-[21.75rem] origin-top-left scale-[0.746]">
-		<PlatformFilter selected={platform} />
+		<PlatformFilter selected={platforms} />
 	</div>
 </div>
