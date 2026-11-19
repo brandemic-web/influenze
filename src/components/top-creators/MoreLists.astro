@@ -16,9 +16,11 @@ interface Props {
 	heading?: string;
 	items: Item[];
 	variant?: "pills" | "cards";
+	/** Cards only: a search box that filters them as you type (shown once the script runs). */
+	search?: { label: string; placeholder: string; empty: string };
 }
 
-const { heading, items, variant = "pills" } = Astro.props;
+const { heading, items, variant = "pills", search } = Astro.props;
 ---
 
 {items.length > 0 && (
@@ -39,9 +41,22 @@ const { heading, items, variant = "pills" } = Astro.props;
 					))}
 				</ul>
 			) : (
+				<div data-list-search>
+				{search && (
+					<div class="mx-auto mb-8 max-w-140 lg:mb-10" hidden data-list-search-box>
+						<label class="sr-only" for="list-search">{search.label}</label>
+						<input
+							id="list-search"
+							type="search"
+							placeholder={search.placeholder}
+							autocomplete="off"
+							class="w-full rounded-full border border-white/20 bg-surface-dark/60 px-6 py-3.5 text-[1rem] text-white placeholder:text-white/40 backdrop-blur-md outline-none focus:border-brand-primary"
+						/>
+					</div>
+				)}
 				<ul class:list={["grid gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-6", heading && "mt-8 lg:mt-10"]}>
 					{items.map((item) => (
-						<li>
+						<li data-list-search-item={item.label.toLowerCase()}>
 							<a
 								href={item.href}
 								class="group flex h-full flex-col justify-between gap-6 rounded-[1.25rem] border border-white/15 bg-surface-dark/40 p-6 backdrop-blur-md transition-colors hover:border-brand-primary lg:p-8"
@@ -61,7 +76,13 @@ const { heading, items, variant = "pills" } = Astro.props;
 						</li>
 					))}
 				</ul>
+				{search && <p class="mt-8 text-center text-[1rem] text-white/60" hidden data-list-search-empty>{search.empty}</p>}
+				</div>
 			)}
 		</div>
 	</section>
 )}
+
+<script>
+	import "../../scripts/top-creators-search";
+</script>

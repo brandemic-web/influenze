@@ -7,10 +7,9 @@
 import type { GetStaticPaths } from "astro";
 import Layout from "../../../layouts/Layout.astro";
 import CreatorList from "../../../components/top-creators/CreatorList.astro";
-import MethodNote from "../../../components/top-creators/MethodNote.astro";
 import MoreLists from "../../../components/top-creators/MoreLists.astro";
 import TopCreatorsHero from "../../../components/top-creators/TopCreatorsHero.astro";
-import { TOP_CREATORS_COPY as COPY, formatCount, formatDate, signupUrl } from "../../../data/top-creators";
+import { TOP_CREATORS_COPY as COPY, pageIntro, signupUrl } from "../../../data/top-creators";
 import { getSnapshot, splitPath } from "../../../lib/top-creators";
 
 export const prerender = true;
@@ -30,39 +29,30 @@ const page = snapshot.pages.find((p) => {
 });
 if (!page) return Astro.rewrite("/404");
 
-const platformName = COPY.platformNames[page.plat];
 const signup = signupUrl(page.path);
 const { country } = splitPath(page.path);
 const hubPath = `${country}/${page.hub}`;
 const hub = snapshot.hubs.find((h) => h.path === hubPath);
 
-const chips = [
-	page.stats.total_results != null && `${formatCount(page.stats.total_results)} ${COPY.matches}`,
-	page.stats.average_engagement != null && `${page.stats.average_engagement}% ${COPY.averageEngagement}`,
-	`${COPY.refreshed} ${formatDate(page.refreshed_at)}`,
-].filter((chip): chip is string => Boolean(chip));
-
 const siblings = (hub?.pages ?? [])
 	.filter((path) => path !== page.path)
 	.map((path) => snapshot.pages.find((p) => p.path === path))
 	.filter((p) => p != null)
-	.map((p) => ({ href: `/${p.path}/`, label: p.heading }));
+	.map((p) => ({ href: `/${p.path}/`, label: p.heading }))
+	.slice(0, COPY.moreListsLimit);
 const moreLists = hub ? [...siblings, { href: `/${hubPath}/`, label: `${COPY.allLists} →` }] : siblings;
 ---
 
 <Layout title={page.title} description={page.meta} noindex={!page.indexed} ctaButtonLabel={COPY.ctaButton} ctaHref={signup}>
 	<main>
 		<TopCreatorsHero
-			eyebrow={`${COPY.eyebrow} · ${platformName} · ${COPY.countryLabel}`}
 			heading={page.heading}
-			intro={page.meta}
-			chips={chips}
+			intro={pageIntro(page.meta)}
 			signupHref={signup}
 			draft={!page.indexed}
 		>
-			<CreatorList creators={page.creators} followersLabel={COPY.followersLabel[page.plat]} label={`${page.heading}: ${page.creators.length} ${COPY.listLabel}`} />
+			<CreatorList creators={page.creators} plat={page.plat} label={`${page.heading}: ${page.creators.length} ${COPY.listLabel}`} />
 		</TopCreatorsHero>
-		<MethodNote />
 		<MoreLists heading={COPY.moreLists} items={moreLists} />
 	</main>
 </Layout>

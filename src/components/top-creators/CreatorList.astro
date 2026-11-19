@@ -9,11 +9,15 @@ import type { TopCreator } from "../../lib/top-creators";
 
 interface Props {
 	creators: TopCreator[];
-	followersLabel: string;
+	plat: "IG" | "YT";
 	label: string;
 }
 
-const { creators, followersLabel, label } = Astro.props;
+const { creators, plat, label } = Astro.props;
+const followersLabel = COPY.followersLabel[plat];
+const averageLabel = COPY.averageLabel[plat];
+// Likes on Instagram; views on YouTube, falling back to likes if a channel has none.
+const average = (c: TopCreator) => (plat === "YT" ? (c.average_views ?? c.average_likes) : c.average_likes);
 const grid = "lg:grid-cols-[4rem_minmax(0,1fr)_10rem_9rem_8rem]";
 const initial = (c: TopCreator) => (c.name || c.handle).trim().charAt(0).toUpperCase();
 ---
@@ -24,8 +28,8 @@ const initial = (c: TopCreator) => (c.name || c.handle).trim().charAt(0).toUpper
 			<span>{COPY.columns.rank}</span>
 			<span>{COPY.columns.creator}</span>
 			<span class="text-right">{followersLabel}</span>
+			<span class="text-right">{averageLabel}</span>
 			<span class="text-right">{COPY.columns.engagement}</span>
-			<span class="text-right">{COPY.columns.tier}</span>
 		</div>
 		<ol>
 			{creators.map((c, i) => (
@@ -87,12 +91,12 @@ const initial = (c: TopCreator) => (c.name || c.handle).trim().charAt(0).toUpper
 							<dd class="tabular-nums text-white lg:text-[1.125rem]">{formatCount(c.followers)}</dd>
 						</div>
 						<div class="flex gap-1 lg:block lg:text-right">
+							<dt class="text-white/50 lg:sr-only">{averageLabel}</dt>
+							<dd class="tabular-nums text-white lg:text-[1.125rem]">{formatCount(average(c))}</dd>
+						</div>
+						<div class="flex gap-1 lg:block lg:text-right">
 							<dt class="text-white/50 lg:sr-only">{COPY.columns.engagement}</dt>
 							<dd class="tabular-nums text-white lg:text-[1.125rem]">{c.engagement_rate != null ? `${c.engagement_rate}%` : "–"}</dd>
-						</div>
-						<div class="lg:text-right">
-							<dt class="sr-only">{COPY.columns.tier}</dt>
-							<dd><span class="inline-block rounded-full bg-surface-pill px-3 py-1 text-[0.75rem] text-white/80 lg:text-[0.8125rem]">{COPY.tierNames[c.tier]}</span></dd>
 						</div>
 					</dl>
 				</li>
