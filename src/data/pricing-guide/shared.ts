@@ -27,6 +27,37 @@ export const ESTIMATOR_FIELDS = [
 	{ id: "contacts", label: "Contacts Unlocked", unit: 5, value: 10 },
 ] as const;
 
+/** "Who this makes sense for" — one card per team, shown only when a guide turns it on. */
+export interface FitCard {
+	title: string;
+	body: string;
+	credits: string;
+}
+export const FIT_CARDS: FitCard[] = [
+	{
+		title: "Influencer Marketing Agencies",
+		body: "Four client briefs a month.",
+		credits: "≈ 1,800 credits a month (80 searches, 24 profiles, 40 contacts). Best fit: monthly subscription",
+	},
+	{
+		title: "Freelancers",
+		body: "Two client briefs a month.",
+		credits: "≈ 750 credits a month (20 searches, 10 profiles, 30 contacts). Best fit: one-time recharge",
+	},
+	{
+		title: "D2C Brands",
+		body: "Two product launches a month.",
+		credits:
+			"≈ 900 credits a month (40 searches, 12 profiles, 20 contacts). Best fit: one-time recharges, or a monthly subscription as volume grows",
+	},
+	{
+		title: "Talent Managers",
+		body: "Two roster reviews plus scouting each month.",
+		credits:
+			"≈ 950 credits a month (20 searches, 16 profiles, 10 contacts). Best fit: one-time recharges, or a monthly subscription as volume grows",
+	},
+];
+
 /** "Credits vs quote-led and annual platforms". */
 export const QUOTE_ROWS = [
 	{ id: "visibility", label: "Pricing Visibility", influenze: { mark: true, text: "Per-action costs published" } },
@@ -58,14 +89,14 @@ export const PRICING_GUIDE_COPY_FIELDS = [
 	{
 		key: "estimatorFits",
 		group: "estimator",
-		title: "Note when it fits the signup credits",
-		default: `Fits inside the ${SIGNUP_CREDITS} signup credits`,
+		title: "Note when it fits the signup credits — {spare} is credits left over",
+		default: `Fits inside your {credits} free credits, with {spare} to spare`,
 	},
 	{
 		key: "estimatorOver",
 		group: "estimator",
-		title: "Note when it needs more",
-		default: `Needs more than the ${SIGNUP_CREDITS} signup credits`,
+		title: "Note when it needs more — {over} is credits beyond the signup ones",
+		default: `Needs {over} more than your {credits} free credits`,
 	},
 	{ key: "rollover", group: "estimator", title: "Rollover pill", default: "Unused Credits Roll Over" },
 	{ key: "plansHeading", group: "plans", title: "Heading — first line", default: "Plans That" },
@@ -80,6 +111,14 @@ export const PRICING_GUIDE_COPY_FIELDS = [
 		long: true,
 	},
 	{
+		key: "fitHeading",
+		group: "fit",
+		title: "Heading",
+		default: "One-Time Recharge Or Monthly Subscription?\n*It Depends On Your Usage*",
+		twoTone: true,
+		long: true,
+	},
+	{ key: "fitSubheading", group: "fit", title: "Subheading", default: "Typical monthly credit use by team, and which option fits." },	{
 		key: "quoteHeading",
 		group: "quote",
 		title: "Heading",
@@ -89,6 +128,7 @@ export const PRICING_GUIDE_COPY_FIELDS = [
 	},
 	{ key: "quoteCorner", group: "quote", title: "First column header", default: "Factor" },
 	{ key: "quoteThem", group: "quote", title: "Other column header", default: "Quote-led / annual platforms" },
+	{ key: "quoteThem2", group: "quote", title: "Third column header (three-way only)", default: "Annual platforms" },
 	{ key: "faqHeading", group: "faq", title: "Heading", default: FAQ_HEADING },
 	{ key: "faqSubcopy", group: "faq", title: "Subheading", default: FAQ_SUBCOPY, long: true },
 ] as const satisfies readonly (CopyField & { group: string })[];

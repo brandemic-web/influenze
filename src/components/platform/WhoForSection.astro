@@ -13,9 +13,11 @@ interface Props {
 	cards: CardText[];
 	/** lg top padding in rem — the gap from the section above, as drawn. */
 	gap: number;
+	/** Starred words in the heading set in italic; off by default. */
+	italic?: boolean;
 }
 
-const { heading, cards, gap } = Astro.props;
+const { heading, cards, gap, italic = false } = Astro.props;
 const trim = "lg:[text-box:trim-both_cap_alphabetic]";
 ---
 
@@ -25,14 +27,14 @@ const trim = "lg:[text-box:trim-both_cap_alphabetic]";
 		id="who-for-heading"
 		class="px-6 text-center text-[1.875rem] capitalize leading-[1.15] text-brand-primary [text-box:trim-both_cap_alphabetic] lg:text-[2.25rem]"
 	>
-		<TwoTone text={heading} accentClass="italic" />
+		<TwoTone text={heading} accentClass={italic ? "italic" : ""} />
 	</h2>
 	<div class="use-case-marquee who-for-marquee relative mt-10 overflow-hidden pb-1 lg:mt-12">
 		<ul class="use-case-track flex w-max gap-5">
 			{
 				[...cards, ...cards].map((card, i) => (
 					<li aria-hidden={i >= cards.length ? "true" : undefined} class="shrink-0">
-						<article class="card-edge flex h-full w-[19rem] flex-col justify-center lg:justify-start gap-5 rounded-sm px-6 py-7 lg:w-[30.3125rem] lg:gap-7 lg:px-[3.625rem] lg:py-10">
+						<article class="card-edge flex h-full w-[19rem] flex-col justify-center lg:justify-start gap-5 rounded-sm px-6 py-7 lg:w-[30.3125rem] lg:gap-7 lg:px-10 lg:py-10">
 							{/* The repeat's title is a <p>, so the page outline lists each card once. */}
 							{i >= cards.length ? (
 								<p class:list={["text-[1.25rem] leading-7 text-white lg:text-md lg:leading-7.5", trim]}>{card.title}</p>

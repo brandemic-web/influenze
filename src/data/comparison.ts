@@ -75,7 +75,7 @@ export const COMPARISON_ROWS: ComparisonRow[] = [
 	},
 	{
 		label: "Self-serve · no annual lock-in",
-		influenze: { mark: true, text: "from Rs 1,000 / mo" },
+		influenze: { mark: true, text: "from ₹1,000 / mo" },
 		others: [
 			{ mark: true, text: "annual" },
 			{ mark: true, text: "12-mo + per-seat" },

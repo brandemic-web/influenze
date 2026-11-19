@@ -18,6 +18,9 @@ export { resolveSlots, type CardText } from "../alternative/shared";
 export const PLATFORM_KEYS = ["instagram", "youtube", "tiktok"] as const;
 export type PlatformKey = (typeof PLATFORM_KEYS)[number];
 
+/** How each platform is written in Studio. */
+export const PLATFORM_LABELS: Record<PlatformKey, string> = { instagram: "Instagram", youtube: "YouTube", tiktok: "TikTok" };
+
 /** `{name}` → platform name, `{an}` → its article. */
 export const fillPlatform = (text: string, name: string) =>
 	text.replaceAll("{an}", /^[aeiou]/i.test(name) ? "an" : "a").replaceAll("{name}", name);
@@ -128,7 +131,7 @@ export type MattersPointId = (typeof MATTERS_POINTS)[number]["id"];
 
 /** The three stat tiles above the follower-quality card. */
 export const MATTERS_STATS = [
-	{ id: "engagement", label: "Engagement rate", value: "8.4%", note: "Tiktok" },
+	{ id: "engagement", label: "Engagement rate", value: "8.4%", note: "TikTok" },
 	{ id: "gender", label: "Top gender", value: "256k", note: "Female" },
 	{ id: "age", label: "Top age", value: "25-34", note: "Years Old" },
 ] as const;

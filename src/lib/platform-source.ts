@@ -91,6 +91,17 @@ const isPlatformKey = (value: string | undefined): value is PlatformKey =>
 	PLATFORM_KEYS.includes(value as PlatformKey);
 const isIconTile = (value: string | undefined): value is IconTile => ICON_TILES.includes(value as IconTile);
 
+/**
+ * The chips shown selected, in the filter's order. Ticked boxes win; a document saved
+ * before the field went multi-select still has its single `platform` value.
+ */
+function pickPlatforms(doc: PlatformPageDoc, code: PlatformPage | undefined): PlatformKey[] {
+	const ticked = PLATFORM_KEYS.filter((key) => doc.platforms?.includes(key));
+	if (ticked.length) return ticked;
+	if (isPlatformKey(doc.platform)) return [doc.platform];
+	return code?.platforms ?? ["instagram"];
+}
+
 /** Merges pinned slot fields over the resolved ones, field by field. */
 function pinSlots<T extends Record<string, object | undefined>>(slots: T, pinned: Partial<T> | undefined): T {
 	if (!pinned) return slots;
@@ -116,7 +127,7 @@ function fromSanity(doc: PlatformPageDoc, code: PlatformPage | undefined): Resol
 		{
 			slug: doc.slug,
 			name,
-			platform: isPlatformKey(doc.platform) ? doc.platform : (code?.platform ?? "instagram"),
+			platforms: pickPlatforms(doc, code),
 			draft: pin?.draft ?? doc.draft ?? true,
 			seo: {
 				title: has(doc.seo?.title)

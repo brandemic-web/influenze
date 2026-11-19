@@ -23,6 +23,7 @@ export default defineType({
 		{ name: "estimator", title: "Estimator" },
 		{ name: "plans", title: "Plans" },
 		{ name: "oneTime", title: "One-Time Campaign" },
+		{ name: "fit", title: "Who It's For" },
 		{ name: "quote", title: "Credits vs Quote-Led" },
 		{ name: "faq", title: "FAQ" },
 		{ name: "seo", title: "SEO" },
@@ -76,7 +77,54 @@ export default defineType({
 		...copyFields("estimator"),
 		...copyFields("plans"),
 		...copyFields("oneTime"),
-		...copyFields("quote"),
+		defineField({
+			name: "showFit",
+			title: "Show this section",
+			type: "boolean",
+			group: "fit",
+			initialValue: false,
+			description: "Off: the section is left off the page. On: shows the heading and cards below, between One-Time Campaign and the comparison table.",
+		}),
+		// Its fields only show once the section is on.
+		...copyFields("fit").map((f) => ({ ...f, hidden: ({ document }: { document?: { showFit?: boolean } }) => !document?.showFit })),
+		defineField({
+			name: "fitCards",
+			title: "Cards",
+			type: "array",
+			group: "fit",
+			hidden: ({ document }) => !document?.showFit,
+			description: "Drag to reorder. Leave empty to show the default four cards (agencies, freelancers, D2C brands, talent managers).",
+			of: [
+				defineArrayMember({
+					name: "fitCard",
+					type: "object",
+					fields: [
+						defineField({ name: "title", title: "Title", type: "string", validation: (Rule) => Rule.required() }),
+						defineField({ name: "body", title: "Body", type: "text", rows: 2 }),
+						defineField({
+							name: "credits",
+							title: "Typical monthly credits",
+							type: "text",
+							rows: 3,
+							description: "Shows as one paragraph, e.g. the estimate followed by “Best fit: …”.",
+						}),
+					],
+					preview: { select: { title: "title", subtitle: "body" } },
+				}),
+			],
+		}),
+		defineField({
+			name: "quoteThreeWay",
+			title: "Three-way comparison",
+			type: "boolean",
+			group: "quote",
+			initialValue: false,
+			description: "Off: Influenze.ai vs one other column. On: adds a third column, with its own header and a cell per row.",
+		}),
+		// The third column's header only shows once the table is three-way.
+		...copyFields("quote").map((f) =>
+			f.name === "quoteThem2" ? { ...f, hidden: ({ document }: { document?: { quoteThreeWay?: boolean } }) => !document?.quoteThreeWay } : f,
+		),
 		defineField({
 			name: "quote",
 			title: "Rows",
@@ -93,7 +141,17 @@ export default defineType({
 					fields: [
 						defineField({ name: "label", title: "Factor", type: "string", placeholder: row.label }),
 						defineField({ name: "ours", title: "Influenze.ai", type: "string", placeholder: row.influenze.text }),
-						defineField({ name: "theirs", title: "Quote-led / annual", type: "string", placeholder: QUOTE_THEIRS[row.id] }),
+						defineField({ name: "theirs", title: "Other column", type: "string", placeholder: QUOTE_THEIRS[row.id] }),
+						defineField({
+							name: "theirs2",
+							title: "Third column",
+							type: "string",
+							hidden: ({ document }) => !document?.quoteThreeWay,
+							validation: (Rule) =>
+								Rule.custom((value, { document }) =>
+									document?.quoteThreeWay && !value?.trim() ? "Empty — this cell shows blank in the three-way table." : true,
+								).warning(),
+						}),
 					],
 				}),
 			),

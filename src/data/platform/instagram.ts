@@ -5,7 +5,7 @@ import type { PlatformPage } from "./types";
 export const INSTAGRAM: PlatformPage = {
 	slug: "instagram",
 	name: "Instagram",
-	platform: "instagram",
+	platforms: ["instagram", "youtube", "tiktok"],
 	draft: true,
 	seo: {
 		title: "Instagram Influencer Search and Discovery | Influenze.ai",

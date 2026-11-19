@@ -18,6 +18,7 @@ import {
 	type FeaturePage,
 } from "../data/feature";
 import type { Faq } from "../data/faqs";
+import { urlFor } from "../sanity/lib/image";
 import { getFeatureLandingPages, type FeatureLandingPageDoc, type ScriptsDoc, type SeoDoc } from "../sanity/lib/queries";
 
 export interface ResolvedFeature extends FeaturePage {
@@ -26,6 +27,10 @@ export interface ResolvedFeature extends FeaturePage {
 	numbersList: ReturnType<typeof resolveSlots<(typeof NUMBERS_CARDS)[number]>>;
 	freshnessList: ReturnType<typeof resolveSlots<(typeof FRESHNESS_CARDS)[number]>>;
 	whoForList: CardText[];
+	/** Uploaded image that replaces the creator rows under "the fastest way…"; undefined keeps the rows. */
+	resultImage?: { src: string; alt: string };
+	/** Uploaded images either side of the manual-way text box; undefined keeps the bundled icon. */
+	manualImages?: { left?: string; right?: string };
 	seoOverrides?: SeoDoc;
 	scripts?: ScriptsDoc;
 }
@@ -35,7 +40,7 @@ const has = (text: string | undefined): text is string => Boolean(text?.trim());
 const stripBlank = (record: Record<string, string | undefined> | undefined) =>
 	Object.fromEntries(Object.entries(record ?? {}).filter(([, v]) => has(v)));
 
-function finish(p: FeaturePage, extra?: Pick<ResolvedFeature, "seoOverrides" | "scripts">): ResolvedFeature {
+function finish(p: FeaturePage, extra?: Pick<ResolvedFeature, "seoOverrides" | "scripts" | "resultImage" | "manualImages">): ResolvedFeature {
 	const whoFor = (p.whoForCards ?? []).filter((c) => has(c.title));
 	return {
 		...p,
@@ -71,9 +76,22 @@ function fromSanity(doc: FeatureLandingPageDoc, code: FeaturePage | undefined): 
 			numbers: { ...code?.numbers, ...doc.numbers },
 			freshness: { ...code?.freshness, ...doc.freshness },
 			whoForCards: whoForCards.length ? whoForCards : code?.whoForCards,
+			heroBubbles: doc.heroBubbles?.length ? doc.heroBubbles : code?.heroBubbles,
 			faqs: faqs.length ? faqs : code?.faqs,
 		},
-		{ seoOverrides: doc.seo, scripts: doc.scripts },
+		{
+			// Twice the rows' 879px design width, for sharpness on large windows.
+			resultImage: doc.resultImage?.asset
+				? { src: urlFor(doc.resultImage).width(1758).url(), alt: doc.resultImage.alt?.trim() ?? "" }
+				: undefined,
+			// Twice the larger icon's 317px design width. Width only, so the image is never cropped.
+			manualImages: {
+				left: doc.manualImages?.left?.asset ? urlFor(doc.manualImages.left).width(634).url() : undefined,
+				right: doc.manualImages?.right?.asset ? urlFor(doc.manualImages.right).width(634).url() : undefined,
+			},
+			seoOverrides: doc.seo,
+			scripts: doc.scripts,
+		},
 	);
 }
 

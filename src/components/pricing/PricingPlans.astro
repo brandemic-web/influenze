@@ -42,7 +42,6 @@ import {
 import {
   stopPositions,
   VISIBLE_DOTS,
-  CAPTION_STOP,
   posFromSpend,
   tierIndexFromSpend,
   creditsFor,
@@ -75,10 +74,7 @@ const stops = stopPositions();
 /** One caption per visible dot, labelling that tier's entry price. */
 const railCaptions = stops.slice(0, VISIBLE_DOTS).map((pos, i) => ({
   pos,
-  label:
-    (i === 0 ? "Rs. " : "Rs. ") +
-    formatAmount(PRICING_TIERS[i].minSpend) +
-    (i === CAPTION_STOP ? "" : ""),
+  label: formatPrice(PRICING_TIERS[i].minSpend),
 }));
 
 // First paint derives from DEFAULT_SPEND, so the markup already matches what the

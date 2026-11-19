@@ -15,5 +15,7 @@ export interface FeaturePage {
 	numbers?: Partial<Record<NumbersId, Partial<CardText>>>;
 	freshness?: Partial<Record<FreshnessId, Partial<CardText>>>;
 	whoForCards?: CardText[];
+	/** The hero's creator bubbles, by name (see BUBBLE_NAMES); unset shows the default six. */
+	heroBubbles?: string[];
 	faqs?: Faq[];
 }
