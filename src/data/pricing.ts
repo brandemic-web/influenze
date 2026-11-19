@@ -47,7 +47,7 @@ export const PRICING_TIERS: PricingTier[] = [
 	{ id: "starter", name: "Starter", minSpend: SLIDER_MIN, bonusPct: 5 },
 	// Growth is the one tier Figma pins down: ₹22,000 → 24,200 = +10%.
 	{ id: "growth", name: "Growth", minSpend: 20_000, bonusPct: 10 },
-	{ id: "scale", name: "Scale", minSpend: 50_000, bonusPct: 20 },
+	{ id: "scale", name: "Scale", minSpend: 50_000, bonusPct: 15 },
 	{
 		id: "enterprise",
 		name: "Enterprise",

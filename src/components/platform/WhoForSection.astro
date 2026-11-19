@@ -13,9 +13,11 @@ interface Props {
 	cards: CardText[];
 	/** lg top padding in rem — the gap from the section above, as drawn. */
 	gap: number;
+	/** Starred words in the heading set in italic; off by default. */
+	italic?: boolean;
 }
 
-const { heading, cards, gap } = Astro.props;
+const { heading, cards, gap, italic = false } = Astro.props;
 const trim = "lg:[text-box:trim-both_cap_alphabetic]";
 ---
 
@@ -25,7 +27,7 @@ const trim = "lg:[text-box:trim-both_cap_alphabetic]";
 		id="who-for-heading"
 		class="px-6 text-center text-[1.875rem] capitalize leading-[1.15] text-brand-primary [text-box:trim-both_cap_alphabetic] lg:text-[2.25rem]"
 	>
-		<TwoTone text={heading} accentClass="italic" />
+		<TwoTone text={heading} accentClass={italic ? "italic" : ""} />
 	</h2>
 	<div class="use-case-marquee who-for-marquee relative mt-10 overflow-hidden pb-1 lg:mt-12">
 		<ul class="use-case-track flex w-max gap-5">
