@@ -1,7 +1,8 @@
 /** Shapes Sanity blog documents for both routes so components never see a nullable field. */
 import type { PortableBlock } from "./portable-text";
 import { estimateReadMinutes, headingSections } from "./portable-text";
-import { BLOG_INDEX, laterUpdate, type BlogAuthor } from "../data/blog";
+import { BLOG_INDEX, laterUpdate, type BlogAuthor, type BlogCta } from "../data/blog";
+import { BLOG_CTA } from "../data/blog-cta";
 import {
 	getBlogAuthor,
 	getBlogCategories,
@@ -55,6 +56,8 @@ export interface BlogEntry {
 	/** Section headings, in order, with the ids the body will render. */
 	sections: { id: string; text: string }[];
 	faq: { heading: string; subcopy: string; items: { question: string; answer: string }[] };
+	/** The contents-rail CTA, with the standard wording filled in for any blank field. */
+	sidebarCta: BlogCta;
 	seo?: SeoDoc;
 	scripts?: ScriptsDoc;
 	noindex: boolean;
@@ -124,6 +127,13 @@ function entryFromSanity(doc: BlogPostDoc): BlogEntry {
 			subcopy: doc.faqSubcopy ?? "",
 			items: faqs,
 		},
+		sidebarCta: {
+			heading: doc.sidebarCta?.heading || BLOG_CTA.heading,
+			body: doc.sidebarCta?.body || BLOG_CTA.body,
+			label: doc.sidebarCta?.label || BLOG_CTA.label,
+			href: doc.sidebarCta?.href || BLOG_CTA.href,
+			newTab: doc.sidebarCta?.href ? (doc.sidebarCta.newTab ?? false) : BLOG_CTA.newTab,
+		},
 		seo: doc.seo,
 		scripts: doc.scripts,
 		noindex: doc.seo?.noindex ?? false,
@@ -138,6 +148,7 @@ function cardFromSanity(doc: BlogCardDoc): BlogEntry {
 		body: [],
 		sections: [],
 		faq: { heading: "", subcopy: "", items: [] },
+		sidebarCta: BLOG_CTA,
 		noindex: false,
 	};
 }
