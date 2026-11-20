@@ -11,7 +11,6 @@ import BlogToc from "../../components/blog/BlogToc.astro";
 import PortableText from "../../components/blog/PortableText.astro";
 import BlogFaq from "../../components/blog/BlogFaq.astro";
 import { authorHref } from "../../data/blog";
-import { BLOG_CTA } from "../../data/blog-cta";
 import { getBlogEntry, getBlogListing } from "../../lib/blog-source";
 import { getPerspectiveCookie } from "../../lib/draft-mode";
 import { parseStructuredDataOverride } from "../../sanity/lib/customSchema";
@@ -82,7 +81,7 @@ const schema = [
 			class="mx-auto flex max-w-410.75 flex-col px-6 pt-5 pb-20 lg:flex-row lg:gap-20 lg:px-25 lg:pt-16 lg:pb-32"
 		>
 			{/* The rail's standing CTA is the same one the body repeats. */}
-			<BlogToc sections={post.sections} label={`${post.title} contents`} cta={BLOG_CTA} />
+			<BlogToc sections={post.sections} label={`${post.title} contents`} cta={post.sidebarCta} />
 
 			<div class="min-w-0 flex-1">
 				<PortableText blocks={post.body} />

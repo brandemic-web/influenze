@@ -46,48 +46,42 @@ const rem = (px: number) => `${px / 16}rem`;
 /** A title line longer than the design's (25 characters) steps down a size so it still sets in two lines. */
 const titleLines = plainText(copy.heroTitle).split("\n");
 const longTitle = Math.max(...titleLines.map((l) => l.length)) > 25;
-/** Rough wrapped line count if each line holds `perLine` characters. */
-const wrappedLines = (perLine: number) => titleLines.reduce((n, l) => n + Math.max(1, Math.ceil(l.length / perLine)), 0);
-// A long title keeps its 3rem size. The design fits two lines, so each extra line pushes everything under the
-// title down by one line height and lengthens the panel and the hero to match. Lines are estimated from
-// character counts (about 36 a line at 3rem), so a borderline title may be off by one.
-const TITLE_LINE_REM = 3.5;
-const extraTitleLines = longTitle ? Math.max(0, wrappedLines(36) - 2) : 0;
-const titleShift = `${extraTitleLines * TITLE_LINE_REM}rem`;
+// Everything under the title is in normal flow, so a longer title simply pushes the pills, search box,
+// CTA and body copy down; no line counting is needed. A long line only steps the title down a size.
 const titleClass = longTitle
-	? "lg:top-[20.75rem] lg:left-[24.375rem] lg:w-[59.25rem] lg:text-[3rem] lg:leading-[3.5rem]"
-	: "lg:top-[19.75rem] lg:left-[28.25rem] lg:w-[51.5rem] lg:text-9xl lg:leading-[4.5rem]";
+	? "lg:w-[59.25rem] lg:text-[3rem] lg:leading-[3.5rem]"
+	: "lg:w-[51.5rem] lg:text-9xl lg:leading-[4.5rem]";
+/** Title-to-pills gap: the design's pills sit 10px under a 2-line title at 4.5rem, 26px under one at 3.5rem. */
+const pillsGap = longTitle ? "lg:mt-[2.625rem]" : "lg:mt-[1.625rem]";
+/** Eyebrow-to-title gap, as drawn (the long title sits a rem lower). */
+const titleGap = longTitle ? "lg:mt-[3.1rem]" : "lg:mt-[2.1rem]";
 ---
 
 <section class="relative overflow-hidden" aria-labelledby="feature-title">
 	<HeroBackdrop fade="#13101c" />
 
-	<div style={`--title-shift:${titleShift}`} class="relative mx-auto flex flex-col items-center px-6 pt-32 pb-0 text-center lg:block lg:h-[calc(86rem+var(--title-shift))] lg:w-[108rem] lg:mx-[calc(50%-54rem)] lg:p-0">
-		<div
-			class="pointer-events-none absolute hidden rounded-[1.25rem] border border-white/10 bg-[#0a0718]/40 backdrop-blur-md lg:block lg:inset-auto lg:top-[12.6875rem] lg:left-[22.375rem] lg:h-[calc(49.5625rem+var(--title-shift))] lg:w-[63.3125rem]"
-			aria-hidden="true"
-		>
-		</div>
+	<div class="relative mx-auto flex flex-col items-center px-6 pt-32 pb-0 text-center lg:min-h-[86rem] lg:w-[108rem] lg:mx-[calc(50%-54rem)] lg:px-0 lg:pt-[12.6875rem] lg:pb-[10.9rem]">
 
-		{/* Below lg the panel wraps its content; from lg it is the drawn box behind absolutely placed pieces. */}
-		<div class="relative -mx-3 flex flex-col self-stretch items-center rounded-[1.25rem] border border-white/10 bg-[#0a0718]/40 px-5 pt-10 pb-10 backdrop-blur-md lg:contents">
+		{/* The panel is the real wrapper: from lg it is the drawn 63.3rem box (a minimum height) and grows with its content, so nothing below the title can be overlapped. */}
+		<div class="relative -mx-3 flex flex-col self-stretch items-center rounded-[1.25rem] border border-white/10 bg-[#0a0718]/40 px-5 pt-10 pb-10 backdrop-blur-md lg:w-[63.3125rem] lg:min-h-[49.5625rem] lg:self-center lg:mx-0 lg:px-0 lg:pt-[3.8125rem] lg:pb-0">
 			<p
-				class="relative text-[0.875rem] uppercase text-brand-primary [text-box:trim-both_cap_alphabetic] lg:absolute lg:top-[16.5rem] lg:left-0 lg:w-full lg:text-[1.125rem]"
+				class="relative text-[0.875rem] uppercase text-brand-primary [text-box:trim-both_cap_alphabetic] lg:w-full lg:text-[1.125rem]"
 			>
 				{plainText(copy.heroEyebrow)}
 			</p>
 			<h1
 				id="feature-title"
 				class:list={[
-					"relative mt-4 text-[2.125rem] leading-[1.1] lg:whitespace-pre-line text-white [text-box:trim-both_cap_alphabetic] lg:absolute lg:mt-0 lg:tracking-[-0.08rem] lg:text-balance",
+					"relative mt-4 text-[2.125rem] leading-[1.1] lg:whitespace-pre-line text-white [text-box:trim-both_cap_alphabetic] lg:tracking-[-0.08rem] lg:text-balance",
+					titleGap,
 					titleClass,
 				]}
 			>
 				<TwoTone text={copy.heroTitle} />
 			</h1>
 
-			<div class="relative mt-8 flex w-full justify-center lg:static lg:mt-0">
-				<HeroPills row="lg:top-[calc(29.375rem+var(--title-shift))]" />
+			<div class="relative mt-8 flex w-full justify-center lg:mt-0">
+				<HeroPills row={pillsGap} />
 			</div>
 
 			{/*
@@ -95,58 +89,70 @@ const titleClass = longTitle
 				placeholder, so it sits under a transparent input and hides once something is typed.
 				The input has no name, so the app opens at its start page whatever was entered.
 			*/}
-			<form
-				action={APP_URL}
-				method="get"
-				target="_blank"
-				role="search"
-				class="relative mt-8 flex h-14 w-full max-w-[27.625rem] items-center rounded-full bg-white/10 pr-1.5 pl-4 backdrop-blur-md focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-brand-primary lg:absolute lg:top-[calc(46.125rem+var(--title-shift))] lg:left-[40.1875rem] lg:mt-0 lg:h-[4.375rem] lg:w-[27.625rem] lg:pr-0 lg:pl-[1.0625rem]"
-			>
-				<Icon name="search" size="1.5rem" class="shrink-0 text-white" />
-				<span class="relative ml-2.5 flex h-full min-w-0 flex-1 items-center lg:ml-[0.6875rem] lg:mr-[4.5rem]">
-					<input
-						type="text"
-						placeholder=" "
-						autocomplete="off"
-						spellcheck="false"
-						aria-label={plainText(copy.searchPrompt)}
-						class="peer h-full w-full min-w-0 bg-transparent text-[0.875rem] leading-none text-white caret-brand-primary outline-none lg:text-[1.114rem]"
-					/>
-					<span
-						class="pointer-events-none absolute top-1/2 left-0 max-w-full -translate-y-1/2 truncate text-[0.875rem] leading-none whitespace-nowrap text-white peer-[:not(:placeholder-shown)]:hidden lg:overflow-visible lg:text-[1.114rem]"
-						aria-hidden="true"
-					>
-						<TwoTone text={copy.searchPrompt} accentClass="text-[#33e889]" />
-					</span>
-				</span>
-				<button
-					type="submit"
-					aria-label="Search in Influenze.ai"
-					class="ml-auto size-11 shrink-0 cursor-pointer rounded-full transition-transform hover:scale-105 focus-visible:outline-none lg:absolute lg:top-[0.375rem] lg:left-[23.5625rem] lg:ml-0 lg:size-[3.5625rem]"
+			<div class="relative flex w-full justify-center lg:mt-[13.5rem]">
+				<form
+					action={APP_URL}
+					method="get"
+					target="_blank"
+					role="search"
+					class="relative mt-8 flex h-14 w-full max-w-[27.625rem] items-center rounded-full bg-white/10 pr-1.5 pl-4 backdrop-blur-md focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-brand-primary lg:mt-0 lg:h-[4.375rem] lg:w-[27.625rem] lg:pr-0 lg:pl-[1.0625rem]"
 				>
-					<img src={logoButton.src} alt="" width="57" height="57" class="size-full" loading="eager" />
-				</button>
-			</form>
+					<Icon name="search" size="1.5rem" class="shrink-0 text-white" />
+					<span class="relative ml-2.5 flex h-full min-w-0 flex-1 items-center lg:ml-[0.6875rem] lg:mr-[4.5rem]">
+						<input
+							type="text"
+							placeholder=" "
+							autocomplete="off"
+							spellcheck="false"
+							aria-label={plainText(copy.searchPrompt)}
+							class="peer h-full w-full min-w-0 bg-transparent text-[0.875rem] leading-none text-white caret-brand-primary outline-none lg:text-[1.114rem]"
+						/>
+						<span
+							class="pointer-events-none absolute top-1/2 left-0 max-w-full -translate-y-1/2 truncate text-[0.875rem] leading-none whitespace-nowrap text-white peer-[:not(:placeholder-shown)]:hidden lg:overflow-visible lg:text-[1.114rem]"
+							aria-hidden="true"
+						>
+							<TwoTone text={copy.searchPrompt} accentClass="text-[#33e889]" />
+						</span>
+					</span>
+					<button
+						type="submit"
+						aria-label="Search in Influenze.ai"
+						class="ml-auto size-11 shrink-0 cursor-pointer rounded-full transition-transform hover:scale-105 focus-visible:outline-none lg:absolute lg:top-[0.375rem] lg:left-[23.5625rem] lg:ml-0 lg:size-[3.5625rem]"
+					>
+						<img src={logoButton.src} alt="" width="57" height="57" class="size-full" loading="eager" />
+					</button>
+				</form>
+				{/* Desktop bubbles hang off the search box, so they stay around it however far the title pushes it down. */}
+				<ul class="pointer-events-none absolute top-0 left-0 hidden w-full lg:block" aria-hidden="true">
+					{
+						bubbles.map((b) => (
+							<li
+								class="absolute"
+								style={`left:calc(${rem(b.x)} - 22.375rem);top:calc(${rem(b.y)} - 46.125rem);width:${rem(b.w)};height:${rem(b.h)}`}
+							>
+								<Image src={b.src} alt="" width={374} class="h-full w-full object-contain" loading="eager" />
+							</li>
+						))
+					}
+				</ul>
+			</div>
 
-			<div class="relative mt-8 lg:absolute lg:top-[calc(60.625rem+var(--title-shift))] lg:left-0 lg:mt-0 lg:flex lg:w-full lg:justify-center">
+			<div class="relative z-10 mt-8 lg:mt-[9.125rem] lg:-mb-[1.75rem] lg:flex lg:w-full lg:justify-center">
 				<Button href={copy.heroCtaLink} newTab={opensNewTab(copy.heroCtaLink)} ctaId={heroCtaId(Astro.url.pathname)}>{plainText(copy.heroCta)}</Button>
 			</div>
 		</div>
 
 		<p
-			class="relative mt-10 max-w-[39.3125rem] text-[1rem] leading-6 text-[#cdcdcd] [text-box:trim-both_cap_alphabetic] lg:absolute lg:top-[calc(69.875rem+var(--title-shift))] lg:left-[34.375rem] lg:mt-0 lg:text-[1.125rem] lg:leading-7"
+			class="relative mt-10 max-w-[39.3125rem] text-[1rem] leading-6 text-[#cdcdcd] [text-box:trim-both_cap_alphabetic] lg:mt-[7.625rem] lg:text-[1.125rem] lg:leading-7"
 		>
 			<TwoTone text={copy.heroBody} accentClass="text-[1.375rem] font-semibold text-brand-primary" />
 		</p>
 
-		<ul class="relative mt-10 flex flex-wrap justify-center gap-2 lg:static lg:mt-0" aria-hidden="true">
+		<ul class="relative mt-10 flex flex-wrap justify-center gap-2 lg:hidden" aria-hidden="true">
 			{
 				bubbles.map((b) => (
-					<li
-						class="size-16 shrink-0 lg:absolute lg:top-(--top) lg:left-(--x) lg:size-auto lg:h-(--h) lg:w-(--w)"
-						style={`--x:${rem(b.x)};--y:${rem(b.y)};--top:calc(${rem(b.y)} + var(--title-shift));--w:${rem(b.w)};--h:${rem(b.h)}`}
-					>
-						<Image src={b.src} alt="" width={374} class="h-full w-full object-contain" loading="eager" />
+					<li class="size-16 shrink-0">
+						<Image src={b.src} alt="" width={374} class="h-full w-full object-contain" loading="lazy" />
 					</li>
 				))
 			}
