@@ -285,6 +285,7 @@ export const blogPostQuery = groq`*[_type == "blogPost" && slug.current == $slug
 	faqHeading,
 	faqSubcopy,
 	faqs[] { question, answer },
+	sidebarCta { heading, body, label, href, newTab },
 	body[] {
 		...,
 		// Inline images carry their own asset, resolved the same way as the hero.
@@ -298,6 +299,8 @@ export interface BlogPostDoc extends BlogCardDoc {
 	faqHeading?: string;
 	faqSubcopy?: string;
 	faqs?: { question?: string; answer?: string }[];
+	/** Per-post override of the contents-rail CTA; blank fields fall back to the standard one. */
+	sidebarCta?: { heading?: string; body?: string; label?: string; href?: string; newTab?: boolean };
 	/** Portable Text. Typed loosely on purpose — the renderer narrows per block. */
 	body?: Record<string, unknown>[];
 }
