@@ -1,30 +1,26 @@
 ---
 /**
- * /in/<hub>/: a Top creators hub, one per platform. Links to every published
+ * /in/<hub>/: a Rankings hub, one per platform. Links to every published
  * list page under it. Open to Google once any of those pages is.
  */
 import type { GetStaticPaths } from "astro";
 import Layout from "../../../layouts/Layout.astro";
-import MoreLists from "../../../components/top-creators/MoreLists.astro";
-import TopCreatorsHero from "../../../components/top-creators/TopCreatorsHero.astro";
-import { TOP_CREATORS_COPY as COPY, signupUrl } from "../../../data/top-creators";
-import { getSnapshot, splitPath } from "../../../lib/top-creators";
+import MoreLists from "../../../components/rankings/MoreLists.astro";
+import RankingsHero from "../../../components/rankings/RankingsHero.astro";
+import { RANKINGS_COPY as COPY, signupUrl } from "../../../data/rankings";
+import { getHubs, splitPath } from "../../../lib/rankings";
 
 export const prerender = true;
 
 export const getStaticPaths = (async () => {
-	const snapshot = await getSnapshot();
-	return snapshot.hubs.map((hub) => ({ params: { hub: splitPath(hub.path).hub } }));
+	const hubs = await getHubs();
+	return hubs.map((hub) => ({ params: { hub: splitPath(hub.path).hub } }));
 }) satisfies GetStaticPaths;
 
-const snapshot = await getSnapshot();
-const hub = snapshot.hubs.find((h) => splitPath(h.path).hub === Astro.params.hub);
+const hub = (await getHubs()).find((h) => splitPath(h.path).hub === Astro.params.hub);
 if (!hub) return Astro.rewrite("/404");
 
-const cards = hub.pages
-	.map((path) => snapshot.pages.find((p) => p.path === path))
-	.filter((p) => p != null)
-	.map((p) => ({
+const cards = hub.pages.map((p) => ({
 		href: `/${p.path}/`,
 		label: p.heading,
 		detail: `${p.stats.kept} ${COPY.hubCount}`,
@@ -35,7 +31,7 @@ const signup = signupUrl(hub.path);
 
 <Layout title={hub.title} description={hub.meta} noindex={!hub.indexed} ctaButtonLabel={COPY.ctaButton} ctaHref={signup}>
 	<main>
-		<TopCreatorsHero
+		<RankingsHero
 			heading={hub.heading}
 			draft={!hub.indexed}
 		>
@@ -44,6 +40,6 @@ const signup = signupUrl(hub.path);
 				variant="cards"
 				search={{ label: COPY.searchLabel, placeholder: COPY.searchPlaceholder, empty: COPY.noMatches }}
 			/>
-		</TopCreatorsHero>
+		</RankingsHero>
 	</main>
 </Layout>

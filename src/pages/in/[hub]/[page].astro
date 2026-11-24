@@ -1,16 +1,16 @@
 ---
 /**
- * /in/<hub>/<page>/: one Top creators list page, built from the backend
+ * /in/<hub>/<page>/: one Rankings list page, built from the backend
  * snapshot. Whether Google may index it is the admin tool's Publishing
  * setting for the page (`indexed`).
  */
 import type { GetStaticPaths } from "astro";
 import Layout from "../../../layouts/Layout.astro";
-import CreatorList from "../../../components/top-creators/CreatorList.astro";
-import MoreLists from "../../../components/top-creators/MoreLists.astro";
-import TopCreatorsHero from "../../../components/top-creators/TopCreatorsHero.astro";
-import { TOP_CREATORS_COPY as COPY, pageIntro, signupUrl } from "../../../data/top-creators";
-import { getSnapshot, splitPath } from "../../../lib/top-creators";
+import CreatorList from "../../../components/rankings/CreatorList.astro";
+import MoreLists from "../../../components/rankings/MoreLists.astro";
+import RankingsHero from "../../../components/rankings/RankingsHero.astro";
+import { RANKINGS_COPY as COPY, pageIntro, signupUrl } from "../../../data/rankings";
+import { getHubs, getSnapshot, splitPath } from "../../../lib/rankings";
 
 export const prerender = true;
 
@@ -32,12 +32,10 @@ if (!page) return Astro.rewrite("/404");
 const signup = signupUrl(page.path);
 const { country } = splitPath(page.path);
 const hubPath = `${country}/${page.hub}`;
-const hub = snapshot.hubs.find((h) => h.path === hubPath);
+const hub = (await getHubs()).find((h) => h.path === hubPath);
 
 const siblings = (hub?.pages ?? [])
-	.filter((path) => path !== page.path)
-	.map((path) => snapshot.pages.find((p) => p.path === path))
-	.filter((p) => p != null)
+	.filter((p) => p.path !== page.path)
 	.map((p) => ({ href: `/${p.path}/`, label: p.heading }))
 	.slice(0, COPY.moreListsLimit);
 const moreLists = hub ? [...siblings, { href: `/${hubPath}/`, label: `${COPY.allLists} →` }] : siblings;
@@ -45,14 +43,14 @@ const moreLists = hub ? [...siblings, { href: `/${hubPath}/`, label: `${COPY.all
 
 <Layout title={page.title} description={page.meta} noindex={!page.indexed} ctaButtonLabel={COPY.ctaButton} ctaHref={signup}>
 	<main>
-		<TopCreatorsHero
+		<RankingsHero
 			heading={page.heading}
 			intro={pageIntro(page.meta)}
 			signupHref={signup}
 			draft={!page.indexed}
 		>
 			<CreatorList creators={page.creators} plat={page.plat} label={`${page.heading}: ${page.creators.length} ${COPY.listLabel}`} />
-		</TopCreatorsHero>
+		</RankingsHero>
 		<MoreLists heading={COPY.moreLists} items={moreLists} />
 	</main>
 </Layout>

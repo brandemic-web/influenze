@@ -1,12 +1,12 @@
 /**
- * Copy for the Top creators pages. The creators and their numbers come from
- * the backend snapshot (lib/top-creators.ts); this file holds only what the
+ * Copy for the ranking pages. The creators and their numbers come from
+ * the backend snapshot (lib/rankings.ts); this file holds only what the
  * page says around them.
  */
 import { APP_URL } from "./site";
 
-/** Every sign-up link on a Top creators page carries these, so signups can be matched to the page. */
-export const SIGNUP_UTM_SOURCE = "top_creators";
+/** Every sign-up link on a ranking page carries these, so signups can be matched to the page. */
+export const SIGNUP_UTM_SOURCE = "rankings";
 
 export function signupUrl(pagePath: string): string {
 	const url = new URL(APP_URL);
@@ -16,7 +16,25 @@ export function signupUrl(pagePath: string): string {
 	return url.toString();
 }
 
-export const TOP_CREATORS_COPY = {
+/** The hub pages, one per platform: each links to every published list page under its path. */
+export const RANKINGS_HUBS = [
+	{
+		path: "in/instagram-influencers",
+		plat: "IG",
+		title: "Instagram Influencers in India | Influenze",
+		heading: "Instagram Influencers in India",
+		meta: "Find Instagram influencers in India by follower tier, category, city and language, with live follower and engagement numbers.",
+	},
+	{
+		path: "in/youtubers",
+		plat: "YT",
+		title: "YouTubers in India | Influenze",
+		heading: "YouTubers in India",
+		meta: "Find YouTubers in India by follower tier, category, city and language, with live follower and engagement numbers.",
+	},
+] as const;
+
+export const RANKINGS_COPY = {
 	platformNames: { IG: "Instagram", YT: "YouTube" } as const,
 	followersLabel: { IG: "Followers", YT: "Subscribers" } as const,
 	/** The second number per creator: likes on Instagram, views on YouTube. */

@@ -1,4 +1,4 @@
-// Top creators hub: the search box filters the list cards by name as you type.
+// Rankings hub: the search box filters the list cards by name as you type.
 // The box ships hidden, so without JavaScript the page is just the full list.
 function initListSearch() {
 	document.querySelectorAll<HTMLElement>("[data-list-search]").forEach((root) => {

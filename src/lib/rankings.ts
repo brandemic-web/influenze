@@ -1,15 +1,16 @@
 /**
- * The Top creators snapshot: the backend's refresh job writes one JSON file
- * with every public creator page, and the build reads it once from
- * TOP_CREATORS_SNAPSHOT_URL, the backend's public snapshot route (any
+ * The Rankings snapshot: the backend's refresh job writes one JSON file
+ * with every public list page (the hubs are built here from those pages), and the build reads it once from
+ * RANKINGS_SNAPSHOT_URL, the backend's public snapshot route (any
  * http(s) URL works, e.g. a local server while developing). No URL, or a
- * failed fetch, builds no Top creators pages rather than failing the whole
+ * failed fetch, builds no ranking pages rather than failing the whole
  * deploy: these pages are noindex for now and must never block the site.
  * Plain fetch only: the Cloudflare adapter prerenders in a runtime with no
  * file system.
  */
+import { RANKINGS_HUBS } from "../data/rankings";
 
-export interface TopCreator {
+export interface RankedCreator {
 	handle: string;
 	external_id: string | null;
 	name: string | null;
@@ -30,7 +31,7 @@ export interface TopCreator {
 	rank: number | null;
 }
 
-export interface TopCreatorsPageStats {
+export interface RankingPageStats {
 	total_results: number | null;
 	found: number;
 	kept: number;
@@ -38,7 +39,7 @@ export interface TopCreatorsPageStats {
 	tier_split: Record<string, number>;
 }
 
-export interface TopCreatorsPage {
+export interface RankingPage {
 	path: string;
 	url: string;
 	hub: string;
@@ -55,61 +56,63 @@ export interface TopCreatorsPage {
 	indexed?: boolean;
 	passed: boolean;
 	fail_reason: string | null;
-	stats: TopCreatorsPageStats;
-	creators: TopCreator[];
+	stats: RankingPageStats;
+	creators: RankedCreator[];
 }
 
-export interface TopCreatorsHub {
-	path: string;
-	url: string;
-	hub: string;
-	plat: "IG" | "YT" | null;
-	keyword: string;
-	title: string;
-	meta: string;
-	heading: string;
-	/** Paths of the published list pages, in path order. */
-	pages: string[];
-	/** Open to Google: true once any page it lists is. */
-	indexed?: boolean;
-}
-
-export interface TopCreatorsSnapshot {
+export interface RankingsSnapshot {
 	version: number;
 	refresh_id: string;
 	refreshed_at: string;
-	hubs: TopCreatorsHub[];
-	pages: TopCreatorsPage[];
+	pages: RankingPage[];
 }
 
-const EMPTY: TopCreatorsSnapshot = { version: 0, refresh_id: "", refreshed_at: "", hubs: [], pages: [] };
+/** A hub page: its copy from data/rankings.ts and the published pages under it. */
+export type RankingHub = (typeof RANKINGS_HUBS)[number] & {
+	/** The published list pages under the hub, in path order. */
+	pages: RankingPage[];
+	/** Open to Google once any page it lists is. */
+	indexed: boolean;
+};
 
-let cached: Promise<TopCreatorsSnapshot> | undefined;
+const EMPTY: RankingsSnapshot = { version: 0, refresh_id: "", refreshed_at: "", pages: [] };
 
-async function load(): Promise<TopCreatorsSnapshot> {
-	const source = process.env.TOP_CREATORS_SNAPSHOT_URL ?? (import.meta.env.TOP_CREATORS_SNAPSHOT_URL as string | undefined);
+let cached: Promise<RankingsSnapshot> | undefined;
+
+async function load(): Promise<RankingsSnapshot> {
+	const source = process.env.RANKINGS_SNAPSHOT_URL ?? (import.meta.env.RANKINGS_SNAPSHOT_URL as string | undefined);
 	if (!source) {
-		console.warn("[top-creators] TOP_CREATORS_SNAPSHOT_URL is not set; building no Top creators pages");
+		console.warn("[rankings] RANKINGS_SNAPSHOT_URL is not set; building no ranking pages");
 		return EMPTY;
 	}
 	try {
 		const res = await fetch(source);
 		if (!res.ok) throw new Error(`HTTP ${res.status}`);
-		const snapshot = (await res.json()) as TopCreatorsSnapshot;
-		if (!Array.isArray(snapshot.pages) || !Array.isArray(snapshot.hubs)) throw new Error("not a snapshot");
+		const snapshot = (await res.json()) as RankingsSnapshot;
+		if (!Array.isArray(snapshot.pages)) throw new Error("not a snapshot");
 		// Unpublished pages stay in the snapshot (keeping their creators) but are not built.
 		snapshot.pages = snapshot.pages.filter((page) => page.published !== false);
-		console.log(`[top-creators] snapshot ${snapshot.refresh_id}: ${snapshot.pages.length} pages, ${snapshot.hubs.length} hubs`);
+		snapshot.pages.sort((a, b) => a.path.localeCompare(b.path));
+		console.log(`[rankings] snapshot ${snapshot.refresh_id}: ${snapshot.pages.length} pages`);
 		return snapshot;
 	} catch (err) {
-		console.warn(`[top-creators] could not read ${source}: ${err}; building no Top creators pages`);
+		console.warn(`[rankings] could not read ${source}: ${err}; building no ranking pages`);
 		return EMPTY;
 	}
 }
 
-export function getSnapshot(): Promise<TopCreatorsSnapshot> {
+export function getSnapshot(): Promise<RankingsSnapshot> {
 	cached ??= load();
 	return cached;
+}
+
+/** The hubs that have at least one published page; an empty hub is not built. */
+export async function getHubs(): Promise<RankingHub[]> {
+	const { pages } = await getSnapshot();
+	return RANKINGS_HUBS.map((hub) => {
+		const listed = pages.filter((page) => page.path.startsWith(`${hub.path}/`));
+		return { ...hub, pages: listed, indexed: listed.some((page) => page.indexed) };
+	}).filter((hub) => hub.pages.length > 0);
 }
 
 /** /in/<hub>/<page>/ → the hub and page slugs, from a stored path like in/youtubers/tamil. */
