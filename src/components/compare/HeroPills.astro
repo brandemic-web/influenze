@@ -14,7 +14,7 @@ import { COMPARE_HERO } from "../../data/compare";
 
 type Props =
 	| { profiles: string; credits: string; platforms: string; row?: undefined }
-	/** lg-up classes placing the whole row, e.g. its top offset. */
+	/** lg-up classes for the whole row (in normal flow), e.g. its top margin. */
 	| { row: string; profiles?: undefined; credits?: undefined; platforms?: undefined };
 
 const props = Astro.props;
@@ -31,7 +31,7 @@ const place = (cls: string | undefined) => (row ? "" : cls);
 <ul
 	class:list={[
 		"mt-6 flex flex-wrap justify-center gap-3",
-		row ? ["lg:absolute lg:left-0 lg:mt-0 lg:w-full lg:flex-nowrap lg:gap-[0.9375rem]", row] : "lg:contents",
+		row ? ["lg:w-full lg:flex-nowrap lg:gap-[0.9375rem]", row] : "lg:contents",
 	]}
 	aria-label="At a glance"
 >

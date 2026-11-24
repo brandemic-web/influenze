@@ -66,11 +66,11 @@ const panelId = (id: string) => `brief-panel-${id}`;
 
 	{/* Figma sets the block off-centre, so it is placed on the 108rem stage. */}
 	<div
-		class="showcase relative mx-auto mt-10 flex max-w-[74.3125rem] flex-col gap-8 lg:mt-(--pg) lg:block lg:h-[34.5rem] lg:w-[108rem] lg:mx-[calc(50%-54rem)] lg:max-w-none"
+		class="showcase relative mx-auto mt-10 flex max-w-[74.3125rem] flex-col gap-8 lg:mt-(--pg) lg:block lg:min-h-[34.5rem] lg:w-[108rem] lg:mx-[calc(50%-54rem)] lg:max-w-none"
 		data-showcase
 	>
 		<div
-			class="brief-list flex flex-col gap-3 rounded-[1.25rem] bg-[#010101]/40 p-3 lg:absolute lg:top-[0.0625rem] lg:left-(--l) lg:w-[32.5625rem] lg:gap-[0.875rem] lg:px-[1.125rem] lg:pt-[1.3125rem] lg:pb-5"
+			class="brief-list flex flex-col gap-3 rounded-[1.25rem] bg-[#010101]/40 p-3 lg:relative lg:top-[0.0625rem] lg:ml-(--l) lg:w-[32.5625rem] lg:gap-[0.875rem] lg:px-[1.125rem] lg:pt-[1.3125rem] lg:pb-5"
 			role="tablist"
 			aria-orientation="vertical"
 			aria-label="Example briefs"

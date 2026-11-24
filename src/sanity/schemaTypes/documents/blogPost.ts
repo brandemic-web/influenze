@@ -124,6 +124,15 @@ export default defineType({
 		}),
 
 		defineField({
+			name: "sidebarCta",
+			title: "Sidebar CTA card",
+			type: "blogCta",
+			group: "content",
+			description:
+				'The "Try Influenze.ai free" card under the contents rail. Any field left blank uses the standard wording, so leave all blank to keep the default.',
+		}),
+
+		defineField({
 			name: "author",
 			title: "Author",
 			type: "reference",
