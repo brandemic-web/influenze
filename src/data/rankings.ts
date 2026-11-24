@@ -56,7 +56,7 @@ export const RANKINGS_COPY = {
 } as const;
 
 /** The generated meta description ends with how the list is ranked; the page itself only needs its opening line. */
-const META_TAIL = /,\s*ranked by followers with above-average engagement\.\s*Live numbers, refreshed every quarter\.\s*$/;
+const META_TAIL = /,\s*ranked by [^.]*\.\s*Live numbers, refreshed every quarter\.\s*$/;
 
 export function pageIntro(meta: string): string {
 	return meta.replace(META_TAIL, ".");
