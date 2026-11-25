@@ -49,7 +49,7 @@ const moreLists = hub ? [...siblings, { href: `/${hubPath}/`, label: `${COPY.all
 			signupHref={signup}
 			draft={!page.indexed}
 		>
-			<CreatorList creators={page.creators} plat={page.plat} label={`${page.heading}: ${page.creators.length} ${COPY.listLabel}`} />
+			<CreatorList creators={page.creators} plat={page.plat} pagePath={page.path} label={`${page.heading}: ${page.creators.length} ${COPY.listLabel}`} />
 		</RankingsHero>
 		<MoreLists heading={COPY.moreLists} items={moreLists} />
 	</main>

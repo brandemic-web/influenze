@@ -4,25 +4,27 @@
  * the ranking reads without styles; from lg each row lines up under the column
  * labels, below lg it stacks into a card with the numbers on a second line.
  */
-import { RANKINGS_COPY as COPY, formatCount } from "../../data/rankings";
+import { RANKINGS_COPY as COPY, analyzeUrl, formatCount } from "../../data/rankings";
 import type { RankedCreator } from "../../lib/rankings";
 
 interface Props {
 	creators: RankedCreator[];
 	plat: "IG" | "YT";
 	label: string;
+	/** The page's path, e.g. in/instagram-influencers/fitness-10k-25k: tags the Analyze links. */
+	pagePath: string;
 }
 
-const { creators, plat, label } = Astro.props;
+const { creators, plat, label, pagePath } = Astro.props;
 const followersLabel = COPY.followersLabel[plat];
 const averageLabel = COPY.averageLabel[plat];
 // Likes on Instagram; views on YouTube, falling back to likes if a channel has none.
 const average = (c: RankedCreator) => (plat === "YT" ? (c.average_views ?? c.average_likes) : c.average_likes);
-const grid = "lg:grid-cols-[4rem_minmax(0,1fr)_10rem_9rem_8rem]";
+const grid = "lg:grid-cols-[4rem_minmax(0,1fr)_10rem_9rem_8rem_10rem]";
 const initial = (c: RankedCreator) => (c.name || c.handle).trim().charAt(0).toUpperCase();
 ---
 
-<section class="relative px-4 pb-20 lg:px-6 lg:pb-32" aria-label={label}>
+<section class="relative px-4 pb-20 lg:px-6 lg:pb-32" aria-label={label} data-cta-location="ranking_list">
 	<div class="mx-auto max-w-280 rounded-[1.25rem] border border-white/15 bg-surface-dark/40 backdrop-blur-md">
 		<div class:list={["hidden px-8 py-5 text-[0.875rem] text-white/60 lg:grid", grid]} aria-hidden="true">
 			<span>{COPY.columns.rank}</span>
@@ -30,6 +32,7 @@ const initial = (c: RankedCreator) => (c.name || c.handle).trim().charAt(0).toUp
 			<span class="text-right">{followersLabel}</span>
 			<span class="text-right">{averageLabel}</span>
 			<span class="text-right">{COPY.columns.engagement}</span>
+			<span></span>
 		</div>
 		<ol>
 			{creators.map((c, i) => (
@@ -99,6 +102,14 @@ const initial = (c: RankedCreator) => (c.name || c.handle).trim().charAt(0).toUp
 							<dd class="tabular-nums text-white lg:text-[1.125rem]">{c.engagement_rate != null ? `${c.engagement_rate}%` : "–"}</dd>
 						</div>
 					</dl>
+
+					<a
+						href={analyzeUrl(plat, c.handle, pagePath)}
+						target="_blank"
+						rel="noopener"
+						aria-label={`${COPY.analyze} @${c.handle}`}
+						class="col-span-2 col-start-2 justify-self-start rounded-full border border-white/20 px-4 py-1.5 text-[0.8125rem] text-white/85 lg:px-5 lg:py-2 lg:text-[1rem] transition-colors hover:border-brand-primary hover:text-brand-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary lg:col-span-1 lg:col-start-auto lg:justify-self-end"
+					>{COPY.analyze}</a>
 				</li>
 			))}
 		</ol>

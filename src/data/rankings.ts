@@ -17,6 +17,14 @@ export function signupUrl(pagePath: string): string {
 }
 
 /** The hub pages, one per platform: each links to every published list page under its path. */
+/** Opens one creator in the app (`/open/<ig|yt>/<handle>`), tagged like the page's sign-up links. */
+export function analyzeUrl(plat: "IG" | "YT", handle: string, pagePath: string): string {
+	const url = new URL(signupUrl(pagePath));
+	url.pathname = `/open/${plat.toLowerCase()}/${encodeURIComponent(handle)}`;
+	url.searchParams.set("utm_content", "analyze");
+	return url.toString();
+}
+
 export const RANKINGS_HUBS = [
 	{
 		path: "in/instagram-influencers",
@@ -42,6 +50,8 @@ export const RANKINGS_COPY = {
 	columns: { rank: "#", creator: "Creator", engagement: "Engagement" },
 	listLabel: "creators, ranked",
 	verified: "Verified",
+	/** Per-creator button: opens them in the app (sign-up first if needed). */
+	analyze: "Analyze",
 	opensProfile: "opens their profile",
 	ctaButton: "Sign up free",
 	moreLists: "More lists",
