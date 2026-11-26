@@ -1,0 +1,52 @@
+---
+/**
+ * Rankings hero, on the compare pages' backdrop: heading, intro, optional
+ * chips, and the sign-up button. The top padding clears
+ * the floating header, as the compare heroes do. Whatever is slotted in (the
+ * list) sits on the same backdrop, so the purple fades out behind it.
+ */
+import Button from "../common/Button.astro";
+import HeroBackdrop from "../compare/HeroBackdrop.astro";
+import { RANKINGS_COPY as COPY } from "../../data/rankings";
+
+interface Props {
+	heading: string;
+	intro?: string;
+	/** Short facts shown as chips under the intro. */
+	chips?: string[];
+	signupHref?: string;
+	draft?: boolean;
+}
+
+const { heading, intro, chips = [], signupHref, draft = false } = Astro.props;
+---
+
+<section class="relative overflow-hidden" aria-labelledby="rankings-title">
+	<HeroBackdrop />
+	<div class="relative mx-auto flex max-w-300 flex-col items-center px-6 pt-32 pb-12 text-center lg:pt-52 lg:pb-16">
+		{draft && (
+			<p class="mb-6 rounded-full border border-ui-amber/40 bg-ui-amber/10 px-4 py-2 text-[0.75rem] text-ui-amber lg:text-[0.875rem]">
+				{COPY.draft}
+			</p>
+		)}
+		<h1 id="rankings-title" class="max-w-250 text-[2.125rem] leading-[1.1] text-white lg:mt-4 lg:text-9xl">
+			{heading}
+		</h1>
+		{intro && <p class="mt-6 max-w-160 text-[1rem] leading-6.5 text-white/80 lg:mt-8 lg:text-[1.125rem] lg:leading-7">{intro}</p>}
+		{chips.length > 0 && (
+			<ul class="mt-8 flex flex-wrap justify-center gap-2.5 lg:mt-10 lg:gap-3">
+				{chips.map((chip) => (
+					<li class="rounded-full border border-white/20 bg-[#010101]/40 px-4 py-2 text-[0.8125rem] text-white backdrop-blur-md lg:text-[0.9375rem]">
+						{chip}
+					</li>
+				))}
+			</ul>
+		)}
+		{signupHref && (
+			<div class="mt-10 lg:mt-12">
+				<Button href={signupHref} newTab>{COPY.ctaButton}</Button>
+			</div>
+		)}
+	</div>
+	<div class="relative"><slot /></div>
+</section>
