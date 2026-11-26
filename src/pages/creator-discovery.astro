@@ -6,18 +6,20 @@ import CtaBand from "../components/common/CtaBand.astro";
 import UseCaseCards from "../components/common/UseCaseCards.astro";
 import HeroBackdrop from "../components/compare/HeroBackdrop.astro";
 import TwoTone from "../components/compare/TwoTone.astro";
-import Analyze from "../components/app/screens/analyze/Analyze.astro";
-import SearchMockup from "../components/platform/SearchMockup.astro";
+import WorkflowMockup from "../components/app/WorkflowMockup.astro";
 import TrustedBy from "../components/home/TrustedBy.astro";
 import WhyInfluenze from "../components/home/WhyInfluenze.astro";
 import FeatureBlock from "../components/features/FeatureBlock.astro";
 import BlogFaq from "../components/blog/BlogFaq.astro";
 import { CREATOR_DISCOVERY } from "../data/creator-discovery";
-import { PLATFORM_KEYS } from "../data/platform";
 import { opensNewTab } from "../data/site";
 import { productSchema } from "../lib/product-schema";
+import { getPerspectiveCookie } from "../lib/draft-mode";
+import { getHomePage } from "../sanity/lib/queries";
 
 const { seo, navigation, hero, signup, demo, metrics, comparison, workflow, features, audience, proof, faq } = CREATOR_DISCOVERY;
+const { data: home } = await getHomePage(getPerspectiveCookie(Astro.cookies));
+const shortlistFlow = home?.hero?.showShortlistFlow ?? false;
 const demoNewTab = Boolean(demo.href && opensNewTab(demo.href));
 const sectionTitle = "text-center text-[1.875rem] leading-[1.15] lg:text-[3.4375rem]";
 const schema = [
@@ -54,21 +56,8 @@ const schema = [
 							<Button disabled title="Booking link pending" class="mt-6 lg:mt-7">{demo.label}</Button>
 						)
 					}
-					<figure class="mt-6 w-full max-w-2xl lg:mt-12 lg:max-w-[73rem]">
-						<div class="hidden rounded-[1.75rem] border border-white/15 bg-wf-page p-2 shadow-[0_1.25rem_5rem] shadow-gradient-primary/25 lg:block">
-							<div class="wf-mockup overflow-hidden rounded-[1.25rem]" data-canvas-fit style="--wf-scale:0.8">
-								<div class="wf-stage" data-canvas aria-hidden="true" inert>
-									<Analyze results />
-								</div>
-							</div>
-						</div>
-						<div class="rounded-lg border border-white/15 bg-wf-page/80 p-3 sm:p-4 lg:hidden">
-							<div class="relative mx-auto aspect-[624/284] w-full max-w-[39rem] overflow-hidden" data-canvas-fit>
-								<div class="absolute top-0 left-0 w-max origin-top-left scale-[var(--wf-scale,0.33)]" data-canvas>
-									<SearchMockup {...hero.search} platforms={[...PLATFORM_KEYS]} />
-								</div>
-							</div>
-						</div>
+					<figure class="relative mt-6 w-full max-w-7xl lg:mt-14.75">
+						<WorkflowMockup shortlistFlow={shortlistFlow} />
 						<figcaption class="sr-only">{hero.previewLabel}</figcaption>
 					</figure>
 				</div>
@@ -179,7 +168,3 @@ const schema = [
 		filter: url(#testimonial-logo-white);
 	}
 </style>
-
-<script>
-	import "../scripts/canvasScale";
-</script>

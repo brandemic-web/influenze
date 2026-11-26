@@ -69,13 +69,7 @@ export const CREATOR_DISCOVERY = {
 		eyebrow: "The world's largest creator search engine",
 		title: "Find, vet and shortlist creators",
 		accent: "in minutes.",
-		previewLabel: "A preview of creator search and filters in Influenze.ai.",
-		search: {
-			searchTerm: "Skincare creators",
-			niche: "Beauty and skincare",
-			audience: "Age 25–34",
-			location: "Bengaluru, India",
-		},
+		previewLabel: "A walkthrough of finding, vetting and shortlisting creators in Influenze.ai.",
 	},
 	signup: {
 		heading: "Find your next creator in minutes.",
