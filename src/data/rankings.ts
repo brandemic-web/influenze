@@ -16,15 +16,18 @@ export function signupUrl(pagePath: string): string {
 	return url.toString();
 }
 
-/** The hub pages, one per platform: each links to every published list page under its path. */
-/** Opens one creator in the app (`/open/<ig|yt>/<handle>`), tagged like the page's sign-up links. */
+/** Off until the app can open `/open/<ig|yt>/<handle>`; until then Analyze opens the app's login page. */
+const OPEN_CREATOR_IN_APP = false;
+
+/** Opens one creator in the app, tagged like the page's sign-up links. */
 export function analyzeUrl(plat: "IG" | "YT", handle: string, pagePath: string): string {
 	const url = new URL(signupUrl(pagePath));
-	url.pathname = `/open/${plat.toLowerCase()}/${encodeURIComponent(handle)}`;
+	if (OPEN_CREATOR_IN_APP) url.pathname = `/open/${plat.toLowerCase()}/${encodeURIComponent(handle)}`;
 	url.searchParams.set("utm_content", "analyze");
 	return url.toString();
 }
 
+/** The hub pages, one per platform: each links to every published list page under its path. */
 export const RANKINGS_HUBS = [
 	{
 		path: "in/instagram-influencers",
