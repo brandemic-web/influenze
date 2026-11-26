@@ -1,7 +1,6 @@
 import gsap from "gsap";
 import { SplitText } from "gsap/SplitText";
 import { HOP, hopAndClick, registerPanelDemo } from "./creators-ai-demo";
-import { panelId } from "./creators-ai";
 
 gsap.registerPlugin(SplitText);
 
@@ -48,12 +47,99 @@ const SCROLL_REVEAL = 0.85;
  */
 const SCROLL_DURATION = 4;
 
+/** Upload button fill while disabled / live — lavender18 and lavender25. */
+const UPLOAD_OFF = "#6d638f";
+const UPLOAD_ON = "#653ee1";
+/** Drop zone edge — whiteA10 at rest, green8 while a file hovers over it. */
+const DROP_IDLE = "rgba(255,255,255,0.1)";
+const DROP_HOVER = "#3aff98";
+/** Where the CSV starts, relative to its resting spot over the drop zone: a little up and right. */
+const FILE_START = { x: 130, y: -110 };
+
+/* ── Import (alternative pages) ─────────────────────────────────────────────
+ * The import dialog lands, the pointer drags a CSV into the drop zone, the file
+ * is read ("48 entries found"), then Upload is clicked and the snackbar confirms.
+ */
+registerPanelDemo("import", (ctx) => {
+	const { panel } = ctx;
+	const item = panel.querySelector<HTMLElement>("[data-panel-item]");
+	const cursor = panel.querySelector<HTMLElement>("[data-demo-cursor]");
+	const ring = panel.querySelector<HTMLElement>("[data-demo-cursor-ring]");
+	const drop = panel.querySelector<HTMLElement>("[data-import-drop]");
+	const file = panel.querySelector<HTMLElement>("[data-import-file]");
+	const found = panel.querySelector<HTMLElement>("[data-import-found]");
+	const hint = panel.querySelector<HTMLElement>("[data-import-hint]");
+	const name = panel.querySelector<HTMLElement>("[data-import-name]");
+	const upload = panel.querySelector<HTMLElement>("[data-import-upload]");
+	const label = panel.querySelector<HTMLElement>("[data-import-upload-label]");
+	const spinner = panel.querySelector<HTMLElement>("[data-import-spinner]");
+	const snackbar = panel.querySelector<HTMLElement>("[data-import-snackbar]");
+
+	if (!item || !cursor || !ring || !drop || !file || !found || !hint || !name
+		|| !upload || !label || !spinner || !snackbar) return;
+
+	if (ctx.reducedMotion) {
+		gsap.set(cursor, { autoAlpha: 0 });
+		return;
+	}
+
+	const tl = gsap.timeline({ paused: true, defaults: { ease: "power2.out" } })
+		// ── t=0 · empty dialog, file off to the side, Upload disabled ────────
+		.set(item, { y: RISE, autoAlpha: 0 })
+		.set(cursor, { autoAlpha: 0, scale: 1, x: CURSOR_HOME.x, y: CURSOR_HOME.y })
+		.set(ring, { autoAlpha: 0, scale: 0.3 })
+		.set(file, { x: FILE_START.x, y: FILE_START.y, autoAlpha: 0, scale: 1 })
+		.set(drop, { borderColor: DROP_IDLE })
+		.set(found, { autoAlpha: 0, scale: 0.6 })
+		.set(hint, { autoAlpha: 1 })
+		.set(name, { autoAlpha: 0 })
+		.set(upload, { backgroundColor: UPLOAD_OFF })
+		.set(label, { autoAlpha: 1 })
+		.set(spinner, { autoAlpha: 0, rotation: 0 })
+		.set(snackbar, { autoAlpha: 0, y: 12 })
+
+		// ── 1 · the dialog lands ─────────────────────────────────────────────
+		.to(item, { y: 0, autoAlpha: 1, duration: 0.7 }, 0.1)
+
+		// ── 2 · the file arrives mid-drag, pointer on it, into the drop zone ──
+		.set(cursor, { x: () => ctx.point(file).x, y: () => ctx.point(file).y }, ">-0.1")
+		.to([file, cursor], { autoAlpha: 1, duration: 0.15 }, "<")
+		.to(cursor, {
+			x: () => ctx.point(drop).x,
+			y: () => ctx.point(drop).y,
+			duration: 1,
+			ease: "power2.inOut",
+		}, "<")
+		.to(file, { x: 0, y: 0, duration: 1, ease: "power2.inOut" }, "<")
+		.to(drop, { borderColor: DROP_HOVER, duration: 0.25 }, "<0.6")
+
+		// ── 3 · drop: the file is read and Upload goes live ──────────────────
+		.to(file, { autoAlpha: 0, scale: 0.7, duration: 0.3, ease: "power2.in" }, ">0.15")
+		.to(drop, { borderColor: DROP_IDLE, duration: 0.3 }, "<")
+		.to(hint, { autoAlpha: 0, duration: 0.2 }, "<")
+		.to(name, { autoAlpha: 1, duration: 0.3 }, ">")
+		.to(found, { autoAlpha: 1, scale: 1, duration: 0.4, ease: "back.out(2.5)" }, "<")
+		.to(upload, { backgroundColor: UPLOAD_ON, duration: 0.3 }, "<0.1");
+
+	// ── 4 · pointer clicks Upload; a short spin, then the snackbar ──────────
+	hopAndClick(tl, ctx, cursor, ring, upload, ">0.2");
+
+	return tl
+		.to(label, { autoAlpha: 0, duration: 0.15 }, ">-0.1")
+		.to(spinner, { autoAlpha: 1, duration: 0.15 }, "<")
+		.to(spinner, { rotation: 720, duration: 0.9, ease: "none" }, "<")
+		.to(spinner, { autoAlpha: 0, duration: 0.15 }, ">-0.1")
+		.to(label, { autoAlpha: 1, duration: 0.2 }, "<")
+		.to(snackbar, { autoAlpha: 1, y: 0, duration: 0.45 }, "<")
+		.to(cursor, { autoAlpha: 0, duration: 0.35 }, ">0.3");
+});
+
 /* ── Panel 1 · Search Globally ──────────────────────────────────────────────
  * A pointer walks the UI: the three cards land, the Mega Account tier is
  * ticked open, then the lookalike handle and creator location are typed in and
  * a region pill drops into the list.
  */
-registerPanelDemo(panelId(0), (ctx) => {
+registerPanelDemo("search", (ctx) => {
 	const { panel } = ctx;
 	const cursor = panel.querySelector<HTMLElement>("[data-demo-cursor]");
 	const ring = panel.querySelector<HTMLElement>("[data-demo-cursor-ring]");
@@ -169,13 +255,13 @@ registerPanelDemo(panelId(0), (ctx) => {
 		.to(cursor, { autoAlpha: 0, duration: 0.35 }, ">0.35");
 
 	return tl;
-}, { autoPlay: true });
+});
 
 /* ── Panel 2 · Know The Audience ─────────────────────────────────────────────
  * The three cards stagger up, then the pointer clicks the Interests toggle on
  * the Audience Affinities card and the top-five list swaps over.
  */
-registerPanelDemo(panelId(1), (ctx) => {
+registerPanelDemo("audience", (ctx) => {
 	const { panel } = ctx;
 	const items = gsap.utils.toArray<HTMLElement>("[data-panel-item]", panel);
 	const cursor = panel.querySelector<HTMLElement>("[data-demo-cursor]");
@@ -226,7 +312,7 @@ registerPanelDemo(panelId(1), (ctx) => {
  * The pieces stagger up in DOM order, then the Compare card scrolls its own
  * body down to show that there's more below the fold. 
  */
-registerPanelDemo(panelId(2), ({ panel, reducedMotion }) => {
+registerPanelDemo("choose", ({ panel, reducedMotion }) => {
 	const items = gsap.utils.toArray<HTMLElement>("[data-panel-item]", panel);
 	const scroller = panel.querySelector<HTMLElement>("[data-compare-scroll]");
 	if (!items.length || reducedMotion) return;
@@ -251,7 +337,7 @@ registerPanelDemo(panelId(2), ({ panel, reducedMotion }) => {
  * The creator card lands, the pointer clicks Enquire, and the contact list
  * wipes open from a clip path collapsed against its top edge.
  */
-registerPanelDemo(panelId(3), (ctx) => {
+registerPanelDemo("enquire", (ctx) => {
 	const { panel } = ctx;
 	const item = panel.querySelector<HTMLElement>("[data-panel-item]");
 	const cursor = panel.querySelector<HTMLElement>("[data-demo-cursor]");

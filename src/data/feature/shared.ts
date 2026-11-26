@@ -7,6 +7,7 @@
 import { APP_URL } from "../site";
 import type { CopyField } from "../compare/shared";
 import { FAQ_HEADING, FAQ_SUBCOPY } from "../faqs";
+import type { GrowthPoint } from "../mediaKitCharts";
 import { FRESHNESS_CARDS, WHO_FOR_CARDS, type IconTile } from "../platform/shared";
 
 export { plainText, twoTone } from "../compare/shared";
@@ -61,6 +62,39 @@ export function resolveBubbles(chosen: readonly string[] | undefined, available:
 	const fill = [...DEFAULT_BUBBLES, ...usable].filter((name) => has.has(name) && !picked.includes(name));
 	return [...picked, ...[...new Set(fill)]].slice(0, BUBBLES_PER_PAGE);
 }
+
+/** What sits under "the fastest way…": the search-result rows, or an app screen matching the heading. */
+export type ResultVisual = "results" | "compare" | "contact" | "growth" | "pricing";
+
+/** Pages whose heading the search rows don't fit, by slug; every other page keeps the rows. */
+export const RESULT_VISUALS: Readonly<Record<string, ResultVisual>> = {
+	"side-by-side-creator-comparison-tool": "compare",
+	"creator-contact-details-tool": "contact",
+	"creator-follower-growth-analysis": "growth",
+	"estimated-influencer-pricing-by-post-type": "pricing",
+};
+
+/** A creator on the rise, for the growth visual: both media kit charts climbing month on month. */
+export const RISING_GROWTH: { followers: readonly GrowthPoint[]; likes: readonly GrowthPoint[] } = {
+	followers: [
+		{ month: "mar", value: 98_400 },
+		{ month: "apr", value: 104_900 },
+		{ month: "may", value: 112_300 },
+		{ month: "jun", value: 121_800 },
+		{ month: "jul", value: 133_500 },
+		{ month: "aug", value: 144_200 },
+		{ month: "sep", value: 156_100 },
+	],
+	likes: [
+		{ month: "mar", value: 3_900 },
+		{ month: "apr", value: 4_700 },
+		{ month: "may", value: 4_400 },
+		{ month: "jun", value: 6_100 },
+		{ month: "jul", value: 7_800 },
+		{ month: "aug", value: 8_600 },
+		{ month: "sep", value: 10_200 },
+	],
+};
 
 /** The creator rows under "the fastest way…" — the app's search results, as drawn. */
 export const RESULT_ROWS = [

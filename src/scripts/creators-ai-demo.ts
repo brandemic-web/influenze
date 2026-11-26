@@ -1,6 +1,6 @@
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { PANEL_DONE, PANEL_ENTER } from "./creators-ai";
+import { PANEL_DONE, PANEL_ENTER, panelId } from "./creators-ai";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -65,23 +65,20 @@ export interface DemoContext {
 	point(el: Element, rx?: number, ry?: number): { x: number; y: number };
 }
 
-export interface PanelDemoOptions {
-	/** Play as soon as the section scrolls into view (only the default tab). */
-	autoPlay?: boolean;
-}
-
 /**
- * Wires a panel's demo timeline up to the tab that controls it. `build` returns
- * the timeline, or nothing to opt out (e.g. under reduced motion).
+ * Wires a panel's demo timeline up to the tab that controls it. Panels are found by
+ * `data-creators-demo`, not position, since pages put the visuals in different slots.
+ * `build` returns the timeline, or nothing to opt out (e.g. under reduced motion).
  */
 export function registerPanelDemo(
-	panelId: string,
+	demo: string,
 	build: (ctx: DemoContext) => gsap.core.Timeline | undefined,
-	{ autoPlay = false }: PanelDemoOptions = {},
 ) {
 	function init() {
-		const panel = document.getElementById(panelId);
+		const panel = document.querySelector<HTMLElement>(`[data-creators-demo="${demo}"]`);
 		if (!panel || panel.dataset.demoReady === "true") return;
+		// Only the default tab plays on scroll.
+		const autoPlay = panel.id === panelId(0);
 
 		const stage = panel.parentElement;
 		if (!stage) return;
