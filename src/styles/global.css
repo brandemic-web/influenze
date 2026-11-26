@@ -59,6 +59,7 @@
     /* gradients */
     --color-gradient-primary:#6838FF;
     --color-gradient-secondary:#0C0A12;
+    --background-image-home-violet: linear-gradient(178.32deg, var(--color-background-primary) 1.67%, #21144B 11.9%, #8058FF 43.98%, #251949 75.14%, #000000 98.38%);
 
     /* fonts */
     --font-sans: "Open Sauce Two", sans-serif;
@@ -216,6 +217,6 @@
 @utility card-edge {
     border: 1px solid transparent;
     background:
-        linear-gradient(#010101, #010101) padding-box,
+        linear-gradient(var(--color-background-primary), var(--color-background-primary)) padding-box,
         linear-gradient(90deg, #19123a, #575757) border-box;
 }

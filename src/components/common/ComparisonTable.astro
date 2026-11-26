@@ -1,22 +1,33 @@
 ---
 /**
- * "How Influenze Compares". One CSS grid so every column stays aligned: five tracks
- * sized off the design (label 398, Influenze 262, competitors 250, in a 1455 frame).
+ * One CSS grid keeps the comparison columns aligned. The homepage's five tracks
+ * are sized from the design (label 398, Influenze 262, competitors 250, in a 1455 frame).
  * The raised Influenze column spans every row in column 2, with negative block margins
  * for its overhang. Below `lg` the grid keeps its shape and scrolls sideways at
  * `(100vw - 3rem) / 2.5` per track, so a half-column always signals more to come.
  */
 import logo from "../../assets/images/common/logos_and_icons/influenze_logo_nav.webp";
 import glowBand from "../../assets/images/home_page/compare_table/glow_band.svg";
+import TwoTone from "../compare/TwoTone.astro";
 import {
 	COMPARISON_HEADING,
 	COMPARISON_COMPETITORS,
 	COMPARISON_ROWS,
+	type ComparisonRow,
 } from "../../data/comparison";
 import { getHomePage } from "../../sanity/lib/queries";
 import { getPerspectiveCookie } from "../../lib/draft-mode";
 
-const { data: home } = await getHomePage(getPerspectiveCookie(Astro.cookies));
+interface Props {
+	content?: {
+		heading: string;
+		otherLabel: string;
+		rows: readonly ComparisonRow[];
+	};
+}
+
+const { content } = Astro.props;
+const { data: home } = content ? { data: null } : await getHomePage(getPerspectiveCookie(Astro.cookies));
 // Every row's `others` array is rendered positionally against the
 // competitor-name columns (grid-column: c + 3), so a mismatched length would
 // misalign or blank out cells — only use Sanity's table if every row's width
@@ -32,35 +43,30 @@ const heading = {
 	lead: sanityComparison?.heading?.lead || COMPARISON_HEADING.lead,
 	accent: sanityComparison?.heading?.accent || COMPARISON_HEADING.accent,
 };
-const competitors = sanityComparison?.competitors ?? COMPARISON_COMPETITORS;
-const rows = sanityComparison?.rows ?? COMPARISON_ROWS;
+const competitors = content ? [content.otherLabel] : (sanityComparison?.competitors ?? COMPARISON_COMPETITORS);
+const rows = content?.rows ?? sanityComparison?.rows ?? COMPARISON_ROWS;
 const rowCount = rows.length;
 ---
 
 <section
-	class="relative overflow-hidden py-5 lg:pt-0 lg:pb-40"
+	class:list={["relative overflow-hidden py-5", content ? "pt-16 lg:pb-8" : "lg:pt-0 lg:pb-40"]}
 	aria-labelledby="comparison-heading"
 >
-	{/*
-		Blurred purple band from the design, centred on the section's vertical axis
-		and clipped by its `overflow-hidden`. The SVG is 1728×744, i.e. the design
-		canvas width, so `w-full` keeps its proportions at every viewport.
-	*/}
-	<img
-		src={glowBand.src}
-		alt=""
-		class="pointer-events-none absolute inset-x-0 top-1/2 hidden h-[58%] w-full -translate-y-1/2 object-cover opacity-80 lg:block"
-		loading="lazy"
-	/>
+	{!content && (
+		<img
+			src={glowBand.src}
+			alt=""
+			class="pointer-events-none absolute inset-x-0 top-1/2 hidden h-[58%] w-full -translate-y-1/2 object-cover opacity-80 lg:block"
+			loading="lazy"
+		/>
+	)}
 
 	<div class="relative z-2 flex flex-col items-center px-6 text-center">
 		<h2
 			id="comparison-heading"
-			class="text-md capitalize leading-[1.15] text-white lg:text-[4rem]"
+			class:list={["leading-[1.15] text-white", content ? "text-[1.875rem] lg:text-[3.4375rem]" : "text-md capitalize lg:text-[4rem]"]}
 		>
-			{heading.lead}<span class="text-brand-primary"
-				>{heading.accent}</span
-			>
+			{content ? <TwoTone text={content.heading} accentBlock /> : <>{heading.lead}<span class="text-brand-primary">{heading.accent}</span></>}
 		</h2>
 	</div>
 
@@ -71,20 +77,26 @@ const rowCount = rows.length;
 		is replaced by the rail below; see comparison-rail.ts for why it can't be styled.
 	*/}
 	<div
-		class="compare-scroller relative z-2 mt-6 overflow-x-auto overscroll-x-contain px-6 py-8 -mb-8 lg:mt-24 lg:mb-0 lg:overflow-visible lg:py-0"
+		class:list={["compare-scroller relative z-2 mt-6 overflow-x-auto overscroll-x-contain px-6 py-8 -mb-8 lg:mb-0 lg:overflow-visible lg:py-0", content ? "lg:mt-20" : "lg:mt-24"]}
 		data-rail-scroller="comparison"
 	>
 		<div
-			class="mx-auto grid w-max max-w-363.75 grid-cols-[repeat(5,calc((100vw-3rem)/2.5))] items-stretch rounded-[1.25rem] border border-[#ffffff52] bg-white/2 lg:w-auto lg:grid-cols-[1.59fr_1.05fr_1fr_1fr_1fr]"
+			class:list={[
+				"mx-auto grid w-max max-w-363.75 items-stretch rounded-[1.25rem] border border-[#ffffff52] lg:w-auto",
+				content ? "grid-cols-[repeat(3,max(8rem,calc((100vw-3rem)/2.5)))] bg-[#060606] lg:grid-cols-[0.8fr_1.1fr_1.1fr]" : "grid-cols-[repeat(5,calc((100vw-3rem)/2.5))] bg-white/2 lg:grid-cols-[1.59fr_1.05fr_1fr_1fr_1fr]",
+			]}
 			role="table"
-			aria-label="Influenze compared with Qoruz, Upfluence and Culture X"
+			aria-label={content ? `Influenze compared with ${content.otherLabel}` : "Influenze compared with Qoruz, Upfluence and Culture X"}
 		>
 			{/*
 				Raised Influenze column. Spans header + every row, and sits behind the
 				cells so their text stays legible.
 			*/}
 			<div
-				class="col-start-2 row-start-1 -my-6 rounded-[1.25rem] border border-[#ffffff52] bg-[linear-gradient(180deg,rgba(10,7,24,0.3)_0%,rgba(10,7,24,0.06)_100%)] backdrop-blur-md shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_24px_60px_-20px_rgba(0,0,0,0.6)] lg:-my-8"
+				class:list={[
+					"col-start-2 row-start-1 -my-6 rounded-[1.25rem] border border-[#ffffff52] bg-[linear-gradient(180deg,rgba(10,7,24,0.3)_0%,rgba(10,7,24,0.06)_100%)] backdrop-blur-md shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_24px_60px_-20px_rgba(0,0,0,0.6)] lg:-my-8",
+					content && "bg-background-primary",
+				]}
 				style={`grid-row-end: ${rowCount + 2}`}
 				aria-hidden="true"
 			>
@@ -165,7 +177,8 @@ const rowCount = rows.length;
 										stroke-width="2"
 										stroke-linecap="round"
 										stroke-linejoin="round"
-										aria-label="Included"
+										aria-label={content ? undefined : "Included"}
+										aria-hidden={content ? "true" : undefined}
 										role="img"
 									>
 										<circle cx="12" cy="12" r="10" />
@@ -173,7 +186,7 @@ const rowCount = rows.length;
 									</svg>
 								)}
 								{(row.influenze?.accent || row.influenze?.text) && (
-									<span class="text-[0.75rem] capitalize leading-4.5 text-white lg:text-[1.125rem] lg:leading-6.5">
+									<span class:list={["text-[0.75rem] leading-4.5 text-white lg:text-[1.125rem] lg:leading-6.5", !content && "capitalize"]}>
 										{row.influenze?.accent && (
 											<span class="text-brand-primary">{row.influenze?.accent} </span>
 										)}
@@ -199,7 +212,8 @@ const rowCount = rows.length;
 											stroke="currentColor"
 											stroke-width="2"
 											stroke-linecap="round"
-											aria-label="Not included"
+											aria-label={content ? undefined : "Not included"}
+											aria-hidden={content ? "true" : undefined}
 											role="img"
 										>
 											<path d="M5 12h14" />
@@ -210,7 +224,8 @@ const rowCount = rows.length;
 										// dimmed; a plain value stands at full strength.
 										<span
 											class:list={[
-												"text-[0.75rem] capitalize leading-4 text-white lg:text-[1rem] lg:leading-6",
+												"text-[0.75rem] leading-4 text-white lg:text-[1rem] lg:leading-6",
+												!content && "capitalize",
 												cell.mark && "opacity-60",
 											]}
 										>

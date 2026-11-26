@@ -22,13 +22,21 @@ import shareIcon from "../../assets/images/common/logos_and_icons/share_icon_wit
 
 interface Props {
 	buttonLabel?: string;
+	id?: string;
+	copy?: { heading: string; note: string };
+	transparent?: boolean;
 }
 
-const { buttonLabel = "Free Trial" } = Astro.props;
+const { buttonLabel = "Free Trial", id, copy, transparent = false } = Astro.props;
 ---
 
 <section
-	class="relative overflow-hidden bg-background-primary py-35 lg:h-152.5 lg:py-0"
+	id={id}
+	class:list={[
+		"relative overflow-hidden py-35 lg:h-152.5 lg:py-0",
+		!transparent && "bg-background-primary",
+		id && "scroll-mt-24 lg:scroll-mt-36",
+	]}
 	aria-labelledby="cta-heading"
 	data-cta-section
 	data-cta-location="cta_band"
@@ -165,15 +173,17 @@ const { buttonLabel = "Free Trial" } = Astro.props;
 	<div
 		class="relative flex h-full flex-col items-center justify-center gap-3 lg:gap-10"
 	>
-		<h2
-			id="cta-heading"
-			data-cta-heading
-			class="text-center text-[2rem] capitalize text-white max-md:text-3xl lg:text-[3.625rem]"
-		>
-			Ready to get influenzed?
-		</h2>
-		<div data-cta-button>
+		<div class:list={["text-center", copy && "max-w-[45rem] px-6"]} data-cta-heading>
+			<h2
+				id="cta-heading"
+				class:list={["text-[2rem] text-white max-md:text-3xl lg:text-[3.625rem]", !copy && "capitalize"]}
+			>
+				{copy?.heading ?? "Ready to get influenzed?"}
+			</h2>
+		</div>
+		<div class:list={["text-center", copy && "max-w-[28rem] px-6"]} data-cta-button>
 			<Button href={APP_URL} newTab>{buttonLabel}</Button>
+			{copy && <p class="mt-3 text-[0.8125rem] leading-5 text-white/75 lg:text-[0.9375rem]">{copy.note}</p>}
 		</div>
 	</div>
 </section>
