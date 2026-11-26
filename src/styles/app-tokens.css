@@ -129,6 +129,13 @@
 	--color-wf-menu-icon: #8878b8; /* lavender54 */
 	--color-wf-violet-soft: #8e6aff; /* lavender2 */
 	--color-wf-green-dim: #3e9761; /* green12 */
+	/* the CSV import dialog */
+	--color-wf-drop-border: #ffffff19; /* whiteA10 — the drop zone's dashed edge */
+	--color-wf-drop-icon: #70688b; /* upload_area.svg's own stroke */
+	--color-wf-found-pill: #0c4628; /* green10 — "N entries found" */
+	--color-wf-credit-note: #2c263d; /* lavender10 — the per-handle cost strip */
+	--color-wf-credit-note-text: #716495; /* lavender88 */
+	--color-wf-snackbar: #121214; /* grey5 */
 
 	/* status */
 	--color-wf-danger: #ff4b52; /* red1 */

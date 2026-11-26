@@ -16,7 +16,7 @@ import BlogFaq from "../../components/blog/BlogFaq.astro";
 import { opensNewTab } from "../../data/site";
 import { FAQS } from "../../data/faqs";
 import { SHOW_DRAFTS } from "../../data/compare";
-import { plainText } from "../../data/feature";
+import { RESULT_VISUALS, plainText } from "../../data/feature";
 import { getFeaturePage, getFeaturePages } from "../../lib/feature-source";
 import { getPerspectiveCookie } from "../../lib/draft-mode";
 import { parseStructuredDataOverride } from "../../sanity/lib/customSchema";
@@ -83,7 +83,12 @@ const schema = [
 			<IconCardSection id="numbers" heading={copy.numbersHeading} cards={page.numbersList} gap={11} cardsGap={2.625} cardHeight={11.75} />
 			<IconCardSection id="freshness" heading={copy.freshnessHeading} cards={page.freshnessList} gap={10.375} cardsGap={3.375} cardHeight={13.375} />
 
-			<FastestResults line1={copy.fastestLine1} line2={copy.fastestLine2} image={page.resultImage} />
+			<FastestResults
+				line1={copy.fastestLine1}
+				line2={copy.fastestLine2}
+				image={page.resultImage}
+				visual={RESULT_VISUALS[page.slug] ?? "results"}
+			/>
 
 			<WhoForSection heading={copy.whoForHeading} cards={page.whoForList} gap={12} italic={false} />
 

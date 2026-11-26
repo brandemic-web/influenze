@@ -96,12 +96,13 @@ const schema = [
 			/>
 			{/*
 				"Keep your network" is the homepage's animated "found with AI" section with this
-				page's heading and four steps: each step plays the product panel at its position.
+				page's heading and four steps: the first step plays the CSV import, the rest the homepage's first three panels.
 				48px of that section's own top padding plus 102px here makes the 150px gap drawn.
 			*/}
 			<div class="lg:pt-[6.375rem]">
 				<CreatorsAI
 					sectionGap
+					importFirst
 					headingText={copy.networkHeading}
 					button={false}
 					backdrop={false}
