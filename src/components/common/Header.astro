@@ -107,7 +107,7 @@ const isActive = (item: { href?: string; newTab?: boolean }) =>
 		</div>
 
 		{mobileStickyCta ? (
-			<div class="ml-auto mr-2 hidden shrink-0 md:max-lg:portrait:block">
+			<div class="ml-auto mr-2 hidden shrink-0 sm:max-lg:portrait:block">
 				<Button href={mobileStickyCta.href} newTab class="min-h-11">{mobileStickyCta.label}</Button>
 			</div>
 		) : (

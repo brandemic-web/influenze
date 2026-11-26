@@ -23,7 +23,7 @@ import shareToEmail from "../../assets/images/featured_page/blocks/share.svg";
 
 interface Props {
 	cards?: readonly FeatureBlock[];
-	actions?: { signupHref: string; demo: { label: string; href?: string } };
+	actions?: { signupHref: string; demo: { label: string; href: string } };
 }
 
 const { cards, actions } = Astro.props;
@@ -33,8 +33,6 @@ const blocks = cards ?? FEATURE_BLOCKS.map((local, index) => ({
 	title: features?.featureBlocks?.[index]?.title || local.title,
 	description: features?.featureBlocks?.[index]?.description || local.description,
 }));
-const demo = actions?.demo;
-const demoNewTab = demo?.href ? opensNewTab(demo.href) : false;
 
 const stickyOffsets = ["lg:top-34", "lg:top-40", "lg:top-46", "lg:top-52", "lg:top-58", "lg:top-64", "lg:top-70"];
 const visualLayout: Record<FeatureBlock["imageKey"], string> = {
@@ -89,11 +87,7 @@ const visualLayout: Record<FeatureBlock["imageKey"], string> = {
 				{actions && block.ctaLabel && (
 					<div class="mt-6 flex flex-wrap gap-3">
 						<Button href={actions.signupHref}>{block.ctaLabel}</Button>
-						{demo?.href ? (
-							<Button href={demo.href} newTab={demoNewTab}>{demo.label}</Button>
-						) : demo && import.meta.env.DEV && (
-							<Button disabled title="Booking link pending">{demo.label}</Button>
-						)}
+						<Button href={actions.demo.href} newTab={opensNewTab(actions.demo.href)}>{actions.demo.label}</Button>
 					</div>
 				)}
 			</div>

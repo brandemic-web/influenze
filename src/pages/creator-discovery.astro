@@ -12,7 +12,7 @@ import WhyInfluenze from "../components/home/WhyInfluenze.astro";
 import FeatureBlock from "../components/features/FeatureBlock.astro";
 import BlogFaq from "../components/blog/BlogFaq.astro";
 import { CREATOR_DISCOVERY } from "../data/creator-discovery";
-import { opensNewTab } from "../data/site";
+import { APP_URL, opensNewTab } from "../data/site";
 import { productSchema } from "../lib/product-schema";
 import { getPerspectiveCookie } from "../lib/draft-mode";
 import { getHomePage } from "../sanity/lib/queries";
@@ -20,7 +20,7 @@ import { getHomePage } from "../sanity/lib/queries";
 const { seo, navigation, hero, signup, demo, metrics, comparison, workflow, features, audience, proof, faq } = CREATOR_DISCOVERY;
 const { data: home } = await getHomePage(getPerspectiveCookie(Astro.cookies));
 const shortlistFlow = home?.hero?.showShortlistFlow ?? false;
-const demoNewTab = Boolean(demo.href && opensNewTab(demo.href));
+const demoNewTab = opensNewTab(demo.href);
 const sectionTitle = "text-center text-[1.875rem] leading-[1.15] lg:text-[3.4375rem]";
 const schema = [
 	await productSchema(Astro.site ?? new URL(Astro.url.origin), seo.description),
@@ -49,13 +49,10 @@ const schema = [
 					>
 						{hero.title}<span class="block text-brand-primary">{hero.accent}</span>
 					</h1>
-					{
-						demo.href ? (
-							<Button href={demo.href} newTab={demoNewTab} class="mt-6 lg:mt-7">{demo.label}</Button>
-						) : import.meta.env.DEV && (
-							<Button disabled title="Booking link pending" class="mt-6 lg:mt-7">{demo.label}</Button>
-						)
-					}
+					<div class="mt-6 flex flex-wrap justify-center gap-3 lg:mt-7">
+						<Button href={APP_URL} newTab>{signup.buttonLabel}</Button>
+						<Button href={demo.href} newTab={demoNewTab}>{demo.label}</Button>
+					</div>
 					<figure class="relative mt-6 w-full max-w-7xl lg:mt-14.75">
 						<WorkflowMockup shortlistFlow={shortlistFlow} />
 						<figcaption class="sr-only">{hero.previewLabel}</figcaption>
@@ -133,9 +130,7 @@ const schema = [
 			<div id="faq" class="mx-auto max-w-3xl scroll-mt-24 lg:mt-28 lg:max-w-[108rem] lg:scroll-mt-36">
 				<BlogFaq heading={faq.heading} faqs={[...faq.items]} align="wide" size="section" transparent>
 					<Fragment slot="afterIntro">
-						{demo.href && (
-							<Button href={demo.href} newTab={demoNewTab} class="mt-5">{demo.label}</Button>
-						)}
+						<Button href={demo.href} newTab={demoNewTab} class="mt-5">{demo.label}</Button>
 					</Fragment>
 				</BlogFaq>
 			</div>
