@@ -1,0 +1,122 @@
+---
+import Icon from "../common/Icon.astro";
+import PlatformIcon from "../common/PlatformIcon.astro";
+
+/**
+ * Import — the app's CSV import dialog (`import_dialog.dart`, upload step) with a
+ * file already dropped in, plus the snackbar the app shows once the import starts.
+ *
+ * Display only. Renders settled (file loaded, Upload live, snackbar up); the
+ * `data-import-*` hooks let `creators-ai-panels.ts` wind it back and replay.
+ */
+interface Props {
+	class?: string;
+}
+
+const { class: className = "" } = Astro.props;
+
+const FILE_NAME = "my-creators.csv";
+const FOUND = 48;
+/** `AppConstants.creditCostMediakitUnlock`. */
+const CREDITS_PER_HANDLE = 50;
+---
+
+<div class:list={["relative w-97.5", className]}>
+	<div
+		class="flex h-120 flex-col rounded-[1.5rem] border border-wf-dialog-border bg-wf-surface font-sans text-white"
+	>
+		<span class="self-end pt-4 pr-4 text-wf-text-muted" aria-hidden="true">
+			<Icon name="cross" size="0.875rem" />
+		</span>
+		<p class="text-center text-[1.375rem]">Import Instagram List</p>
+
+		<div class="px-6 pt-4 pb-2">
+			<div
+				data-import-drop
+				class="relative flex h-56 flex-col items-center justify-between rounded-[0.75rem] border border-dashed border-wf-drop-border py-6"
+			>
+				{/* The badge and the 28px spacer the app swaps it for share one slot. */}
+				<span class="grid h-7 place-items-center">
+					<span
+						data-import-found
+						class="flex items-center gap-1 rounded-full bg-wf-found-pill p-2 text-[0.75rem] leading-none text-white"
+					>
+						<Icon name="info" size="0.75rem" />
+						{FOUND} entries found
+					</span>
+				</span>
+
+				<svg class="h-15 w-auto text-wf-drop-icon" viewBox="0 0 59 71" fill="none" aria-hidden="true">
+					<g stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<path
+							d="M23.08 52.67H10.17a5.17 5.17 0 0 1-5.17-5.17V6.17A5.17 5.17 0 0 1 10.17 1h20.66a6.2 6.2 0 0 1 4.41 1.82l9.27 9.27a6.2 6.2 0 0 1 1.82 4.41v12.92"
+						></path>
+						<path d="M30.83 1v12.92a2.58 2.58 0 0 0 2.59 2.58h12.91"></path>
+						<path d="M40.67 50v9.34"></path>
+						<path
+							d="M31.33 52.22a8.17 8.17 0 1 1 13.66-8.05h2.09a5.08 5.08 0 0 1 2.92 9.62"
+						></path>
+						<path d="m36 54.67 4.67-4.67 4.66 4.67"></path>
+					</g>
+				</svg>
+
+				<span class="grid text-center text-[0.75rem] text-wf-text-value">
+					<span data-import-hint class="col-start-1 row-start-1 invisible">
+						Drag &amp; drop a CSV or XLSX file | max size: 500kb
+					</span>
+					<span data-import-name class="col-start-1 row-start-1">{FILE_NAME}</span>
+				</span>
+			</div>
+		</div>
+
+		<div class="mx-auto flex items-center gap-2 rounded-full bg-wf-credit-note p-1 text-[0.75rem]">
+			<span
+				class="flex items-center gap-0.5 rounded-full border border-wf-credit-border bg-[linear-gradient(258deg,var(--color-wf-credit-to)_20%,var(--color-wf-credit-from)_96%)] px-2 py-1.5 text-wf-green"
+			>
+				<Icon name="credits" size="0.75rem" class="text-white" />
+				{CREDITS_PER_HANDLE} credits
+			</span>
+			<span class="pr-2 text-wf-credit-note-text">for every handle imported</span>
+		</div>
+
+		<div class="mt-6 flex h-13 gap-2.5 px-6">
+			<span
+				data-import-upload
+				class="relative grid flex-1 place-items-center rounded-[0.625rem] bg-wf-violet text-base font-semibold"
+			>
+				<span data-import-upload-label class="flex items-center gap-2">
+					Upload
+					<Icon name="upload" size="1rem" />
+				</span>
+				<span
+					data-import-spinner
+					class="absolute size-3.5 rounded-full border-2 border-white/30 border-t-white opacity-0"
+					aria-hidden="true"
+				></span>
+			</span>
+			<PlatformIcon platform="instagram" tile="3.25rem" glyph="1.75rem" radius="0.625rem" />
+		</div>
+
+		<span class="mt-4 flex items-center justify-center gap-1 text-[0.75rem] font-medium text-wf-green-bright">
+			<Icon name="download" size="0.875rem" />
+			<span class="underline">Download template</span>
+		</span>
+	</div>
+
+	{/* A CSV being dragged in; the demo carries it from the pointer into the drop zone. */}
+	<span
+		data-import-file
+		class="absolute inset-x-0 top-41 mx-auto flex w-max items-center gap-2 rounded-lg border border-wf-dialog-border bg-wf-list-row px-3 py-2 text-[0.8125rem] text-white opacity-0 shadow-[0_0.75rem_2rem_rgba(0,0,0,0.45)]"
+		aria-hidden="true"
+	>
+		<Icon name="import" size="1rem" class="text-wf-violet-soft" />
+		{FILE_NAME}
+	</span>
+
+	<div
+		data-import-snackbar
+		class="absolute inset-x-0 -bottom-15 mx-auto w-max rounded-[0.125rem] border-l-[3px] border-wf-green bg-wf-snackbar px-3.5 py-3 text-[0.875rem] font-medium text-white shadow-[0_0.375rem_1rem_rgba(0,0,0,0.4)]"
+	>
+		Import started for {FOUND} profiles
+	</div>
+</div>

@@ -8,20 +8,27 @@ import { Image } from "astro:assets";
 import Icon from "../app/common/Icon.astro";
 import PlatformIcon from "../app/common/PlatformIcon.astro";
 import VerifiedBadge from "../app/common/VerifiedBadge.astro";
+import CompareCreatorColumn from "../app/elements/CompareCreatorColumn.astro";
+import CreatorDetailPanel from "../app/elements/CreatorDetailPanel.astro";
+import GrowthChart from "../app/screens/analyze/widgets/media-kit/GrowthChart.astro";
+import PricingCard from "../app/screens/analyze/widgets/media-kit/PricingCard.astro";
 import TwoTone from "../compare/TwoTone.astro";
 import saloni from "../../assets/images/feature_page/results/avatar_saloni.png";
 import justin from "../../assets/images/feature_page/results/avatar_justin.png";
 import placeholder from "../../assets/images/feature_page/results/avatar_placeholder.png";
-import { RESULT_ROWS, plainText } from "../../data/feature";
+import { RESULT_ROWS, RISING_GROWTH, plainText, type ResultVisual } from "../../data/feature";
+import { MEDIA_KIT_STATS, PRICING } from "../../data/workflowMockup";
 
 interface Props {
 	line1: string;
 	line2: string;
 	/** Studio upload that replaces the creator rows below the heading; none keeps the rows. */
 	image?: { src: string; alt: string };
+	/** Swaps the search rows for an app screen that fits the heading: Compare, contacts, growth or pricing. */
+	visual?: ResultVisual;
 }
 
-const { line1, line2, image } = Astro.props;
+const { line1, line2, image, visual = "results" } = Astro.props;
 const avatars = { saloni, justin, placeholder } as const;
 const levelColour = { GOOD: "text-[#3fbd71]", AVERAGE: "text-[#f2994a]" } as const;
 // Below lg the two lines run together as one heading.
@@ -57,6 +64,36 @@ const line = [
 		image ? (
 			<div class:list={["mx-auto mt-8 max-w-[54.9375rem] lg:ml-[calc(50%-27.8125rem)]", gap]}>
 				<img src={image.src} alt={image.alt} class="h-auto w-full" loading="lazy" />
+			</div>
+		) : visual === "compare" ? (
+			<div class:list={["relative mx-auto mt-8 w-fit", gap]} aria-hidden="true">
+				{/* Authored at the app's full size (892px wide); zoom fits it to each breakpoint and keeps its box. */}
+				{/* The bottom fades out, as the rows do, so the clipped stats read as "more below". */}
+				<div class="w-223 [mask-image:linear-gradient(to_bottom,black_70%,transparent)] [zoom:0.38] min-[400px]:[zoom:0.42] sm:[zoom:0.6] md:[zoom:0.8] lg:[zoom:1]">
+					<CompareCreatorColumn scale={1} />
+				</div>
+			</div>
+		) : visual === "growth" ? (
+			<div class:list={["mx-auto mt-8 max-w-[54.9375rem]", gap]} aria-hidden="true">
+				{/* The media kit's two growth charts on its own panel; zoom scales the app-size charts up to the rows' width. */}
+				<div class="mx-auto grid gap-3 rounded-[1rem] bg-wf-panel p-3 font-sans lg:w-[38rem] lg:grid-cols-2 lg:[zoom:1.1]">
+					<GrowthChart variant="followers" title="Follower Growth" history={RISING_GROWTH.followers} surface="#25292c" />
+					<GrowthChart variant="likes" title="Average Likes Growth" history={RISING_GROWTH.likes} surface="#25292c" />
+				</div>
+			</div>
+		) : visual === "pricing" ? (
+			<div class:list={["mx-auto mt-8 max-w-[54.9375rem]", gap]} aria-hidden="true">
+				{/* The media kit's price card without its factors list, on the compare screen's darker tiles. */}
+				<div class="mx-auto rounded-[1rem] bg-wf-panel p-3 font-sans lg:w-[38rem] lg:[zoom:1.1]">
+					<PricingCard bare bars={MEDIA_KIT_STATS.selwyn.priceBars} currency={PRICING.currency} factors={[]} surface="#18171f" />
+				</div>
+			</div>
+		) : visual === "contact" ? (
+			<div class:list={["mx-auto mt-8 w-fit", gap]} aria-hidden="true">
+				{/* The card with its contact list already open; zoom keeps the card's box, unlike a transform. */}
+				<div class="[zoom:0.8] min-[400px]:[zoom:0.85] sm:[zoom:1] lg:[zoom:1.25]">
+					<CreatorDetailPanel />
+				</div>
 			</div>
 		) : (
 	<div class:list={["relative mx-auto mt-8 max-w-[54.9375rem] lg:ml-[calc(50%-27.8125rem)]", gap]} aria-hidden="true">

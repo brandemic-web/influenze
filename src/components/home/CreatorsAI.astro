@@ -11,6 +11,7 @@ import PlatformFilter from "../app/elements/PlatformFilter.astro";
 import FollowerMetricsFilter from "../app/elements/FollowerMetricsFilter.astro";
 import TopDemographics from "../app/elements/TopDemographics.astro";
 import FollowerQuality from "../app/elements/FollowerQuality.astro";
+import ImportDialog from "../app/elements/ImportDialog.astro";
 import AffinitiesCard from "../app/elements/AffinitiesCard.astro";
 import CompareCreatorColumn from "../app/elements/CompareCreatorColumn.astro";
 import AddToListDialog from "../app/elements/AddToListDialog.astro";
@@ -47,9 +48,11 @@ interface Props {
 	steps?: CreatorAIFeature[];
 	/** Landing pages space every section 64px apart on phones; the homepage keeps its own rhythm. */
 	sectionGap?: boolean;
+	/** Opens on the CSV import visual and shifts the rest down a slot, dropping Scale Campaigns. */
+	importFirst?: boolean;
 }
 
-const { headingText, button, backdrop = true, steps, sectionGap = false } = Astro.props;
+const { headingText, button, backdrop = true, steps, sectionGap = false, importFirst = false } = Astro.props;
 
 const { data: home } = await getHomePage(getPerspectiveCookie(Astro.cookies));
 const creatorsAI = home?.creatorsAI;
@@ -64,10 +67,9 @@ const buttonNewTab = pill ? Boolean(pill.newTab) : (creatorsAI?.button?.newTab ?
 
 // The icon draws at 48px from lg up, so 96 covers it at 2x DPR.
 const featureIcon = (feature: Parameters<typeof resolveIcon>[0]) => resolveIcon(feature, featureIcons, 96);
-// Each of the 4 tabs drives one hardcoded, hand-positioned visual panel below
-// (Search Globally / Know The Audience / Choose The Right Creators / Scale
-// Campaigns) by index — so the count can't vary and the order can't change,
-// only the title/description/icon per slot. Anything else falls back.
+// Each of the 4 tabs drives one hand-positioned visual panel below, in the slot
+// order `panelOrder` sets — so the count can't vary, only the title/description/
+// icon per slot. Anything else falls back.
 const sanityFeatures = creatorsAI?.features ?? [];
 const features =
 	steps?.length === CREATORS_AI_FEATURES.length
@@ -75,6 +77,23 @@ const features =
 		: sanityFeatures.length === CREATORS_AI_FEATURES.length && sanityFeatures.every((f) => featureIcon(f))
 			? sanityFeatures
 			: CREATORS_AI_FEATURES;
+
+/** Which visual plays in each slot; each name matches its demo in `creators-ai-panels`. */
+const panelOrder = importFirst
+	? (["import", "search", "audience", "choose"] as const)
+	: (["search", "audience", "choose", "enquire"] as const);
+const panelAttrs = (demo: (typeof panelOrder)[number] | "enquire" | "import") => {
+	const i = (panelOrder as readonly string[]).indexOf(demo);
+	return {
+		id: panelId(i),
+		role: "tabpanel" as const,
+		"aria-labelledby": tabId(i),
+		"aria-hidden": i === 0 ? undefined : ("true" as const),
+		"data-creators-panel": true,
+		"data-creators-demo": demo,
+		class: i === 0 ? "creators-panel absolute inset-0" : "creators-panel absolute inset-0 invisible opacity-0",
+	};
+};
 
 /**
  * The visuals are real UI element components at design size on a fixed 668 x 680 stage,
@@ -205,14 +224,12 @@ const features =
 						to track which tab is open — sharing one element would have the script
 						un-hiding the illustration on every selection.
 					*/}
-					{/* Search Globally */}
-						<div
-							id={panelId(0)}
-							role="tabpanel"
-							aria-labelledby={tabId(0)}
-							data-creators-panel
-							class="creators-panel absolute inset-0"
-						>
+											{panelOrder.map((demo) => (
+							<>
+								{demo === "search" && (
+									<>
+{/* Search Globally */}
+						<div {...panelAttrs("search")}>
 							{/*
 								The three cards span ~598 of the stage's 668, so the group is nudged
 								right to centre. The cursor stays outside it — it parks in stage
@@ -240,16 +257,12 @@ const features =
 
 							<DemoCursor />
 						</div>
-
-						{/* Know The Audience */}
-						<div
-							id={panelId(1)}
-							role="tabpanel"
-							aria-labelledby={tabId(1)}
-							aria-hidden="true"
-							data-creators-panel
-							class="creators-panel absolute inset-0 invisible opacity-0"
-						>
+									</>
+								)}
+								{demo === "audience" && (
+									<>
+{/* Know The Audience */}
+						<div {...panelAttrs("audience")}>
 							{/*
 									Wrapper exists only to carry the below-lg block-axis centring; the
 									cursor has to stay outside it, as in panel 0. Measured 94 stage px of
@@ -282,16 +295,12 @@ const features =
 
 							<DemoCursor />
 						</div>
-
-						{/* Choose The Right Creators */}
-						<div
-							id={panelId(2)}
-							role="tabpanel"
-							aria-labelledby={tabId(2)}
-							aria-hidden="true"
-							data-creators-panel
-							class="creators-panel absolute inset-0 invisible opacity-0"
-						>
+									</>
+								)}
+								{demo === "choose" && (
+									<>
+{/* Choose The Right Creators */}
+						<div {...panelAttrs("choose")}>
 							{/*
 								Same as panel 1: the group spans ~613 of the stage's 668 — from
 								the list dialog's left edge to the compare panel's right — so it
@@ -315,16 +324,12 @@ const features =
 								</div>
 							</div>
 						</div>
-
-						{/* Scale Campaigns Confidently */}
-						<div
-							id={panelId(3)}
-							role="tabpanel"
-							aria-labelledby={tabId(3)}
-							aria-hidden="true"
-							data-creators-panel
-							class="creators-panel absolute inset-0 invisible opacity-0"
-						>
+									</>
+								)}
+								{demo === "enquire" && (
+									<>
+{/* Scale Campaigns Confidently */}
+						<div {...panelAttrs("enquire")}>
 							{/*
 								The card is the whole panel, so it centres rather than being placed by
 								hand; the wrapper owns the intro tween's transform, so the scale sits on
@@ -343,6 +348,24 @@ const features =
 
 							<DemoCursor />
 						</div>
+									</>
+								)}
+								{demo === "import" && (
+									<div {...panelAttrs("import")}>
+										{/* Centred in the well, as the Scale Campaigns card is; see that panel. */}
+										<div
+											data-panel-item
+											aria-hidden="true"
+											class="absolute inset-0 grid place-items-center max-lg:pb-12 lg:pb-36"
+										>
+											<ImportDialog class="scale-120" />
+										</div>
+
+										<DemoCursor />
+									</div>
+								)}
+							</>
+						))}
 					</div>
 				</div>
 			</div>
