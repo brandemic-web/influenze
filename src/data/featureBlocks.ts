@@ -1,8 +1,9 @@
 export interface FeatureBlock {
 	title: string;
 	description: string;
-	/** Key into the image map in FeatureBlock.astro (src/assets imports live there) */
-	imageKey: string;
+	imageKey: "discovery" | "analytics" | "contacts" | "comparisons" | "shortlists" | "sharing" | "pools";
+	highlights?: readonly string[];
+	ctaLabel?: string;
 }
 
 export const FEATURE_BLOCKS_HEADING = "The platform that actually does the work";

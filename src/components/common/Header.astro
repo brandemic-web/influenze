@@ -5,10 +5,20 @@
 // ComparisonTable reach for the same asset the same way, so all eleven places the
 // logo appears on the homepage share one download.
 import logo from "../../assets/images/common/logos_and_icons/influenze_logo_nav.webp";
-import { NAV_ITEMS } from "../../data/nav";
+import { NAV_ITEMS, type HeaderNavigation } from "../../data/nav";
 import Button from "./Button.astro";
 import MobileMenu from "./MobileMenu.astro";
 import { APP_URL } from "../../data/site";
+
+interface Props {
+	navigation?: HeaderNavigation;
+}
+
+const { navigation } = Astro.props;
+const links = navigation?.links ?? NAV_ITEMS;
+const ctaHref = navigation?.cta.href ?? APP_URL;
+const ctaLabel = navigation?.cta.label ?? "Login / Sign Up";
+const mobileStickyCta = navigation?.mobileStickyCta;
 
 // Current page gets the hover green. Trailing slash stripped so "/pricing/" matches "/pricing".
 const currentPath = Astro.url.pathname.replace(/\/+$/, "") || "/";
@@ -20,19 +30,19 @@ const isActive = (item: { href?: string; newTab?: boolean }) =>
 	<div
 		class="mx-auto flex  max-w-410.75 items-center justify-between rounded-full border border-brand-primary bg-surface-header py-2.5 pr-4.5 pl-1.5 backdrop-blur-md lg:pl-10 lg:flex-row"
 	>
-		<a href="/" class="shrink-0" aria-label="influenze.ai home">
+		<a href={navigation?.logoHref ?? "/"} class="shrink-0" aria-label={navigation ? "Influenze.ai, back to top" : "influenze.ai home"}>
 			<img
 				src={logo.src}
 				alt="influenze.ai"
 				width={logo.width}
 				height={logo.height}
-				class="h-10 w-auto lg:h-16"
+				class="h-8 w-auto sm:h-10 lg:h-16"
 			/>
 		</a>
 
 		<nav class="hidden items-center gap-10 lg:flex xl:gap-15" aria-label="Main">
 			{
-				NAV_ITEMS.map((item) =>
+				links.map((item) =>
 					item.dropdown ? (
 						<div class="group relative" data-nav-dropdown>
 							<button
@@ -93,22 +103,32 @@ const isActive = (item: { href?: string; newTab?: boolean }) =>
 		</nav>
 
 		<div class="hidden lg:block">
-			<Button href={APP_URL} newTab>Login / Sign Up</Button>
+			<Button href={ctaHref} newTab={!navigation}>{ctaLabel}</Button>
 		</div>
 
-		<div class="flex items-center ml-2 gap-4 md:hidden">
-			<span class="h-4.25 w-px bg-white/40" aria-hidden="true"></span>
-			<a
-				href={APP_URL}
-				target="_blank"
-				rel="noopener noreferrer"
-				class="text-[0.75rem] font-normal uppercase text-brand-primary"
-			>
-				Login / Sign Up
-			</a>
-		</div>
+		{mobileStickyCta ? (
+			<div class="ml-auto mr-2 hidden shrink-0 sm:max-lg:portrait:block">
+				<Button href={mobileStickyCta.href} newTab class="min-h-11">{mobileStickyCta.label}</Button>
+			</div>
+		) : (
+			<div class:list={["flex items-center", navigation ? "ml-auto lg:hidden" : "ml-1 gap-2 sm:ml-2 sm:gap-4 md:hidden"]}>
+				{!navigation && <span class="h-4.25 w-px bg-white/40" aria-hidden="true"></span>}
+				<a
+					href={ctaHref}
+					target={navigation ? undefined : "_blank"}
+					rel={navigation ? undefined : "noopener noreferrer"}
+					class:list={["text-[0.75rem] font-normal text-brand-primary", navigation ? "whitespace-nowrap" : "uppercase"]}
+				>
+					{ctaLabel}
+				</a>
+			</div>
+		)}
 
-		<MobileMenu />
+		<MobileMenu
+			links={navigation?.mobileLinks ?? links}
+			cta={navigation?.cta}
+			hasStickyCta={Boolean(mobileStickyCta)}
+		/>
 	</div>
 </header>
 

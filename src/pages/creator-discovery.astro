@@ -1,0 +1,114 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Button from "../components/common/Button.astro";
+import ComparisonTable from "../components/common/ComparisonTable.astro";
+import CtaBand from "../components/common/CtaBand.astro";
+import CustomerTestimonials from "../components/common/CustomerTestimonials.astro";
+import UseCaseCards from "../components/common/UseCaseCards.astro";
+import HeroBackdrop from "../components/compare/HeroBackdrop.astro";
+import TwoTone from "../components/compare/TwoTone.astro";
+import WorkflowMockup from "../components/app/WorkflowMockup.astro";
+import TrustedBy from "../components/home/TrustedBy.astro";
+import WhyInfluenze from "../components/home/WhyInfluenze.astro";
+import FeatureBlock from "../components/features/FeatureBlock.astro";
+import BlogFaq from "../components/blog/BlogFaq.astro";
+import { CREATOR_DISCOVERY } from "../data/creator-discovery";
+import { APP_URL, opensNewTab } from "../data/site";
+import { productSchema } from "../lib/product-schema";
+import { getPerspectiveCookie } from "../lib/draft-mode";
+import { getHomePage } from "../sanity/lib/queries";
+
+const { seo, navigation, hero, signup, demo, metrics, comparison, workflow, features, audience, faq } = CREATOR_DISCOVERY;
+const { data: home } = await getHomePage(getPerspectiveCookie(Astro.cookies));
+const shortlistFlow = home?.hero?.showShortlistFlow ?? false;
+const demoNewTab = opensNewTab(demo.href);
+const sectionTitle = "text-center text-[1.875rem] leading-[1.15] lg:text-[3.4375rem]";
+const schema = [
+	await productSchema(Astro.site ?? new URL(Astro.url.origin), seo.description),
+	{
+		"@type": "FAQPage",
+		mainEntity: faq.items.map(({ question, answer }) => ({
+			"@type": "Question",
+			name: question,
+			acceptedAnswer: { "@type": "Answer", text: answer },
+		})),
+	},
+];
+---
+
+<Layout title={seo.title} description={seo.description} headerNavigation={navigation} schema={schema} hideCta>
+	<main id="top">
+		<div class="relative overflow-hidden">
+			<HeroBackdrop />
+
+			<section class="relative" aria-labelledby="creator-discovery-title" data-cta-location="hero">
+				<div class="mx-auto flex max-w-[108rem] flex-col items-center px-6 pt-25 text-center lg:pt-[12.6875rem]">
+					<p class="text-[0.875rem] uppercase text-brand-primary lg:text-[1.125rem]">{hero.eyebrow}</p>
+					<h1
+						id="creator-discovery-title"
+						class="mt-3 text-[clamp(1.875rem,5.5vw,2.75rem)] leading-[1.1] tracking-[-0.04em] text-balance text-white lg:mt-4 lg:text-[4.5rem]"
+					>
+						{hero.title}<span class="block text-brand-primary">{hero.accent}</span>
+					</h1>
+					<div class="mt-6 flex flex-wrap justify-center gap-3 lg:mt-7">
+						<Button href={APP_URL} newTab>{signup.buttonLabel}</Button>
+						<Button href={demo.href} newTab={demoNewTab}>{demo.label}</Button>
+					</div>
+					<figure class="relative mt-6 w-full max-w-7xl lg:mt-14.75">
+						<WorkflowMockup shortlistFlow={shortlistFlow} />
+						<figcaption class="sr-only">{hero.previewLabel}</figcaption>
+					</figure>
+				</div>
+			</section>
+
+			<TrustedBy />
+		</div>
+
+		<section id="numbers" class="scroll-mt-24 px-6 py-12 lg:scroll-mt-36 lg:pt-10 lg:pb-16" aria-label={metrics.label}>
+			<ul class="mx-auto grid max-w-[82rem] grid-cols-2 gap-x-5 gap-y-9 sm:grid-cols-4 lg:gap-x-8">
+				{metrics.items.map(({ value, label }) => (
+					<li class="flex flex-col items-center gap-2.5 text-center">
+						<strong class="text-[2.125rem] leading-none font-semibold tracking-[-0.04em] text-white lg:text-[3.25rem]">{value}</strong>
+						<span class="max-w-[15rem] text-[0.875rem] leading-5 text-balance text-white/72 lg:text-[1rem] lg:leading-6">{label}</span>
+					</li>
+				))}
+			</ul>
+		</section>
+
+		<ComparisonTable content={comparison} />
+
+		<div class="discovery-background">
+			<WhyInfluenze content={workflow} />
+
+			<section id="features" class="relative scroll-mt-24 pt-16 lg:scroll-mt-36 lg:pt-24" aria-labelledby="creator-features-title">
+				<h2 id="creator-features-title" class:list={[sectionTitle, "relative mx-auto max-w-[62rem] px-6"]}><TwoTone text={features.heading} accentBlock /></h2>
+				<div class="relative z-2 mx-auto mt-7 flex max-w-2xl flex-col gap-5 px-4 lg:mt-16 lg:max-w-[96.875rem] lg:gap-8 lg:px-19.5">
+					<FeatureBlock cards={features.cards} actions={{ signupHref: navigation.cta.href, demo }} />
+				</div>
+			</section>
+
+			<UseCaseCards id="who" cards={audience} />
+
+			<CustomerTestimonials />
+
+			<div id="faq" class="mx-auto max-w-3xl scroll-mt-24 lg:mt-28 lg:max-w-[108rem] lg:scroll-mt-36">
+				<BlogFaq heading={faq.heading} faqs={[...faq.items]} align="wide" size="section" transparent>
+					<Fragment slot="afterIntro">
+						<Button href={demo.href} newTab={demoNewTab} class="mt-5">{demo.label}</Button>
+					</Fragment>
+				</BlogFaq>
+			</div>
+			<CtaBand id="start" buttonLabel={signup.buttonLabel} copy={signup} transparent />
+		</div>
+	</main>
+</Layout>
+
+<style>
+	.discovery-background {
+		/* Leave an equal stretch of black between the three homepage fades and before the footer. */
+		background-image: var(--background-image-home-violet), var(--background-image-home-violet), var(--background-image-home-violet);
+		background-size: 100% calc(100% / 7);
+		background-position: center top, center calc(100% / 3), center calc(200% / 3);
+		background-repeat: no-repeat;
+	}
+</style>

@@ -2,7 +2,9 @@
 import "../styles/global.css";
 import { getImage } from "astro:assets";
 import { APP_URL, SITE } from "../data/site";
+import type { HeaderNavigation } from "../data/nav";
 import Header from "../components/common/Header.astro";
+import Button from "../components/common/Button.astro";
 import CtaBand from "../components/common/CtaBand.astro";
 import Footer from "../components/common/Footer.astro";
 import SanityVisualEditing from "../components/common/SanityVisualEditing.tsx";
@@ -19,6 +21,7 @@ const draftMode = isDraftMode(Astro.cookies);
 interface Props {
 	title?: string;
 	description?: string;
+	headerNavigation?: HeaderNavigation;
 	ctaButtonLabel?: string;
 	hideCta?: boolean;
 	/** Keeps a page out of search results. Used by 404. */
@@ -48,6 +51,7 @@ interface Props {
 const {
 	title = SITE.title,
 	description = SITE.description,
+	headerNavigation,
 	ctaButtonLabel,
 	hideCta = false,
 	noindex = false,
@@ -58,6 +62,7 @@ const {
 	scripts,
 	fluidRem = false,
 } = Astro.props;
+const mobileStickyCta = headerNavigation?.mobileStickyCta;
 
 const site = Astro.site ?? new URL(Astro.url.origin);
 const path = Astro.url.pathname.endsWith("/") ? Astro.url.pathname : `${Astro.url.pathname}/`;
@@ -130,7 +135,10 @@ const inlineFooterScripts = [settings?.scripts?.footer, scripts?.footer].filter(
 ---
 
 <!doctype html>
-<html lang="en" class:list={[fluidRem && "fluid-rem"]}>
+<html lang="en" class:list={[
+	fluidRem && "fluid-rem",
+	mobileStickyCta && "[--mobile-cta-inset:calc(4.5rem+env(safe-area-inset-bottom))] max-lg:scroll-pb-(--mobile-cta-inset) sm:portrait:[--mobile-cta-inset:0px]",
+]}>
 	<head>
 		<meta name="saashub-verification" content="nfzi8lh09rn2" />
 		<meta charset="utf-8" />
@@ -238,10 +246,18 @@ const inlineFooterScripts = [settings?.scripts?.footer, scripts?.footer].filter(
 				>
 			)
 		}
-		<Header />
+		<Header navigation={headerNavigation} />
 		<slot />
 		{!hideCta && <CtaBand buttonLabel={ctaButtonLabel} />}
-		<Footer />
+		<Footer class={mobileStickyCta ? "max-lg:pb-(--mobile-cta-inset)" : undefined} />
+		{mobileStickyCta && (
+			<div
+				class="pointer-events-none fixed inset-x-0 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-40 flex justify-center px-4 sm:portrait:hidden lg:hidden"
+				data-cta-location="mobile_sticky"
+			>
+				<Button href={mobileStickyCta.href} newTab class="pointer-events-auto min-h-11 w-full max-w-sm shadow-lg shadow-black/60">{mobileStickyCta.label}</Button>
+			</div>
+		)}
 		{
 			draftMode && (
 				<>

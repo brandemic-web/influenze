@@ -9,7 +9,7 @@ import type { BlogFaqItem } from "../../data/blog";
 
 interface Props {
 	heading: string;
-	subcopy: string;
+	subcopy?: string;
 	faqs: BlogFaqItem[];
 	align?: "section" | "page" | "wide";
 	size?: "post" | "section";
@@ -50,9 +50,12 @@ const CONTAINER = {
 			>
 				{heading}
 			</h2>
-			<p class="mt-2 max-w-109 text-[0.875rem] leading-[1.4] text-white/50 lg:mt-3.5 lg:text-[1rem]">
-				{subcopy}
-			</p>
+			{subcopy && (
+				<p class="mt-2 max-w-109 text-[0.875rem] leading-[1.4] text-white/50 lg:mt-3.5 lg:text-[1rem]">
+					{subcopy}
+				</p>
+			)}
+			<slot name="afterIntro" />
 		</div>
 
 		<div class="flex w-full max-w-196.5 flex-col gap-2.5" data-faq-list>

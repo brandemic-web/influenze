@@ -14,6 +14,14 @@ export interface NavItem extends Omit<NavLink, "href"> {
 	badge?: string;
 }
 
+export interface HeaderNavigation {
+	logoHref: string;
+	links: readonly NavItem[];
+	cta: NavLink;
+	mobileLinks?: readonly NavItem[];
+	mobileStickyCta?: NavLink;
+}
+
 export const NAV_ITEMS: NavItem[] = [
 	{ label: "Features", href: "/features/" },
 	{ label: "Pricing", href: "/pricing/" },

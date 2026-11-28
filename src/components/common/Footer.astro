@@ -6,12 +6,16 @@ import gradientBg from "../../assets/images/common/decor/footer_gradient_mask.sv
 import influenze_mobile from "../../assets/images/common/logos_and_icons/influenze_wordmark_mobile.png";
 import { FOOTER_COLUMNS } from "../../data/footer";
 
+interface Props { class?: string }
+
+const { class: className } = Astro.props;
+
 // Mobile stacks the columns in a single file to the right of the bolt; the `pl`
 // on the wrapper is what clears it, and the small `pt` keeps the stack level with
 // the bolt rather than sinking below it. Desktop is the flex row of columns.
 ---
 
-<footer class="relative lg:overflow-hidden bg-surface-dark" data-footer>
+<footer class:list={["relative lg:overflow-hidden bg-surface-dark", className]} data-footer>
 	<img
 		src={gradientBg.src}
 		alt=""
@@ -28,15 +32,15 @@ import { FOOTER_COLUMNS } from "../../data/footer";
 		<Image
 			src={bolt}
 			alt=""
-			class="pointer-events-none absolute left-3.75 -top-8.5 w-45 lg:left-0 lg:bottom-1.25 lg:w-95 lg:top-auto"
+			class="pointer-events-none absolute left-3.75 -top-8.5 w-[min(11.25rem,46vw)] lg:left-0 lg:bottom-1.25 lg:w-95 lg:top-auto"
 			widths={[360, 760]}
-			sizes="(min-width: 1024px) 380px, 180px"
+			sizes="(min-width: 1024px) 380px, min(180px, 46vw)"
 			loading="lazy"
 			data-footer-bolt
 		/>
 
 		<div
-			class="flex flex-col gap-10 pt-6 pb-10 pl-52 pr-6 sm:pr-12 lg:flex-row lg:flex-wrap lg:justify-end lg:gap-x-47.5 lg:gap-y-10 lg:pt-48 lg:pr-25 lg:pb-7.5 lg:pl-150"
+			class="flex flex-col gap-10 pt-6 pb-10 pl-[min(13rem,53vw)] pr-6 sm:pr-12 lg:flex-row lg:flex-wrap lg:justify-end lg:gap-x-47.5 lg:gap-y-10 lg:pt-48 lg:pr-25 lg:pb-7.5 lg:pl-150"
 		>
 			{
 				FOOTER_COLUMNS.map((column) => (

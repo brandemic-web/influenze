@@ -20,16 +20,15 @@ const SCOPES: Record<string, string> = {
 	always: "(prefers-reduced-motion: no-preference)",
 };
 
-const mm = gsap.matchMedia();
-
 function initMarquees() {
 	document.querySelectorAll<HTMLElement>("[data-marquee]").forEach((marquee) => {
 		if (marquee.dataset.marqueeReady === "true") return;
 		marquee.dataset.marqueeReady = "true";
 
 		const scope = SCOPES[marquee.dataset.marquee || "mobile"] ?? SCOPES.mobile;
+		const media = gsap.matchMedia();
 
-		mm.add(scope, () => {
+		media.add(scope, () => {
 			const track = marquee.querySelector<HTMLElement>("[data-marquee-track]");
 			if (!track) return;
 
@@ -47,22 +46,38 @@ function initMarquees() {
 			marquee.scrollLeft = 0;
 			gsap.set(marquee, { overflowX: "clip" });
 
-			// Wrap spacing must match the flex gap, which is rem-based and varies with the fluid root font-size.
-			const gap = parseFloat(getComputedStyle(track).columnGap) || 0;
-			const loop = horizontalLoop(items, { repeat: -1, speed: 1, paddingRight: gap });
+			let loop: gsap.core.Timeline | undefined;
+			let animation: gsap.Context | undefined;
+			let width = 0;
+			// The fluid rem changes logo widths and gaps as the viewport resizes.
+			// Measure again with the previous transforms removed so the items stay spaced.
+			const resize = new ResizeObserver(([entry]) => {
+				if (!entry.contentRect.width || entry.contentRect.width === width) return;
+				width = entry.contentRect.width;
+				const progress = loop?.progress() ?? 0;
+				animation?.revert();
+				animation = gsap.context(() => {
+					const gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+					loop = horizontalLoop(items, { repeat: -1, speed: 1, paddingRight: gap });
+					loop.progress(progress).paused(marquee.matches(":hover"));
+				});
+			});
+			resize.observe(track);
 
 			// Pause the loop while the pointer is over the strip, resume on leave.
-			const pause = () => loop.pause();
-			const play = () => loop.play();
+			const pause = () => loop?.pause();
+			const play = () => loop?.play();
 			marquee.addEventListener("mouseenter", pause);
 			marquee.addEventListener("mouseleave", play);
 
 			return () => {
 				marquee.removeEventListener("mouseenter", pause);
 				marquee.removeEventListener("mouseleave", play);
-				loop.kill();
+				resize.disconnect();
+				animation?.revert();
 			};
 		});
+		document.addEventListener("astro:before-swap", () => media.revert(), { once: true });
 	});
 }
 

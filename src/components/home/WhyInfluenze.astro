@@ -6,6 +6,7 @@ import {
 	WHY_INFLUENZE_BUTTON,
 	WHY_INFLUENZE_BUTTON_ARIA,
 	WHY_INFLUENZE_STEPS,
+	type WhyInfluenzeStep,
 } from "../../data/whyInfluenze";
 import { getHomePage } from "../../sanity/lib/queries";
 import { getPerspectiveCookie } from "../../lib/draft-mode";
@@ -15,87 +16,116 @@ import iconRocket from "../../assets/images/common/icons/rocket.svg";
 import Button from "../common/Button.astro";
 import { resolveIcon } from "../../sanity/lib/icon";
 
+interface Props {
+	content?: {
+		id: string;
+		eyebrow: string;
+		heading: { lead: string; accent: string };
+		buttonHref: string;
+		steps: readonly WhyInfluenzeStep[];
+	};
+}
+
+const { content } = Astro.props;
 const stepIcons: Record<string, ImageMetadata> = {
 	search: iconSearch,
 	eye: iconEye,
 	rocket: iconRocket,
 };
 
-const { data: home } = await getHomePage(getPerspectiveCookie(Astro.cookies));
+const { data: home } = content ? { data: null } : await getHomePage(getPerspectiveCookie(Astro.cookies));
 const why = home?.whyInfluenze;
-const eyebrow = why?.eyebrow || WHY_INFLUENZE_EYEBROW;
-const heading = {
+const eyebrow = content?.eyebrow ?? (why?.eyebrow || WHY_INFLUENZE_EYEBROW);
+const heading = content?.heading ?? {
 	lead: why?.heading?.lead || WHY_INFLUENZE_HEADING.lead,
 	accent: why?.heading?.accent || WHY_INFLUENZE_HEADING.accent,
 };
 const buttonLabel = why?.button?.label || WHY_INFLUENZE_BUTTON;
-const buttonHref = why?.button?.href || FEATURES_URL;
+const buttonHref = content?.buttonHref ?? (why?.button?.href || FEATURES_URL);
 const buttonNewTab = why?.button?.newTab ?? false;
 // Only the default label and link get the longer name; a custom one from Sanity speaks for itself.
 const buttonAria =
-	buttonLabel === WHY_INFLUENZE_BUTTON && buttonHref === FEATURES_URL ? WHY_INFLUENZE_BUTTON_ARIA : undefined;
+	buttonLabel === WHY_INFLUENZE_BUTTON && (content || buttonHref === FEATURES_URL) ? WHY_INFLUENZE_BUTTON_ARIA : undefined;
 
 // The icon draws at 48px from lg up, so 96 covers it at 2x DPR.
 const iconSrc = (step: Parameters<typeof resolveIcon>[0]) => resolveIcon(step, stepIcons, 96);
 // Every step needs a resolvable icon, so a step from Sanity with a bad/missing
 // one falls the whole list back rather than rendering a broken image.
 const sanitySteps = why?.steps ?? [];
-const steps = sanitySteps.length && sanitySteps.every((step) => iconSrc(step))
+const steps = content?.steps ?? (sanitySteps.length && sanitySteps.every((step) => iconSrc(step))
 	? sanitySteps
-	: WHY_INFLUENZE_STEPS;
+	: WHY_INFLUENZE_STEPS);
+const displaySteps = content ? steps : [...steps, ...steps];
+const headingId = content ? `${content.id}-heading` : "why-influenze-heading";
+const stepTitleClass = "text-[1.25rem] lg:text-md leading-[normal] text-white [text-box:trim-both_cap_alphabetic]";
+const Track = content ? "ol" : "div";
+const Step = content ? "li" : "article";
 ---
 
-<section aria-labelledby="why-influenze-heading" class="-mt-20 overflow-hidden relative z-5">
+<section
+	id={content?.id}
+	aria-labelledby={headingId}
+	class:list={["relative z-5 overflow-hidden", content ? "scroll-mt-24 py-16 lg:scroll-mt-36 lg:pt-24 lg:pb-14" : "-mt-20"]}
+>
 	<div class="relative mx-auto flex flex-col items-center px-6 text-center">
 		<p class="text-[1rem] lg:text-[1.125rem] uppercase leading-[normal] text-brand-primary">{eyebrow}</p>
 		<h2
-			id="why-influenze-heading"
-			class="mt-5 lg:mt-8 max-w-130 text-md capitalize leading-[normal] text-white lg:text-[2.25rem] [text-box:trim-both_cap_alphabetic]"
+			id={headingId}
+			class:list={[
+				"mt-5 lg:mt-8 max-w-130 text-md leading-[normal] text-white lg:text-[2.25rem] [text-box:trim-both_cap_alphabetic]",
+				!content && "capitalize",
+			]}
 		>
-			{heading.lead} <span class="text-brand-primary">{heading.accent}</span>
+			{heading.lead} <span class:list={["text-brand-primary", content && "block"]}>{heading.accent}</span>
 		</h2>
 
-		{/* Mobile: full-bleed GSAP ticker (cards rendered twice for a gapless loop). Desktop: static centered row. */}
+		{/* The homepage uses a full-bleed ticker on mobile. The workflow keeps each step in reading order. */}
 		<div
-			class="mt-7 -mx-6 w-[calc(100%+3rem)] overflow-x-auto overscroll-x-contain lg:mx-0 lg:w-full lg:overflow-visible"
-			data-marquee
+			class:list={[
+				"mt-7",
+				content ? "w-full max-w-lg md:max-w-[94.375rem]" : "-mx-6 w-[calc(100%+3rem)] overflow-x-auto overscroll-x-contain lg:mx-0 lg:w-full lg:overflow-visible",
+			]}
+			data-marquee={content ? undefined : ""}
 		>
-			<div
-				class="flex w-max flex-row items-center justify-start gap-3 px-6 lg:w-full lg:gap-5 lg:justify-center lg:items-stretch lg:px-0"
-				data-marquee-track
+			<Track
+				class={content ? "grid gap-4 md:grid-cols-3 lg:gap-5" : "flex w-max flex-row items-center justify-start gap-3 px-6 lg:w-full lg:gap-5 lg:justify-center lg:items-stretch lg:px-0"}
+				data-marquee-track={content ? undefined : ""}
 				data-reveal
 				data-reveal-stagger="0.15"
 				data-reveal-desktop-only
 			>
 				{
-					[...steps, ...steps].map((step, i) => (
-						<article
+					displaySteps.map((step, i) => (
+						<Step
+							id={content ? `${content.id}-${step.icon}` : undefined}
+							tabindex={content ? -1 : undefined}
 							class:list={[
 								"rounded-sm bg-linear-to-r from-[#19123A] via-[#19123A] to-[#575757] p-px",
+								content && "scroll-mt-24 lg:scroll-mt-36",
 								i >= steps.length && "hidden",
 							]}
 							data-marquee-clone={i >= steps.length ? "" : undefined}
 							aria-hidden={i >= steps.length ? "true" : undefined}
 							data-reveal-item
 						>
-							<div class="flex min-h-47 h-full items-center rounded-sm bg-background-primary px-6 py-7 lg:px-15 lg:py-10">
-								<div class="flex w-75 max-w-85 lg:w-92 lg:max-w-full flex-col gap-5 text-left">
+							<div class:list={["flex min-h-47 h-full rounded-sm bg-background-primary px-6 py-7 lg:px-15 lg:py-10", !content && "items-center"]}>
+								<div class:list={["flex flex-col gap-5 text-left", content ? "w-full" : "w-75 max-w-85 lg:w-92 lg:max-w-full"]}>
 									<div class="flex items-center gap-4">
-										<img src={iconSrc(step)} alt="" class="h-10 w-10 rounded-sm object-contain lg:h-12 lg:w-12" loading="lazy" />
+										<img src={iconSrc(step)} alt="" class="h-10 w-10 shrink-0 rounded-sm object-contain lg:h-12 lg:w-12" loading="lazy" />
 										{/* The repeat's title is a <p>, so the page outline lists each step once. */}
 										{i >= steps.length ? (
-											<p class="text-[1.25rem] lg:text-md capitalize leading-[normal] text-white [text-box:trim-both_cap_alphabetic]">{step.title}</p>
+											<p class:list={[stepTitleClass, "capitalize"]}>{step.title}</p>
 										) : (
-											<h3 class="text-[1.25rem] lg:text-md capitalize leading-[normal] text-white [text-box:trim-both_cap_alphabetic]">{step.title}</h3>
+											<h3 class:list={[stepTitleClass, !content && "capitalize"]}>{step.title}</h3>
 										)}
 									</div>
 									<p class="text-[0.875rem] lg:text-[1.125rem] leading-6.5 text-[#CECECE]/70 [text-box:trim-both_cap_alphabetic]">{step.description}</p>
 								</div>
 							</div>
-						</article>
+						</Step>
 					))
 				}
-			</div>
+			</Track>
 		</div>
 
 		<Button href={buttonHref} newTab={buttonNewTab} ariaLabel={buttonAria} class="mt-6 lg:mt-12">

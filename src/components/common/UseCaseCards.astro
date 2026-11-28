@@ -1,52 +1,98 @@
 ---
-import { USE_CASES, USE_CASES_HEADING } from "../../data/useCases";
+import { USE_CASES, USE_CASES_HEADING, type UseCase } from "../../data/useCases";
 import { getHomePage } from "../../sanity/lib/queries";
 import { getPerspectiveCookie } from "../../lib/draft-mode";
 
-const { data: home } = await getHomePage(getPerspectiveCookie(Astro.cookies));
+interface Props {
+	id?: string;
+	cards?: readonly (UseCase & { href: string })[];
+}
+
+const { id, cards } = Astro.props;
+const { data: home } = cards ? { data: null } : await getHomePage(getPerspectiveCookie(Astro.cookies));
 const heading = home?.useCases?.heading || USE_CASES_HEADING;
-const useCases = home?.useCases?.cards?.length ? home.useCases.cards : USE_CASES;
+const useCases: readonly (Partial<UseCase> & { href?: string })[] = cards ?? (
+	home?.useCases?.cards?.length ? home.useCases.cards : USE_CASES
+);
+const displayCards = cards ? useCases : [...useCases, ...useCases];
+const headingId = id ? `${id}-heading` : "use-cases-heading";
 ---
 
-<section class="bg-background-primary py-10 lg:pt-25 lg:pb-30" aria-labelledby="use-cases-heading">
+<section
+	id={id}
+	class={cards ? "scroll-mt-24 pt-16 lg:scroll-mt-36 lg:pt-25" : "bg-background-primary py-10 lg:pt-25 lg:pb-30"}
+	aria-labelledby={headingId}
+>
 	{/*
 		`relative z-2` lifts the heading above the CreatorsAI gradient, which is
 		absolutely positioned with z-0 and overhangs this section. The marquee
 		below already does the same.
 	*/}
 	<h2
-		id="use-cases-heading"
+		id={headingId}
 		class="relative z-2 text-center text-md lg:text-2xl capitalize text-brand-primary"
 	>
 		{heading}
 	</h2>
 
-	{/* GSAP marquee: cards rendered twice for a seamless loop; pauses on hover. */}
-	<div class="use-case-marquee mt-8.5 overflow-hidden pb-1 relative z-2">
+	<div class:list={[
+		"relative z-2 mt-8.5 pb-1",
+		cards ? "linked-use-cases-rail snap-x snap-proximity overflow-x-auto overscroll-x-contain" : "use-case-marquee overflow-hidden",
+	]}>
 		<ul class="use-case-track flex w-max gap-5">
-			{
-				[...useCases, ...useCases].map((useCase, i) => (
+			{displayCards.map((useCase, i) => {
+				const Card = useCase.href ? "a" : "div";
+				return (
 					<li
 						aria-hidden={i >= useCases.length ? "true" : undefined}
-						class="w-121.25 max-w-[85vw] shrink-0 rounded-sm bg-linear-to-r from-[#19123A] via-[#19123A] to-[#575757] p-px"
+						class:list={[
+							"w-121.25 max-w-[85vw] shrink-0 rounded-sm bg-linear-to-r from-[#19123A] via-[#19123A] to-[#575757] p-px",
+							cards && "snap-start",
+						]}
 					>
-						<div class="h-full rounded-sm bg-background-primary px-6 lg:px-14.5 py-6 lg:py-10">
+						<Card
+							href={useCase.href}
+							class:list={[
+								"h-full rounded-sm bg-background-primary px-6 py-6 lg:py-10",
+								useCase.href ? "lg:px-8" : "lg:px-14.5",
+								useCase.href && "group block focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand-primary",
+							]}
+						>
 							{/* The repeat's title is a <p>, so the page outline lists each card once. */}
 							{i >= useCases.length ? (
 								<p class="text-sm lg:text-md text-white">{useCase.title}</p>
 							) : (
-								<h3 class="text-sm lg:text-md text-white">{useCase.title}</h3>
+								<h3 class:list={[
+									"text-sm text-white",
+									useCase.href
+										? "uppercase group-hover:text-brand-primary group-focus-visible:text-brand-primary lg:text-[1.375rem] lg:whitespace-nowrap"
+										: "lg:text-md",
+								]}>{useCase.title}</h3>
 							)}
-							<p class="mt-5 text-[0.875rem] lg:text-[1.125rem] leading-6.5 text-[#CECECE]/70 ">
+							<p class:list={[
+								"mt-5 text-[0.875rem] leading-6.5 text-[#CECECE]/70 lg:text-[1.125rem]",
+								useCase.href && "lg:max-w-[23rem]",
+							]}>
 								{useCase.description}
 							</p>
-						</div>
+						</Card>
 					</li>
-				))
-			}
+				);
+			})}
 		</ul>
 	</div>
 </section>
+
+<style>
+	.linked-use-cases-rail {
+		scrollbar-color: rgb(192 175 247 / 0.32) transparent;
+		scrollbar-width: thin;
+	}
+
+	.linked-use-cases-rail[data-looping] {
+		overflow-x: clip;
+	}
+</style>
 
 <script>
 	import "../../scripts/use-case-cards";

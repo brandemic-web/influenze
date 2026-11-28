@@ -1,7 +1,15 @@
 ---
-import { NAV_ITEMS } from "../../data/nav";
+import type { NavItem, NavLink } from "../../data/nav";
 import { APP_URL } from "../../data/site";
 import Button from "./Button.astro";
+
+interface Props {
+	links: readonly NavItem[];
+	cta?: NavLink;
+	hasStickyCta?: boolean;
+}
+
+const { links, cta, hasStickyCta = false } = Astro.props;
 
 // Matches Header.astro — current page gets the brand green.
 const currentPath = Astro.url.pathname.replace(/\/+$/, "") || "/";
@@ -9,11 +17,10 @@ const isActive = (item: { href?: string; newTab?: boolean }) =>
 	!item.newTab && item.href?.replace(/\/+$/, "") === currentPath;
 ---
 
-{/* Hamburger + slide-down panel. No mobile design exists; inferred. */}
 <button
 	type="button"
 	id="mobile-menu-button"
-	class="flex h-5 w-12 flex-col items-center justify-center gap-1.5 lg:hidden"
+	class="flex h-11 w-12 shrink-0 flex-col items-center justify-center gap-1.5 lg:hidden"
 	aria-expanded="false"
 	aria-controls="mobile-menu"
 	aria-label="Open menu"
@@ -23,87 +30,86 @@ const isActive = (item: { href?: string; newTab?: boolean }) =>
 	<span class="bar bar-bottom block h-0.5 w-6.5 bg-white transition-transform duration-300 ease-in-out"></span>
 </button>
 
-<div id="mobile-menu" class="fixed inset-x-0 top-17 z-40  lg:hidden" data-cta-location="mobile_menu">
+<div
+	id="mobile-menu"
+	class="fixed inset-x-0 top-full z-40 mt-2 lg:hidden"
+	data-cta-location="mobile_menu"
+	inert
+>
 	<div class="menu-inner">
-		<div class="rounded-[1.5rem] border border-brand-primary bg-[#18122b] p-6">
-			<nav aria-label="Mobile">
-				<ul class="flex flex-col">
-					{
-						NAV_ITEMS.map((item, index) =>
-							item.dropdown ? (
-								<li class={index < NAV_ITEMS.length - 1 ? "border-b border-white/10" : ""}>
-									<button
-										type="button"
-										class="res-toggle flex w-full items-center justify-between py-4 text-[0.875rem] text-white"
-										aria-expanded="false"
-									>
-										{item.label}
-										<svg
-											class="chevron h-2 w-3 transition-transform duration-300"
-											viewBox="0 0 8 5"
-											fill="none"
-											aria-hidden="true"
-										>
-											<path d="M1 1l3 3 3-3" stroke="currentColor" stroke-width="1.5" />
-										</svg>
-									</button>
-									<div class="submenu">
-										<div class="overflow-hidden">
+		<div class="overflow-hidden">
+			<div class="max-h-[calc(100dvh-5.5rem-var(--mobile-cta-inset,1rem))] overflow-y-auto overscroll-contain rounded-[1.5rem] border border-brand-primary bg-[#18122b] px-5 py-3 sm:px-6">
+				<nav aria-label="Mobile">
+					<ul class="flex flex-col">
+						{
+							links.map((item, index) =>
+								item.dropdown ? (
+									<li class={index < links.length - 1 ? "border-b border-white/10" : ""}>
+										<details name="mobile-navigation" class="group">
+										<summary class="flex min-h-11 cursor-pointer list-none items-center justify-between py-3 text-[0.875rem] text-white [&::-webkit-details-marker]:hidden">
+												{item.label}
+												<svg
+													class="h-2 w-3 transition-transform duration-300 group-open:rotate-180 motion-reduce:transition-none"
+													viewBox="0 0 8 5"
+													fill="none"
+													aria-hidden="true"
+												>
+													<path d="M1 1l3 3 3-3" stroke="currentColor" stroke-width="1.5" />
+												</svg>
+										</summary>
 											<ul class="pb-2">
 												{item.dropdown.map((link) => (
 													<li>
 														<a
 															href={link.href}
-															class="block py-2.5 pl-3 text-base text-white/60 hover:text-white"
+															class="flex min-h-11 items-center py-2 pl-3 text-[0.875rem] text-white/70 hover:text-white"
 														>
 															{link.label}
 														</a>
 													</li>
 												))}
 											</ul>
-										</div>
-									</div>
-								</li>
-							) : (
-								<li class={index <= NAV_ITEMS.length - 1 ? "border-b border-white/10" : ""}>
-									<a
-										href={item.href}
-										target={item.newTab ? "_blank" : undefined}
-										rel={item.newTab ? "noopener noreferrer" : undefined}
-										aria-current={isActive(item) ? "page" : undefined}
-										class:list={[
-											"flex items-center gap-3 py-4 text-[0.875rem]",
-											isActive(item) ? "text-brand-primary" : "text-white",
-										]}
-									>
-										{item.label}
-										{item.badge && (
-											<span class="flex items-center gap-1.25 rounded-[0.3125rem] bg-button-primary p-2 text-[0.6875rem] leading-none font-semibold text-[#1D192B]">
-												{item.badge}
-												<svg class="h-2 w-2" viewBox="0 0 7 7" fill="none" aria-hidden="true">
-													<path
-														d="M0.450195 6.44995L6.45019 0.449951M6.45019 6.44995L6.45019 0.449951L0.450195 0.449952"
-														stroke="currentColor"
-														stroke-width="1"
-														stroke-linecap="round"
-													/>
-												</svg>
-											</span>
-										)}
-									</a>
-								</li>
-							),
-						)
-					}
-				</ul>
-			</nav>
-			<Button
-				href={APP_URL}
-				class="mt-6"
-				newTab
-			>
-			Get Access
-			</Button>
+										</details>
+									</li>
+								) : (
+									<li class="border-b border-white/10">
+										<a
+											href={item.href}
+											target={item.newTab ? "_blank" : undefined}
+											rel={item.newTab ? "noopener noreferrer" : undefined}
+											aria-current={isActive(item) ? "page" : undefined}
+											class:list={[
+												"flex items-center gap-3 py-4 text-[0.875rem]",
+												isActive(item) ? "text-brand-primary" : "text-white",
+											]}
+										>
+											{item.label}
+											{item.badge && (
+												<span class="flex items-center gap-1.25 rounded-[0.3125rem] bg-button-primary p-2 text-[0.6875rem] leading-none font-semibold text-[#1D192B]">
+													{item.badge}
+													<svg class="h-2 w-2" viewBox="0 0 7 7" fill="none" aria-hidden="true">
+														<path
+															d="M0.450195 6.44995L6.45019 0.449951M6.45019 6.44995L6.45019 0.449951L0.450195 0.449952"
+															stroke="currentColor"
+															stroke-width="1"
+															stroke-linecap="round"
+														/>
+													</svg>
+												</span>
+											)}
+										</a>
+									</li>
+								),
+							)
+						}
+					</ul>
+				</nav>
+				{!hasStickyCta && (
+					<Button href={cta?.href ?? APP_URL} class="mt-6" newTab={!cta}>
+						{cta?.label ?? "Get Access"}
+					</Button>
+				)}
+			</div>
 		</div>
 	</div>
 </div>
@@ -136,38 +142,43 @@ const isActive = (item: { href?: string; newTab?: boolean }) =>
 		opacity: 1;
 		visibility: visible;
 	}
-	#mobile-menu .menu-inner > div {
-		overflow: hidden;
-	}
-
-	/* Resources submenu reveal */
-	.submenu {
-		display: grid;
-		grid-template-rows: 0fr;
-		transition: grid-template-rows 300ms ease;
-	}
-	.res-toggle.is-open + .submenu {
-		grid-template-rows: 1fr;
-	}
-	.res-toggle.is-open .chevron {
-		transform: rotate(180deg);
+	@media (prefers-reduced-motion: reduce) {
+		#mobile-menu .menu-inner,
+		#mobile-menu-button .bar {
+			transition: none;
+		}
 	}
 </style>
 
 <script>
+	import { DESKTOP_MIN } from "../../scripts/breakpoints";
+
 	const button = document.getElementById("mobile-menu-button")!;
 	const menu = document.getElementById("mobile-menu")!;
-	button.addEventListener("click", () => {
-		const open = menu.classList.toggle("is-open");
+	function setMenuOpen(open: boolean) {
+		menu.classList.toggle("is-open", open);
+		menu.inert = !open;
 		button.classList.toggle("is-open", open);
 		button.setAttribute("aria-expanded", String(open));
 		button.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+	}
+
+	button.addEventListener("click", () => setMenuOpen(!menu.classList.contains("is-open")));
+	menu.querySelectorAll('a[href^="#"]').forEach((link) => {
+		link.addEventListener("click", () => setMenuOpen(false));
 	});
 
-	menu.querySelectorAll<HTMLButtonElement>(".res-toggle").forEach((toggle) => {
-		toggle.addEventListener("click", () => {
-			const open = toggle.classList.toggle("is-open");
-			toggle.setAttribute("aria-expanded", String(open));
-		});
+	document.addEventListener("keydown", (event) => {
+		if (event.key !== "Escape" || menu.inert) return;
+		setMenuOpen(false);
+		button.focus();
+	});
+	document.addEventListener("click", (event) => {
+		if (event.target instanceof Node && !menu.contains(event.target) && !button.contains(event.target)) {
+			setMenuOpen(false);
+		}
+	});
+	matchMedia(`(min-width: ${DESKTOP_MIN}px)`).addEventListener("change", (event) => {
+		if (event.matches) setMenuOpen(false);
 	});
 </script>
