@@ -20,7 +20,7 @@ const isActive = (item: { href?: string; newTab?: boolean }) =>
 <button
 	type="button"
 	id="mobile-menu-button"
-	class:list={["flex w-12 shrink-0 flex-col items-center justify-center gap-1.5 lg:hidden", hasStickyCta ? "h-11" : "h-5"]}
+	class="flex h-11 w-12 shrink-0 flex-col items-center justify-center gap-1.5 lg:hidden"
 	aria-expanded="false"
 	aria-controls="mobile-menu"
 	aria-label="Open menu"
@@ -32,7 +32,7 @@ const isActive = (item: { href?: string; newTab?: boolean }) =>
 
 <div
 	id="mobile-menu"
-	class:list={["fixed inset-x-0 z-40 lg:hidden", hasStickyCta ? "top-full mt-2" : "top-17"]}
+	class="fixed inset-x-0 top-full z-40 mt-2 lg:hidden"
 	data-cta-location="mobile_menu"
 	inert
 >
