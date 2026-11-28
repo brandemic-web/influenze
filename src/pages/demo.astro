@@ -12,7 +12,7 @@ const fieldClass = "min-h-12 w-full min-w-0 rounded-sm border border-purple-soft
 ---
 
 <Layout title={title} description={description} hideCta>
-	<main class="bg-surface-dark">
+	<main class="bg-surface-dark pb-14 lg:pb-24">
 		<div class="relative isolate overflow-hidden">
 			<div class="pointer-events-none absolute inset-0 opacity-45" aria-hidden="true">
 				<HeroBackdrop fade="var(--color-surface-dark)" />
@@ -105,9 +105,7 @@ const fieldClass = "min-h-12 w-full min-w-0 rounded-sm border border-purple-soft
 
 		<TrustedBy />
 
-		<div class="bg-radial from-gradient-primary/20 to-transparent to-70% pb-14 lg:pb-24">
-			<CustomerTestimonials />
-		</div>
+		<CustomerTestimonials />
 	</main>
 </Layout>
 
