@@ -66,14 +66,12 @@ const fieldClass = "min-h-12 w-full min-w-0 rounded-sm border border-purple-soft
 							<select
 								id="demo-budget"
 								name={form.budget.label}
-								aria-describedby="demo-budget-hint"
 								required
 								class:list={[fieldClass, "cursor-pointer scheme-dark invalid:text-white/65"]}
 							>
 								<option value="" selected disabled>{form.budget.placeholder}</option>
 								{form.budget.options.map((option) => <option value={option}>{option}</option>)}
 							</select>
-							<p id="demo-budget-hint" class="text-[0.875rem] text-white/75">{form.budget.hint}</p>
 						</div>
 					</div>
 

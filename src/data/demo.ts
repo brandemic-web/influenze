@@ -30,7 +30,6 @@ export const DEMO_PAGE = {
 		] satisfies { label: string; icon: WorkflowIconName }[],
 		budget: {
 			label: "Monthly influencer spend",
-			hint: "A rough total in USD, including creator fees, product costs and commissions.",
 			placeholder: "Select an option",
 			options: [
 				"I haven’t started yet",
