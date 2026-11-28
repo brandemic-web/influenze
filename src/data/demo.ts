@@ -17,7 +17,7 @@ export const DEMO_PAGE = {
 		{ value: `${SIGNUP_CREDITS}`, label: "Free credits at signup", icon: "coins" },
 	] satisfies { value: string; label: string; icon: WorkflowIconName }[],
 	form: {
-		heading: "Get a 30-minute *personalised demo*",
+		heading: "Get a 30‑minute *personalised demo*",
 		fields: [
 			{ label: "First name", autocomplete: "given-name", type: "text", maxlength: 80 },
 			{ label: "Last name", autocomplete: "family-name", type: "text", maxlength: 80 },
