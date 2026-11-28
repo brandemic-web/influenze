@@ -111,7 +111,7 @@ const isActive = (item: { href?: string; newTab?: boolean }) =>
 				<Button href={mobileStickyCta.href} newTab class="min-h-11">{mobileStickyCta.label}</Button>
 			</div>
 		) : (
-			<div class:list={["flex items-center", navigation ? "ml-auto lg:hidden" : "ml-2 gap-4 md:hidden"]}>
+			<div class:list={["flex items-center", navigation ? "ml-auto lg:hidden" : "ml-1 gap-2 sm:ml-2 sm:gap-4 md:hidden"]}>
 				{!navigation && <span class="h-4.25 w-px bg-white/40" aria-hidden="true"></span>}
 				<a
 					href={ctaHref}
