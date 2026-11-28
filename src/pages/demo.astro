@@ -1,5 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import CustomerTestimonials from "../components/common/CustomerTestimonials.astro";
+import TrustedBy from "../components/home/TrustedBy.astro";
 import HeroBackdrop from "../components/compare/HeroBackdrop.astro";
 import TwoTone from "../components/compare/TwoTone.astro";
 import Icon from "../components/app/common/Icon.astro";
@@ -10,93 +12,101 @@ const fieldClass = "min-h-12 w-full min-w-0 rounded-sm border border-purple-soft
 ---
 
 <Layout title={title} description={description} hideCta>
-	<main class="relative isolate overflow-hidden bg-surface-dark">
-		<div class="pointer-events-none absolute inset-0 opacity-45" aria-hidden="true">
-			<HeroBackdrop fade="var(--color-surface-dark)" />
-		</div>
-		<div class="relative mx-auto grid max-w-[96.875rem] gap-y-8 px-6 pt-28 pb-14 sm:px-10 lg:grid-cols-2 lg:items-center lg:gap-x-16 lg:px-8 lg:pt-44 lg:pb-24">
-			<div class="max-w-2xl">
-				<h1 class="text-3xl leading-[1.08] tracking-tight text-balance sm:text-6xl lg:text-9xl">
-					<TwoTone text={heading} accentBlock />
-				</h1>
-				<p class="mt-5 max-w-lg text-xs leading-relaxed text-white/80 lg:mt-6 lg:text-sm">{intro}</p>
-				<ul role="list" class="mt-6 grid gap-3 text-xs leading-6 text-white/85 lg:mt-8 lg:gap-4 lg:text-[1.125rem]">
-					{benefits.map((benefit) => (
-						<li class="flex items-start gap-3">
-							<span class="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-brand-primary/15 text-brand-primary" aria-hidden="true">
-								<Icon name="check" size="0.875rem" />
-							</span>
-							<span>{benefit}</span>
-						</li>
-					))}
-				</ul>
+	<main class="bg-surface-dark">
+		<div class="relative isolate overflow-hidden">
+			<div class="pointer-events-none absolute inset-0 opacity-45" aria-hidden="true">
+				<HeroBackdrop fade="var(--color-surface-dark)" />
 			</div>
-
-			<form
-				id="demo-form"
-				aria-labelledby="demo-form-title"
-				action={form.emailHref}
-				method="post"
-				enctype="text/plain"
-				class="min-w-0 rounded-[1.25rem] border border-white/15 bg-surface-card px-5 py-6 backdrop-blur-md sm:p-8 lg:p-10"
-			>
-				<h2 id="demo-form-title" class="text-[clamp(1.5rem,8vw,2rem)] leading-[1.13] tracking-tight sm:text-3xl lg:text-4xl">
-					<TwoTone text={form.heading} accentBlock />
-				</h2>
-
-				<div class="mt-6 grid gap-x-4 gap-y-4 sm:grid-cols-2 lg:mt-8 lg:gap-x-5 lg:gap-y-6">
-					{form.fields.map((field) => (
-						<label class="flex min-w-0 flex-col gap-2 text-xs">
-							<span>{field.label} <span class="text-brand-primary" aria-hidden="true">*</span></span>
-							<input
-								type={field.type}
-								name={field.label}
-								autocomplete={field.autocomplete}
-								maxlength={field.maxlength}
-								required
-								class:list={[fieldClass, "caret-brand-primary"]}
-							/>
-						</label>
-					))}
-					<div class="flex min-w-0 flex-col gap-2">
-						<label for="demo-budget" class="text-xs">{form.budget.label} <span class="text-brand-primary" aria-hidden="true">*</span></label>
-						<select
-							id="demo-budget"
-							name={form.budget.label}
-							aria-describedby="demo-budget-hint"
-							required
-							class:list={[fieldClass, "cursor-pointer scheme-dark invalid:text-white/65"]}
-						>
-							<option value="" selected disabled>{form.budget.placeholder}</option>
-							{form.budget.options.map((option) => <option value={option}>{option}</option>)}
-						</select>
-						<p id="demo-budget-hint" class="text-[0.875rem] text-white/75">{form.budget.hint}</p>
-					</div>
+			<div class="relative mx-auto grid max-w-[96.875rem] gap-y-8 px-6 pt-28 pb-4 sm:px-10 lg:grid-cols-2 lg:items-center lg:gap-x-16 lg:px-8 lg:pt-44 lg:pb-0">
+				<div class="max-w-2xl">
+					<h1 class="text-3xl leading-[1.08] tracking-tight text-balance sm:text-6xl lg:text-9xl">
+						<TwoTone text={heading} accentBlock />
+					</h1>
+					<p class="mt-5 max-w-lg text-xs leading-relaxed text-white/80 lg:mt-6 lg:text-sm">{intro}</p>
+					<ul role="list" class="mt-6 grid gap-3 text-xs leading-6 text-white/85 lg:mt-8 lg:gap-4 lg:text-[1.125rem]">
+						{benefits.map((benefit) => (
+							<li class="flex items-start gap-3">
+								<span class="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-brand-primary/15 text-brand-primary" aria-hidden="true">
+									<Icon name="check" size="0.875rem" />
+								</span>
+								<span>{benefit}</span>
+							</li>
+						))}
+					</ul>
 				</div>
 
-				<fieldset class="mt-6 min-w-0 lg:mt-7">
-					<legend class="text-xs">{form.roleLabel} <span class="text-brand-primary" aria-hidden="true">*</span></legend>
-					<div class="mt-3 grid grid-cols-3 gap-2 sm:gap-3">
-						{form.roles.map(({ label, icon }) => (
-							<label class="relative cursor-pointer">
-								<input type="radio" name={form.roleLabel} value={label} class="peer sr-only" required />
-								<span class="flex h-full min-h-16 flex-col items-center justify-center gap-1.5 rounded-sm border border-purple-soft/25 bg-purple-deep/20 p-1.5 text-[0.875rem] text-white peer-checked:border-brand-primary peer-checked:bg-brand-primary/10 peer-checked:text-brand-primary peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-brand-primary hover:bg-purple-deep/35 lg:text-xs">
-									<Icon name={icon} size="1.125rem" />
-									{label}
-								</span>
+				<form
+					id="demo-form"
+					aria-labelledby="demo-form-title"
+					action={form.emailHref}
+					method="post"
+					enctype="text/plain"
+					class="min-w-0 rounded-[1.25rem] border border-white/15 bg-surface-card px-5 py-6 backdrop-blur-md sm:p-8 lg:p-10"
+				>
+					<h2 id="demo-form-title" class="text-[clamp(1.5rem,8vw,2rem)] leading-[1.13] tracking-tight sm:text-3xl lg:text-4xl">
+						<TwoTone text={form.heading} accentBlock />
+					</h2>
+
+					<div class="mt-6 grid gap-x-4 gap-y-4 sm:grid-cols-2 lg:mt-8 lg:gap-x-5 lg:gap-y-6">
+						{form.fields.map((field) => (
+							<label class="flex min-w-0 flex-col gap-2 text-xs">
+								<span>{field.label} <span class="text-brand-primary" aria-hidden="true">*</span></span>
+								<input
+									type={field.type}
+									name={field.label}
+									autocomplete={field.autocomplete}
+									maxlength={field.maxlength}
+									required
+									class:list={[fieldClass, "caret-brand-primary"]}
+								/>
 							</label>
 						))}
+						<div class="flex min-w-0 flex-col gap-2">
+							<label for="demo-budget" class="text-xs">{form.budget.label} <span class="text-brand-primary" aria-hidden="true">*</span></label>
+							<select
+								id="demo-budget"
+								name={form.budget.label}
+								aria-describedby="demo-budget-hint"
+								required
+								class:list={[fieldClass, "cursor-pointer scheme-dark invalid:text-white/65"]}
+							>
+								<option value="" selected disabled>{form.budget.placeholder}</option>
+								{form.budget.options.map((option) => <option value={option}>{option}</option>)}
+							</select>
+							<p id="demo-budget-hint" class="text-[0.875rem] text-white/75">{form.budget.hint}</p>
+						</div>
 					</div>
-				</fieldset>
 
-				<button type="submit" aria-describedby="demo-submit-note" class="hover-dark-pill mt-6 inline-flex min-h-11 cursor-pointer items-center justify-center rounded-full bg-button-primary px-6 py-3 text-xs font-semibold text-button-text lg:mt-8">
-					{form.submitLabel}
-				</button>
-				<p id="demo-submit-note" class="mt-3 text-[0.875rem] leading-relaxed text-white/80">{form.submitNote}</p>
-				<p class="mt-2 text-[0.875rem] leading-relaxed text-white/75">
-					{form.privacyLead} <a href="/privacy/" class="text-brand-primary underline underline-offset-2">{form.privacyLabel}</a>.
-				</p>
-			</form>
+					<fieldset class="mt-6 min-w-0 lg:mt-7">
+						<legend class="text-xs">{form.roleLabel} <span class="text-brand-primary" aria-hidden="true">*</span></legend>
+						<div class="mt-3 grid grid-cols-3 gap-2 sm:gap-3">
+							{form.roles.map(({ label, icon }) => (
+								<label class="relative cursor-pointer">
+									<input type="radio" name={form.roleLabel} value={label} class="peer sr-only" required />
+									<span class="flex h-full min-h-16 flex-col items-center justify-center gap-1.5 rounded-sm border border-purple-soft/25 bg-purple-deep/20 p-1.5 text-[0.875rem] text-white peer-checked:border-brand-primary peer-checked:bg-brand-primary/10 peer-checked:text-brand-primary peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-brand-primary hover:bg-purple-deep/35 lg:text-xs">
+										<Icon name={icon} size="1.125rem" />
+										{label}
+									</span>
+								</label>
+							))}
+						</div>
+					</fieldset>
+
+					<button type="submit" aria-describedby="demo-submit-note" class="hover-dark-pill mt-6 inline-flex min-h-11 cursor-pointer items-center justify-center rounded-full bg-button-primary px-6 py-3 text-xs font-semibold text-button-text lg:mt-8">
+						{form.submitLabel}
+					</button>
+					<p id="demo-submit-note" class="mt-3 text-[0.875rem] leading-relaxed text-white/80">{form.submitNote}</p>
+					<p class="mt-2 text-[0.875rem] leading-relaxed text-white/75">
+						{form.privacyLead} <a href="/privacy/" class="text-brand-primary underline underline-offset-2">{form.privacyLabel}</a>.
+					</p>
+				</form>
+			</div>
+		</div>
+
+		<TrustedBy />
+
+		<div class="bg-(image:--background-image-home-violet) pb-14 lg:pb-24">
+			<CustomerTestimonials />
 		</div>
 	</main>
 </Layout>
