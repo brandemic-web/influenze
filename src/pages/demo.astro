@@ -46,7 +46,7 @@ const fieldClass = "min-h-12 w-full min-w-0 rounded-sm border border-purple-soft
 
 				<div class="mt-6 grid gap-x-4 gap-y-4 sm:grid-cols-2 lg:mt-8 lg:gap-x-5 lg:gap-y-6">
 					{form.fields.map((field) => (
-						<label class="flex min-w-0 flex-col gap-2 text-xs sm:last:col-span-2">
+						<label class="flex min-w-0 flex-col gap-2 text-xs">
 							<span>{field.label} <span class="text-brand-primary" aria-hidden="true">*</span></span>
 							<input
 								type={field.type}
@@ -58,6 +58,20 @@ const fieldClass = "min-h-12 w-full min-w-0 rounded-sm border border-purple-soft
 							/>
 						</label>
 					))}
+					<div class="flex min-w-0 flex-col gap-2">
+						<label for="demo-budget" class="text-xs">{form.budget.label} <span class="text-brand-primary" aria-hidden="true">*</span></label>
+						<select
+							id="demo-budget"
+							name={form.budget.label}
+							aria-describedby="demo-budget-hint"
+							required
+							class:list={[fieldClass, "cursor-pointer scheme-dark invalid:text-white/65"]}
+						>
+							<option value="" selected disabled>{form.budget.placeholder}</option>
+							{form.budget.options.map((option) => <option value={option}>{option}</option>)}
+						</select>
+						<p id="demo-budget-hint" class="text-[0.875rem] text-white/75">{form.budget.hint}</p>
+					</div>
 				</div>
 
 				<fieldset class="mt-6 min-w-0 lg:mt-7">
@@ -74,21 +88,6 @@ const fieldClass = "min-h-12 w-full min-w-0 rounded-sm border border-purple-soft
 						))}
 					</div>
 				</fieldset>
-
-				<div class="mt-6 lg:mt-7">
-					<label for="demo-budget" class="text-xs">{form.budget.label} <span class="text-brand-primary" aria-hidden="true">*</span></label>
-					<p id="demo-budget-hint" class="mt-1 text-[0.875rem] text-white/75">{form.budget.hint}</p>
-					<select
-						id="demo-budget"
-						name={form.budget.label}
-						aria-describedby="demo-budget-hint"
-						required
-						class:list={[fieldClass, "mt-2 cursor-pointer scheme-dark invalid:text-white/65"]}
-					>
-						<option value="" selected disabled>{form.budget.placeholder}</option>
-						{form.budget.options.map((option) => <option value={option}>{option}</option>)}
-					</select>
-				</div>
 
 				<button type="submit" aria-describedby="demo-submit-note" class="hover-dark-pill mt-6 inline-flex min-h-11 cursor-pointer items-center justify-center rounded-full bg-button-primary px-6 py-3 text-xs font-semibold text-button-text lg:mt-8">
 					{form.submitLabel}
