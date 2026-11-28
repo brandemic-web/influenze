@@ -6,12 +6,11 @@ import type { ComparisonRow } from "./comparison";
 import type { FeatureBlock } from "./featureBlocks";
 import type { Faq } from "./faqs";
 import type { HeaderNavigation } from "./nav";
-import { CUSTOM_PLAN } from "./pricing";
+import { DEMO_LABEL, DEMO_PATH } from "./demo";
 import { APP_URL } from "./site";
 import type { WhyInfluenzeStep } from "./whyInfluenze";
 
 const signupButtonLabel = "Claim free credits";
-const demoButtonLabel = "Request a demo";
 const faqLink = { label: "FAQ", href: "#faq" };
 
 export const CREATOR_DISCOVERY = {
@@ -79,9 +78,8 @@ export const CREATOR_DISCOVERY = {
 		note: "Free credits don't expire and can be claimed by up to three people per company. No credit card required.",
 	},
 	demo: {
-		label: demoButtonLabel,
-		href: import.meta.env.PUBLIC_DEMO_URL?.trim() ||
-			`mailto:${CUSTOM_PLAN.contactEmail}?subject=${encodeURIComponent(demoButtonLabel)}`,
+		label: DEMO_LABEL,
+		href: import.meta.env.PUBLIC_DEMO_URL?.trim() || DEMO_PATH,
 	},
 	comparison: {
 		heading: "Creator research shouldn't live in *30 browser tabs.*",
